@@ -443,3 +443,30 @@ header {
 .dice-sum-fly--arrive {
   animation: dice-fly-arrive 0.15s ease-out forwards;
 }
+
+/* ===== Tutorial System ===== */
+.tutorial-highlight {
+  position: relative !important;
+  z-index: 196 !important;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.9), 0 0 20px rgba(139, 92, 246, 0.5) !important;
+  border-radius: 8px;
+  pointer-events: auto !important;
+  animation: tutorial-pulse 1.8s ease-in-out infinite;
+}
+@keyframes tutorial-pulse {
+  0%, 100% { box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.9), 0 0 20px rgba(139, 92, 246, 0.4); }
+  50%       { box-shadow: 0 0 0 4px rgba(167, 139, 250, 1.0), 0 0 30px rgba(139, 92, 246, 0.7); }
+}
+
+.tutorial-tooltip {
+  background: linear-gradient(145deg, #1e1b2e, #1a1a2e);
+  border: 2px solid #7c3aed;
+  border-radius: 14px;
+  padding: 14px 16px;
+  box-shadow: 0 0 30px rgba(124, 58, 237, 0.45), 0 8px 32px rgba(0,0,0,0.6);
+  animation: tutorial-fade-in 0.25s ease-out;
+}
+@keyframes tutorial-fade-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}

@@ -212,6 +212,77 @@ ui: {
     dev_shackle_select_ph: '-- 選擇枷鎖 --',
     dev_shackle_conflict: '⚠️ 已有枷鎖套用中，強制套用將覆蓋現有枷鎖。'
   },
+  tutorial: {
+    btn_start: '🎓 新手教學',
+    btn_rules: '📖 玩法說明',
+    skip: '跳過教學',
+    step_indicator: '{0} / {1}',
+    next_btn: '繼續 →',
+    step0: '歡迎來到比比丟八！你有 8 顆骰子，目標是湊出牌型來造成傷害擊敗敵人！',
+    step1: '點擊骰子可以「鎖定」它。鎖定後重骰時這顆骰子不會改變。試著鎖定兩顆一樣的骰子！',
+    step2: '很好！現在點「重骰」按鈕，重新投擲未鎖定的骰子。',
+    step3: '系統自動偵測到牌型！各區的倍率會相乘，湊出越好的牌型傷害越高！',
+    step4: '準備好了！點「攻擊」按鈕，用目前的骰面造成傷害！',
+    step5: '打倒敵人後進入商店，從遺物中選一件。遺物會永久改變你的遊戲規則！',
+    step6: '教學完成！挑戰 10 關，最終面對創世神。祝你好運，骰子之神！',
+    complete_btn: '開始正式挑戰',
+    htp_title: '📖 玩法說明',
+    htp_tab_basics: '基本玩法',
+    htp_tab_hands: '牌型表',
+    htp_tab_relics: '遺物說明',
+    htp_tab_shackles: '枷鎖說明',
+    htp_tab_souls: '靈魂奉獻',
+    htp_basics: `<div class="flex flex-col gap-3 text-slate-300">
+      <h3 class="text-base font-black text-violet-300">🎲 骰子與盤面</h3>
+      <p>每回合你有 <b class="text-white">8 顆骰子</b>（點數 1~8），目標是湊出牌型組合來對敵人造成傷害。</p>
+      <h3 class="text-base font-black text-violet-300">🔒 鎖定</h3>
+      <p>點擊骰子可以<b class="text-white">鎖定</b>它。重骰時鎖定的骰子不會改變，讓你保留想要的點數。</p>
+      <h3 class="text-base font-black text-violet-300">🔄 重骰</h3>
+      <p>每回合有固定的<b class="text-white">重骰次數</b>（通常 2~3 次）。點「重骰」重新投擲未鎖定的骰子，找出更好的牌型。</p>
+      <h3 class="text-base font-black text-violet-300">⚔️ 攻擊</h3>
+      <p>點「攻擊」結算目前盤面。系統計算所有牌型的基礎點數與倍率相乘得出<b class="text-white">最終傷害</b>。在限制回合數內打倒敵人！</p>
+      <h3 class="text-base font-black text-violet-300">🏆 勝利條件</h3>
+      <p>連續打倒 10 關的敵人（最終 Boss 是創世神）即可通關！每關打倒敵人後可在商店獲取遺物。</p>
+    </div>`,
+    htp_relics: `<div class="flex flex-col gap-3 text-slate-300">
+      <h3 class="text-base font-black text-violet-300">🎁 遺物稀有度</h3>
+      <div class="grid grid-cols-1 gap-1.5 text-xs">
+        <div class="flex items-center gap-2"><span class="text-slate-400 font-black w-12">普通</span><span>基礎增益效果</span></div>
+        <div class="flex items-center gap-2"><span class="text-blue-400 font-black w-12">稀有</span><span>強力的點數或倍率加成</span></div>
+        <div class="flex items-center gap-2"><span class="text-purple-400 font-black w-12">史詩</span><span>改變遊戲機制的特殊效果</span></div>
+        <div class="flex items-center gap-2"><span class="text-amber-400 font-black w-12">傳說</span><span>極強的條件觸發效果</span></div>
+        <div class="flex items-center gap-2"><span class="text-fuchsia-400 font-black w-12">神話</span><span>融合兩件遺物後才能獲得</span></div>
+      </div>
+      <h3 class="text-base font-black text-violet-300 mt-1">✨ 遺物融合</h3>
+      <p>持有特定兩件遺物時會自動觸發<b class="text-white">融合</b>，生成一件神話遺物（同時消耗原材料）。每人最多持有 2 件神話遺物。</p>
+    </div>`,
+    htp_shackles: `<div class="flex flex-col gap-3 text-slate-300">
+      <h3 class="text-base font-black text-violet-300">⛓️ 枷鎖說明</h3>
+      <p>某些關卡會附帶<b class="text-white">枷鎖</b>，對玩家施加限制或負面效果。</p>
+      <div class="flex flex-col gap-2 mt-1">
+        <div class="bg-amber-900/30 border border-amber-700/50 rounded-lg p-2.5">
+          <div class="text-amber-400 font-black text-sm mb-1">輕型枷鎖</div>
+          <div class="text-xs">出現於第 3、9 關。效果較輕微，如資訊隱藏、視覺干擾等，不直接削減傷害。</div>
+        </div>
+        <div class="bg-red-900/30 border border-red-700/50 rounded-lg p-2.5">
+          <div class="text-red-400 font-black text-sm mb-1">重型枷鎖</div>
+          <div class="text-xs">出現於第 6、10 關。效果嚴重，如傷害削減、強制重骰等，對戰局影響極大。</div>
+        </div>
+      </div>
+      <p class="text-xs text-slate-500">持有【反抗軍】遺物時，有枷鎖的關卡最終倍率 ×1.5。</p>
+    </div>`,
+    htp_souls: `<div class="flex flex-col gap-3 text-slate-300">
+      <h3 class="text-base font-black text-violet-300">👻 靈魂奉獻</h3>
+      <p>每次戰鬥勝利都會獲得<b class="text-white">靈魂</b>，可在標題畫面的「靈魂奉獻」中永久強化能力。</p>
+      <div class="flex flex-col gap-1.5 text-xs mt-1">
+        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-red-400">❤️ 體魄鍛鍊</span><span>最大 HP +1（最多 2 級）</span></div>
+        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-violet-400">🎲 骰子掌握</span><span>初始重骰次數 +1（最多 2 級）</span></div>
+        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-amber-400">⚔️ 力量覺醒</span><span>最終傷害 +10%（最多 5 級）</span></div>
+        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-fuchsia-400">🔥 靈魂爆發</span><span>敵人 HP 提升，靈魂獲取增加，神話遺物上限提升</span></div>
+      </div>
+      <p class="text-xs text-slate-500 mt-1">靈魂強化跨遊戲局永久保留。</p>
+    </div>`
+  },
   souls: {
     'hp': { name: '❤️ 體魄鍛鍊', desc: '最大 HP +1' },
     'rerolls': { name: '🎲 骰子掌握', desc: '初始重骰次數 +1' },

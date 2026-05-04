@@ -33,6 +33,22 @@ let shopItems = [];
 let shopRerollsUsed = 0;
 let activeHighlight = null;
 const SAVE_KEY = 'bibbidiba_save_v60';
+
+// --- Tutorial state ---
+let tutorialMode = false;
+let tutorialStep = 0;
+let tutorialForcedDice = null; // array[8] to force on next roll
+
+const TUTORIAL_STEPS = [
+    { step: 0, highlight: null,            forceDice: [3, 3, 5, 2, 7, 1, 4, 6], waitFor: 'any_click' },
+    { step: 1, highlight: 'dice-container', forceDice: [3, 3, 5, 2, 7, 1, 4, 6], waitFor: 'lock_two_dice' },
+    { step: 2, highlight: 'roll-btn',       waitFor: 'roll_action', forceDiceAfterRoll: [3, 3, 3, 6, 6, 1, 4, 2] },
+    { step: 3, highlight: 'score-preview', waitFor: 'any_click' },
+    { step: 4, highlight: 'attack-btn',    waitFor: 'attack_action' },
+    { step: 5, highlight: 'shop-container', waitFor: 'shop_select' },
+    { step: 6, highlight: null,            waitFor: 'any_click', onComplete: 'end_tutorial' }
+];
+window.TUTORIAL_STEPS = TUTORIAL_STEPS;
 const HISTORY_KEY = 'bibbidiba_history_v60';
 const COLLECTION_KEY = 'bibbidiba_collection_v60';
 
@@ -449,6 +465,39 @@ function initTitleScreen() {
         UI.el.tabShackles.onclick = () => { currentTab = 'shackles'; updateTabUI(); };
     }
 
+    // Tutorial button
+    const btnTutorial = document.getElementById('btn-tutorial');
+    if (btnTutorial) {
+        btnTutorial.onclick = () => {
+            const confirmMsg = (i18n.t('tutorial.btn_start') || '🎓 新手教學') + '\n\n' +
+                (i18n.getLocale() === 'en' ? 'Enter tutorial mode? Dice will be preset for learning. (~2 min)' :
+                 i18n.getLocale() === 'ja' ? 'チュートリアルを開始しますか？ダイスは事前設定されます。(約2分)' :
+                 i18n.getLocale() === 'zh-cn' ? '进入新手引导局？骰子将被预设以利教学。(约2分钟)' :
+                 '進入新手引導局？骰子結果將被預先設定以利教學。(約 2 分鐘)');
+            if (window.confirm(confirmMsg)) {
+                startTutorialGame();
+            }
+        };
+    }
+
+    // How-to-play button & modal
+    const btnHowToPlay = document.getElementById('btn-how-to-play');
+    const htpModal = document.getElementById('how-to-play-modal');
+    const btnCloseHtp = document.getElementById('btn-close-how-to-play');
+    if (btnHowToPlay && htpModal) {
+        let htpTab = 'basics';
+        const openHtp = () => {
+            htpModal.classList.remove('hidden');
+            UI.renderHowToPlayTab(htpTab);
+        };
+        btnHowToPlay.onclick = openHtp;
+        if (btnCloseHtp) btnCloseHtp.onclick = () => htpModal.classList.add('hidden');
+        ['basics', 'hands', 'relics', 'shackles', 'souls'].forEach(t => {
+            const btn = document.getElementById(`htp-tab-${t}`);
+            if (btn) btn.onclick = () => { htpTab = t; UI.renderHowToPlayTab(t); };
+        });
+    }
+
     UI.el.shopRerollBtn.onclick = () => window.rerollShop(false);
     document.getElementById('btn-next-stage').onclick = () => {
         if (UI.el.shopOverlay.classList.contains('hidden')) return;
@@ -557,6 +606,59 @@ function initTitleScreen() {
 }
 
 import { SHACKLE_DB } from './data.js';
+
+// --- Tutorial functions ---
+function startTutorialGame() {
+    tutorialMode = true;
+    tutorialStep = 0;
+    tutorialForcedDice = [...TUTORIAL_STEPS[0].forceDice];
+
+    UI.el.titleScreen.classList.add('hidden');
+
+    player = {
+        hp: 3, relics: [], maxRolls: 3, bonusBasePoints: 0, nextDamageMulti: 1.0,
+        dismantledFusions: [], fivesRolled: 0, highestDamage: 0, highestDamageCombo: '', isInfiniteMode: false
+    };
+    stage = {
+        level: 0,
+        enemyMaxHp: 50, enemyHp: 50,
+        enemyName: i18n.t('enemies.enemy_0') || '史萊姆',
+        turnsLeft: 5,
+        activeShackle: null, shackleMeta: null,
+        hasAttackedThisStage: false, damageBuffMulti: 1.0
+    };
+
+    renderAll();
+    startTurn();
+}
+
+window.advanceTutorialStep = function() {
+    if (!tutorialMode) return;
+    const currentStep = TUTORIAL_STEPS[tutorialStep];
+    if (currentStep && currentStep.onComplete === 'end_tutorial') {
+        endTutorial();
+        return;
+    }
+    tutorialStep++;
+    if (tutorialStep < TUTORIAL_STEPS.length) {
+        UI.showTutorialStep(tutorialStep, TUTORIAL_STEPS.length);
+    }
+};
+
+window.skipTutorial = function() {
+    tutorialMode = false;
+    tutorialForcedDice = null;
+    UI.hideTutorialOverlay();
+    location.reload();
+};
+
+function endTutorial() {
+    tutorialMode = false;
+    tutorialForcedDice = null;
+    localStorage.setItem('bibbidiba_tutorial_done', 'true');
+    UI.hideTutorialOverlay();
+    location.reload();
+}
 
 function initNewGame() {
     let startHp = 3 + (metaData.upgrades.hp * 1);
@@ -759,7 +861,7 @@ function startTurn() {
     battle.balanceUsedThisTurn = false;
     battle.dice = battle.dice.map((d, i) => ({ val: 1, locked: false, id: i, matchedGroups: {A:false, B:false, C:false, D:false} }));
     battle.scoreResult = null;
-    saveGame();
+    if (!tutorialMode) saveGame();
     renderAll();
     window.executeRoll(true);
 }
@@ -834,13 +936,24 @@ window.toggleLock = function(idx) {
             stage.shackleMeta.displayOrder.sort(() => Math.random() - 0.5);
         }
         
-        saveGame();
+        if (!tutorialMode) saveGame();
         UI.renderDice(battle, activeHighlight, player);
         const diceEl = document.getElementById(`dice-element-${idx}`);
         if(diceEl) {
             diceEl.classList.remove('pop-anim');
             void diceEl.offsetWidth;
             diceEl.classList.add('pop-anim');
+        }
+
+        // Tutorial: check lock_two_dice condition
+        if (tutorialMode && willLock) {
+            const lockedCount = battle.dice.filter(d => d.locked).length;
+            if (TUTORIAL_STEPS[tutorialStep]?.waitFor === 'lock_two_dice' && lockedCount >= 2) {
+                tutorialStep++;
+                const nextStep = TUTORIAL_STEPS[tutorialStep];
+                if (nextStep?.forceDiceAfterRoll) tutorialForcedDice = [...nextStep.forceDiceAfterRoll];
+                UI.showTutorialStep(tutorialStep, TUTORIAL_STEPS.length);
+            }
         }
     }
 };
@@ -858,6 +971,11 @@ window.executeRoll = function(isInitial = false) {
     if (battle.state === 'ROLLING' || battle.state === 'ATTACKING') return;
 
     if (!isInitial) {
+        // Tutorial: advance step on roll action
+        if (tutorialMode && TUTORIAL_STEPS[tutorialStep]?.waitFor === 'roll_action') {
+            tutorialStep++; // Will show step 3 tooltip after roll completes
+        }
+
         if (stage.activeShackle === 'rebel') {
             let freed = 0;
             battle.dice.forEach(d => {
@@ -868,8 +986,8 @@ window.executeRoll = function(isInitial = false) {
             });
             if (freed > 0) UI.showToast(i18n.t('messages.toast_rebel', freed));
         }
-        
-        if (player.relics.includes('balance') && battle.rollsLeft === player.maxRolls && !battle.balanceUsedThisTurn) {
+
+        if (!tutorialMode && player.relics.includes('balance') && battle.rollsLeft === player.maxRolls && !battle.balanceUsedThisTurn) {
             UI.showToast(i18n.t('messages.toast_balance'));
             battle.balanceUsedThisTurn = true;
         } else {
@@ -893,6 +1011,19 @@ window.executeRoll = function(isInitial = false) {
 
         if (intervals >= 15) { // increased animation duration
             clearInterval(timer);
+
+            // Apply tutorial forced dice before sort & score calc
+            if (tutorialMode && tutorialForcedDice) {
+                let desired = [...tutorialForcedDice];
+                battle.dice.filter(d => d.locked).forEach(d => {
+                    let idx = desired.indexOf(d.val);
+                    if (idx !== -1) desired.splice(idx, 1);
+                });
+                let unlockedDice = battle.dice.filter(d => !d.locked);
+                unlockedDice.forEach((d, i) => { if (i < desired.length) d.val = desired[i]; });
+                tutorialForcedDice = null;
+            }
+
             battle.dice.sort((a, b) => a.val - b.val);
 
             player.fivesRolled += battle.dice.filter(d => d.val === 5).length;
@@ -965,8 +1096,13 @@ window.executeRoll = function(isInitial = false) {
                 }, 300);
             }
 
-            saveGame();
+            if (!tutorialMode) saveGame();
             renderAll();
+
+            // Tutorial: show current step tooltip after roll completes
+            if (tutorialMode) {
+                setTimeout(() => UI.showTutorialStep(tutorialStep, TUTORIAL_STEPS.length), 80);
+            }
         }
     }, 25);
 };
@@ -975,6 +1111,12 @@ window.fireAttack = function() {
     if (battle.state !== 'WAIT_ACTION' || !battle.scoreResult) return;
     battle.state = 'ATTACKING';
     activeHighlight = null;
+
+    // Tutorial: advance on attack action
+    if (tutorialMode && TUTORIAL_STEPS[tutorialStep]?.waitFor === 'attack_action') {
+        tutorialStep++; // step 5 will be shown when shop opens
+        UI.hideTutorialOverlay();
+    }
 
     if (drunkInterval) { clearInterval(drunkInterval); drunkInterval = null; clearDrunkDisplayValue(); }
     clearIllusionaryFakeRatio();
@@ -1419,6 +1561,11 @@ function openShop() {
     UI.updateShopRerollBtn(shopRerollsUsed, false, false);
     UI.updateHeaderUI(player, stage);
     window.rerollShop(true);
+
+    // Tutorial: show shop selection step
+    if (tutorialMode && TUTORIAL_STEPS[tutorialStep]?.waitFor === 'shop_select') {
+        setTimeout(() => UI.showTutorialStep(tutorialStep, TUTORIAL_STEPS.length), 400);
+    }
 }
 
 window.rerollShop = function(isInitial = false) {
@@ -1491,6 +1638,20 @@ window.showFusionInfo = function(fusionId) {
 
 window.buyItem = function(idx) {
     let r = shopItems[idx];
+
+    // Tutorial: intercept shop selection
+    if (tutorialMode && TUTORIAL_STEPS[tutorialStep]?.waitFor === 'shop_select') {
+        Audio.playBuySound();
+        if (!r.id.startsWith('cons_')) {
+            player.relics.push(r.id);
+            unlockCollectionItem('relic', r.id);
+        }
+        UI.renderInventory(player, battle);
+        UI.el.shopOverlay.classList.add('hidden');
+        tutorialStep++; // advance to step 6
+        UI.showTutorialStep(tutorialStep, TUTORIAL_STEPS.length);
+        return;
+    }
 
     Audio.playBuySound();
     window.itemsBoughtThisScreen++;

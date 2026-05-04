@@ -1296,3 +1296,171 @@ window.resetSouls = function() {
 
     renderSoulsModal(meta);
 };
+
+// ===== Tutorial UI =====
+
+const _tutorialHighlighted = { el: null, origPos: '', origZ: '', origShadow: '' };
+
+export function showTutorialStep(stepIndex, totalSteps) {
+    const overlay = document.getElementById('tutorial-overlay');
+    const backdrop = document.getElementById('tutorial-backdrop');
+    const tooltip = document.getElementById('tutorial-tooltip');
+    const indicatorEl = document.getElementById('tutorial-step-indicator');
+    const textEl = document.getElementById('tutorial-tooltip-text');
+    const skipBtn = document.getElementById('tutorial-skip-btn');
+    const nextBtn = document.getElementById('tutorial-next-btn');
+    if (!overlay || !tooltip) return;
+
+    const steps = window.TUTORIAL_STEPS;
+    if (!steps || stepIndex >= steps.length) return;
+    const step = steps[stepIndex];
+
+    // Update text & indicator
+    indicatorEl.textContent = i18n.t('tutorial.step_indicator', stepIndex + 1, totalSteps);
+    textEl.textContent = i18n.t(`tutorial.step${stepIndex}`);
+    skipBtn.textContent = i18n.t('tutorial.skip');
+    nextBtn.textContent = i18n.t('tutorial.next_btn') || '繼續 →';
+
+    const showNext = step.waitFor === 'any_click';
+    nextBtn.classList.toggle('hidden', !showNext);
+
+    // Step 6: show complete button instead of next
+    if (step.onComplete === 'end_tutorial') {
+        nextBtn.textContent = i18n.t('tutorial.complete_btn') || '開始正式挑戰';
+        nextBtn.classList.remove('hidden');
+    }
+
+    skipBtn.onclick = () => { if (window.skipTutorial) window.skipTutorial(); };
+    nextBtn.onclick = () => { if (window.advanceTutorialStep) window.advanceTutorialStep(); };
+
+    // Remove previous highlight
+    _unhighlightTutorialElement();
+
+    // Apply new highlight
+    const highlightMap = {
+        'dice-container': 'dice-container',
+        'roll-btn': 'controls-container',
+        'score-preview': 'score-area',
+        'attack-btn': 'controls-container',
+        'shop-container': 'shop-items'
+    };
+    const targetId = step.highlight ? (highlightMap[step.highlight] || step.highlight) : null;
+    let targetEl = targetId ? document.getElementById(targetId) : null;
+
+    if (targetEl) {
+        _tutorialHighlighted.el = targetEl;
+        _tutorialHighlighted.origPos = targetEl.style.position;
+        _tutorialHighlighted.origZ = targetEl.style.zIndex;
+        targetEl.style.position = 'relative';
+        targetEl.style.zIndex = '196';
+        targetEl.classList.add('tutorial-highlight');
+    }
+
+    // Show overlay
+    overlay.classList.remove('hidden');
+
+    // Position tooltip near highlighted element (or center-bottom if none)
+    _positionTutorialTooltip(targetEl);
+}
+
+function _unhighlightTutorialElement() {
+    if (_tutorialHighlighted.el) {
+        _tutorialHighlighted.el.style.position = _tutorialHighlighted.origPos;
+        _tutorialHighlighted.el.style.zIndex = _tutorialHighlighted.origZ;
+        _tutorialHighlighted.el.classList.remove('tutorial-highlight');
+        _tutorialHighlighted.el = null;
+    }
+}
+
+function _positionTutorialTooltip(targetEl) {
+    const tooltip = document.getElementById('tutorial-tooltip');
+    if (!tooltip) return;
+
+    const TOOLTIP_W = 290, TOOLTIP_H = 150, PAD = 12;
+    const vw = window.innerWidth, vh = window.innerHeight;
+
+    let left, top;
+
+    if (targetEl) {
+        const rect = targetEl.getBoundingClientRect();
+        // Prefer below, fallback above
+        if (rect.bottom + TOOLTIP_H + PAD < vh) {
+            top = rect.bottom + PAD;
+        } else {
+            top = Math.max(PAD, rect.top - TOOLTIP_H - PAD);
+        }
+        // Center horizontally on element, clamp to viewport
+        left = rect.left + rect.width / 2 - TOOLTIP_W / 2;
+        left = Math.max(PAD, Math.min(vw - TOOLTIP_W - PAD, left));
+    } else {
+        // Center of screen, near bottom
+        left = vw / 2 - TOOLTIP_W / 2;
+        top = vh / 2 - TOOLTIP_H / 2;
+    }
+
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${top}px`;
+}
+
+export function hideTutorialOverlay() {
+    _unhighlightTutorialElement();
+    const overlay = document.getElementById('tutorial-overlay');
+    if (overlay) overlay.classList.add('hidden');
+}
+
+// ===== How-to-play modal =====
+
+export function renderHowToPlayTab(tabKey) {
+    const contentEl = document.getElementById('htp-content');
+    if (!contentEl) return;
+
+    // Tab button active state
+    const tabs = ['basics', 'hands', 'relics', 'shackles', 'souls'];
+    tabs.forEach(t => {
+        const btn = document.getElementById(`htp-tab-${t}`);
+        if (!btn) return;
+        const isActive = t === tabKey;
+        btn.className = isActive
+            ? 'flex-shrink-0 px-3 py-2 text-sm font-bold text-violet-400 bg-slate-800 transition-colors border-b-2 border-violet-500'
+            : 'flex-shrink-0 px-3 py-2 text-sm font-bold text-slate-300 hover:text-white hover:bg-slate-800 transition-colors border-b-2 border-transparent';
+    });
+
+    if (tabKey === 'hands') {
+        // Reuse the already-rendered rules content
+        const rulesContent = document.getElementById('rules-content');
+        if (rulesContent && rulesContent.innerHTML.trim()) {
+            contentEl.innerHTML = rulesContent.innerHTML;
+        } else {
+            // Render inline if rules-content isn't populated yet
+            let html = '';
+            const groups = [
+                { key: 'groupA', titleKey: 'rules.groupA_desc' },
+                { key: 'groupB', titleKey: 'rules.groupB_desc' },
+                { key: 'groupC', titleKey: 'rules.groupC_desc' },
+                { key: 'groupD', titleKey: 'rules.groupD_desc' }
+            ];
+            groups.forEach(g => {
+                html += `<h3 class="text-base font-black text-slate-300 mt-4 mb-2 border-b border-slate-700 pb-1">${i18n.t(g.titleKey)}</h3>`;
+                html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">`;
+                RULE_DB[g.key].forEach((rule, rIdx) => {
+                    let rStyle = RARITY[rule.rarity] || RARITY[1];
+                    let letter = g.key.replace('group', '').toLowerCase();
+                    let ruleName = i18n.t(`rules.rule_${letter}${rIdx}.name`) || rule.name;
+                    let ruleDesc = i18n.t(`rules.rule_${letter}${rIdx}.desc`) || rule.desc;
+                    html += `<div class="flex justify-between items-center bg-slate-900/50 p-2.5 rounded-lg border border-slate-700"><div><div class="text-sm font-bold ${rStyle.color}">${ruleName}</div><div class="text-[10px] text-slate-400">${ruleDesc}</div></div><div class="text-base font-black text-violet-300">${rule.multi}</div></div>`;
+                });
+                html += `</div>`;
+            });
+            contentEl.innerHTML = html;
+        }
+        return;
+    }
+
+    const keyMap = {
+        basics: 'htp_basics',
+        relics: 'htp_relics',
+        shackles: 'htp_shackles',
+        souls: 'htp_souls'
+    };
+    contentEl.innerHTML = i18n.t(`tutorial.${keyMap[tabKey]}`) || '';
+}

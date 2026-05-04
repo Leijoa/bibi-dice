@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600&amp;family=Newsreader:ital,wght@0,600;0,700;1,600;1,700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-container": "#725f00",
+                    "surface-container-high": "#2a2a2c",
+                    "inverse-surface": "#e5e1e4",
+                    "on-secondary": "#3a3000",
+                    "on-surface-variant": "#ccc3d8",
+                    "on-tertiary": "#00363a",
+                    "surface": "#131315",
+                    "outline": "#958da1",
+                    "outline-variant": "#4a4455",
+                    "on-surface": "#e5e1e4",
+                    "surface-tint": "#d0bcff",
+                    "on-error": "#690005",
+                    "on-tertiary-fixed-variant": "#004f54",
+                    "on-tertiary-fixed": "#002022",
+                    "on-primary-fixed": "#23005c",
+                    "surface-container-low": "#1c1b1d",
+                    "primary-fixed-dim": "#d0bcff",
+                    "secondary-fixed": "#ffe16d",
+                    "on-primary-fixed-variant": "#5600c9",
+                    "error-container": "#93000a",
+                    "inverse-primary": "#702ceb",
+                    "surface-dim": "#131315",
+                    "secondary-container": "#ffdb3c",
+                    "primary": "#d0bcff",
+                    "tertiary": "#00dbe9",
+                    "primary-container": "#7a3bf5",
+                    "on-error-container": "#ffdad6",
+                    "error": "#ffb4ab",
+                    "surface-variant": "#353437",
+                    "surface-container-lowest": "#0e0e10",
+                    "inverse-on-surface": "#313032",
+                    "on-primary-container": "#eee4ff",
+                    "surface-container-highest": "#353437",
+                    "secondary-fixed-dim": "#e9c400",
+                    "on-primary": "#3c0091",
+                    "background": "#131315",
+                    "on-tertiary-container": "#a0f7ff",
+                    "on-secondary-fixed": "#221b00",
+                    "primary-fixed": "#e9ddff",
+                    "secondary": "#fff9ef",
+                    "surface-container": "#201f21",
+                    "tertiary-fixed": "#7df4ff",
+                    "on-background": "#e5e1e4",
+                    "on-secondary-fixed-variant": "#544600",
+                    "surface-bright": "#39393b",
+                    "tertiary-fixed-dim": "#00dbe9",
+                    "tertiary-container": "#00747c"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "panel-gap": "20px",
+                    "xl": "48px",
+                    "lg": "24px",
+                    "md": "16px",
+                    "sm": "8px",
+                    "unit": "4px",
+                    "xs": "4px",
+                    "safe-zone": "32px"
+            },
+            "fontFamily": {
+                    "body-main": ["Manrope"],
+                    "title-section": ["Newsreader"],
+                    "stats-xl": ["Space Grotesk"],
+                    "title-hero": ["Newsreader"],
+                    "label-caps": ["Space Grotesk"]
+            },
+            "fontSize": {
+                    "body-main": ["16px", {"lineHeight": "1.6", "letterSpacing": "0.01em", "fontWeight": "400"}],
+                    "title-section": ["32px", {"lineHeight": "1.2", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "stats-xl": ["24px", {"lineHeight": "1.0", "letterSpacing": "0.02em", "fontWeight": "700"}],
+                    "title-hero": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-caps": ["12px", {"lineHeight": "1.0", "letterSpacing": "0.1em", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>.stone-texture {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuA3TSdwYIhA11qSw283b_VWLXsl5MPFGtzbH2mCzNnYHYkO6duxQx_8m1PAYjX5DFmdLpf8xa-lX_B84skG-ojRcsobGzstkWkEjhEzpyZHQBDP6VDE2qwceCHydkZDdz5p8bOhnZBcX3C0SVZSbhJVLrX-_M0mk-JsDBIFIFb1FJpMOxfr2T_NYw2C1VneiRqIOnPKCZn-eHRUx9JhH7qhh20vxkAZ2TMHuaie3YCGegRCA_OQIaI_bwDKStNbmTqNhoIMzTYXNMI);
+    background-color: theme("colors.surface-container-low")
+    }
+.arcane-glow {
+    text-shadow: 0 0 15px rgba(168, 85, 247, 0.8), 0 0 30px rgba(168, 85, 247, 0.4)
+    }
+.sigil-border {
+    border: 1px solid rgba(122, 59, 245, 0.3);
+    box-shadow: inset 0 0 10px rgba(122, 59, 245, 0.2)
+    }
+.runic-bg {
+    background: radial-gradient(circle at center, rgba(88, 28, 135, 0.15) 0%, transparent 70%)
+    }</style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-surface font-body-main selection:bg-primary/30 min-h-screen overflow-hidden">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-6 h-16 bg-zinc-900/60 backdrop-blur-xl border-b border-zinc-800/50 shadow-[0_4px_20px_rgba(0,0,0,0.8)]">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-purple-500" data-icon="account_circle">account_circle</span>
+<div class="flex flex-col">
+<span class="font-serif italic tracking-widest uppercase text-zinc-500 text-[10px]">Soul Weaver</span>
+<span class="font-stats-xl text-stats-xl text-primary leading-none">12,450</span>
+</div>
+</div>
+<h1 class="text-2xl font-black text-purple-600 dark:text-purple-400 drop-shadow-[0_0_10px_rgba(122,59,245,0.5)] font-serif italic tracking-widest uppercase">Bibbidiba</h1>
+<div class="flex items-center gap-lg">
+<button class="active:scale-95 transition-all hover:text-purple-300 transition-colors text-zinc-500">
+<span class="material-symbols-outlined" data-icon="token">token</span>
+</button>
+<button class="active:scale-95 transition-all hover:text-purple-300 transition-colors text-zinc-500">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</header>
+<!-- Main Canvas Area -->
+<main class="relative w-full h-screen flex flex-col items-center justify-center pt-16 pb-24 runic-bg">
+<!-- Background Runic Art -->
+<div class="absolute inset-0 z-0 flex items-center justify-center opacity-20 pointer-events-none">
+<div class="w-[707px] h-[707px] border-[1px] border-primary-container rounded-full flex items-center justify-center animate-[spin_60s_linear_infinite]">
+<div class="w-[618px] h-[618px] border-[2px] border-dashed border-primary/40 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined text-[353px] text-primary/10" data-icon="auto_awesome">auto_awesome</span>
+</div>
+</div>
+</div>
+<!-- Hero Section & Logo -->
+<div class="relative z-10 flex flex-col items-center text-center mb-xl">
+<div class="relative mb-md">
+<div class="absolute inset-0 blur-3xl bg-primary/20 rounded-full"></div>
+<img alt="Bibbidiba Logo" class="w-48 h-48 object-contain drop-shadow-[0_0_20px_rgba(168,85,247,0.6)]" data-alt="A magnificent and intricate game logo for 'Bibbidiba' designed in a gothic fantasy style. The letters are forged from dark, weathered obsidian stone with glowing purple arcane runes etched into the surface. Ghostly ethereal flames in shades of violet and deep indigo dance around the typography. The lighting is dramatic and moody, emphasizing sharp beveled edges and mystical depth against a pitch-black abyssal background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAdJBP-vWaQwF660JJPVvbPjupCli88KqExsjBs7PGkDkd9eTS9vqTFKEVTmePrpABmm-9J3XOQpKF0LTL8Bcw-aYfgbzWLaQ8_xHNbYb7tU8a-vRhx9afJXnOanmLjHKOwGPRmzIXHLLNaeGnvs6XqDEx5yhszPPya4JCefsbkVJeXTp0ZmbFRdsWgMu9xruJTwmJBNlomLaK65a_VNmg2ODrJEkv6By7nZLhpoMxrKL9IFzUFvGzOSs5qbhSqoN7MVKmuamsZzIs"/>
+</div>
+<h2 class="font-title-hero text-title-hero arcane-glow italic">The Abyssal Call</h2>
+<p class="font-body-main text-on-surface-variant max-w-md mt-sm">Your soul is tethered to the void. Will you ascend the tower or be consumed by the offering?</p>
+</div>
+<!-- Tactical Menu Zones -->
+<div class="relative z-10 flex flex-col gap-md w-full max-w-sm px-safe-zone">
+<!-- Start Game Button -->
+<button class="group relative stone-texture sigil-border p-md rounded-lg flex items-center justify-between overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-[0_4px_15px_rgba(0,0,0,0.5)]">
+<div class="absolute inset-0 bg-gradient-to-r from-primary-container/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-primary group-hover:animate-pulse" data-icon="swords">swords</span>
+<span class="font-title-section text-lg tracking-wider text-on-surface">Enter Abyss</span>
+</div>
+<span class="font-label-caps text-primary/60 group-hover:text-primary transition-colors">Start Journey</span>
+</button>
+<!-- Infinite Mode -->
+<button class="group relative stone-texture sigil-border p-md rounded-lg flex items-center justify-between overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-[0_4px_15px_rgba(0,0,0,0.5)]">
+<div class="absolute inset-0 bg-gradient-to-r from-tertiary-container/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-tertiary" data-icon="castle">castle</span>
+<span class="font-title-section text-lg tracking-wider text-on-surface">Endless Tower</span>
+</div>
+<span class="font-label-caps text-tertiary/60 group-hover:text-tertiary transition-colors">Infinite</span>
+</button>
+<!-- Talents/Offering -->
+<button class="group relative stone-texture sigil-border p-md rounded-lg flex items-center justify-between overflow-hidden transition-all hover:scale-[1.02] active:scale-95 shadow-[0_4px_15px_rgba(0,0,0,0.5)]">
+<div class="absolute inset-0 bg-gradient-to-r from-secondary-container/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-secondary-fixed-dim" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-title-section text-lg tracking-wider text-on-surface">Soul Offering</span>
+</div>
+<span class="font-label-caps text-secondary-fixed-dim/60 group-hover:text-secondary-fixed-dim transition-colors">Talents</span>
+</button>
+</div>
+<!-- Quick Action Sidebar (Stats/Inventory) -->
+<aside class="fixed right-6 top-1/2 -translate-y-1/2 flex flex-col gap-panel-gap z-20">
+<div class="stone-texture sigil-border p-xs rounded-xl flex flex-col gap-sm shadow-2xl">
+<button class="p-sm hover:bg-white/5 rounded-lg transition-colors flex flex-col items-center gap-xs">
+<span class="material-symbols-outlined text-primary" data-icon="inventory_2">inventory_2</span>
+<span class="text-[8px] font-label-caps">Vault</span>
+</button>
+<button class="p-sm hover:bg-white/5 rounded-lg transition-colors flex flex-col items-center gap-xs">
+<span class="material-symbols-outlined text-tertiary" data-icon="history_edu">history_edu</span>
+<span class="text-[8px] font-label-caps">Lore</span>
+</button>
+<button class="p-sm hover:bg-white/5 rounded-lg transition-colors flex flex-col items-center gap-xs">
+<span class="material-symbols-outlined text-secondary" data-icon="military_tech">military_tech</span>
+<span class="text-[8px] font-label-caps">Rank</span>
+</button>
+</div>
+</aside>
+</main>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 pb-6 pt-2 bg-zinc-950/80 backdrop-blur-2xl rounded-t-3xl border-t border-purple-900/30 shadow-[0_-10px_30px_rgba(88,28,135,0.4)]">
+<button class="flex flex-col items-center justify-center text-purple-400 drop-shadow-[0_0_12px_rgba(168,85,247,0.8)] scale-110 active:scale-90 transition-transform duration-300 ease-out">
+<span class="material-symbols-outlined" data-icon="fort">fort</span>
+<span class="font-serif text-[10px] font-bold tracking-tighter uppercase">Abyss</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-600 grayscale hover:text-purple-300 hover:drop-shadow-[0_0_8px_rgba(168,85,247,0.4)] active:scale-90 transition-transform duration-300 ease-out">
+<span class="material-symbols-outlined" data-icon="castle">castle</span>
+<span class="font-serif text-[10px] font-bold tracking-tighter uppercase">Tower</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-600 grayscale hover:text-purple-300 hover:drop-shadow-[0_0_8px_rgba(168,85,247,0.4)] active:scale-90 transition-transform duration-300 ease-out">
+<span class="material-symbols-outlined" data-icon="auto_awesome">auto_awesome</span>
+<span class="font-serif text-[10px] font-bold tracking-tighter uppercase">Offering</span>
+</button>
+<button class="flex flex-col items-center justify-center text-zinc-600 grayscale hover:text-purple-300 hover:drop-shadow-[0_0_8px_rgba(168,85,247,0.4)] active:scale-90 transition-transform duration-300 ease-out">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-serif text-[10px] font-bold tracking-tighter uppercase">Vault</span>
+</button>
+</nav>
+<!-- Floating Background Orbs (Visual Flourish) -->
+<div class="fixed top-[20%] left-[10%] w-64 h-64 bg-primary/5 blur-[120px] rounded-full pointer-events-none"></div>
+<div class="fixed bottom-[10%] right-[5%] w-96 h-96 bg-tertiary/5 blur-[150px] rounded-full pointer-events-none"></div>
+</body></html>
