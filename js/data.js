@@ -137,7 +137,9 @@ export const SHACKLE_DB = [
     { id: 'abyssgaze', name: '【深淵凝視】', desc: '若單次攻擊未打掉 Boss 20% 最大 HP，該次傷害轉為治療 Boss。', type: 'heavy' },
     { id: 'wither', name: '【枯萎】', desc: '本局戰鬥玩家最大 HP 視為 1（受傷即死）。', type: 'heavy' },
     { id: 'mutualdestruction', name: '【同歸於盡】', desc: '敵人會將受到的 5% 傷害反彈給玩家，但不會導致玩家死亡（最少剩 1 HP）。', type: 'heavy' },
-    { id: 'illusionary', name: '【假象】', desc: '顯示虛假的最終傷害。', type: 'heavy' }
+    { id: 'illusionary', name: '【假象】', desc: '顯示虛假的最終傷害。', type: 'heavy' },
+    { id: 'shackle_smoke', name: '【煙霧】', desc: '看不到血條預估傷害。', type: 'light', hidesDamagePreviewBar: true, hidesDamageNumber: false, distortsDamage: false },
+    { id: 'shackle_drunk', name: '【酒醉】', desc: '無法精準掌握預估傷害。', type: 'heavy', hidesDamagePreviewBar: false, hidesDamageNumber: false, distortsDamage: true, distortRange: 0.20 }
 ];
 
 export function isElite(levelIndex) {

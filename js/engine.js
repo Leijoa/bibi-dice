@@ -680,3 +680,173 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
 
     return result;
 }
+
+// --- Damage Visibility & Display API ---
+let _drunkDisplayValue = null;
+let _illusionaryFakeRatio = null;
+
+export function setDrunkDisplayValue(val) {
+    _drunkDisplayValue = val;
+}
+
+export function clearDrunkDisplayValue() {
+    _drunkDisplayValue = null;
+}
+
+export function setIllusionaryFakeRatio(ratio) {
+    _illusionaryFakeRatio = ratio;
+}
+
+export function clearIllusionaryFakeRatio() {
+    _illusionaryFakeRatio = null;
+}
+
+export function isDamageVisible(activeShackle) {
+    return activeShackle !== 'bluff';
+}
+
+export function isEnemyHpBarVisible(activeShackle) {
+    return true;
+}
+
+export function isEnemyHpBarPreviewVisible(activeShackle) {
+    return activeShackle !== 'bluff' && activeShackle !== 'shackle_smoke';
+}
+
+export function getDisplayedEstimatedDamage(actualDamage, activeShackle) {
+    if (activeShackle === 'shackle_drunk' && _drunkDisplayValue !== null) {
+        return _drunkDisplayValue;
+    }
+    if (activeShackle === 'illusionary' && _illusionaryFakeRatio !== null) {
+        return Math.floor(actualDamage * _illusionaryFakeRatio);
+    }
+    return actualDamage;
+}
+
+// --- Damage Steps (for relic step animation) ---
+export function calculateDamageSteps(dice, playerRelics, rollsLeft, playerHp, activeShackles = [], turnsLeft = 0, env = {}) {
+    const result = calculateEngineScore(dice, playerRelics, rollsLeft, playerHp, activeShackles, turnsLeft, env);
+
+    const kills = env.level || 0;
+    const isExploited = activeShackles.some(sh => sh.id === 'exploitation');
+
+    let workingDice = [...dice];
+    activeShackles.forEach(sh => {
+        if (ShackleHooks[sh.id] && ShackleHooks[sh.id].preDice)
+            workingDice = ShackleHooks[sh.id].preDice(workingDice, sh);
+    });
+    activeShackles.forEach(sh => {
+        if (ShackleHooks[sh.id] && ShackleHooks[sh.id].filterDice)
+            workingDice = workingDice.filter(d => ShackleHooks[sh.id].filterDice(d, sh));
+    });
+    const counts = new Array(9).fill(0);
+    workingDice.forEach(d => counts[d.val]++);
+
+    let usedIdsTemp = new Set();
+    const markT = (arr) => {
+        let avail = [...workingDice];
+        arr.forEach(val => {
+            let idx = avail.findIndex(d => d.val === val && !usedIdsTemp.has(d.id));
+            if (idx !== -1) { usedIdsTemp.add(avail[idx].id); avail.splice(idx, 1); }
+        });
+    };
+    markT(result.tagA.used); markT(result.tagB.used); markT(result.tagC.used); markT(result.tagD.used);
+    const scatterCount = workingDice.length - usedIdsTemp.size;
+
+    let runningScore = result.totalBase;
+    const steps = [
+        { zero: true, damageAfter: 0 },
+        { base: true, damageAfter: Math.floor(result.totalBase) }
+    ];
+
+    const addStep = (relicId, relicName, amt) => {
+        if (amt <= 1.001) return;
+        runningScore = Math.min(Number.MAX_SAFE_INTEGER, runningScore * amt);
+        steps.push({ relicId, relicName, type: 'multiply', multiplier: amt, bonus: null, damageAfter: Math.floor(runningScore) });
+    };
+
+    if (playerRelics.includes('fusion_nebula') && (counts[1] > 0 || counts[2] > 0 || counts[3] > 0)) {
+        addStep('fusion_nebula', getRelicName('fusion_nebula', '【微縮星雲】'), 1.0 + scatterCount);
+    }
+    if (playerRelics.includes('fusion_pillar') && (counts[4] > 0 || counts[5] > 0)) {
+        addStep('fusion_pillar', getRelicName('fusion_pillar', '【中流砥柱】'), 3.0 + kills * 0.2);
+    }
+    if (playerRelics.includes('pansy') && counts[1] > 0) {
+        addStep('pansy', getRelicName('pansy', '【雷爪獅的祝福】'), isExploited ? 1.5 : 3.0);
+    }
+    if (playerRelics.includes('pongo') && counts[8] > 0) {
+        addStep('pongo', getRelicName('pongo', '【捧夠的祝福】'), isExploited ? 1.5 : 3.0);
+    }
+    if (playerRelics.includes('highlow') && counts[1] > 0 && counts[8] > 0) {
+        addStep('highlow', getRelicName('highlow', '【高低差】'), isExploited ? 1.25 : 1.5);
+    }
+    if (playerRelics.includes('laststand') && rollsLeft === 0) {
+        addStep('laststand', getRelicName('laststand', '【破釜沉舟】'), isExploited ? 1.25 : 1.5);
+    }
+    if (playerRelics.includes('allin') && playerHp === 1) {
+        addStep('allin', getRelicName('allin', '【孤注一擲】'), isExploited ? 1.0 : 2.0);
+    }
+    if (playerRelics.includes('fourdeath') && counts[4] === 4) {
+        addStep('fourdeath', getRelicName('fourdeath', '【四死如歸】'), isExploited ? 2.0 : 4.0);
+    }
+    if (playerRelics.includes('rebel') && activeShackles.length > 0) {
+        addStep('rebel', getRelicName('rebel', '【反抗軍】'), isExploited ? 1.25 : 1.5);
+    }
+    if (playerRelics.includes('royalflush') && result.tagA.name !== '無' && result.tagB.name !== '無') {
+        addStep('royalflush', getRelicName('royalflush', '【同花順】'), isExploited ? 1.5 : 2.0);
+    }
+    if (playerRelics.includes('brink') && turnsLeft === 1) {
+        addStep('brink', getRelicName('brink', '【極限拉扯】'), isExploited ? 1.25 : 2.5);
+    }
+    if (rollsLeft > 0) {
+        addStep('reroll_bonus', 'reroll_bonus', 1.0 + rollsLeft * 0.5);
+    }
+
+    const addZoneStep = (zone, multi) => {
+        if (multi <= 1.001) return;
+        runningScore = Math.min(Number.MAX_SAFE_INTEGER, runningScore * multi);
+        steps.push({ zone, multiplier: multi, damageAfter: Math.floor(runningScore) });
+    };
+    addZoneStep('A', result.tagA.multi);
+    addZoneStep('B', result.tagB.multi);
+    addZoneStep('C', result.tagC.multi);
+    addZoneStep('D', result.tagD.multi);
+
+    steps.push({ final: true, damageAfter: Math.floor(result.finalScore) });
+    return steps;
+}
+
+// DEV ONLY — apply a shackle to stage, generating appropriate shackleMeta
+export function devApplyShackle(stage, shackleId) {
+    stage.activeShackle = shackleId;
+    let meta = null;
+    if (shackleId === 'parityfear') {
+        meta = { fearType: Math.random() > 0.5 ? 'odd' : 'even' };
+    } else if (shackleId === 'numberplunder') {
+        meta = { targetNumber: Math.floor(Math.random() * 8) + 1 };
+    } else if (shackleId === 'illusion') {
+        meta = { fakeNumber: Math.floor(Math.random() * 8) + 1 };
+    } else if (shackleId === 'dizziness') {
+        let o = Array(8).fill(0).map((_, i) => i);
+        for (let i = 7; i > 0; i--) { let j = Math.floor(Math.random() * (i + 1)); [o[i], o[j]] = [o[j], o[i]]; }
+        meta = { displayOrder: o };
+    } else if (shackleId === 'cursedlock') {
+        meta = { cursedId: null };
+    } else if (shackleId === 'inversion') {
+        const c = ['bg-red-800', 'bg-blue-800', 'bg-green-800', 'bg-yellow-800',
+                   'bg-purple-800', 'bg-orange-800', 'bg-teal-800', 'bg-pink-800'];
+        meta = { colorMap: [...c].sort(() => Math.random() - 0.5) };
+    } else if (shackleId === 'blind') {
+        meta = { blindIndices: [] };
+    } else if (shackleId === 'illusionary') {
+        _illusionaryFakeRatio = Math.random() * 0.25 + 0.05;
+        meta = { fakeRatio: _illusionaryFakeRatio };
+    }
+    stage.shackleMeta = meta;
+}
+
+// DEV ONLY — remove active shackle from stage
+export function devRemoveShackle(stage) {
+    stage.activeShackle = null;
+    stage.shackleMeta = null;
+}

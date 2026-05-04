@@ -109,7 +109,9 @@ export const zh_tw_data = {
     'absolutebarrier': { name: '【絕對屏障】', desc: '本局戰鬥中的「第一次攻擊」強制無效（造成 0 點傷害）。' },
     'abyssgaze': { name: '【深淵凝視】', desc: '若單次攻擊未打掉 Boss 20% 最大 HP，該次傷害轉為治療 Boss。' },
     'wither': { name: '【枯萎】', desc: '本局戰鬥玩家最大 HP 視為 1（受傷即死）。' },
-    'mutualdestruction': { name: '【同歸於盡】', desc: '敵人會將受到的 5% 傷害反彈給玩家，但不會導致玩家死亡（最少剩 1 HP）。' }
+    'mutualdestruction': { name: '【同歸於盡】', desc: '敵人會將受到的 5% 傷害反彈給玩家，但不會導致玩家死亡（最少剩 1 HP）。' },
+    'shackle_smoke': { name: '【煙霧】', desc: '看不到血條預估傷害。' },
+    'shackle_drunk': { name: '【酒醉】', desc: '無法精準掌握預估傷害。' }
   },
   rules: {
     'groupA': '同數',
@@ -200,7 +202,15 @@ ui: {
     fusion_materials: '退回素材：',
     fusion_new_item: 'NEW',
     fusion_discard_btn: '捨棄並分解',
-    pb_highest_infinite: '最高無限層數'
+    pb_highest_infinite: '最高無限層數',
+    dev_shackle_title: '🔒 枷鎖編輯',
+    dev_shackle_current: '當前枷鎖',
+    dev_shackle_none: '（無枷鎖）',
+    dev_shackle_remove: '移除',
+    dev_shackle_apply: '套用枷鎖',
+    dev_shackle_filter: '搜尋枷鎖...',
+    dev_shackle_select_ph: '-- 選擇枷鎖 --',
+    dev_shackle_conflict: '⚠️ 已有枷鎖套用中，強制套用將覆蓋現有枷鎖。'
   },
   souls: {
     'hp': { name: '❤️ 體魄鍛鍊', desc: '最大 HP +1' },

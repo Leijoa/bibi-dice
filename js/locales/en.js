@@ -109,7 +109,9 @@ export const en_data = {
     'absolutebarrier': { name: '[Absolute Barrier]', desc: 'The first attack in this battle deals 0 damage.' },
     'abyssgaze': { name: '[Abyssal Gaze]', desc: 'If an attack deals less than 20% of Boss Max HP, it heals the Boss instead.' },
     'wither': { name: '[Wither]', desc: 'Player Max HP is set to 1 for this battle.' },
-    'mutualdestruction': { name: '[Mutual Destruction]', desc: 'Reflects 5% damage taken back to the player (cannot kill player, min 1 HP left).' }
+    'mutualdestruction': { name: '[Mutual Destruction]', desc: 'Reflects 5% damage taken back to the player (cannot kill player, min 1 HP left).' },
+    'shackle_smoke': { name: '[Smoke]', desc: 'Cannot see the damage preview bar on the HP bar.' },
+    'shackle_drunk': { name: '[Drunk]', desc: 'Cannot accurately gauge estimated damage.' }
   },
   rules: {
     'groupA': 'Freqs',
@@ -200,7 +202,15 @@ ui: {
     fusion_materials: 'Materials Returned:',
     fusion_new_item: 'NEW',
     fusion_discard_btn: 'Discard & Dismantle',
-    pb_highest_infinite: 'Highest Infinite Floor'
+    pb_highest_infinite: 'Highest Infinite Floor',
+    dev_shackle_title: '🔒 Shackle Editor',
+    dev_shackle_current: 'Active Shackle',
+    dev_shackle_none: '(None)',
+    dev_shackle_remove: 'Remove',
+    dev_shackle_apply: 'Apply Shackle',
+    dev_shackle_filter: 'Search shackles...',
+    dev_shackle_select_ph: '-- Select Shackle --',
+    dev_shackle_conflict: '⚠️ A shackle is already active. Applying will override it.'
   },
   souls: {
     'hp': { name: '❤️ Physique', desc: 'Max HP +1' },

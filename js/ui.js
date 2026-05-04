@@ -62,7 +62,9 @@ export const el = {
     devRelicCancel: document.getElementById('dev-relic-cancel'),
     devRelicConfirm: document.getElementById('dev-relic-confirm'),
     fusionReplaceModal: document.getElementById('fusion-replace-modal'),
-    fusionReplaceContent: document.getElementById('fusion-replace-content')
+    fusionReplaceContent: document.getElementById('fusion-replace-content'),
+    damagePreviewBar: document.getElementById('damage-preview-bar'),
+    finalDamagePreview: document.getElementById('final-damage-preview')
 };
 
 if (document.getElementById('btn-rules')) {
@@ -210,6 +212,8 @@ export function updateEnemyUI(stage) {
     }
     
     el.turnsLeft.innerText = i18n.t('ui.turns_left', stage.turnsLeft);
+    el.turnsLeft.classList.add('enemy-countdown');
+    el.turnsLeft.classList.toggle('countdown-urgent', stage.turnsLeft === 1);
     let pct = Math.max(0, (stage.enemyHp / stage.enemyMaxHp) * 100);
     el.enemyHpBar.style.width = `${pct}%`;
     el.enemyHpText.innerText = `${Math.floor(stage.enemyHp).toLocaleString()} / ${stage.enemyMaxHp.toLocaleString()}`;
@@ -274,7 +278,7 @@ export function renderInventory(player, battle) {
         }
         let rName = id.startsWith('cons_') ? i18n.t(`consumables.${id}.name`) : (i18n.t(`relics.${id}.name`) || r.name);
         return `
-        <div onclick="window.showRelicInfo('${r.id}')" class="${style.bg} px-2 py-1 rounded-full border ${style.border} shadow-sm flex items-center gap-1 cursor-pointer hover:scale-105 transition-transform active:scale-95">
+        <div data-relic-id="${r.id}" onclick="window.showRelicInfo('${r.id}')" class="${style.bg} px-2 py-1 rounded-full border ${style.border} shadow-sm flex items-center gap-1 cursor-pointer hover:scale-105 transition-transform active:scale-95">
             <span class="text-[10px] md:text-xs font-black ${style.color} whitespace-nowrap">${rName}</span>
         </div>`;
     }).join('');
@@ -481,10 +485,33 @@ export function renderControls(battle) {
 }
 
 // --- 牌型結算渲染 ---
+function updateDamagePreviewBar(damage) {
+    if (!el.damagePreviewBar) return;
+    let currentHp = window.getStageEnemyHp ? window.getStageEnemyHp() : 0;
+    let maxHp = window.getStageEnemyMaxHp ? window.getStageEnemyMaxHp() : 1;
+    if (!currentHp || !maxHp || damage <= 0) {
+        el.damagePreviewBar.classList.add('hidden');
+        el.damagePreviewBar.classList.remove('damage-preview-bar--lethal');
+        if (el.enemyHpBar) el.enemyHpBar.classList.remove('hp-bar-killshot');
+        return;
+    }
+    let effectiveDamage = Math.min(damage, currentHp);
+    let leftPct = Math.max(0, (currentHp - effectiveDamage) / maxHp * 100);
+    let widthPct = effectiveDamage / maxHp * 100;
+    el.damagePreviewBar.style.left = `${leftPct}%`;
+    el.damagePreviewBar.style.width = `${widthPct}%`;
+    el.damagePreviewBar.classList.remove('hidden');
+    let isKillShot = damage >= currentHp;
+    el.damagePreviewBar.classList.toggle('damage-preview-bar--lethal', isKillShot);
+    if (el.enemyHpBar) el.enemyHpBar.classList.toggle('hp-bar-killshot', isKillShot);
+}
+
 export function renderScore(battle, activeHighlight) {
     if (!battle.scoreResult || battle.state === 'ROLLING') {
         el.scoreDisplay.innerHTML = `<div class="text-slate-500 text-center mt-2 mb-2 font-bold animate-pulse text-xs">盤面結算中...</div>`;
         if (el.finalScoreValue) el.finalScoreValue.innerText = '0';
+        if (el.damagePreviewBar) el.damagePreviewBar.classList.add('hidden');
+        if (el.enemyHpBar) el.enemyHpBar.classList.remove('hp-bar-killshot');
         return;
     }
     let res = battle.scoreResult;
@@ -520,46 +547,200 @@ export function renderScore(battle, activeHighlight) {
     <div class="flex flex-col gap-1 px-2 py-1.5 rounded-lg border mb-1.5" style="background:#0e0e10;border-color:#2a2a2c;">
         <div class="flex items-baseline gap-2 whitespace-nowrap">
             <span class="text-[9px] md:text-[10px] font-semibold tracking-widest uppercase text-slate-600">${i18n.t('ui.score_total_base')}</span>
-            <span class="text-base md:text-lg font-black text-white">${res.totalBase.toFixed(1)}</span>
+            <span id="score-total-base-value" class="text-base md:text-lg font-black text-white">${res.totalBase.toFixed(1)}</span>
         </div>
         <div class="flex overflow-x-auto gap-1 pb-0.5 scroll-smooth hide-scrollbar">${notesHtml}</div>
     </div>
 
     <div class="grid grid-cols-4 gap-1 mb-1">
-        <div onclick="window.setHighlight('A')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('A', res.tagA)}">
+        <div id="zone-box-A" onclick="window.setHighlight('A')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('A', res.tagA)}">
             <div class="text-[8px] md:text-[10px] font-bold truncate opacity-70 w-full px-1 text-center leading-tight">${getTagLocalName(res.tagA.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">x${res.tagA.multi.toFixed(1)}</div>
         </div>
-        <div onclick="window.setHighlight('B')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('B', res.tagB)}">
+        <div id="zone-box-B" onclick="window.setHighlight('B')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('B', res.tagB)}">
             <div class="text-[8px] md:text-[10px] font-bold truncate opacity-70 w-full px-1 text-center leading-tight">${getTagLocalName(res.tagB.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">x${res.tagB.multi.toFixed(1)}</div>
         </div>
-        <div onclick="window.setHighlight('C')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('C', res.tagC)}">
+        <div id="zone-box-C" onclick="window.setHighlight('C')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('C', res.tagC)}">
             <div class="text-[8px] md:text-[10px] font-bold truncate opacity-70 w-full px-1 text-center leading-tight">${getTagLocalName(res.tagC.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">x${res.tagC.multi.toFixed(1)}</div>
         </div>
-        <div onclick="window.setHighlight('D')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('D', res.tagD)}">
+        <div id="zone-box-D" onclick="window.setHighlight('D')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('D', res.tagD)}">
             <div class="text-[8px] md:text-[10px] font-bold truncate opacity-70 w-full px-1 text-center leading-tight">${getTagLocalName(res.tagD.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">x${res.tagD.multi.toFixed(1)}</div>
         </div>
     </div>
     `;
     if (el.finalScoreValue) {
-        if (window.getStageActiveShackle && window.getStageActiveShackle() === 'bluff') {
+        const damageVisible = window.isDamageVisible ? window.isDamageVisible() : true;
+        const previewVisible = window.isEnemyHpBarPreviewVisible ? window.isEnemyHpBarPreviewVisible() : true;
+        const isDrunk = window.getStageActiveShackle && window.getStageActiveShackle() === 'shackle_drunk';
+
+        if (!damageVisible) {
             el.finalScoreValue.innerText = '???';
             el.finalScoreValue.classList.add('score-normal');
             el.finalScoreValue.classList.remove('score-hot');
+            el.finalScoreValue.classList.remove('damage-drunk');
+            if (el.damagePreviewBar) el.damagePreviewBar.classList.add('hidden');
+            if (el.enemyHpBar) el.enemyHpBar.classList.remove('hp-bar-killshot');
         } else {
-            el.finalScoreValue.innerText = Math.floor(res.finalScore).toLocaleString();
-            if(res.finalMultiplier > 50) {
+            const displayScore = window.getDisplayedEstimatedDamage
+                ? window.getDisplayedEstimatedDamage(res.finalScore)
+                : res.finalScore;
+            el.finalScoreValue.innerText = Math.floor(displayScore).toLocaleString();
+            let enemyHp = window.getStageEnemyHp ? window.getStageEnemyHp() : Infinity;
+            if (displayScore >= enemyHp * 0.5) {
                 el.finalScoreValue.classList.add('score-hot');
                 el.finalScoreValue.classList.remove('score-normal');
             } else {
                 el.finalScoreValue.classList.add('score-normal');
                 el.finalScoreValue.classList.remove('score-hot');
             }
+            if (isDrunk) {
+                el.finalScoreValue.classList.add('damage-drunk');
+            } else {
+                el.finalScoreValue.classList.remove('damage-drunk');
+            }
+
+            if (!previewVisible) {
+                if (el.damagePreviewBar) el.damagePreviewBar.classList.add('hidden');
+                if (el.enemyHpBar) el.enemyHpBar.classList.remove('hp-bar-killshot');
+            } else {
+                if (el.damagePreviewBar) {
+                    if (isDrunk) el.damagePreviewBar.classList.add('drunk');
+                    else el.damagePreviewBar.classList.remove('drunk');
+                }
+                updateDamagePreviewBar(displayScore);
+            }
         }
     }
+}
+
+export function refreshDamageDisplay(battle, activeHighlight) {
+    if (battle && battle.scoreResult) renderScore(battle, activeHighlight);
+}
+
+// --- 遺物逐步結算演出 ---
+function countUpTo(targetEl, targetValue, duration, onDone) {
+    if (!targetEl) { if (onDone) onDone(); return; }
+    const startValue = parseInt(targetEl.innerText.replace(/[^0-9]/g, '')) || 0;
+    const diff = targetValue - startValue;
+    const startTime = performance.now();
+    const animate = (now) => {
+        const progress = Math.min((now - startTime) / duration, 1);
+        targetEl.innerText = Math.floor(startValue + diff * progress).toLocaleString();
+        if (progress < 1) requestAnimationFrame(animate);
+        else { targetEl.innerText = targetValue.toLocaleString(); if (onDone) onDone(); }
+    };
+    requestAnimationFrame(animate);
+}
+
+function playDiceSumFly(baseValue, onDone) {
+    const sourceEl = document.getElementById('score-total-base-value');
+    const targetEl = el.finalScoreValue;
+    if (!sourceEl || !targetEl) { onDone(); return; }
+    const srcRect = sourceEl.getBoundingClientRect();
+    const tgtRect = targetEl.getBoundingClientRect();
+    if (!srcRect.width || !tgtRect.width) { onDone(); return; }
+
+    const fly = document.createElement('div');
+    fly.className = 'dice-sum-fly';
+    fly.textContent = baseValue.toLocaleString();
+    fly.style.fontSize = window.getComputedStyle(sourceEl).fontSize;
+    fly.style.left = `${srcRect.left + srcRect.width / 2}px`;
+    fly.style.top = `${srcRect.top + srcRect.height / 2}px`;
+    document.body.appendChild(fly);
+
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            fly.style.left = `${tgtRect.left + tgtRect.width / 2}px`;
+            fly.style.top = `${tgtRect.top + tgtRect.height / 2}px`;
+            fly.style.transform = 'translate(-50%, -50%) scale(1.4)';
+        });
+    });
+
+    setTimeout(() => {
+        fly.classList.add('dice-sum-fly--arrive');
+        setTimeout(() => {
+            fly.remove();
+            onDone();
+        }, 150);
+    }, 350);
+}
+
+export function playDamageStepsAnimation(steps, callback) {
+    if (!steps || steps.length === 0 || !el.finalScoreValue) { callback(); return; }
+
+    const STEP_DELAY = 400;
+    let i = 0;
+
+    const playNext = () => {
+        if (i >= steps.length) { callback(); return; }
+        const step = steps[i++];
+
+        if (step.final) {
+            countUpTo(el.finalScoreValue, step.damageAfter, 150, callback);
+            return;
+        }
+
+        if (step.zero) {
+            el.finalScoreValue.innerText = '0';
+            setTimeout(playNext, STEP_DELAY);
+            return;
+        }
+
+        if (step.base) {
+            playDiceSumFly(step.damageAfter, () => {
+                countUpTo(el.finalScoreValue, step.damageAfter, 150, () => {
+                    setTimeout(playNext, STEP_DELAY);
+                });
+            });
+            return;
+        }
+
+        if (step.zone) {
+            const zoneEl = document.getElementById('zone-box-' + step.zone);
+            if (zoneEl) zoneEl.classList.add('zone-active');
+            countUpTo(el.finalScoreValue, step.damageAfter, 150, () => {
+                el.finalScoreValue.classList.remove('zone-multiply');
+                void el.finalScoreValue.offsetWidth;
+                el.finalScoreValue.classList.add('zone-multiply');
+                setTimeout(() => {
+                    if (zoneEl) zoneEl.classList.remove('zone-active');
+                    el.finalScoreValue.classList.remove('zone-multiply');
+                    playNext();
+                }, STEP_DELAY);
+            });
+            return;
+        }
+
+        const relicEl = el.inventoryGrid
+            ? el.inventoryGrid.querySelector(`[data-relic-id="${step.relicId}"]`)
+            : null;
+        if (relicEl) relicEl.classList.add('relic-active');
+
+        countUpTo(el.finalScoreValue, step.damageAfter, 150, () => {
+            if (step.type === 'multiply') {
+                el.finalScoreValue.classList.remove('damage-multiply');
+                void el.finalScoreValue.offsetWidth;
+                el.finalScoreValue.classList.add('damage-multiply');
+            } else if (step.type === 'add' && step.bonus > 0 && el.finalDamagePreview) {
+                const popup = document.createElement('div');
+                popup.className = 'damage-bonus-popup';
+                popup.textContent = `+${step.bonus.toLocaleString()}`;
+                el.finalDamagePreview.style.position = 'relative';
+                el.finalDamagePreview.appendChild(popup);
+                setTimeout(() => popup.remove(), 400);
+            }
+            setTimeout(() => {
+                if (relicEl) relicEl.classList.remove('relic-active');
+                el.finalScoreValue.classList.remove('damage-multiply');
+                playNext();
+            }, STEP_DELAY);
+        });
+    };
+
+    playNext();
 }
 
 // --- 商店渲染邏輯 ---
@@ -931,6 +1112,96 @@ export function renderCollectionModal(tab) {
 }
 
 
+function renderDevShackleSection(container) {
+    const activeShackle = window.getStageActiveShackle ? window.getStageActiveShackle() : null;
+
+    let activeHtml = '';
+    if (activeShackle) {
+        const sDef = SHACKLE_DB.find(s => s.id === activeShackle);
+        const sName = sDef ? (i18n.t(`shackles.${activeShackle}.name`) || sDef.name) : activeShackle;
+        const colorClass = sDef && sDef.type === 'heavy' ? 'text-red-400' : 'text-amber-400';
+        activeHtml = `
+            <div class="flex items-center justify-between bg-slate-900 p-2 rounded-lg border border-slate-600">
+                <span class="${colorClass} font-bold text-sm">${sName}</span>
+                <button onclick="window.devRemoveShackle(); window.openDevModal();" class="text-xs bg-red-900 hover:bg-red-800 text-red-300 px-2 py-1 rounded border border-red-700 font-bold transition-colors active:scale-95">
+                    ${i18n.t('ui.dev_shackle_remove') || '移除'}
+                </button>
+            </div>`;
+    } else {
+        activeHtml = `<div class="text-slate-500 text-sm italic">${i18n.t('ui.dev_shackle_none') || '（無枷鎖）'}</div>`;
+    }
+
+    let shackleOptions = `<option value="">${i18n.t('ui.dev_shackle_select_ph') || '-- 選擇枷鎖 --'}</option>`;
+    SHACKLE_DB.forEach(s => {
+        const sName = i18n.t(`shackles.${s.id}.name`) || s.name;
+        const typeLabel = s.type === 'heavy' ? ' [重]' : ' [輕]';
+        shackleOptions += `<option value="${s.id}">${sName}${typeLabel} (${s.id})</option>`;
+    });
+
+    container.innerHTML = `
+        <div class="border-t border-slate-600 pt-3 flex flex-col gap-2">
+            <h3 class="text-base font-black text-violet-300">${i18n.t('ui.dev_shackle_title') || '🔒 枷鎖編輯'}</h3>
+            <div class="text-xs text-slate-400 font-bold">${i18n.t('ui.dev_shackle_current') || '當前枷鎖'}:</div>
+            ${activeHtml}
+            <div id="dev-shackle-conflict" class="hidden text-red-400 text-xs font-bold bg-red-950/40 border border-red-800 rounded p-2"></div>
+            <input id="dev-shackle-filter" type="text" placeholder="${i18n.t('ui.dev_shackle_filter') || '搜尋枷鎖...'}"
+                class="bg-slate-900 text-white p-2 rounded border border-slate-600 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-violet-500 placeholder-slate-500"
+                oninput="window._devFilterShackles(this.value)" />
+            <select id="dev-shackle-select"
+                class="bg-slate-900 text-white p-2 rounded border border-slate-600 font-bold max-h-40 overflow-y-auto cursor-pointer focus:outline-none focus:ring-2 focus:ring-violet-500 text-sm"
+                onchange="window._devCheckShackleConflict()">
+                ${shackleOptions}
+            </select>
+            <button onclick="window._devApplyShackleBtn()" class="w-full bg-violet-700 hover:bg-violet-600 text-white font-black py-2 rounded-lg transition-colors active:scale-95 text-sm">
+                ${i18n.t('ui.dev_shackle_apply') || '套用枷鎖'}
+            </button>
+        </div>`;
+
+    window._allShackleOptions = SHACKLE_DB.map(s => ({
+        id: s.id,
+        name: i18n.t(`shackles.${s.id}.name`) || s.name,
+        type: s.type
+    }));
+
+    window._devFilterShackles = (filter) => {
+        const select = document.getElementById('dev-shackle-select');
+        if (!select) return;
+        const low = filter.toLowerCase();
+        select.innerHTML = `<option value="">${i18n.t('ui.dev_shackle_select_ph') || '-- 選擇枷鎖 --'}</option>`;
+        window._allShackleOptions
+            .filter(s => !filter || s.name.toLowerCase().includes(low) || s.id.toLowerCase().includes(low))
+            .forEach(s => {
+                const opt = document.createElement('option');
+                opt.value = s.id;
+                opt.textContent = `${s.name}${s.type === 'heavy' ? ' [重]' : ' [輕]'} (${s.id})`;
+                select.appendChild(opt);
+            });
+        window._devCheckShackleConflict();
+    };
+
+    window._devCheckShackleConflict = () => {
+        const select = document.getElementById('dev-shackle-select');
+        const conflictDiv = document.getElementById('dev-shackle-conflict');
+        if (!select || !conflictDiv) return;
+        const current = window.getStageActiveShackle ? window.getStageActiveShackle() : null;
+        const selected = select.value;
+        if (selected && current && current !== selected) {
+            conflictDiv.textContent = i18n.t('ui.dev_shackle_conflict') || '⚠️ 已有枷鎖套用中，強制套用將覆蓋現有枷鎖。';
+            conflictDiv.classList.remove('hidden');
+        } else {
+            conflictDiv.classList.add('hidden');
+        }
+    };
+
+    window._devApplyShackleBtn = () => {
+        const select = document.getElementById('dev-shackle-select');
+        if (!select || !select.value) return;
+        if (window.devApplyShackle) window.devApplyShackle(select.value);
+        const section = document.getElementById('dev-shackle-section');
+        if (section) renderDevShackleSection(section);
+    };
+}
+
 window.openDevModal = function() {
     if (!el.devModal || !el.devRelicSelect) return;
     el.devRelicSelect.innerHTML = '<option value="">-- 請選擇遺物 --</option>';
@@ -940,6 +1211,8 @@ window.openDevModal = function() {
         opt.innerText = `${r.name} (${r.id})`;
         el.devRelicSelect.appendChild(opt);
     });
+    const shackleSection = document.getElementById('dev-shackle-section');
+    if (shackleSection) renderDevShackleSection(shackleSection);
     el.devModal.classList.remove('hidden');
     el.devModal.classList.add('flex');
 };

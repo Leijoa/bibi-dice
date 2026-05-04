@@ -1,6 +1,6 @@
 // js/main.js
 import { RELIC_DB, ENEMY_DB, RULE_DB, getEnemy, FUSION_RECIPES, CONSUMABLES_DB, isElite, isBoss } from './data.js';
-import { calculateEngineScore } from './engine.js';
+import { calculateEngineScore, isDamageVisible, isEnemyHpBarVisible, isEnemyHpBarPreviewVisible, getDisplayedEstimatedDamage, setDrunkDisplayValue, clearDrunkDisplayValue, setIllusionaryFakeRatio, clearIllusionaryFakeRatio, calculateDamageSteps, devApplyShackle as engineDevApplyShackle, devRemoveShackle as engineDevRemoveShackle } from './engine.js';
 import * as UI from './ui.js';
 import * as Audio from './audio.js';
 import { i18n } from './i18n.js';
@@ -27,6 +27,7 @@ export function getEnemyWithMeta(levelIndex) {
 // --- 遊戲狀態 ---
 let player = { hp: 3, relics: [], maxRolls: 3, dismantledFusions: [], fivesRolled: 0, fivesRolled: 0 };
 let stage = { level: 0, enemyMaxHp: 0, enemyHp: 0, turnsLeft: 0, activeShackle: null, shackleMeta: null };
+let drunkInterval = null;
 let battle = { state: 'IDLE', dice: Array(8).fill().map((_, i) => ({ val: 1, locked: false, id: i, matchedGroups: {A:false, B:false, C:false, D:false} })), rollsLeft: 0, scoreResult: null };
 let shopItems = [];
 let shopRerollsUsed = 0;
@@ -203,6 +204,43 @@ window.getStageActiveShackle = () => stage.activeShackle;
 window.getStageLevel = () => stage.level;
 window.getMaxHp = () => 3 + (metaData.upgrades.hp * 1);
 window.getShackleMeta = () => stage.shackleMeta;
+window.getStageEnemyHp = () => stage.enemyHp;
+window.getStageEnemyMaxHp = () => stage.enemyMaxHp;
+window.isDamageVisible = () => isDamageVisible(stage.activeShackle);
+window.isEnemyHpBarVisible = () => isEnemyHpBarVisible(stage.activeShackle);
+window.isEnemyHpBarPreviewVisible = () => isEnemyHpBarPreviewVisible(stage.activeShackle);
+window.getDisplayedEstimatedDamage = (actualDamage) => getDisplayedEstimatedDamage(actualDamage, stage.activeShackle);
+window.refreshDamageDisplay = () => { if (battle.scoreResult) UI.renderScore(battle, activeHighlight); };
+
+// DEV ONLY
+window.devApplyShackle = (shackleId) => {
+    if (stage.shackleTimer) { clearTimeout(stage.shackleTimer); stage.shackleTimer = null; }
+    engineDevApplyShackle(stage, shackleId);
+    if (shackleId === 'thalassophobia') {
+        const triggerFear = () => {
+            if (battle.state === 'IDLE' || battle.state === 'WAIT_ACTION') {
+                if (UI.el.diceContainer) {
+                    UI.el.diceContainer.classList.add('deep-sea-anim');
+                    setTimeout(() => UI.el.diceContainer.classList.remove('deep-sea-anim'), 1000);
+                }
+            }
+            stage.shackleTimer = setTimeout(triggerFear, 3000 + Math.random() * 5000);
+        };
+        stage.shackleTimer = setTimeout(triggerFear, 3000 + Math.random() * 5000);
+    }
+    UI.updateEnemyUI(stage);
+    if (battle.scoreResult) UI.renderScore(battle, activeHighlight);
+    saveGame();
+};
+// DEV ONLY
+window.devRemoveShackle = () => {
+    if (stage.shackleTimer) { clearTimeout(stage.shackleTimer); stage.shackleTimer = null; }
+    clearIllusionaryFakeRatio();
+    engineDevRemoveShackle(stage);
+    UI.updateEnemyUI(stage);
+    if (battle.scoreResult) UI.renderScore(battle, activeHighlight);
+    saveGame();
+};
 
 // --- Modular Game Loop Hooks ---
 function applyCombatShackles(dmg, actualDamage, isEnemyDefeated) {
@@ -584,6 +622,10 @@ function assignShackleForStage(levelIndex) {
         } else if (selected.id === 'relicseal') {
             let shuffled = [...player.relics].sort(() => 0.5 - Math.random());
             meta = { ignoredRelics: shuffled.slice(0, 2) };
+        } else if (selected.id === 'illusionary') {
+            let fakeRatio = Math.random() * 0.25 + 0.05;
+            setIllusionaryFakeRatio(fakeRatio);
+            meta = { fakeRatio };
         }
         
         return { id: selected.id, meta: meta };
@@ -690,6 +732,8 @@ function loadStage(levelIndex, isLoad = false, parsedData = null) {
 
 function startTurn() {
     if (stage.turnsLeft <= 0) return gameOver(i18n.t('ui.game_over_desc'));
+    if (drunkInterval) { clearInterval(drunkInterval); drunkInterval = null; clearDrunkDisplayValue(); }
+    if (stage.activeShackle === 'illusionary') { setIllusionaryFakeRatio(Math.random() * 0.25 + 0.05); }
     battle.state = 'IDLE';
     activeHighlight = null;
 
@@ -910,6 +954,17 @@ window.executeRoll = function(isInitial = false) {
             applyMatch(battle.scoreResult.tagD.used, 'D');
 
             battle.state = 'WAIT_ACTION';
+
+            if (stage.activeShackle === 'shackle_drunk' && battle.scoreResult) {
+                if (drunkInterval) clearInterval(drunkInterval);
+                const actualScore = battle.scoreResult.finalScore;
+                drunkInterval = setInterval(() => {
+                    const distort = 1 + (Math.random() * 0.4 - 0.2);
+                    setDrunkDisplayValue(Math.floor(actualScore * distort));
+                    if (window.refreshDamageDisplay) window.refreshDamageDisplay();
+                }, 300);
+            }
+
             saveGame();
             renderAll();
         }
@@ -920,221 +975,234 @@ window.fireAttack = function() {
     if (battle.state !== 'WAIT_ACTION' || !battle.scoreResult) return;
     battle.state = 'ATTACKING';
     activeHighlight = null;
-    
+
+    if (drunkInterval) { clearInterval(drunkInterval); drunkInterval = null; clearDrunkDisplayValue(); }
+    clearIllusionaryFakeRatio();
+
     if (stage.activeShackle === 'tremor' && Math.random() < 0.10) {
         let unlockedDice = battle.dice.filter(d => !d.locked);
         if (unlockedDice.length > 0) {
             let target = unlockedDice[Math.floor(Math.random() * unlockedDice.length)];
             target.val = Math.floor(Math.random() * 8) + 1;
             battle.dice.sort((a, b) => a.val - b.val);
-            
+
             let shackleConfig = null;
             if (stage.activeShackle) {
                 shackleConfig = { id: stage.activeShackle };
                 if (stage.shackleMeta) Object.assign(shackleConfig, stage.shackleMeta);
             }
-
             let activeRelics = player.relics;
             if (stage.activeShackle === 'relicseal' && stage.shackleMeta && stage.shackleMeta.ignoredRelics) {
                 activeRelics = player.relics.filter(r => !stage.shackleMeta.ignoredRelics.includes(r));
             }
-
             let isInitialRoll = (battle.rollsLeft === player.maxRolls);
             battle.scoreResult = calculateEngineScore(battle.dice, activeRelics, battle.rollsLeft, player.hp, shackleConfig ? [shackleConfig] : [], isInitialRoll, stage.turnsLeft, { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled });
             UI.showToast(i18n.t('messages.toast_tremor'));
         }
     }
-    
-    // Render dice one last time to reveal 'blind' masked dice and any tremor changes
+
     UI.renderDice(battle, activeHighlight, player);
-    
     UI.renderControls(battle);
     Audio.playAttackSound();
 
-    let finalDamage = Math.floor(battle.scoreResult.finalScore);
-
-    if (player.relics.includes('dragonslayer') && (isElite(stage.level) || isBoss(stage.level))) {
-        finalDamage = Math.floor(Math.min(Number.MAX_SAFE_INTEGER, finalDamage * 1.5));
-        UI.showToast(i18n.t('messages.toast_dragonslayer'));
+    // --- Build shackleConfig + activeRelics for steps calculation ---
+    let shackleConfig = null;
+    if (stage.activeShackle) {
+        shackleConfig = { id: stage.activeShackle };
+        if (stage.shackleMeta) Object.assign(shackleConfig, stage.shackleMeta);
+    }
+    let activeRelics = player.relics;
+    if (stage.activeShackle === 'relicseal' && stage.shackleMeta && stage.shackleMeta.ignoredRelics) {
+        activeRelics = player.relics.filter(r => !stage.shackleMeta.ignoredRelics.includes(r));
     }
 
-    // Meta-progression final damage buff
+    // --- Compute final damage (all modifiers) ---
+    let finalDamage = Math.floor(battle.scoreResult.finalScore);
+    if (player.relics.includes('dragonslayer') && (isElite(stage.level) || isBoss(stage.level))) {
+        finalDamage = Math.floor(Math.min(Number.MAX_SAFE_INTEGER, finalDamage * 1.5));
+    }
     if (metaData && metaData.upgrades && metaData.upgrades.finalDamage > 0) {
         let buffMulti = 1.0 + (metaData.upgrades.finalDamage * 0.1);
         finalDamage = Math.floor(Math.min(Number.MAX_SAFE_INTEGER, finalDamage * buffMulti));
     }
-
     if (stage.damageBuffMulti > 1.0) {
         finalDamage = Math.floor(Math.min(Number.MAX_SAFE_INTEGER, finalDamage * stage.damageBuffMulti));
+    }
+
+    // --- Build animation steps ---
+    const env = { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled };
+    let steps = calculateDamageSteps(battle.dice, activeRelics, battle.rollsLeft, player.hp, shackleConfig ? [shackleConfig] : [], stage.turnsLeft, env);
+
+    // Insert dragonslayer step before the final if applicable
+    if (player.relics.includes('dragonslayer') && (isElite(stage.level) || isBoss(stage.level))) {
+        const preSlayScore = Math.floor(battle.scoreResult.finalScore);
+        steps.splice(steps.length - 1, 0, {
+            relicId: 'dragonslayer',
+            relicName: (window.i18n ? window.i18n.t('relics.dragonslayer.name') : null) || '【屠龍者】',
+            type: 'multiply', multiplier: 1.5, bonus: null, damageAfter: Math.floor(preSlayScore * 1.5)
+        });
+        UI.showToast(i18n.t('messages.toast_dragonslayer'));
+    }
+    if (stage.damageBuffMulti > 1.0) {
         UI.showToast(i18n.t('messages.toast_power', stage.damageBuffMulti));
     }
+    // Ensure final step shows actual finalDamage
+    steps[steps.length - 1].damageAfter = finalDamage;
 
-    let dmg = finalDamage;
+    // --- doAttack: original combat resolution, wrapped as callback ---
+    const doAttack = () => {
+        let dmg = finalDamage;
 
-    if (stage.activeShackle === 'ironwall') {
-        dmg = Math.floor(dmg * 0.8);
-        UI.showToast(i18n.t('messages.toast_ironwall'));
-    }
+        if (stage.activeShackle === 'ironwall') {
+            dmg = Math.floor(dmg * 0.8);
+            UI.showToast(i18n.t('messages.toast_ironwall'));
+        }
 
-    if (stage.activeShackle === 'absolutebarrier' && !stage.hasAttackedThisStage) {
-        dmg = 0;
-        stage.hasAttackedThisStage = true;
-        UI.showToast(i18n.t('messages.toast_absolutebarrier'));
-    } else {
-        stage.hasAttackedThisStage = true;
-    }
+        if (stage.activeShackle === 'absolutebarrier' && !stage.hasAttackedThisStage) {
+            dmg = 0;
+            stage.hasAttackedThisStage = true;
+            UI.showToast(i18n.t('messages.toast_absolutebarrier'));
+        } else {
+            stage.hasAttackedThisStage = true;
+        }
 
-    if (stage.activeShackle === 'abyssgaze' && dmg > 0 && dmg < stage.enemyMaxHp * 0.20) {
-        let healAmount = dmg;
-        dmg = 0;
-        stage.enemyHp = Math.min(stage.enemyMaxHp, stage.enemyHp + healAmount);
-        UI.showToast(i18n.t('messages.toast_abyssgaze', healAmount));
-    }
-
-    let actualDamage = Math.min(dmg, stage.enemyHp);
-    stage.enemyHp -= dmg;
-
-    if (stage.activeShackle === 'healingdice') {
-        let count2 = battle.dice.filter(d => d.val === 2).length;
-        if (count2 > 0) {
-            let healAmount = Math.floor(count2 * stage.enemyMaxHp * 0.03);
+        if (stage.activeShackle === 'abyssgaze' && dmg > 0 && dmg < stage.enemyMaxHp * 0.20) {
+            let healAmount = dmg;
+            dmg = 0;
             stage.enemyHp = Math.min(stage.enemyMaxHp, stage.enemyHp + healAmount);
-            UI.showToast(i18n.t('messages.toast_healingdice', healAmount));
+            UI.showToast(i18n.t('messages.toast_abyssgaze', healAmount));
         }
-    }
 
-    if (stage.activeShackle === 'wrath') {
-        let hasLegendary = false;
-        ['tagA', 'tagB', 'tagC', 'tagD'].forEach(tag => {
-            let name = battle.scoreResult[tag].name;
-            if (name !== '無') {
-                for (let group in RULE_DB) {
-                    let rule = RULE_DB[group].find(r => r.name === name);
-                    if (rule && rule.rarity === 4) hasLegendary = true;
-                }
+        let actualDamage = Math.min(dmg, stage.enemyHp);
+        stage.enemyHp -= dmg;
+
+        if (stage.activeShackle === 'healingdice') {
+            let count2 = battle.dice.filter(d => d.val === 2).length;
+            if (count2 > 0) {
+                let healAmount = Math.floor(count2 * stage.enemyMaxHp * 0.03);
+                stage.enemyHp = Math.min(stage.enemyMaxHp, stage.enemyHp + healAmount);
+                UI.showToast(i18n.t('messages.toast_healingdice', healAmount));
             }
-        });
-        if (hasLegendary) {
-            player.hp -= 1;
-            UI.updateHeaderUI(player, stage);
-            UI.showToast(i18n.t('messages.toast_wrath'));
-        }
-    }
-
-    if (dmg > (player.highestDamage || 0)) {
-        player.highestDamage = dmg;
-        let combos = [];
-        if (battle.scoreResult.tagA.name !== '無') { combos.push(battle.scoreResult.tagA.name); }
-        if (battle.scoreResult.tagB.name !== '無') { combos.push(battle.scoreResult.tagB.name); }
-        if (battle.scoreResult.tagC.name !== '無') { combos.push(battle.scoreResult.tagC.name); }
-        if (battle.scoreResult.tagD.name !== '無') { combos.push(battle.scoreResult.tagD.name); }
-        player.highestDamageCombo = combos.join(' + ') || '無';
-    }
-    
-    if (dmg > metaData.stats.highestDamage) {
-        metaData.stats.highestDamage = dmg;
-        let combos = [];
-        if (battle.scoreResult.tagA.name !== '無') { combos.push(battle.scoreResult.tagA.name); }
-        if (battle.scoreResult.tagB.name !== '無') { combos.push(battle.scoreResult.tagB.name); }
-        if (battle.scoreResult.tagC.name !== '無') { combos.push(battle.scoreResult.tagC.name); }
-        if (battle.scoreResult.tagD.name !== '無') { combos.push(battle.scoreResult.tagD.name); }
-        metaData.stats.highestDamageCombo = combos.join(' + ') || '無';
-        metaData.stats.highestDamageRelics = [...player.relics];
-        saveMetaData();
-    }
-
-    if (battle.scoreResult.finalMultiplier > metaData.stats.highestMulti) {
-        metaData.stats.highestMulti = battle.scoreResult.finalMultiplier;
-        saveMetaData();
-    }
-
-    // Always unlock hands regardless of highest damage
-    if (battle.scoreResult.tagA.name !== '無') unlockCollectionItem('hand', battle.scoreResult.tagA.name);
-    if (battle.scoreResult.tagB.name !== '無') unlockCollectionItem('hand', battle.scoreResult.tagB.name);
-    if (battle.scoreResult.tagC.name !== '無') unlockCollectionItem('hand', battle.scoreResult.tagC.name);
-    if (battle.scoreResult.tagD.name !== '無') unlockCollectionItem('hand', battle.scoreResult.tagD.name);
-
-    // doVisuals: Immediately apply hit visual effects
-    UI.el.battleArea.classList.remove('shake-hard');
-    void UI.el.battleArea.offsetWidth;
-    UI.el.battleArea.classList.add('shake-hard');
-
-    UI.el.hitFlash.classList.remove('hidden');
-    UI.el.hitFlash.classList.remove('flash-red-anim');
-    void UI.el.hitFlash.offsetWidth;
-    UI.el.hitFlash.classList.add('flash-red-anim');
-
-    let dmgEl = document.createElement('div');
-    dmgEl.className = 'damage-text text-6xl md:text-8xl font-black text-red-500 drop-shadow-[0_0_20px_rgba(255,0,0,0.9)] z-30 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2';
-
-    let displayDmg = dmg;
-    if (stage.activeShackle === 'illusionary') {
-        let fakeMultiplier = Math.floor(Math.random() * 16) + 5; // 5 to 20
-        displayDmg *= fakeMultiplier;
-    }
-    dmgEl.innerText = `-${displayDmg.toLocaleString()}`;
-    UI.el.damageContainer.appendChild(dmgEl);
-
-    setTimeout(() => {
-        dmgEl.remove();
-        UI.el.hitFlash.classList.add('hidden');
-    }, 1200);
-
-    UI.updateEnemyUI(stage);
-
-    // hitstop delay
-    let delay = dmg > stage.enemyMaxHp * 0.20 ? 100 : 0;
-
-    setTimeout(() => {
-        let isDefeated = stage.enemyHp <= 0;
-        let playerDied = applyCombatShackles(dmg, actualDamage, isDefeated);
-        
-        // 統一依據當下的真實 HP 進行一次性判定
-        if (player.hp <= 0) {
-            // 根據 playerDied 來決定死因文字
-            let deathReason = playerDied ? i18n.t('messages.death_thorns') : i18n.t('messages.death_hp');
-            playerTakesFatalDamage(deathReason);
-
-            // 如果經過急救（破財消災）後 HP 仍然 <= 0，才中斷後續邏輯
-            if (player.hp <= 0) return;
         }
 
-        if (isDefeated) {
-            // 如果是最後一關，直接觸發勝利
-            if (stage.level === ENEMY_DB.length - 1) {
-                gameWin();
+        if (stage.activeShackle === 'wrath') {
+            let hasLegendary = false;
+            ['tagA', 'tagB', 'tagC', 'tagD'].forEach(tag => {
+                let name = battle.scoreResult[tag].name;
+                if (name !== '無') {
+                    for (let group in RULE_DB) {
+                        let rule = RULE_DB[group].find(r => r.name === name);
+                        if (rule && rule.rarity === 4) hasLegendary = true;
+                    }
+                }
+            });
+            if (hasLegendary) {
+                player.hp -= 1;
+                UI.updateHeaderUI(player, stage);
+                UI.showToast(i18n.t('messages.toast_wrath'));
+            }
+        }
+
+        if (dmg > (player.highestDamage || 0)) {
+            player.highestDamage = dmg;
+            let combos = [];
+            if (battle.scoreResult.tagA.name !== '無') combos.push(battle.scoreResult.tagA.name);
+            if (battle.scoreResult.tagB.name !== '無') combos.push(battle.scoreResult.tagB.name);
+            if (battle.scoreResult.tagC.name !== '無') combos.push(battle.scoreResult.tagC.name);
+            if (battle.scoreResult.tagD.name !== '無') combos.push(battle.scoreResult.tagD.name);
+            player.highestDamageCombo = combos.join(' + ') || '無';
+        }
+
+        if (dmg > metaData.stats.highestDamage) {
+            metaData.stats.highestDamage = dmg;
+            let combos = [];
+            if (battle.scoreResult.tagA.name !== '無') combos.push(battle.scoreResult.tagA.name);
+            if (battle.scoreResult.tagB.name !== '無') combos.push(battle.scoreResult.tagB.name);
+            if (battle.scoreResult.tagC.name !== '無') combos.push(battle.scoreResult.tagC.name);
+            if (battle.scoreResult.tagD.name !== '無') combos.push(battle.scoreResult.tagD.name);
+            metaData.stats.highestDamageCombo = combos.join(' + ') || '無';
+            metaData.stats.highestDamageRelics = [...player.relics];
+            saveMetaData();
+        }
+
+        if (battle.scoreResult.finalMultiplier > metaData.stats.highestMulti) {
+            metaData.stats.highestMulti = battle.scoreResult.finalMultiplier;
+            saveMetaData();
+        }
+
+        if (battle.scoreResult.tagA.name !== '無') unlockCollectionItem('hand', battle.scoreResult.tagA.name);
+        if (battle.scoreResult.tagB.name !== '無') unlockCollectionItem('hand', battle.scoreResult.tagB.name);
+        if (battle.scoreResult.tagC.name !== '無') unlockCollectionItem('hand', battle.scoreResult.tagC.name);
+        if (battle.scoreResult.tagD.name !== '無') unlockCollectionItem('hand', battle.scoreResult.tagD.name);
+
+        UI.el.battleArea.classList.remove('shake-hard');
+        void UI.el.battleArea.offsetWidth;
+        UI.el.battleArea.classList.add('shake-hard');
+
+        UI.el.hitFlash.classList.remove('hidden');
+        UI.el.hitFlash.classList.remove('flash-red-anim');
+        void UI.el.hitFlash.offsetWidth;
+        UI.el.hitFlash.classList.add('flash-red-anim');
+
+        let dmgEl = document.createElement('div');
+        dmgEl.className = 'damage-text text-6xl md:text-8xl font-black text-red-500 drop-shadow-[0_0_20px_rgba(255,0,0,0.9)] z-30 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2';
+        let displayDmg = dmg;
+        if (stage.activeShackle === 'illusionary') {
+            let fakeMultiplier = Math.floor(Math.random() * 16) + 5;
+            displayDmg *= fakeMultiplier;
+        }
+        dmgEl.innerText = `-${displayDmg.toLocaleString()}`;
+        UI.el.damageContainer.appendChild(dmgEl);
+        setTimeout(() => { dmgEl.remove(); UI.el.hitFlash.classList.add('hidden'); }, 1200);
+
+        UI.updateEnemyUI(stage);
+
+        let delay = dmg > stage.enemyMaxHp * 0.20 ? 100 : 0;
+        setTimeout(() => {
+            let isDefeated = stage.enemyHp <= 0;
+            let playerDied = applyCombatShackles(dmg, actualDamage, isDefeated);
+
+            if (player.hp <= 0) {
+                let deathReason = playerDied ? i18n.t('messages.death_thorns') : i18n.t('messages.death_hp');
+                playerTakesFatalDamage(deathReason);
+                if (player.hp <= 0) return;
+            }
+
+            if (isDefeated) {
+                if (stage.level === ENEMY_DB.length - 1) {
+                    gameWin();
+                } else {
+                    enemyDefeated();
+                }
             } else {
-                enemyDefeated();
+                stage.turnsLeft--;
+                if (stage.turnsLeft <= 0) {
+                    player.hp--;
+                    if (player.relics.includes('berserker')) {
+                        player.berserkerBonus = (player.berserkerBonus || 0) + 1;
+                        UI.showToast(i18n.t('messages.toast_berserker'));
+                    }
+                    if (player.hp <= 0) {
+                        playerTakesFatalDamage(i18n.t('messages.death_hp'));
+                        if (player.hp <= 0) return;
+                        UI.showToast(i18n.t('messages.toast_timeout_wealth'), () => {
+                            stage.turnsLeft = getEnemyWithMeta(stage.level).turns;
+                            if (stage.activeShackle === 'timecompress') stage.turnsLeft = 2;
+                            startTurn();
+                        });
+                    } else {
+                        UI.showToast(i18n.t('messages.toast_timeout_retry'), () => {
+                            stage.turnsLeft = getEnemyWithMeta(stage.level).turns;
+                            if (stage.activeShackle === 'timecompress') stage.turnsLeft = 2;
+                            startTurn();
+                        });
+                    }
+                } else startTurn();
             }
-        }
-        else {
-            stage.turnsLeft--;
-            if (stage.turnsLeft <= 0) {
-                player.hp--;
-                if (player.relics.includes('berserker')) {
-                    player.berserkerBonus = (player.berserkerBonus || 0) + 1;
-                    UI.showToast(i18n.t('messages.toast_berserker'));
-                }
-                if (player.hp <= 0) {
-                    playerTakesFatalDamage(i18n.t('messages.death_hp'));
-                    if (player.hp <= 0) return;
-                    // IF we are here, playerTakesFatalDamage rescued the player (hp is now 1)
-                    UI.showToast(i18n.t('messages.toast_timeout_wealth'), () => {
-                        stage.turnsLeft = getEnemyWithMeta(stage.level).turns;
-                        if (stage.activeShackle === 'timecompress') stage.turnsLeft = 2;
-                        startTurn();
-                    });
-                }
-                else {
-                    UI.showToast(i18n.t('messages.toast_timeout_retry'), () => {
-                        stage.turnsLeft = getEnemyWithMeta(stage.level).turns;
-                        if (stage.activeShackle === 'timecompress') stage.turnsLeft = 2;
-                        startTurn();
-                    });
-                }
-            } else startTurn();
-        }
-    }, 1000 + delay);
+        }, 1000 + delay);
+    };
+
+    UI.playDamageStepsAnimation(steps, doAttack);
 };
 
 // --- 商店與關卡結算 ---

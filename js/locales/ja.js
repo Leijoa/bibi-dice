@@ -109,7 +109,9 @@ export const ja_data = {
     'absolutebarrier': { name: '【絶対障壁】', desc: 'この戦闘での最初の攻撃が強制的に無効（0ダメージ）になる。' },
     'abyssgaze': { name: '【深淵の凝視】', desc: '攻撃がボスの最大HPの20%未満の場合、ダメージがボスの回復に変わる。' },
     'wither': { name: '【枯渇】', desc: 'この戦闘中、プレイヤーの最大HPは1になる（1ダメージで死ぬ）。' },
-    'mutualdestruction': { name: '【相打ち】', desc: '受けたダメージの5%を反射する。ただし、プレイヤーのHPは最低1残る。' }
+    'mutualdestruction': { name: '【相打ち】', desc: '受けたダメージの5%を反射する。ただし、プレイヤーのHPは最低1残る。' },
+    'shackle_smoke': { name: '【煙幕】', desc: 'HPバーのダメージプレビューバーが見えなくなる。' },
+    'shackle_drunk': { name: '【酔っぱらい】', desc: '予測ダメージを正確に把握できない。' }
   },
   rules: {
     'groupA': '同数',
@@ -200,7 +202,15 @@ ui: {
     fusion_materials: '返還される素材：',
     fusion_new_item: 'NEW',
     fusion_discard_btn: '破棄して分解する',
-    pb_highest_infinite: '最高到達無限階層'
+    pb_highest_infinite: '最高到達無限階層',
+    dev_shackle_title: '🔒 枷鎖編集',
+    dev_shackle_current: '現在の枷鎖',
+    dev_shackle_none: '（枷鎖なし）',
+    dev_shackle_remove: '解除',
+    dev_shackle_apply: '枷鎖を適用',
+    dev_shackle_filter: '枷鎖を検索...',
+    dev_shackle_select_ph: '-- 枷鎖を選択 --',
+    dev_shackle_conflict: '⚠️ 既に枷鎖が適用中です。強制適用すると上書きされます。'
   },
   souls: {
     'hp': { name: '❤️ 体力鍛錬', desc: '最大 HP +1' },

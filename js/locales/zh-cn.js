@@ -109,7 +109,9 @@ export const zh_cn_data = {
     'absolutebarrier': { name: '【绝对屏障】', desc: '本局战斗中的「第一次攻击」强制无效（造成 0 点伤害）。' },
     'abyssgaze': { name: '【深渊凝视】', desc: '若单次攻击未打掉 Boss 20% 最大 HP，该次伤害转为治疗 Boss。' },
     'wither': { name: '【枯萎】', desc: '本局战斗玩家最大 HP 视为 1（受伤即死）。' },
-    'mutualdestruction': { name: '【同归于尽】', desc: '敌人会将受到的 5% 伤害反弹给玩家，但不会导致玩家死亡（最少剩 1 HP）。' }
+    'mutualdestruction': { name: '【同归于尽】', desc: '敌人会将受到的 5% 伤害反弹给玩家，但不会导致玩家死亡（最少剩 1 HP）。' },
+    'shackle_smoke': { name: '【烟雾】', desc: '看不到血条预估伤害。' },
+    'shackle_drunk': { name: '【酒醉】', desc: '无法精准掌握预估伤害。' }
   },
   rules: {
     'groupA': '同数',
@@ -200,7 +202,15 @@ ui: {
     fusion_materials: '退回素材：',
     fusion_new_item: 'NEW',
     fusion_discard_btn: '舍弃并分解',
-    pb_highest_infinite: '最高无限层数'
+    pb_highest_infinite: '最高无限层数',
+    dev_shackle_title: '🔒 枷锁编辑',
+    dev_shackle_current: '当前枷锁',
+    dev_shackle_none: '（无枷锁）',
+    dev_shackle_remove: '移除',
+    dev_shackle_apply: '套用枷锁',
+    dev_shackle_filter: '搜索枷锁...',
+    dev_shackle_select_ph: '-- 选择枷锁 --',
+    dev_shackle_conflict: '⚠️ 已有枷锁套用中，强制套用将覆盖现有枷锁。'
   },
   souls: {
     'hp': { name: '❤️ 体魄锻炼', desc: '最大 HP +1' },

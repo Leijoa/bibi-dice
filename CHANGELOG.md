@@ -1,5 +1,35 @@
 # 比比丟八-BIBBIDIBA [2.0版] 更新紀錄
 
+### 結算動畫：骰子點數飛行演出 [2026/05/04]
+* **骰子點數總和飛行動畫**：逐步結算演出「歸零」後、「基礎點數」跳動前，新增一段飛行橋段：`#score-total-base-value` 的數字複製為浮動元素（`.dice-sum-fly`），以 CSS transition 從點數總和欄位飛向傷害數字位置，途中放大至 scale(1.4)，抵達後播放 `.dice-sum-fly--arrive` 淡出動畫（共 500ms），消失後傷害數字才開始跳動。若元素座標取不到則靜默跳過，不中斷流程。
+
+### 枷鎖假象、紫底擊殺、逐步結算擴充 [2026/05/04]
+* **假象（illusionary）枷鎖重做**：生效時主動顯示「真實傷害 × random(0.05~0.30)」的假數值（每回合開始時固定），血條預判條寬度亦依假值計算；攻擊確認後解除欺騙，顯示真實結算。透過 `_illusionaryFakeRatio` 模組變數管理，`engine.js` 新增 `setIllusionaryFakeRatio` / `clearIllusionaryFakeRatio`。
+* **血條預判條擊殺紫底效果**：當預估傷害 >= 敵人當前 HP 時，`.damage-preview-bar` 套用 `.damage-preview-bar--lethal` class，背景轉為紫色並播放呼吸脈動動畫（`lethal-pulse`）；假象模式下以假值判斷，避免洩漏真實資訊。
+* **逐步結算動畫擴充（A~D 牌型區）**：`calculateDamageSteps()` 改版，加入「歸零 → 基礎點數 → 遺物加乘 → A/B/C/D 區加乘（倍率 > 1.0 才播） → 最終傷害」完整步驟。各牌型區格加入 `id="zone-box-{X}"` 供動畫選取，亮起時套用青色 `.zone-active` 光暈，數字跳動採獨立 `.zone-multiply` 閃光動畫。
+
+### 開發工具強化：Dev Mode 枷鎖編輯器 [2026/05/04]
+* **Dev Mode 枷鎖編輯區塊**：在開發者模式面板內新增「🔒 枷鎖編輯」區塊，支援以下操作：
+  * 顯示當前套用中的枷鎖（輕度橘色、重度紅色），並可一鍵移除。
+  * 關鍵字篩選下拉選單（`<input>` 即時過濾），支援以 id 或名稱搜尋所有枷鎖。
+  * 「套用枷鎖」按鈕，呼叫完整初始化流程（含 shackleMeta 生成、thalassophobia timer 等），等同正常進關效果。
+  * 衝突警示：若已有枷鎖，套用時以紅字提示將覆蓋，但仍允許強制執行。
+* **engine.js DEV ONLY API**：新增 `devApplyShackle(stage, shackleId)` 與 `devRemoveShackle(stage)` 兩支純函式，負責設定 `stage.activeShackle` / `shackleMeta`。
+* **main.js 包裝**：`window.devApplyShackle` / `window.devRemoveShackle` 包含 timer 管理、UI 刷新與 saveGame，完整對接 engine API。
+* **四語 i18n 完整支援**：新增 8 個 `ui.dev_shackle_*` 鍵值至 zh-tw、zh-cn、en、ja 四個語系檔。
+* **安全限制**：所有 dev 功能僅在 dev modal（由 `triggerDevMode` 開啟）中可存取，正式玩家無法觸及。
+
+### 視覺 UI 強化 Phase B (系統與動畫 System & Animation) [2026/05/04]
+* **統一傷害可見性 API**：在 `engine.js` 中新增 `isDamageVisible`、`isEnemyHpBarPreviewVisible`、`getDisplayedEstimatedDamage` 等函式，並透過 `window.*` 暴露給 `ui.js`，移除原本散落於各處的 `bluff` 硬編碼判斷。
+* **新枷鎖【煙幕】(shackle_smoke)**：輕型枷鎖，隱藏血條上的傷害預判條，但不影響中央傷害數字顯示。已加入四語翻譯。
+* **新枷鎖【酒醉】(shackle_drunk)**：重型枷鎖，每 300ms 以 ±20% 隨機浮動顯示預估傷害數字，使玩家難以精準掌握輸出量。已加入四語翻譯及專屬 CSS 搖晃動畫。
+* **遺物逐步結算動畫 (Balatro-style)**：攻擊時逐一點亮背包中的遺物圖示，傷害數字同步用計數動畫遞增至各遺物加成後的數值，最終觸發實際攻擊，大幅強化戰鬥爽感。
+
+### 視覺 UI 強化 Phase A (Visual UI Polish Phase A) [2026/05/04]
+* **血量預判條 (Damage Preview Bar)**：攻擊前於敵人血條右端顯示紅色閃爍預判條，直觀呈現本次預估傷害佔比。當預估傷害可擊殺敵人時，整條血條同步脈衝閃爍提示。
+* **預估傷害金色高亮條件調整**：將傷害數字金色高亮的觸發條件從「倍率 > 50」改為「預估傷害 ≥ 敵人當前 HP × 50%」，更貼近實際戰況的壓迫感回饋。
+* **敵人攻擊倒數視覺強化**：敵人倒數回合數字改以紅色大字搭配發光邊框呈現。倒數剩餘 1 回合時觸發脈衝縮放警示動畫，強化玩家的壓迫感體驗。
+
 ### 問題修正與體驗優化 (Fixes & UX Improvements) [2026/05/01]
 * **多國語言介面修復**：修正了融合遺物上限警告介面的相關鍵值（ui.fusion_limit_title 等）未正確解析的問題；修正繁體中文語系下副標題顯示為簡體字的問題；優化語言切換機制，現在切換語言時不需重新載入頁面即可即時生效於所有開啟中的介面。並且修正了各語系下，融合遺物上限警告副標題中殘留 HTML 語法標籤（如 `<span class="text-red-400">`）的問題。
 * **UI 錯誤修復**：修正 `js/ui.js` 中的一處 SyntaxError，導致頁面載入失敗的問題。
