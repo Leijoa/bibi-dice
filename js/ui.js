@@ -1359,6 +1359,11 @@ export function showTutorialStep(stepIndex, totalSteps) {
     // Show overlay
     overlay.classList.remove('hidden');
 
+    // For steps where the user must interact with an element inside a low-z-index
+    // stacking context (e.g. shop-overlay is z-50, below backdrop z-195),
+    // disable backdrop pointer-events so clicks pass through to the shop.
+    backdrop.style.pointerEvents = step.waitFor === 'shop_select' ? 'none' : 'auto';
+
     // Position tooltip near highlighted element (or center-bottom if none)
     _positionTutorialTooltip(targetEl);
 }
