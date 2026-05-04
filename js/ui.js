@@ -402,6 +402,14 @@ export function renderDice(battle, activeHighlight, player) {
             }
         }
 
+        // Apply shackle zeroing effects to badge display
+        if (shackleId === 'drowning' && d.val === 5) { baseVal = 0; isEnhanced = false; }
+        if (shackleId === 'parityfear' && shackleMeta) {
+            if (shackleMeta.fearType === 'odd' && d.val % 2 !== 0) { baseVal = 0; isEnhanced = false; }
+            if (shackleMeta.fearType === 'even' && d.val % 2 === 0) { baseVal = 0; isEnhanced = false; }
+        }
+        if (shackleId === 'numberplunder' && shackleMeta && d.val === shackleMeta.targetNumber) { baseVal = 0; isEnhanced = false; }
+
         let baseBadgeHtml = '';
         const isBlinded = shackleId === 'blind' && battle.state === 'WAIT_ACTION' && shackleMeta && shackleMeta.blindIndices && shackleMeta.blindIndices.includes(idx);
         if (battle.state !== 'IDLE' && battle.state !== 'ROLLING' && !isBlinded) {

@@ -1211,12 +1211,16 @@ window.triggerFusionReplace = function(currentFusions, newFusionId, mat1, mat2) 
         if (discardedId === newFusionId) {
             // Discarding the new one, return its materials to inventory
             player.relics.push(mat1, mat2);
+            // Remove returned materials from shop pool to prevent duplicates
+            shopItems = shopItems.filter(item => item.id !== mat1 && item.id !== mat2);
             UI.showToast(i18n.t('messages.toast_dismantle', discardedName));
         } else {
             // Discarding an old one. Return its materials.
             let oldRec = FUSION_RECIPES[discardedId];
             if (oldRec) {
                 player.relics.push(oldRec.mat1, oldRec.mat2);
+                // Remove returned materials from shop pool to prevent duplicates
+                shopItems = shopItems.filter(item => item.id !== oldRec.mat1 && item.id !== oldRec.mat2);
             }
 
             // Remove the discarded old relic from inventory
@@ -1256,8 +1260,15 @@ function enemyDefeated() {
 
     UI.shootConfetti();
 
-    // Exclude Rarity 5 from regular drops
-    let availableForShop = RELIC_DB.filter(r => !player.relics.includes(r.id) && r.rarity !== 5);
+    // Exclude Rarity 5 and fusion materials of active fusions from drops
+    const getDropFusedMaterials = () => {
+        let mats = [];
+        player.relics.forEach(rId => {
+            if (FUSION_RECIPES[rId]) { mats.push(FUSION_RECIPES[rId].mat1, FUSION_RECIPES[rId].mat2); }
+        });
+        return mats;
+    };
+    let availableForShop = RELIC_DB.filter(r => !player.relics.includes(r.id) && r.rarity !== 5 && !getDropFusedMaterials().includes(r.id));
     let nextStep = (availableForShop.length === 0 && !player.isInfiniteMode) ? nextStage : openShop;
 
     // Boss (9) or Elite (2, 5, 8)
@@ -1271,7 +1282,7 @@ function enemyDefeated() {
         // Ensure UI updates properly if fusion happens
         checkRelicFusion();
 
-        availableForShop = RELIC_DB.filter(r => !player.relics.includes(r.id) && r.rarity !== 5);
+        availableForShop = RELIC_DB.filter(r => !player.relics.includes(r.id) && r.rarity !== 5 && !getDropFusedMaterials().includes(r.id));
         nextStep = (availableForShop.length === 0 && !player.isInfiniteMode) ? nextStage : openShop;
 
         if (isBoss(stage.level) && !player.isInfiniteMode) {
@@ -1314,10 +1325,12 @@ function enemyDefeated() {
 
         if (stage.level >= ENEMY_DB.length) {
             let infiniteLevel = stage.level - ENEMY_DB.length + 1;
+            let n = Math.floor((infiniteLevel - 1) / 3) + 1;
             let m = ((infiniteLevel - 1) % 3) + 1;
-            if (m === 3) enemyNameI18n = i18n.t('messages.stage_infinite_boss', infiniteLevel);
-            else if (m === 2) enemyNameI18n = i18n.t('messages.stage_infinite_elite', infiniteLevel);
-            else enemyNameI18n = i18n.t('messages.stage_infinite', infiniteLevel);
+            let nmStr = `${n}-${m}`;
+            if (m === 3) enemyNameI18n = i18n.t('messages.stage_infinite_boss', nmStr);
+            else if (m === 2) enemyNameI18n = i18n.t('messages.stage_infinite_elite', nmStr);
+            else enemyNameI18n = i18n.t('messages.stage_infinite', nmStr);
         }
 
         let soulMsg = '';
