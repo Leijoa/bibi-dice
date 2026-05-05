@@ -1,5 +1,10 @@
 # 比比丟八-BIBBIDIBA [2.0版] 更新紀錄
 
+### Fix：歷史 Modal Flex 布局精確修正 & 過濾條件強化 [2026/05/05]
+* **CSS `#history-modal > div`**：新增 `display: flex !important; flex-direction: column !important; overflow: hidden !important;`，使外層容器成為 flex 父層，配合 `max-height: 85vh` 限高後由子元素自然分配高度。
+* **CSS `#history-content`**：移除 `max-height: 85vh;`，改為 `flex: 1;`，讓內容區完整填滿外層 flex 容器剩餘空間，`overflow: hidden; min-height: 0;` 保持不變。
+* **JS `records.filter`**：條件強化為 `r && typeof r === 'object' && r.date && r.date > 0 && (r.stageName || r.win === true || r.win === false)`，嚴格排除 null、非物件、date 為 0 或缺失的紀錄，並明確判斷 `win` 為 boolean 值而非 undefined。
+
 ### Fix：歷史紀錄空白項目過濾 & 遺物空白條清除 & Modal 滾動布局修正 [2026/05/05]
 * **過濾無效歷史紀錄**：`renderHistory` 的 `records.map()` 前加入 `.filter(r => r && (r.stageName || r.win !== undefined) && r.date)`，防止空白或損壞資料渲染成空白卡片。
 * **遺物空白條修正**：PB 區與歷史列表展開區的 `relics.map()` 在找不到 `relicDef` 時改回傳 `null`（原為空字串），並在 `.join('')` 前加入 `.filter(Boolean)`，徹底清除殘留空白 badge。

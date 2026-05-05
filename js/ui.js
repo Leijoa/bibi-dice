@@ -976,7 +976,7 @@ export function renderHistoryModal(records, metaData) {
         }
     };
 
-    const listHtml = records.filter(r => r && (r.stageName || r.win !== undefined) && r.date).map((r, i) => {
+    const listHtml = records.filter(r => r && typeof r === 'object' && r.date && r.date > 0 && (r.stageName || r.win === true || r.win === false)).map((r, i) => {
         let resultColor = r.win ? "text-violet-300" : "text-red-400";
         let resultText = r.stageName || (r.win ? "勝利" : "失敗");
         let dateObj = new Date(r.date || 0);
