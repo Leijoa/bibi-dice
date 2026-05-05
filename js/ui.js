@@ -951,10 +951,10 @@ export function renderHistoryModal(records, metaData) {
                 <div class="mt-3 flex flex-wrap gap-1">
                     ${(metaData.stats.highestDamageRelics || []).map(r => {
                         let relicDef = RELIC_DB.find(x => x.id === r);
-                        if (!relicDef) return '';
+                        if (!relicDef) return null;
                         let rName = r.startsWith('cons_') ? i18n.t(`consumables.${r}.name`) : (i18n.t(`relics.${r}.name`) || relicDef.name);
                         return `<span class="bg-slate-700 px-1.5 py-0.5 rounded text-[10px] text-slate-300 inline-block">${rName}</span>`;
-                    }).join('')}
+                    }).filter(Boolean).join('')}
                 </div>
             </div>
         `;
@@ -976,7 +976,7 @@ export function renderHistoryModal(records, metaData) {
         }
     };
 
-    const listHtml = records.map((r, i) => {
+    const listHtml = records.filter(r => r && (r.stageName || r.win !== undefined) && r.date).map((r, i) => {
         let resultColor = r.win ? "text-violet-300" : "text-red-400";
         let resultText = r.stageName || (r.win ? "勝利" : "失敗");
         let dateObj = new Date(r.date || 0);
@@ -1003,10 +1003,10 @@ export function renderHistoryModal(records, metaData) {
 
         let relicHtml = (r.relics && r.relics.length > 0) ? r.relics.map(id => {
             let relicDef = RELIC_DB.find(x => x.id === id);
-            if (!relicDef) return '';
+            if (!relicDef) return null;
             let rName = id.startsWith('cons_') ? i18n.t(`consumables.${id}.name`) : (i18n.t(`relics.${id}.name`) || relicDef.name);
             return `<span class="bg-slate-700 px-1.5 py-0.5 rounded text-[10px] text-slate-300 mr-1 mb-1 inline-block">${rName}</span>`;
-        }).join('') : '<span class="text-slate-500 text-[10px]">' + i18n.t('messages.none') + '</span>';
+        }).filter(Boolean).join('') : '<span class="text-slate-500 text-[10px]">' + i18n.t('messages.none') + '</span>';
 
         return `
         <div class="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">

@@ -1,5 +1,10 @@
 # 比比丟八-BIBBIDIBA [2.0版] 更新紀錄
 
+### Fix：歷史紀錄空白項目過濾 & 遺物空白條清除 & Modal 滾動布局修正 [2026/05/05]
+* **過濾無效歷史紀錄**：`renderHistory` 的 `records.map()` 前加入 `.filter(r => r && (r.stageName || r.win !== undefined) && r.date)`，防止空白或損壞資料渲染成空白卡片。
+* **遺物空白條修正**：PB 區與歷史列表展開區的 `relics.map()` 在找不到 `relicDef` 時改回傳 `null`（原為空字串），並在 `.join('')` 前加入 `.filter(Boolean)`，徹底清除殘留空白 badge。
+* **CSS Modal 布局修正**：`#history-content` 改為 `display:flex; flex-direction:column; max-height:85vh; overflow:hidden`，讓子元素能正確分配高度；`.history-list-section` 改用 `flex:1`（取代 `flex-grow:1`）、`gap:8px`、`padding:8px 0`，確保展開項目自然撐開父容器並觸發捲軸；`hist-det-{i}` 保持 `position:relative`（非 absolute），展開時正確推擠下方項目。
+
 ### Fix：歷史牌局展開顯示與滾動布局 [2026/05/05]
 * **CSS 布局修正**：
   * `#history-modal > div` 限制 `max-height: 85vh`，避免 modal 超出螢幕。
