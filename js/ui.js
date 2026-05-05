@@ -469,7 +469,9 @@ export function renderControls(battle) {
     let isRollDisabled = (battle.rollsLeft <= 0 || isRolling || isAttacking);
     let rollClass = isRollDisabled ? "opacity-40 cursor-not-allowed" : "hover:bg-violet-600 active:border-b-0 active:translate-y-1 shadow-lg shadow-violet-950/60";
 
-    let isScoreDisabled = (isRolling || isAttacking);
+    const tutState = window.getTutorialState?.();
+    const isTutorialAttackLocked = tutState?.mode && tutState.step < 4;
+    let isScoreDisabled = (isRolling || isAttacking || isTutorialAttackLocked);
     let scoreClass = isScoreDisabled ? "opacity-40 cursor-not-allowed" : "hover:bg-red-500 active:border-b-0 active:translate-y-1 shadow-lg shadow-red-950/60";
 
     el.controlsContainer.innerHTML = `

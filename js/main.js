@@ -679,6 +679,8 @@ function endTutorial() {
     location.reload();
 }
 
+window.getTutorialState = () => ({ mode: tutorialMode, step: tutorialStep });
+
 function initNewGame() {
     let startHp = 3 + (metaData.upgrades.hp * 1);
     let startRerolls = 3 + (metaData.upgrades.rerolls * 1);

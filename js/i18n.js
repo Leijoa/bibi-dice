@@ -7,6 +7,7 @@ export const translations = {
   'zh-tw': {
     ...zh_tw_data,
     'ui': {
+      'setting_step_animation_label': '🎬 逐步結算動畫',
       'title_main': 'BIBBIDIBA',
       'title_sub': '比比丟八',
       'title_desc': '擲八顆骰子湊牌型疊加倍率！每回合重骰兩次，在限制回合內打倒敵人獲取遺物強化流派，挑戰連過十關！',
@@ -87,6 +88,7 @@ export const translations = {
   'zh-cn': {
     ...zh_cn_data,
     'ui': {
+      'setting_step_animation_label': '🎬 逐步结算动画',
       'title_main': 'BIBBIDIBA',
       'title_sub': '比比丢八',
       'title_desc': '掷八颗骰子凑牌型叠加倍率！每回合重骰两次，在限制回合内打倒敌人获取遗物强化流派，挑战连过十关！',
@@ -161,6 +163,7 @@ export const translations = {
   'en': {
     ...en_data,
     'ui': {
+      'setting_step_animation_label': '🎬 Step Animation',
       'title_main': 'BIBBIDIBA',
       'title_sub': 'Bibbidiba',
       'title_desc': 'Roll 8 dice to form hands and stack multipliers! Reroll twice per turn, defeat enemies within the turn limit to gain relics and strengthen your build. Challenge 10 stages in a row!',
@@ -236,6 +239,7 @@ export const translations = {
   'ja': {
     ...ja_data,
     'ui': {
+      'setting_step_animation_label': '🎬 ステップアニメ',
       'title_main': 'BIBBIDIBA',
       'title_sub': 'ビビディバ',
       'title_desc': '8つのダイスを振って役を作り、倍率を重ねよう！毎ターン2回振り直し可能。制限ターン内に敵を倒して遺物を獲得し、ビルドを強化。10ステージ連続クリアを目指せ！',
