@@ -1,5 +1,17 @@
 # 比比丟八-BIBBIDIBA [2.0版] 更新紀錄
 
+### Fix：逐步結算動畫步驟與實際傷害完全同步 [2026/05/05]
+* **根本原因修復**：舊 `calculateDamageSteps` 是事後手動重建步驟，與 `calculateEngineScore` 的實際計算有落差，導致動畫走完 D 區後仍有神秘跳值。
+* **engine.js — `calculateEngineScore` 加入 `stepCollector` 參數**：新增可選第九參數 `stepCollector = null`，在每個倍率修改點即時埋入步驟，確保順序與計算完全一致。
+* **收集點覆蓋所有遺物**：pansy、pongo、highlow、laststand、allin、fourdeath、rebel、royalflush、brink、reroll bonus、fusion_nebula、fusion_pillar。
+* **additive globalMulti 正確轉換**：flicker（+3.0）、fivebless（+0.2×n）以「有效倍率 = globalMulti_after / globalMulti_before」入隊，重建時乘法結果精確吻合。
+* **枷鎖 post-hook 變化自動捕捉**：記錄 `applyShacklePostHooks` 前後的 `globalMulti` 差值，shortcircuit / badluck / sealeddoor 的減益效果不再被隱藏。
+* **zone 步驟使用最終值**：A/B/C/D 區步驟在 `applyShacklePostHooks` 之後推入，extremist / fusion_scale_apex / banality 等修改均已反映在 zone 倍率中，無需另設步驟也不會重複計算。
+* **`order` 遺物支援**：有 `order` 遺物時推入合併步驟 `{ zone: 'AB', multiplier: tagA.multi + tagB.multi }`，與 finalMultiplier 公式一致。
+* **`mediocre` 特殊處理**：觸發時清空 collector 並以單一 ×5.0 步驟取代，確保重建值恰好等於 `totalBase × 5.0 = finalScore`，zero jump。
+* **Step 3 重建**：`calculateEngineScore` 回傳前，以 `running = totalBase` 跑過所有 collector 步驟（type:'multiply' 或 zone），填入精確的 `damageAfter`。
+* **`calculateDamageSteps` 完全重寫**：原有 90 行手動重建邏輯全數移除，改為傳入 `collector` 呼叫 `calculateEngineScore`，函式縮減為 10 行。同時修正原有的 `isInitialRoll`/`turnsLeft` 參數錯位 bug（brink 遺物在步驟動畫中不出現的隱性問題）。
+
 ### Feat：弒神枷鎖、敵人名稱格式重構、#final-damage-preview 置中 [2026/05/05]
 * **新增枷鎖「弒神」**：`data.js` SHACKLE_DB 末尾加入 `{ id: 'shackle_godslayer', difficulty: 'heavy', type: 'relic_suppress', suppressMythic: true }`；四語系補上對應翻譯（繁中「弒神」/「神話遺物無效化。」）。
 * **engine.js 神話遺物壓制**：`calculateEngineScore` 與 `calculateDamageSteps` 各自在 isExploited 行後加入 `if (activeShackles.some(sh => sh.suppressMythic)) playerRelics = playerRelics.filter(id => !id.startsWith('fusion_'))`，使所有 fusion_ 遺物計算被跳過。

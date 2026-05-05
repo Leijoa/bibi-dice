@@ -129,7 +129,7 @@ function applyShacklePostHooks(scoreResult, activeShackles, workingDice, baseCon
     });
 }
 
-export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3, activeShackles = [], isInitialRoll = false, turnsLeft = 0, env = {}) {
+export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3, activeShackles = [], isInitialRoll = false, turnsLeft = 0, env = {}, stepCollector = null) {
     let stageLevel = env.level || 0;
     let E = stageLevel + 1;
     let currentGold = env.gold || 0;
@@ -559,10 +559,17 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     markUsedTemp(tagA.used); markUsedTemp(tagB.used); markUsedTemp(tagC.used); markUsedTemp(tagD.used);
     let scatterCount = workingDice.length - usedIdsTemp.size;
 
+    // Step collector helper: push a multiply step, skip trivial multipliers (|x-1| ≤ 0.001)
+    const _collect = (relicId, relicName, multiplier) => {
+        if (!stepCollector || Math.abs(multiplier - 1.0) <= 0.001) return;
+        stepCollector.push({ relicId, relicName, type: 'multiply', multiplier, damageAfter: null });
+    };
+
     if (playerRelics.includes('fusion_nebula') && (counts[1] > 0 || counts[2] > 0 || counts[3] > 0)) {
         let amt = 1.0 + scatterCount * 1.0;
         globalMulti *= amt;
         globalNotes.push(`${getRelicName('fusion_nebula', '【微縮星雲】')} x${amt.toFixed(1)}`);
+        _collect('fusion_nebula', getRelicName('fusion_nebula', '【微縮星雲】'), amt);
     }
 
     if (playerRelics.includes('fusion_pillar') && (counts[4] > 0 || counts[5] > 0)) {
@@ -570,6 +577,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         let amt = basePillar + (kills * 0.2);
         globalMulti *= amt;
         globalNotes.push(`${getRelicName('fusion_pillar', '【中流砥柱】')} x${amt.toFixed(1)}`);
+        _collect('fusion_pillar', getRelicName('fusion_pillar', '【中流砥柱】'), amt);
     }
 
     if (activeShackles.some(sh => sh.id === 'oblivion')) globalNotes.push(`${getShackleName('oblivion', '【忘卻】')} 發動: 無視遺物基礎點數。`);
@@ -583,53 +591,67 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         let amt = isExploited ? 1.5 : 3.0;
         globalMulti *= amt;
         globalNotes.push(`${getRelicName('pansy', '【雷爪獅的祝福】')} x${amt.toFixed(1)}`);
+        _collect('pansy', getRelicName('pansy', '【雷爪獅的祝福】'), amt);
     }
 
     if (playerRelics.includes('pongo') && counts[8] > 0) {
         let amt = isExploited ? 1.5 : 3.0;
         globalMulti *= amt;
         globalNotes.push(`${getRelicName('pongo', '【捧夠的祝福】')} x${amt.toFixed(1)}`);
+        _collect('pongo', getRelicName('pongo', '【捧夠的祝福】'), amt);
     }
 
     if (playerRelics.includes('highlow') && counts[1] > 0 && counts[8] > 0) {
         let amt = isExploited ? 1.25 : 1.5;
         globalMulti *= amt;
         globalNotes.push(`${getRelicName('highlow', '【高低差】')} x${amt.toFixed(2)}`);
+        _collect('highlow', getRelicName('highlow', '【高低差】'), amt);
     }
 
     if (playerRelics.includes('laststand') && rollsLeft === 0) {
         let amt = isExploited ? 1.25 : 1.5;
         globalMulti *= amt;
         globalNotes.push(`${getRelicName('laststand', '【破釜沉舟】')} x${amt.toFixed(2)}`);
+        _collect('laststand', getRelicName('laststand', '【破釜沉舟】'), amt);
     }
 
     if (playerRelics.includes('allin') && playerHp === 1) {
         let amt = isExploited ? 1.0 : 2.0;
         globalMulti *= amt;
         globalNotes.push(`${getRelicName('allin', '【孤注一擲】')} x${amt.toFixed(2)}`);
+        _collect('allin', getRelicName('allin', '【孤注一擲】'), amt);
     }
 
     if (playerRelics.includes('flicker') && tagA.name === '對子' && tagB.name === '無' && tagC.name === '無' && tagD.name === '無') {
-        globalMulti += (isExploited ? 1.5 : 3.0);
-        globalNotes.push(`${getRelicName('flicker', '【凡人微光】')} +${(isExploited ? 1.5 : 3.0).toFixed(1)}x`);
+        const addAmt = (isExploited ? 1.5 : 3.0);
+        const prevGM = globalMulti;
+        globalMulti += addAmt;
+        globalNotes.push(`${getRelicName('flicker', '【凡人微光】')} +${addAmt.toFixed(1)}x`);
+        // Additive change: express as effective multiplier (globalMulti_after / globalMulti_before)
+        _collect('flicker', getRelicName('flicker', '【凡人微光】'), prevGM > 0.001 ? globalMulti / prevGM : globalMulti);
     }
 
     if (playerRelics.includes('fivebless') && counts[5] > 0) {
         let amt = counts[5] * 0.2;
-        globalMulti += (isExploited ? amt/2 : amt);
-        globalNotes.push(`${getRelicName('fivebless', '【五福臨門】')} +${(isExploited ? amt/2 : amt).toFixed(1)}x`);
+        const addAmt = (isExploited ? amt / 2 : amt);
+        const prevGM = globalMulti;
+        globalMulti += addAmt;
+        globalNotes.push(`${getRelicName('fivebless', '【五福臨門】')} +${addAmt.toFixed(1)}x`);
+        _collect('fivebless', getRelicName('fivebless', '【五福臨門】'), prevGM > 0.001 ? globalMulti / prevGM : globalMulti);
     }
 
     if (playerRelics.includes('fourdeath') && counts[4] === 4) {
         let amt = isExploited ? 2.0 : 4.0;
         globalMulti *= amt;
         globalNotes.push(`${getRelicName('fourdeath', '【四死如歸】')} x${amt.toFixed(1)}`);
+        _collect('fourdeath', getRelicName('fourdeath', '【四死如歸】'), amt);
     }
 
     if (playerRelics.includes('extremist') && tagD.name !== '無') {
         let amt = isExploited ? 1.25 : 1.5;
         tagD.multi *= amt;
         globalNotes.push(`${getRelicName('extremist', '【極端份子】')} D區 x${amt.toFixed(2)}`);
+        // tagD.multi modification: captured in zone D step below (using final tagD.multi)
     }
 
     if (playerRelics.includes('fusion_scale_apex')) {
@@ -638,6 +660,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
             let scaleAmt = playerHp === 1 ? 2.0 : (playerHp === 2 ? 1.75 : 1.5);
             tagD.multi *= scaleAmt;
             globalNotes.push(`${getRelicName('fusion_scale_apex', '【天秤之極】')} 絕對秩序倍率 x${scaleAmt.toFixed(2)}`);
+            // tagD.multi modification: captured in zone D step below (using final tagD.multi)
         }
     }
 
@@ -645,18 +668,21 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         let amt = isExploited ? 1.25 : 1.5;
         globalMulti *= amt;
         globalNotes.push(`${getRelicName('rebel', '【反抗軍】')} x${amt.toFixed(2)}`);
+        _collect('rebel', getRelicName('rebel', '【反抗軍】'), amt);
     }
 
     if (playerRelics.includes('royalflush') && tagA.name !== '無' && tagB.name !== '無') {
         let amt = isExploited ? 1.5 : 2.0;
         globalMulti *= amt;
         globalNotes.push(`${getRelicName('royalflush', '【同花順】')} x${amt.toFixed(1)}`);
+        _collect('royalflush', getRelicName('royalflush', '【同花順】'), amt);
     }
 
     if (playerRelics.includes('brink') && turnsLeft === 1) {
         let amt = isExploited ? 1.25 : 2.5;
         globalMulti *= amt;
         globalNotes.push(`${getRelicName('brink', '【極限拉扯】')} x${amt.toFixed(2)}`);
+        _collect('brink', getRelicName('brink', '【極限拉扯】'), amt);
     }
 
     let rerollMulti = 1.0 + (rollsLeft * 0.5);
@@ -664,7 +690,11 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         globalMulti *= rerollMulti;
         let resourceBonusMsg = typeof window !== 'undefined' && window.i18n ? window.i18n.t('ui.bonus_reroll', rollsLeft) : `剩餘資源加成 (剩 ${rollsLeft} 次)`;
         globalNotes.push(`${resourceBonusMsg} x${rerollMulti.toFixed(1)}`);
+        _collect('reroll_bonus', 'reroll_bonus', rerollMulti);
     }
+
+    // Capture globalMulti before shackle post-hooks so we can detect changes
+    const preHookGlobalMulti = globalMulti;
 
     let result = {
         totalBase, tagA, tagB, tagC, tagD, globalMulti, globalNotes, finalMultiplier: 1.0, finalScore: 0
@@ -672,14 +702,58 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
 
     applyShacklePostHooks(result, activeShackles, workingDice, baseContributions);
 
+    // Collect globalMulti change caused by shackle post-hooks (shortcircuit, badluck, sealeddoor)
+    if (stepCollector && Math.abs(result.globalMulti - preHookGlobalMulti) > 0.001) {
+        const shackleEffMult = preHookGlobalMulti > 0.001 ? result.globalMulti / preHookGlobalMulti : 0;
+        if (Math.abs(shackleEffMult - 1.0) > 0.001) {
+            stepCollector.push({ relicId: 'shackle_debuff', relicName: '枷鎖減益', type: 'multiply', multiplier: shackleEffMult, damageAfter: null });
+        }
+    }
+
+    // Collect zone steps using FINAL values (post shackle-hooks, post extremist/scale_apex)
+    // Zone multipliers for non-order: tagA × tagB × tagC × tagD
+    // Zone multipliers for order:    (tagA + tagB) × tagC × tagD
+    if (stepCollector) {
+        if (playerRelics.includes('order')) {
+            const combined = result.tagA.multi + result.tagB.multi;
+            if (Math.abs(combined - 1.0) > 0.001)
+                stepCollector.push({ zone: 'AB', multiplier: combined, damageAfter: null });
+        } else {
+            if (Math.abs(result.tagA.multi - 1.0) > 0.001)
+                stepCollector.push({ zone: 'A', multiplier: result.tagA.multi, damageAfter: null });
+            if (Math.abs(result.tagB.multi - 1.0) > 0.001)
+                stepCollector.push({ zone: 'B', multiplier: result.tagB.multi, damageAfter: null });
+        }
+        if (Math.abs(result.tagC.multi - 1.0) > 0.001)
+            stepCollector.push({ zone: 'C', multiplier: result.tagC.multi, damageAfter: null });
+        if (Math.abs(result.tagD.multi - 1.0) > 0.001)
+            stepCollector.push({ zone: 'D', multiplier: result.tagD.multi, damageAfter: null });
+    }
+
     result.finalMultiplier = (playerRelics.includes('order') ? (result.tagA.multi + result.tagB.multi) * result.tagC.multi * result.tagD.multi : result.tagA.multi * result.tagB.multi * result.tagC.multi * result.tagD.multi) * result.globalMulti;
-    
+
     if (playerRelics.includes('mediocre') && result.finalMultiplier < 5.0) {
         result.finalMultiplier = 5.0;
         result.globalNotes.push(`${getRelicName('mediocre', '【平庸之善】')} 發動: 總倍率提升至 x5.0。`);
+        // Mediocre overrides the entire multiplier chain: clear collector and replace with a single ×5.0 step
+        if (stepCollector) {
+            stepCollector.length = 0;
+            stepCollector.push({ relicId: 'mediocre', relicName: getRelicName('mediocre', '【平庸之善】'), type: 'multiply', multiplier: 5.0, damageAfter: null });
+        }
     }
 
     result.finalScore = Math.min(Number.MAX_SAFE_INTEGER, result.totalBase * result.finalMultiplier);
+
+    // Step 3: fill in damageAfter for each collected step via running reconstruction
+    if (stepCollector && stepCollector.length > 0) {
+        let running = result.totalBase;
+        for (const step of stepCollector) {
+            if (step.type === 'multiply' || step.zone) {
+                running = Math.min(Number.MAX_SAFE_INTEGER, running * step.multiplier);
+            }
+            step.damageAfter = Math.floor(running);
+        }
+    }
 
     return result;
 }
@@ -732,96 +806,19 @@ export function getDisplayedEstimatedDamage(actualDamage, activeShackle) {
 
 // --- Damage Steps (for relic step animation) ---
 export function calculateDamageSteps(dice, playerRelics, rollsLeft, playerHp, activeShackles = [], turnsLeft = 0, env = {}) {
-    const result = calculateEngineScore(dice, playerRelics, rollsLeft, playerHp, activeShackles, turnsLeft, env);
+    const collector = [];
+    const result = calculateEngineScore(
+        dice, playerRelics, rollsLeft, playerHp,
+        activeShackles, false, turnsLeft, env,
+        collector
+    );
 
-    const kills = env.level || 0;
-    const isExploited = activeShackles.some(sh => sh.id === 'exploitation');
-    if (activeShackles.some(sh => sh.suppressMythic)) playerRelics = playerRelics.filter(id => !id.startsWith('fusion_'));
-
-    let workingDice = [...dice];
-    activeShackles.forEach(sh => {
-        if (ShackleHooks[sh.id] && ShackleHooks[sh.id].preDice)
-            workingDice = ShackleHooks[sh.id].preDice(workingDice, sh);
-    });
-    activeShackles.forEach(sh => {
-        if (ShackleHooks[sh.id] && ShackleHooks[sh.id].filterDice)
-            workingDice = workingDice.filter(d => ShackleHooks[sh.id].filterDice(d, sh));
-    });
-    const counts = new Array(9).fill(0);
-    workingDice.forEach(d => counts[d.val]++);
-
-    let usedIdsTemp = new Set();
-    const markT = (arr) => {
-        let avail = [...workingDice];
-        arr.forEach(val => {
-            let idx = avail.findIndex(d => d.val === val && !usedIdsTemp.has(d.id));
-            if (idx !== -1) { usedIdsTemp.add(avail[idx].id); avail.splice(idx, 1); }
-        });
-    };
-    markT(result.tagA.used); markT(result.tagB.used); markT(result.tagC.used); markT(result.tagD.used);
-    const scatterCount = workingDice.length - usedIdsTemp.size;
-
-    let runningScore = result.totalBase;
-    const steps = [
+    return [
         { zero: true, damageAfter: 0 },
-        { base: true, damageAfter: Math.floor(result.totalBase) }
+        { base: true, damageAfter: Math.floor(result.totalBase) },
+        ...collector,
+        { final: true, damageAfter: Math.floor(result.finalScore) }
     ];
-
-    const addStep = (relicId, relicName, amt) => {
-        if (amt <= 1.001) return;
-        runningScore = Math.min(Number.MAX_SAFE_INTEGER, runningScore * amt);
-        steps.push({ relicId, relicName, type: 'multiply', multiplier: amt, bonus: null, damageAfter: Math.floor(runningScore) });
-    };
-
-    if (playerRelics.includes('fusion_nebula') && (counts[1] > 0 || counts[2] > 0 || counts[3] > 0)) {
-        addStep('fusion_nebula', getRelicName('fusion_nebula', '【微縮星雲】'), 1.0 + scatterCount);
-    }
-    if (playerRelics.includes('fusion_pillar') && (counts[4] > 0 || counts[5] > 0)) {
-        addStep('fusion_pillar', getRelicName('fusion_pillar', '【中流砥柱】'), 3.0 + kills * 0.2);
-    }
-    if (playerRelics.includes('pansy') && counts[1] > 0) {
-        addStep('pansy', getRelicName('pansy', '【雷爪獅的祝福】'), isExploited ? 1.5 : 3.0);
-    }
-    if (playerRelics.includes('pongo') && counts[8] > 0) {
-        addStep('pongo', getRelicName('pongo', '【捧夠的祝福】'), isExploited ? 1.5 : 3.0);
-    }
-    if (playerRelics.includes('highlow') && counts[1] > 0 && counts[8] > 0) {
-        addStep('highlow', getRelicName('highlow', '【高低差】'), isExploited ? 1.25 : 1.5);
-    }
-    if (playerRelics.includes('laststand') && rollsLeft === 0) {
-        addStep('laststand', getRelicName('laststand', '【破釜沉舟】'), isExploited ? 1.25 : 1.5);
-    }
-    if (playerRelics.includes('allin') && playerHp === 1) {
-        addStep('allin', getRelicName('allin', '【孤注一擲】'), isExploited ? 1.0 : 2.0);
-    }
-    if (playerRelics.includes('fourdeath') && counts[4] === 4) {
-        addStep('fourdeath', getRelicName('fourdeath', '【四死如歸】'), isExploited ? 2.0 : 4.0);
-    }
-    if (playerRelics.includes('rebel') && activeShackles.length > 0) {
-        addStep('rebel', getRelicName('rebel', '【反抗軍】'), isExploited ? 1.25 : 1.5);
-    }
-    if (playerRelics.includes('royalflush') && result.tagA.name !== '無' && result.tagB.name !== '無') {
-        addStep('royalflush', getRelicName('royalflush', '【同花順】'), isExploited ? 1.5 : 2.0);
-    }
-    if (playerRelics.includes('brink') && turnsLeft === 1) {
-        addStep('brink', getRelicName('brink', '【極限拉扯】'), isExploited ? 1.25 : 2.5);
-    }
-    if (rollsLeft > 0) {
-        addStep('reroll_bonus', 'reroll_bonus', 1.0 + rollsLeft * 0.5);
-    }
-
-    const addZoneStep = (zone, multi) => {
-        if (multi <= 1.001) return;
-        runningScore = Math.min(Number.MAX_SAFE_INTEGER, runningScore * multi);
-        steps.push({ zone, multiplier: multi, damageAfter: Math.floor(runningScore) });
-    };
-    addZoneStep('A', result.tagA.multi);
-    addZoneStep('B', result.tagB.multi);
-    addZoneStep('C', result.tagC.multi);
-    addZoneStep('D', result.tagD.multi);
-
-    steps.push({ final: true, damageAfter: Math.floor(result.finalScore) });
-    return steps;
 }
 
 // DEV ONLY — apply a shackle to stage, generating appropriate shackleMeta
