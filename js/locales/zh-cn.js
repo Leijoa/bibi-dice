@@ -216,6 +216,8 @@ ui: {
   tutorial: {
     btn_start: '🎓 新手教程',
     btn_rules: '📖 玩法说明',
+    confirm_title: '进入新手引导局？',
+    confirm_desc: '骰子将被预设以利教学。(约2分钟)',
     skip: '跳过教程',
     step_indicator: '{0} / {1}',
     next_btn: '继续 →',

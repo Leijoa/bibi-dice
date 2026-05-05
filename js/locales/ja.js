@@ -216,6 +216,8 @@ ui: {
   tutorial: {
     btn_start: '🎓 チュートリアル',
     btn_rules: '📖 遊び方',
+    confirm_title: 'チュートリアルを開始しますか？',
+    confirm_desc: 'ダイスは事前設定されます。(約2分)',
     skip: 'チュートリアルをスキップ',
     step_indicator: '{0} / {1}',
     next_btn: '次へ →',

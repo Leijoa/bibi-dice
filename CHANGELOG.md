@@ -1,5 +1,9 @@
 # 比比丟八-BIBBIDIBA [2.0版] 更新紀錄
 
+### 新增：首次進入遊戲自動提示新手教學 [2026/05/05]
+* **主動提示教學**：在玩家點擊「開始新遊戲」時，系統會檢查是否已完成過新手教學（透過 localStorage 的 `bibbidiba_tutorial_done` 鍵值）。若為首次遊玩，將主動彈出確認視窗詢問是否進入新手引導局。
+* **i18n 多語系支援**：移除原本新手教學按鈕中硬編碼的語言判斷，改為完全使用 `i18n.t`。在四個語系檔（`en.js`, `ja.js`, `zh-cn.js`, `zh-tw.js`）中補齊了 `tutorial.confirm_title` 與 `tutorial.confirm_desc` 的鍵值。
+
 ### Bug Fix：健忘枷鎖 A~D 區隱藏 & 歷史牌局展開 [2026/05/05]
 * **Fix【健忘】枷鎖未隱藏 A~D 區加成**：`engine.js` 新增 `isZoneMultiplierVisible(activeShackle)` 函式（amnesia 時回傳 false）。`ui.js` 的 `renderScore()` 在 A/B/C/D 四個牌型區格中加入 `isAmnesia` 判斷，生效時牌型名稱與倍率皆顯示為「???」；實際計算邏輯與逐步結算動畫（`countUpTo` 傷害數字跳動、`zone-active` 閃光）完全不受影響。
 * **Fix 個人最佳紀錄遺物圖示破版**：移除對不存在之 `RELIC_DB[].icon` 與 `img/relic_placeholder.png` 的依賴，改以文字 badge（與歷史列表一致），並加入 `relicDef` 存在性檢查，缺失時回傳空字串，防止破版。

@@ -408,9 +408,21 @@ function initTitleScreen() {
     checkSaveExists();
 
     UI.el.btnNewGame.onclick = () => {
-        clearSave();
-        UI.el.titleScreen.classList.add('hidden');
-        initNewGame();
+        if (!localStorage.getItem('bibbidiba_tutorial_done')) {
+            const confirmMsg = (i18n.t('tutorial.confirm_title') || '進入新手引導局？') + '\n\n' + (i18n.t('tutorial.confirm_desc') || '骰子結果將被預先設定以利教學。(約 2 分鐘)');
+            if (window.confirm(confirmMsg)) {
+                startTutorialGame();
+            } else {
+                localStorage.setItem('bibbidiba_tutorial_done', 'true');
+                clearSave();
+                UI.el.titleScreen.classList.add('hidden');
+                initNewGame();
+            }
+        } else {
+            clearSave();
+            UI.el.titleScreen.classList.add('hidden');
+            initNewGame();
+        }
     };
     UI.el.btnContinue.onclick = () => {
         UI.el.titleScreen.classList.add('hidden');
@@ -469,11 +481,7 @@ function initTitleScreen() {
     const btnTutorial = document.getElementById('btn-tutorial');
     if (btnTutorial) {
         btnTutorial.onclick = () => {
-            const confirmMsg = (i18n.t('tutorial.btn_start') || '🎓 新手教學') + '\n\n' +
-                (i18n.getLocale() === 'en' ? 'Enter tutorial mode? Dice will be preset for learning. (~2 min)' :
-                 i18n.getLocale() === 'ja' ? 'チュートリアルを開始しますか？ダイスは事前設定されます。(約2分)' :
-                 i18n.getLocale() === 'zh-cn' ? '进入新手引导局？骰子将被预设以利教学。(约2分钟)' :
-                 '進入新手引導局？骰子結果將被預先設定以利教學。(約 2 分鐘)');
+            const confirmMsg = (i18n.t('tutorial.confirm_title') || '進入新手引導局？') + '\n\n' + (i18n.t('tutorial.confirm_desc') || '骰子結果將被預先設定以利教學。(約 2 分鐘)');
             if (window.confirm(confirmMsg)) {
                 startTutorialGame();
             }

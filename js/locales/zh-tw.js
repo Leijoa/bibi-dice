@@ -216,6 +216,8 @@ ui: {
   tutorial: {
     btn_start: '🎓 新手教學',
     btn_rules: '📖 玩法說明',
+    confirm_title: '進入新手引導局？',
+    confirm_desc: '骰子結果將被預先設定以利教學。(約 2 分鐘)',
     skip: '跳過教學',
     step_indicator: '{0} / {1}',
     next_btn: '繼續 →',
