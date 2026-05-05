@@ -1,5 +1,11 @@
 # 比比丟八-BIBBIDIBA [2.0版] 更新紀錄
 
+### Fix：歷史 Modal CSS 還原 Tailwind 滾動行為 [2026/05/05]
+* **CSS `#history-modal > div`**：移除所有覆蓋（`max-height`、`display`、`flex-direction`、`overflow`），完全保留 Tailwind 預設。
+* **CSS `#history-content`**：改為 `overflow-y: auto !important; overflow-x: hidden; flex-grow: 1; min-height: 0; padding: 0 !important;`，由此層承擔滾動。
+* **CSS `.history-pb-sticky`**：新增 `position: sticky; top: 0; z-index: 10; background: #1c1b1d;`，使 PB 標頭固定在可捲動容器頂端。
+* **CSS `.history-list-section`**：移除 `flex: 1; overflow-y: auto; min-height: 0`，改為純 `display: flex; flex-direction: column; gap: 8px; padding: 8px`（md: `1rem`/`0.5rem`），不再自行控制捲軸。
+
 ### Fix：歷史紀錄過濾條件放寬與存檔欄位補強 [2026/05/05]
 * **`ui.js` `records.filter`**：條件放寬為 `r && typeof r === 'object' && Object.keys(r).length > 0`，不再依賴 `r.date > 0`（舊 ISO 字串格式無法通過數值比較），改由 map 內第一行 `if (!r.stageName && r.win == null) return ''` 作 fallback 排除空殼物件。
 * **`ui.js` `.filter(Boolean)`**：在 `.reverse().join('')` 前插入 `.filter(Boolean)`，過濾 map 回傳的空字串，防止空白卡片渲染。
