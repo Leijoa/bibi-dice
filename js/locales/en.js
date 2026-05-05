@@ -216,6 +216,8 @@ ui: {
   tutorial: {
     btn_start: '🎓 Tutorial',
     btn_rules: '📖 How to Play',
+    confirm_title: 'Enter tutorial mode?',
+    confirm_desc: 'Dice will be preset for learning. (~2 min)',
     skip: 'Skip Tutorial',
     step_indicator: '{0} / {1}',
     next_btn: 'Next →',
