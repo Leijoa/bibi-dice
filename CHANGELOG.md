@@ -1,5 +1,10 @@
 # 比比丟八-BIBBIDIBA [2.0版] 更新紀錄
 
+### Bug Fix：健忘枷鎖 A~D 區隱藏 & 歷史牌局展開 [2026/05/05]
+* **Fix【健忘】枷鎖未隱藏 A~D 區加成**：`engine.js` 新增 `isZoneMultiplierVisible(activeShackle)` 函式（amnesia 時回傳 false）。`ui.js` 的 `renderScore()` 在 A/B/C/D 四個牌型區格中加入 `isAmnesia` 判斷，生效時牌型名稱與倍率皆顯示為「???」；實際計算邏輯與逐步結算動畫（`countUpTo` 傷害數字跳動、`zone-active` 閃光）完全不受影響。
+* **Fix 個人最佳紀錄遺物圖示破版**：移除對不存在之 `RELIC_DB[].icon` 與 `img/relic_placeholder.png` 的依賴，改以文字 badge（與歷史列表一致），並加入 `relicDef` 存在性檢查，缺失時回傳空字串，防止破版。
+* **Fix 歷史牌局列表無法展開**：將每筆紀錄改為可獨立折疊的手風琴卡片，預設顯示結果與日期標頭，點擊後展開完整資訊（傷害、最高牌型、遺物列表）；`window._toggleHistoryEntry(idx)` 管理展開狀態，圖示同步切換 ▶/▼。舊存檔缺失欄位（`relics`、`combo`、`date`、`highestDamage`）均已加入 fallback 處理。
+
 ### 設定：逐步結算動畫開關 [2026/05/05]
 * **新增「逐步結算動畫」開關**：在設定面板 SFX 音量下方新增切換開關（紫色 toggle），預設開啟，狀態存入 `localStorage` 的 `setting_stepAnimation` 鍵。
 * **關閉時直接跳過**：若開關關閉，`main.js` 在呼叫 `playDamageStepsAnimation` 前直接取用 `steps` 陣列中 `final: true` 的步驟值更新 `finalScoreValue`，並立刻觸發 `doAttack`，完全省略所有動畫延遲，適合追求速度的玩家。

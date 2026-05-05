@@ -713,6 +713,10 @@ export function isEnemyHpBarPreviewVisible(activeShackle) {
     return activeShackle !== 'bluff' && activeShackle !== 'shackle_smoke';
 }
 
+export function isZoneMultiplierVisible(activeShackle) {
+    return activeShackle !== 'amnesia';
+}
+
 export function getDisplayedEstimatedDamage(actualDamage, activeShackle) {
     if (activeShackle === 'shackle_drunk' && _drunkDisplayValue !== null) {
         return _drunkDisplayValue;

@@ -556,20 +556,20 @@ export function renderScore(battle, activeHighlight) {
 
     <div class="grid grid-cols-4 gap-1 mb-1">
         <div id="zone-box-A" onclick="window.setHighlight('A')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('A', res.tagA)}">
-            <div class="text-[8px] md:text-[10px] font-bold truncate opacity-70 w-full px-1 text-center leading-tight">${getTagLocalName(res.tagA.name)}</div>
-            <div class="font-black text-xl md:text-2xl leading-none mt-1">x${res.tagA.multi.toFixed(1)}</div>
+            <div class="text-[8px] md:text-[10px] font-bold truncate opacity-70 w-full px-1 text-center leading-tight">${isAmnesia ? '???' : getTagLocalName(res.tagA.name)}</div>
+            <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagA.multi.toFixed(1)}</div>
         </div>
         <div id="zone-box-B" onclick="window.setHighlight('B')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('B', res.tagB)}">
-            <div class="text-[8px] md:text-[10px] font-bold truncate opacity-70 w-full px-1 text-center leading-tight">${getTagLocalName(res.tagB.name)}</div>
-            <div class="font-black text-xl md:text-2xl leading-none mt-1">x${res.tagB.multi.toFixed(1)}</div>
+            <div class="text-[8px] md:text-[10px] font-bold truncate opacity-70 w-full px-1 text-center leading-tight">${isAmnesia ? '???' : getTagLocalName(res.tagB.name)}</div>
+            <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagB.multi.toFixed(1)}</div>
         </div>
         <div id="zone-box-C" onclick="window.setHighlight('C')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('C', res.tagC)}">
-            <div class="text-[8px] md:text-[10px] font-bold truncate opacity-70 w-full px-1 text-center leading-tight">${getTagLocalName(res.tagC.name)}</div>
-            <div class="font-black text-xl md:text-2xl leading-none mt-1">x${res.tagC.multi.toFixed(1)}</div>
+            <div class="text-[8px] md:text-[10px] font-bold truncate opacity-70 w-full px-1 text-center leading-tight">${isAmnesia ? '???' : getTagLocalName(res.tagC.name)}</div>
+            <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagC.multi.toFixed(1)}</div>
         </div>
         <div id="zone-box-D" onclick="window.setHighlight('D')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('D', res.tagD)}">
-            <div class="text-[8px] md:text-[10px] font-bold truncate opacity-70 w-full px-1 text-center leading-tight">${getTagLocalName(res.tagD.name)}</div>
-            <div class="font-black text-xl md:text-2xl leading-none mt-1">x${res.tagD.multi.toFixed(1)}</div>
+            <div class="text-[8px] md:text-[10px] font-bold truncate opacity-70 w-full px-1 text-center leading-tight">${isAmnesia ? '???' : getTagLocalName(res.tagD.name)}</div>
+            <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagD.multi.toFixed(1)}</div>
         </div>
     </div>
     `;
@@ -932,8 +932,13 @@ export function renderHistoryModal(records, metaData) {
                         <div class="text-xl font-black text-purple-400">${metaData.stats.highestInfiniteLevel > 0 ? metaData.stats.highestInfiniteLevel : '-'}</div>
                     </div>
                 </div>
-                <div class="mt-3 flex overflow-x-auto gap-1 hide-scrollbar">
-                    ${metaData.stats.highestDamageRelics.map(r => `<img src="${RELIC_DB.find(x => x.id === r)?.icon || 'img/relic_placeholder.png'}" class="w-6 h-6 rounded-md border border-slate-600 shadow-sm" title="${RELIC_DB.find(x => x.id === r)?.name}">`).join('')}
+                <div class="mt-3 flex flex-wrap gap-1">
+                    ${(metaData.stats.highestDamageRelics || []).map(r => {
+                        let relicDef = RELIC_DB.find(x => x.id === r);
+                        if (!relicDef) return '';
+                        let rName = r.startsWith('cons_') ? i18n.t(`consumables.${r}.name`) : (i18n.t(`relics.${r}.name`) || relicDef.name);
+                        return `<span class="bg-slate-700 px-1.5 py-0.5 rounded text-[10px] text-slate-300 inline-block">${rName}</span>`;
+                    }).join('')}
                 </div>
             </div>
         `;
@@ -944,34 +949,48 @@ export function renderHistoryModal(records, metaData) {
         return;
     }
     
+    window._toggleHistoryEntry = function(idx) {
+        const det = document.getElementById('hist-det-' + idx);
+        const ico = document.getElementById('hist-ico-' + idx);
+        if (det) {
+            det.classList.toggle('hidden');
+            if (ico) ico.textContent = det.classList.contains('hidden') ? '▶' : '▼';
+        }
+    };
+
     el.historyContent.innerHTML = pbHtml + records.map((r, i) => {
         let resultColor = r.win ? "text-violet-300" : "text-red-400";
-        let resultText = r.stageName || (r.win ? "勝利" : "失敗"); // This is saved in DB, so it might be hard to translate retrospectively.
-        let dateObj = new Date(r.date);
+        let resultText = r.stageName || (r.win ? "勝利" : "失敗");
+        let dateObj = new Date(r.date || 0);
         let dateStr = dateObj.toLocaleDateString() + " " + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-        
+
         let relicHtml = (r.relics && r.relics.length > 0) ? r.relics.map(id => {
             let relicDef = RELIC_DB.find(x => x.id === id);
             if (!relicDef) return '';
             let rName = id.startsWith('cons_') ? i18n.t(`consumables.${id}.name`) : (i18n.t(`relics.${id}.name`) || relicDef.name);
             return `<span class="bg-slate-700 px-1.5 py-0.5 rounded text-[10px] text-slate-300 mr-1 mb-1 inline-block">${rName}</span>`;
         }).join('') : '<span class="text-slate-500 text-[10px]">' + i18n.t('messages.none') + '</span>';
-        
+
         return `
-        <div class="bg-slate-800 p-3 rounded-lg border border-slate-700 flex flex-col gap-1 relative overflow-hidden">
-            <div class="flex justify-between items-center border-b border-slate-700 pb-1 mb-1">
+        <div class="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
+            <div class="flex justify-between items-center px-3 py-2 cursor-pointer hover:bg-slate-700/50 transition-colors select-none" onclick="window._toggleHistoryEntry(${i})">
                 <span class="font-black ${resultColor} text-sm md:text-base">${resultText}</span>
-                <span class="text-[10px] md:text-xs text-slate-400">${dateStr}</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-[10px] md:text-xs text-slate-400">${dateStr}</span>
+                    <span id="hist-ico-${i}" class="text-slate-500 text-xs">▶</span>
+                </div>
             </div>
-            <div class="text-xs md:text-sm text-slate-300">
-                <span class="text-slate-500">${i18n.t("messages.history_dmg_label")}:</span> <span class="font-black text-white">${Number(r.highestDamage).toLocaleString()}</span>
-            </div>
-            <div class="text-xs md:text-sm text-slate-300">
-                <span class="text-slate-500">${i18n.t("messages.history_combo_label")}:</span> <span class="font-bold text-blue-300">${r.combo || i18n.t('messages.none')}</span>
-            </div>
-            <div class="mt-1">
-                <div class="text-[10px] text-slate-500 mb-0.5">${i18n.t("messages.history_relics_label")}:</div>
-                <div class="flex flex-wrap">${relicHtml}</div>
+            <div id="hist-det-${i}" class="hidden px-3 pb-3 pt-2 border-t border-slate-700/50 flex flex-col gap-1">
+                <div class="text-xs md:text-sm text-slate-300">
+                    <span class="text-slate-500">${i18n.t("messages.history_dmg_label")}:</span> <span class="font-black text-white">${Number(r.highestDamage || 0).toLocaleString()}</span>
+                </div>
+                <div class="text-xs md:text-sm text-slate-300">
+                    <span class="text-slate-500">${i18n.t("messages.history_combo_label")}:</span> <span class="font-bold text-blue-300">${r.combo || i18n.t('messages.none')}</span>
+                </div>
+                <div class="mt-1">
+                    <div class="text-[10px] text-slate-500 mb-0.5">${i18n.t("messages.history_relics_label")}:</div>
+                    <div class="flex flex-wrap">${relicHtml}</div>
+                </div>
             </div>
         </div>`;
     }).reverse().join('');
