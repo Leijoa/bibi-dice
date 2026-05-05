@@ -129,7 +129,7 @@ function applyShacklePostHooks(scoreResult, activeShackles, workingDice, baseCon
     });
 }
 
-export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3, activeShackles = [], isInitialRoll = false, turnsLeft = 0, env = {}, stepCollector = null) {
+export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3, activeShackles = [], turnsLeft = 0, env = {}, stepCollector = null) {
     let stageLevel = env.level || 0;
     let E = stageLevel + 1;
     let currentGold = env.gold || 0;
@@ -809,7 +809,7 @@ export function calculateDamageSteps(dice, playerRelics, rollsLeft, playerHp, ac
     const collector = [];
     const result = calculateEngineScore(
         dice, playerRelics, rollsLeft, playerHp,
-        activeShackles, false, turnsLeft, env,
+        activeShackles, turnsLeft, env,
         collector
     );
 
