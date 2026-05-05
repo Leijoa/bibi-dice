@@ -64,7 +64,8 @@ export const el = {
     fusionReplaceModal: document.getElementById('fusion-replace-modal'),
     fusionReplaceContent: document.getElementById('fusion-replace-content'),
     damagePreviewBar: document.getElementById('damage-preview-bar'),
-    finalDamagePreview: document.getElementById('final-damage-preview')
+    finalDamagePreview: document.getElementById('final-damage-preview'),
+    boardPanel: document.getElementById('board-panel')
 };
 
 if (document.getElementById('btn-rules')) {
@@ -173,6 +174,7 @@ export function updateHeaderUI(player, stage) {
     if (recycleStatus) {
         recycleStatus.classList.add('hidden');
     }
+    updateBoardBackground(stage.level, stage.activeShackle);
 }
 
 export function updateEnemyUI(stage) {
@@ -217,6 +219,20 @@ export function updateEnemyUI(stage) {
     let pct = Math.max(0, (stage.enemyHp / stage.enemyMaxHp) * 100);
     el.enemyHpBar.style.width = `${pct}%`;
     el.enemyHpText.innerText = `${Math.floor(stage.enemyHp).toLocaleString()} / ${stage.enemyMaxHp.toLocaleString()}`;
+    updateBoardBackground(stage.level, stage.activeShackle);
+}
+
+function updateBoardBackground(level, shackleId) {
+    const panel = el.boardPanel;
+    if (!panel) return;
+    panel.classList.remove('board-shackled', 'board-shackled-boss');
+    if (level >= ENEMY_DB.length) {
+        const infiniteLevel = level - ENEMY_DB.length + 1;
+        const m = ((infiniteLevel - 1) % 3) + 1;
+        if (m === 3) panel.classList.add('board-shackled-boss');
+    } else if (shackleId) {
+        panel.classList.add('board-shackled');
+    }
 }
 
 window.showShackleInfo = function(id) {
@@ -323,6 +339,7 @@ window.showRelicInfo = function(id) {
 export function renderDice(battle, activeHighlight, player) {
     let shackleId = window.getStageActiveShackle ? window.getStageActiveShackle() : null;
     let shackleMeta = window.getShackleMeta ? window.getShackleMeta() : null;
+    updateBoardBackground(window.getStageLevel ? window.getStageLevel() : 0, shackleId);
 
     el.diceContainer.innerHTML = battle.dice.map((d, idx) => {
         let wrapperClass = "w-11 h-11 md:w-16 md:h-16 relative mx-auto my-0.5 cursor-pointer dice-btn transition-transform duration-200";

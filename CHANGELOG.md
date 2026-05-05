@@ -1,5 +1,11 @@
 # 比比丟八-BIBBIDIBA [2.0版] 更新紀錄
 
+### 視覺：骰子背板枷鎖/BOSS 背景變色 [2026/05/05]
+* **一般關卡有枷鎖**：骰子背板套用 `.board-shackled`（深紫紅放射漸層 + 3s 呼吸光暈動畫）。
+* **無限塔第三關（BOSS）**：套用 `.board-shackled-boss`（暗血紅放射漸層 + 2s 快節奏呼吸動畫）。
+* **無枷鎖 / 無限塔第1~2關**：移除所有變色 class，恢復預設深色背板。
+* **實作**：`ui.js` 新增 `updateBoardBackground(level, shackleId)` 函式，由 `updateHeaderUI`、`updateEnemyUI`（含 DevMode 枷鎖切換）、`renderDice` 三處呼叫，確保進關與渲染時皆同步。`index.html` 骰子背板 div 加上 `id="board-panel"` 供快取取用。
+
 ### Bug Fix：健忘枷鎖 A~D 區隱藏 & 歷史牌局展開 [2026/05/05]
 * **Fix【健忘】枷鎖未隱藏 A~D 區加成**：`engine.js` 新增 `isZoneMultiplierVisible(activeShackle)` 函式（amnesia 時回傳 false）。`ui.js` 的 `renderScore()` 在 A/B/C/D 四個牌型區格中加入 `isAmnesia` 判斷，生效時牌型名稱與倍率皆顯示為「???」；實際計算邏輯與逐步結算動畫（`countUpTo` 傷害數字跳動、`zone-active` 閃光）完全不受影響。
 * **Fix 個人最佳紀錄遺物圖示破版**：移除對不存在之 `RELIC_DB[].icon` 與 `img/relic_placeholder.png` 的依賴，改以文字 badge（與歷史列表一致），並加入 `relicDef` 存在性檢查，缺失時回傳空字串，防止破版。
