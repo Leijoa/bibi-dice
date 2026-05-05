@@ -1,5 +1,12 @@
 # 比比丟八-BIBBIDIBA [2.0版] 更新紀錄
 
+### Feat：弒神枷鎖、敵人名稱格式重構、#final-damage-preview 置中 [2026/05/05]
+* **新增枷鎖「弒神」**：`data.js` SHACKLE_DB 末尾加入 `{ id: 'shackle_godslayer', difficulty: 'heavy', type: 'relic_suppress', suppressMythic: true }`；四語系補上對應翻譯（繁中「弒神」/「神話遺物無效化。」）。
+* **engine.js 神話遺物壓制**：`calculateEngineScore` 與 `calculateDamageSteps` 各自在 isExploited 行後加入 `if (activeShackles.some(sh => sh.suppressMythic)) playerRelics = playerRelics.filter(id => !id.startsWith('fusion_'))`，使所有 fusion_ 遺物計算被跳過。
+* **ui.js 逐步結算動畫標示**：`playDamageStepsAnimation` 開頭清除舊 `.mythic-suppressed` / `.mythic-suppress-icon`，偵測 suppressMythic 枷鎖後對所有 `data-relic-id` 開頭 `fusion_` 的遺物卡加上灰色遮罩與 🚫 圖示。
+* **敵人名稱渲染改版**：`updateEnemyUI` 新增層數徽章（`第n層` / `n-m` 無限塔）與枷鎖稱號徽章（去除【】後顯示）；`enemyName` 類別補 `min-w-0` 防止 flex 溢出。
+* **CSS**：新增 `.stage-layer-badge`、`.shackle-title-badge`、`.enemy-name-text`（text-overflow ellipsis）、`.mythic-suppressed`、`.mythic-suppress-icon`；`#final-damage-preview` 補上 `align-items: center; text-align: center;` 覆寫原有靠左設定。
+
 ### Feature：牌型重命名與新增 D 區特殊牌型 [2026/05/05]
 * **牌型更名**：八重奏→比比丟八(ビビデバ)、大滿貫→彗星、葫蘆→南瓜馬車、中葫蘆→白馬、小葫蘆→南瓜，同步更新 `data.js`、`engine.js`、`ui.js` 及四語系 locale。
 * **D 區標題**：各語系 `groupD_desc` 由「極端盤面/Extreme Board States/特殊盤面」統一改為「特殊牌型(繁/簡中)、Special Hands(英)、特殊役(日)」。

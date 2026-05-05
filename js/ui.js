@@ -187,8 +187,9 @@ export function updateEnemyUI(stage) {
     }
 
     // new logic using activeShackle
-    if (window.getStageActiveShackle && window.getStageActiveShackle()) {
-        shackleHtml += `<span onclick="window.showShackleInfo('${window.getStageActiveShackle()}')" class="ml-2 bg-red-900/80 hover:bg-red-800 text-[10px] md:text-xs text-red-300 px-1.5 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0">⛓️ ${i18n.t('ui.tab_shackles') || '當前枷鎖'}</span>`;
+    const activeShackleId = window.getStageActiveShackle && window.getStageActiveShackle();
+    if (activeShackleId) {
+        shackleHtml += `<span onclick="window.showShackleInfo('${activeShackleId}')" class="ml-2 bg-red-900/80 hover:bg-red-800 text-[10px] md:text-xs text-red-300 px-1.5 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0">⛓️ ${i18n.t('ui.tab_shackles') || '當前枷鎖'}</span>`;
     }
 
     let localizedEnemyName = enemy.name;
@@ -197,10 +198,30 @@ export function updateEnemyUI(stage) {
     } else {
         localizedEnemyName = enemy.name.replace('虛空幻影', i18n.t('infinite_enemy_prefix') || '虛空幻影');
     }
-    
-    el.enemyName.innerHTML = `⚔️ ${localizedEnemyName}${shackleHtml}`;
 
-    el.enemyName.className = "text-xl font-bold flex-1 flex items-center";
+    // Layer badge
+    let layerBadgeText;
+    if (stage.level < ENEMY_DB.length) {
+        layerBadgeText = `第${stage.level + 1}層`;
+    } else {
+        const _inf = stage.level - ENEMY_DB.length + 1;
+        const _n = Math.floor((_inf - 1) / 3) + 1;
+        const _m = ((_inf - 1) % 3) + 1;
+        layerBadgeText = `${_n}-${_m}`;
+    }
+
+    // Shackle title badge (brackets stripped)
+    let shackleTitleHtml = '';
+    if (activeShackleId) {
+        const _sd = SHACKLE_DB.find(s => s.id === activeShackleId);
+        const _rawName = _sd ? (i18n.t(`shackles.${activeShackleId}.name`) || _sd.name) : '';
+        const _stripped = _rawName.replace(/[【】\[\]]/g, '').trim();
+        if (_stripped) shackleTitleHtml = `<span class="shackle-title-badge">${_stripped}</span>`;
+    }
+
+    el.enemyName.innerHTML = `⚔️ <span class="stage-layer-badge">${layerBadgeText}</span>${shackleTitleHtml}<span class="enemy-name-text">${localizedEnemyName}</span>${shackleHtml}`;
+
+    el.enemyName.className = "text-xl font-bold flex-1 flex items-center min-w-0";
     if (stage.level >= ENEMY_DB.length) {
         el.enemyName.classList.add("text-fuchsia-400");
     } else if (stage.level === 4) {
@@ -688,6 +709,30 @@ function playDiceSumFly(baseValue, onDone) {
 }
 
 export function playDamageStepsAnimation(steps, callback) {
+    // Sync mythic-suppressed visuals on relic cards
+    if (el.inventoryGrid) {
+        el.inventoryGrid.querySelectorAll('[data-relic-id]').forEach(relEl => {
+            relEl.classList.remove('mythic-suppressed');
+            const oldIcon = relEl.querySelector('.mythic-suppress-icon');
+            if (oldIcon) oldIcon.remove();
+        });
+        const _asid = window.getStageActiveShackle && window.getStageActiveShackle();
+        if (_asid) {
+            const _asd = SHACKLE_DB.find(s => s.id === _asid);
+            if (_asd && _asd.suppressMythic) {
+                el.inventoryGrid.querySelectorAll('[data-relic-id]').forEach(relEl => {
+                    if ((relEl.dataset.relicId || '').startsWith('fusion_')) {
+                        relEl.classList.add('mythic-suppressed');
+                        const icon = document.createElement('span');
+                        icon.className = 'mythic-suppress-icon';
+                        icon.textContent = '🚫';
+                        relEl.appendChild(icon);
+                    }
+                });
+            }
+        }
+    }
+
     if (!steps || steps.length === 0 || !el.finalScoreValue) { callback(); return; }
 
     const STEP_DELAY = 400;

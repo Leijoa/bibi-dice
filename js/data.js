@@ -139,7 +139,8 @@ export const SHACKLE_DB = [
     { id: 'mutualdestruction', name: '【同歸於盡】', desc: '敵人會將受到的 5% 傷害反彈給玩家，但不會導致玩家死亡（最少剩 1 HP）。', type: 'heavy' },
     { id: 'illusionary', name: '【假象】', desc: '顯示虛假的最終傷害。', type: 'heavy' },
     { id: 'shackle_smoke', name: '【煙霧】', desc: '看不到血條預估傷害。', type: 'light', hidesDamagePreviewBar: true, hidesDamageNumber: false, distortsDamage: false },
-    { id: 'shackle_drunk', name: '【酒醉】', desc: '無法精準掌握預估傷害。', type: 'heavy', hidesDamagePreviewBar: false, hidesDamageNumber: false, distortsDamage: true, distortRange: 0.20 }
+    { id: 'shackle_drunk', name: '【酒醉】', desc: '無法精準掌握預估傷害。', type: 'heavy', hidesDamagePreviewBar: false, hidesDamageNumber: false, distortsDamage: true, distortRange: 0.20 },
+    { id: 'shackle_godslayer', name: '【弒神】', desc: '神話遺物無效化。', difficulty: 'heavy', type: 'relic_suppress', suppressMythic: true }
 ];
 
 export function isElite(levelIndex) {

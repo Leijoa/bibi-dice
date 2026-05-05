@@ -180,6 +180,12 @@ header {
     box-shadow: inset 0 1px 0 rgba(208, 188, 255, 0.05), 0 4px 20px rgba(0,0,0,0.4);
 }
 
+.stage-layer-badge { font-size: 0.7em; font-weight: 700; color: #94A3B8; margin-right: 4px; flex-shrink: 0; }
+.shackle-title-badge { font-size: 0.75em; font-weight: 900; color: #C084FC; margin-right: 4px; flex-shrink: 0; }
+.enemy-name-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+.mythic-suppressed { opacity: 0.4; filter: grayscale(1); position: relative; }
+.mythic-suppress-icon { position: absolute; top: 2px; right: 2px; font-size: 0.85em; pointer-events: none; }
+
 #final-damage-preview {
     background: linear-gradient(160deg, #100e18 0%, #0e0e10 60%);
     border: 1px solid rgba(122, 59, 245, 0.22);
@@ -187,6 +193,8 @@ header {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
+    text-align: center;
     padding: 10px 14px;
     box-shadow: inset 0 0 40px rgba(122, 59, 245, 0.06);
 }

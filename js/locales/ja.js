@@ -111,7 +111,8 @@ export const ja_data = {
     'wither': { name: '【枯渇】', desc: 'この戦闘中、プレイヤーの最大HPは1になる（1ダメージで死ぬ）。' },
     'mutualdestruction': { name: '【相打ち】', desc: '受けたダメージの5%を反射する。ただし、プレイヤーのHPは最低1残る。' },
     'shackle_smoke': { name: '【煙幕】', desc: 'HPバーのダメージプレビューバーが見えなくなる。' },
-    'shackle_drunk': { name: '【酔っぱらい】', desc: '予測ダメージを正確に把握できない。' }
+    'shackle_drunk': { name: '【酔っぱらい】', desc: '予測ダメージを正確に把握できない。' },
+    'shackle_godslayer': { name: '【神殺し】', desc: '神話遺物が無効化される。' }
   },
   rules: {
     'groupA': '同数',

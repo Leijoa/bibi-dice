@@ -111,7 +111,8 @@ export const zh_cn_data = {
     'wither': { name: '【枯萎】', desc: '本局战斗玩家最大 HP 视为 1（受伤即死）。' },
     'mutualdestruction': { name: '【同归于尽】', desc: '敌人会将受到的 5% 伤害反弹给玩家，但不会导致玩家死亡（最少剩 1 HP）。' },
     'shackle_smoke': { name: '【烟雾】', desc: '看不到血条预估伤害。' },
-    'shackle_drunk': { name: '【酒醉】', desc: '无法精准掌握预估伤害。' }
+    'shackle_drunk': { name: '【酒醉】', desc: '无法精准掌握预估伤害。' },
+    'shackle_godslayer': { name: '【弑神】', desc: '神话遗物无效化。' }
   },
   rules: {
     'groupA': '同数',

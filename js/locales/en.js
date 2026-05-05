@@ -111,7 +111,8 @@ export const en_data = {
     'wither': { name: '[Wither]', desc: 'Player Max HP is set to 1 for this battle.' },
     'mutualdestruction': { name: '[Mutual Destruction]', desc: 'Reflects 5% damage taken back to the player (cannot kill player, min 1 HP left).' },
     'shackle_smoke': { name: '[Smoke]', desc: 'Cannot see the damage preview bar on the HP bar.' },
-    'shackle_drunk': { name: '[Drunk]', desc: 'Cannot accurately gauge estimated damage.' }
+    'shackle_drunk': { name: '[Drunk]', desc: 'Cannot accurately gauge estimated damage.' },
+    'shackle_godslayer': { name: '[Godslayer]', desc: 'Mythic relics are nullified.' }
   },
   rules: {
     'groupA': 'Freqs',

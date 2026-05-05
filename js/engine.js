@@ -161,6 +161,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     let globalNotes = [];
 
     let isExploited = activeShackles.some(sh => sh.id === 'exploitation');
+    if (activeShackles.some(sh => sh.suppressMythic)) playerRelics = playerRelics.filter(id => !id.startsWith('fusion_'));
 
     workingDice.forEach(d => {
         let multi = 1;
@@ -735,6 +736,7 @@ export function calculateDamageSteps(dice, playerRelics, rollsLeft, playerHp, ac
 
     const kills = env.level || 0;
     const isExploited = activeShackles.some(sh => sh.id === 'exploitation');
+    if (activeShackles.some(sh => sh.suppressMythic)) playerRelics = playerRelics.filter(id => !id.startsWith('fusion_'));
 
     let workingDice = [...dice];
     activeShackles.forEach(sh => {
