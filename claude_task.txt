@@ -1,0 +1,35 @@
+請讀取並執行以下開發指令：
+
+【計畫先行，請先確認後再動工】
+
+預計修改檔案：js/data.js、js/engine.js、js/ui.js、css/style.css、js/locales/zh-tw.js、js/locales/zh-cn.js、js/locales/en.js、js/locales/ja.js
+
+【新增枷鎖｜弒神】
+閱讀 js/data.js，依照現有枷鎖格式新增弒神枷鎖，difficulty: 'heavy'，type: 'relic_suppress'，suppressMythic: true。
+閱讀 js/engine.js，在遺物加成計算位置，當弒神枷鎖生效時跳過所有神話稀有度遺物的加成計算。遺物仍顯示在持有欄但效果不計算。逐步結算動畫中神話遺物步驟以灰色顯示並加上🚫標示。
+四個語系檔新增：zh-tw: 弒神／神話遺物無效化。其他語系依對應語言翻譯。
+
+【新增｜敵人名稱格式】
+閱讀 js/ui.js，找到敵人名稱渲染位置。
+統一格式如下：
+無枷鎖：「第{n}層　{敵人名稱}」
+有枷鎖：「第{n}層　{枷鎖名稱}　{敵人名稱}」
+無限塔無枷鎖：「{n}-{m}　{敵人名稱}」
+無限塔有枷鎖：「{n}-{m}　{枷鎖名稱}　{敵人名稱}」
+枷鎖名稱不加任何括號，直接以稱號形式呈現，用 i18n.t() 取得當前語系名稱。
+枷鎖按鈕保留不移除。
+css/style.css 新增：
+.stage-layer-badge { font-size: 0.7em; font-weight: 700; color: #94A3B8; margin-right: 4px; }
+.shackle-title-badge { font-size: 0.75em; font-weight: 900; color: #C084FC; margin-right: 4px; }
+名稱過長時設定 overflow: hidden + text-overflow: ellipsis 避免破版。
+
+【調整｜預估造成傷害數字置中】
+閱讀 index.html，確認 #final-damage-preview 的 DOM 結構與現有 class。
+閱讀 css/style.css，在 #final-damage-preview 樣式中加入 text-align: center 與 align-items: center，使 DAMAGE 標題與 #final-score-value 數字均置中顯示。若現有 class 有 text-left 或 items-start 請在 css 中覆蓋。
+
+【測試情境】
+弒神枷鎖：神話遺物不計算效果，逐步動畫顯示🚫，非神話遺物正常。
+層數標籤：第1層 史萊姆、第3層 眼盲 巨石像、2-3 弒神 創世神。
+傷害數字與DAMAGE標題均置中顯示。
+
+完成後更新 CHANGELOG.md。
