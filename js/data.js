@@ -186,7 +186,7 @@ export function getEnemy(levelIndex) {
 
 export const RULE_DB = {
     groupA: [
-        { name: '八重奏', desc: '8顆相同數字', multi: 'x50.0' , rarity: 4 },
+        { name: '比比丟八(ビビデバ)', desc: '8顆相同數字', multi: 'x50.0' , rarity: 4 },
         { name: '七同', desc: '7顆相同數字', multi: 'x25.0' , rarity: 4 },
         { name: '六同', desc: '6顆相同數字', multi: 'x12.0' , rarity: 3 },
         { name: '五同', desc: '5顆相同數字', multi: 'x6.0' , rarity: 3 },
@@ -195,7 +195,7 @@ export const RULE_DB = {
         { name: '對子', desc: '2顆相同數字', multi: 'x1.5' , rarity: 1 }
     ],
     groupB: [
-        { name: '大滿貫', desc: '1~8各有一顆', multi: 'x25.0' , rarity: 4 },
+        { name: '彗星', desc: '1~8各有一顆', multi: 'x25.0' , rarity: 4 },
         { name: '七連順', desc: '7顆數字相連', multi: 'x10.0' , rarity: 3 },
         { name: '六連順', desc: '6顆數字相連', multi: 'x6.0' , rarity: 3 },
         { name: '五連順', desc: '5顆數字相連', multi: 'x3.5' , rarity: 2 },
@@ -204,18 +204,18 @@ export const RULE_DB = {
     ],
     groupC: [
         { name: '雙子星', desc: '兩組4同', multi: 'x20.0' , rarity: 4 },
-        { name: '葫蘆', desc: '5同 + 3同', multi: 'x15.0' , rarity: 3 },
+        { name: '南瓜馬車', desc: '5同 + 3同', multi: 'x15.0' , rarity: 3 },
         { name: '豪華四對子', desc: '包含3同或4同的4組對子', multi: 'x15.0' , rarity: 3 },
         { name: '三龍會', desc: '分成三組完全相連的順子', multi: 'x12.0' , rarity: 3 },
         { name: '經典四對子', desc: '嚴格的4組對子(無3同或4同)', multi: 'x10.0' , rarity: 2 },
         { name: '雙四連順', desc: '兩組4連順', multi: 'x10.0' , rarity: 2 },
-        { name: '中葫蘆', desc: '4同 + 3同', multi: 'x8.0' , rarity: 2 },
+        { name: '白馬', desc: '4同 + 3同', multi: 'x8.0' , rarity: 2 },
         { name: '平胡', desc: '兩組3連順 + 一組對子', multi: 'x6.0' , rarity: 2 },
         { name: '碰碰胡', desc: '兩組3同 + 一組對子', multi: 'x5.0' , rarity: 2 },
         { name: '順碰交響曲', desc: '1組3連順 + 1組3同', multi: 'x4.0' , rarity: 1 },
         { name: '雙三連順', desc: '兩組3連順', multi: 'x4.0' , rarity: 1 },
         { name: '雙三同', desc: '兩組3同', multi: 'x3.5' , rarity: 1 },
-        { name: '小葫蘆', desc: '3同 + 一組對子', multi: 'x3.5' , rarity: 1 },
+        { name: '南瓜', desc: '3同 + 一組對子', multi: 'x3.5' , rarity: 1 },
         { name: '三對子', desc: '任意3組對子', multi: 'x3.0' , rarity: 1 },
         { name: '雙對子', desc: '任意2組對子', multi: 'x2.0' , rarity: 1 }
     ],
@@ -223,6 +223,8 @@ export const RULE_DB = {
         { name: '兩極', desc: '盤面只有 1 和 8', multi: 'x30.0' , rarity: 4 },
         { name: '絕對秩序', desc: '7顆以上數字為全奇數或全偶數', multi: 'x8.0' , rarity: 3 },
         { name: '全異', desc: '8顆數字皆不相同', multi: 'x2.5' , rarity: 2 },
-        { name: '中庸之道', desc: '盤面完全沒有 1 和 8', multi: 'x2.0' , rarity: 1 }
+        { name: '中庸之道', desc: '盤面完全沒有 1 和 8', multi: 'x2.0' , rarity: 1 },
+        { name: '斐波那契數列', desc: '112358', multi: 'x8.0' , rarity: 3 },
+        { name: '圓周率', desc: '3.1415', multi: 'x6.0' , rarity: 3 }
     ]
 };

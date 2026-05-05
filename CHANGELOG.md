@@ -1,5 +1,11 @@
 # 比比丟八-BIBBIDIBA [2.0版] 更新紀錄
 
+### Feature：牌型重命名與新增 D 區特殊牌型 [2026/05/05]
+* **牌型更名**：八重奏→比比丟八(ビビデバ)、大滿貫→彗星、葫蘆→南瓜馬車、中葫蘆→白馬、小葫蘆→南瓜，同步更新 `data.js`、`engine.js`、`ui.js` 及四語系 locale。
+* **D 區標題**：各語系 `groupD_desc` 由「極端盤面/Extreme Board States/特殊盤面」統一改為「特殊牌型(繁/簡中)、Special Hands(英)、特殊役(日)」。
+* **新增牌型 — 圓周率**：`data.js` groupD 新增 `圓周率`（desc: 3.1415, 倍率 x6.0）；`engine.js` 新增判斷：`counts[1]>=2 && counts[3]>=1 && counts[4]>=1 && counts[5]>=1`；四語系補上 `rule_d5` 翻譯（Pi / 円周率）。
+* **新增牌型 — 斐波那契數列**：`data.js` groupD 新增 `斐波那契數列`（desc: 112358, 倍率 x8.0）；`engine.js` 新增判斷：`counts[1]>=2 && counts[2]>=1 && counts[3]>=1 && counts[5]>=1 && counts[8]>=1`；四語系補上 `rule_d4` 翻譯（Fibonacci / フィボナッチ数列）。
+
 ### Fix：歷史 Modal CSS 還原 Tailwind 滾動行為 [2026/05/05]
 * **CSS `#history-modal > div`**：移除所有覆蓋（`max-height`、`display`、`flex-direction`、`overflow`），完全保留 Tailwind 預設。
 * **CSS `#history-content`**：改為 `overflow-y: auto !important; overflow-x: hidden; flex-grow: 1; min-height: 0; padding: 0 !important;`，由此層承擔滾動。

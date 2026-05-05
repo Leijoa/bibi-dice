@@ -363,7 +363,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     // --- 判斷 A 區 ---
     let tagA = { name: '無', multi: 1.0, used: [] };
     let maxFreq = Math.max(...counts);
-    if (maxFreq >= 8) tagA = { name: '八重奏', multi: 50.0, used: getFreqVals(8) };
+    if (maxFreq >= 8) tagA = { name: '比比丟八(ビビデバ)', multi: 50.0, used: getFreqVals(8) };
     else if (maxFreq >= 7) tagA = { name: '七同', multi: 25.0, used: getFreqVals(7) };
     else if (maxFreq >= 6) tagA = { name: '六同', multi: 12.0, used: getFreqVals(6) };
     else if (maxFreq >= 5) tagA = { name: '五同', multi: 6.0, used: getFreqVals(5) };
@@ -376,7 +376,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     let tempUsed;
 
     if (counts.slice(1,9).every(c => c>=1)) {
-        tagB = { name: '大滿貫', multi: 25.0, used: [1,2,3,4,5,6,7,8] };
+        tagB = { name: '彗星', multi: 25.0, used: [1,2,3,4,5,6,7,8] };
     } else if ((tempUsed = extractVals([7]))) {
         tagB = { name: '七連順', multi: 10.0, used: tempUsed };
     } else if ((tempUsed = extractVals([6]))) {
@@ -396,8 +396,8 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
 
     const priorityOrder = [
         '平胡', '碰碰胡', '三龍會', '雙四連順',
-        '雙子星', '葫蘆', '豪華四對子', '經典四對子', '中葫蘆',
-        '順碰交響曲', '雙三連順', '雙三同', '小葫蘆',
+        '雙子星', '南瓜馬車', '豪華四對子', '經典四對子', '白馬',
+        '順碰交響曲', '雙三連順', '雙三同', '南瓜',
         '三對子', '雙對子'
     ];
 
@@ -417,7 +417,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         candidates.push({ name: '雙子星', multi: 20.0, used: tempUsed, priorityIndex: priorityOrder.indexOf('雙子星') });
     }
     if ((tempUsed = getFreqVals(5, 3))) {
-        candidates.push({ name: '葫蘆', multi: 15.0, used: tempUsed, priorityIndex: priorityOrder.indexOf('葫蘆') });
+        candidates.push({ name: '南瓜馬車', multi: 15.0, used: tempUsed, priorityIndex: priorityOrder.indexOf('南瓜馬車') });
     }
     if ((tempUsed = getPairsVals(4))) {
         candidates.push({ name: '豪華四對子', multi: 15.0, used: tempUsed, priorityIndex: priorityOrder.indexOf('豪華四對子') });
@@ -426,7 +426,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         candidates.push({ name: '經典四對子', multi: 10.0, used: tempUsed, priorityIndex: priorityOrder.indexOf('經典四對子') });
     }
     if ((tempUsed = getFreqVals(4, 3))) {
-        candidates.push({ name: '中葫蘆', multi: 8.0, used: tempUsed, priorityIndex: priorityOrder.indexOf('中葫蘆') });
+        candidates.push({ name: '白馬', multi: 8.0, used: tempUsed, priorityIndex: priorityOrder.indexOf('白馬') });
     }
     if ((tempUsed = checkChowPongVals(counts))) {
         candidates.push({ name: '順碰交響曲', multi: 4.0, used: tempUsed, priorityIndex: priorityOrder.indexOf('順碰交響曲') });
@@ -438,7 +438,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         candidates.push({ name: '雙三同', multi: 3.5, used: tempUsed, priorityIndex: priorityOrder.indexOf('雙三同') });
     }
     if ((tempUsed = getFreqVals(3, 2))) {
-        candidates.push({ name: '小葫蘆', multi: 3.5, used: tempUsed, priorityIndex: priorityOrder.indexOf('小葫蘆') });
+        candidates.push({ name: '南瓜', multi: 3.5, used: tempUsed, priorityIndex: priorityOrder.indexOf('南瓜') });
     }
     if ((tempUsed = getPairsVals(3))) {
         let candidate = { name: '三對子', multi: 3.0, used: tempUsed, priorityIndex: priorityOrder.indexOf('三對子') };
@@ -479,6 +479,8 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
 
     if (counts[1] + counts[8] === 8 && workingDice.length === 8) tagD = { name: '兩極', multi: 30.0, used: workingDice.map(d=>d.val) };
     else if (oddCount >= orderReq || evenCount >= orderReq) tagD = { name: '絕對秩序', multi: 8.0, used: orderUsed };
+    else if (counts[1] >= 2 && counts[2] >= 1 && counts[3] >= 1 && counts[5] >= 1 && counts[8] >= 1) tagD = { name: '斐波那契數列', multi: 8.0, used: [1,1,2,3,5,8] };
+    else if (counts[1] >= 2 && counts[3] >= 1 && counts[4] >= 1 && counts[5] >= 1) tagD = { name: '圓周率', multi: 6.0, used: [1,1,3,4,5] };
     else if (freqs.length === 8 && workingDice.length === 8) tagD = { name: '全異', multi: 2.5, used: workingDice.map(d=>d.val) };
     else if (counts[1] === 0 && counts[8] === 0) tagD = { name: '中庸之道', multi: 2.0, used: workingDice.map(d=>d.val) };
 
