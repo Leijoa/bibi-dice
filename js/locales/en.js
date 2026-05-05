@@ -160,6 +160,7 @@ ui: {
     settings_title: '⚙️ Game Settings',
     bgm_volume: '🎵 BGM Volume',
     sfx_volume: '🔊 SFX Volume',
+    setting_step_animation_label: '🎬 Step Animation',
     title_main: 'BIBBIDIBA',
     title_sub: 'BIBBIDIBA',
     title_desc: 'Roll 8 dice to form combinations and stack multipliers! Reroll twice per turn. Defeat enemies within the turn limit to gain relics and strengthen your build. Challenge 10 consecutive stages!',

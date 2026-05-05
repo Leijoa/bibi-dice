@@ -577,6 +577,25 @@ function initTitleScreen() {
         }
     }
 
+    const stepAnimToggle = document.getElementById('setting-step-animation-toggle');
+    const isStepAnimEnabled = () => localStorage.getItem('setting_stepAnimation') !== 'false';
+    const applyStepAnimToggle = (enabled) => {
+        if (!stepAnimToggle) return;
+        const thumb = stepAnimToggle.querySelector('span');
+        stepAnimToggle.setAttribute('aria-checked', enabled ? 'true' : 'false');
+        stepAnimToggle.classList.toggle('bg-violet-600', enabled);
+        stepAnimToggle.classList.toggle('bg-slate-600', !enabled);
+        if (thumb) { thumb.classList.toggle('translate-x-6', enabled); thumb.classList.toggle('translate-x-1', !enabled); }
+    };
+    applyStepAnimToggle(isStepAnimEnabled());
+    if (stepAnimToggle) {
+        stepAnimToggle.addEventListener('click', () => {
+            const next = !isStepAnimEnabled();
+            localStorage.setItem('setting_stepAnimation', next ? 'true' : 'false');
+            applyStepAnimToggle(next);
+        });
+    }
+
     const openSettings = () => {
         Audio.initAudio();
         if (settingsModal) settingsModal.classList.remove('hidden');
@@ -1344,7 +1363,13 @@ window.fireAttack = function() {
         }, 1000 + delay);
     };
 
-    UI.playDamageStepsAnimation(steps, doAttack);
+    if (localStorage.getItem('setting_stepAnimation') === 'false') {
+        const finalStep = steps && steps.find(s => s.final);
+        if (finalStep && UI.el.finalScoreValue) UI.el.finalScoreValue.innerText = finalStep.damageAfter.toLocaleString();
+        doAttack();
+    } else {
+        UI.playDamageStepsAnimation(steps, doAttack);
+    }
 };
 
 // --- 商店與關卡結算 ---

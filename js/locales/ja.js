@@ -160,6 +160,7 @@ ui: {
     settings_title: '⚙️ ゲーム設定',
     bgm_volume: '🎵 BGM音量',
     sfx_volume: '🔊 SE音量',
+    setting_step_animation_label: '🎬 ステップアニメ',
     title_main: 'BIBBIDIBA',
     title_sub: 'ビビディバ',
     title_desc: '8つのダイスを振って役を作り、倍率を重ねよう！毎ターン2回振り直し可能。制限ターン内に敵を倒して遺物を獲得し、ビルドを強化。10ステージ連続クリアを目指せ！',

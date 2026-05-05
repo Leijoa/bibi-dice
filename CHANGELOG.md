@@ -1,5 +1,10 @@
 # 比比丟八-BIBBIDIBA [2.0版] 更新紀錄
 
+### 設定：逐步結算動畫開關 [2026/05/05]
+* **新增「逐步結算動畫」開關**：在設定面板 SFX 音量下方新增切換開關（紫色 toggle），預設開啟，狀態存入 `localStorage` 的 `setting_stepAnimation` 鍵。
+* **關閉時直接跳過**：若開關關閉，`main.js` 在呼叫 `playDamageStepsAnimation` 前直接取用 `steps` 陣列中 `final: true` 的步驟值更新 `finalScoreValue`，並立刻觸發 `doAttack`，完全省略所有動畫延遲，適合追求速度的玩家。
+* **四語 i18n**：新增 `ui.setting_step_animation_label`（繁中：🎬 逐步結算動畫 / 簡中：逐步结算动画 / EN：Step Animation / JA：ステップアニメ）。
+
 ### 結算動畫：骰子點數飛行演出 [2026/05/04]
 * **骰子點數總和飛行動畫**：逐步結算演出「歸零」後、「基礎點數」跳動前，新增一段飛行橋段：`#score-total-base-value` 的數字複製為浮動元素（`.dice-sum-fly`），以 CSS transition 從點數總和欄位飛向傷害數字位置，途中放大至 scale(1.4)，抵達後播放 `.dice-sum-fly--arrive` 淡出動畫（共 500ms），消失後傷害數字才開始跳動。若元素座標取不到則靜默跳過，不中斷流程。
 

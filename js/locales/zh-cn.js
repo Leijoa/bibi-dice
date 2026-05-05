@@ -160,6 +160,7 @@ ui: {
     settings_title: '⚙️ 游戏设置',
     bgm_volume: '🎵 音乐音量',
     sfx_volume: '🔊 音效音量',
+    setting_step_animation_label: '🎬 逐步结算动画',
     title_main: 'BIBBIDIBA',
     title_sub: '比比丢八',
     title_desc: '掷八颗骰子凑牌型叠加倍率！每回合重骰两次，在限制回合内打倒敌人获取遗物强化流派，挑战连过十关！',
