@@ -909,10 +909,9 @@ export function updateShopRerollBtn(shopRerollsUsed, hasScavenger = false, hasFu
 }
 
 export function renderHistoryModal(records, metaData) {
-
+    const dash = '-';
     let pbHtml = '';
     if (metaData && metaData.stats) {
-        // Find best combination local name using existing DB
         let comboTag = metaData.stats.highestDamageCombo;
         let comboKey = '';
         if(comboTag === '無') comboKey = 'messages.none';
@@ -932,7 +931,7 @@ export function renderHistoryModal(records, metaData) {
         let highestDamageComboTranslated = (comboKey && window.i18n) ? window.i18n.t(comboKey) : comboTag;
 
         pbHtml = `
-            <div class="bg-amber-900/40 border border-amber-600/50 p-4 rounded-xl mb-6 shadow-inner">
+            <div class="bg-amber-900/40 border border-amber-600/50 p-4 rounded-xl shadow-inner">
                 <h3 class="text-lg font-black text-amber-400 mb-3 flex items-center gap-2">${i18n.t('ui.pb_title') || '🏆 個人最佳紀錄'}</h3>
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <div>
@@ -942,11 +941,11 @@ export function renderHistoryModal(records, metaData) {
                     </div>
                     <div>
                         <div class="text-xs text-amber-200/70 font-bold">${i18n.t('ui.pb_highest_multi') || '最高倍率'}</div>
-                        <div class="text-xl font-black text-emerald-400">x${metaData.stats.highestMulti.toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})}</div>
+                        <div class="text-xl font-black text-emerald-400">x${(metaData.stats.highestMulti || 0).toLocaleString(undefined, {minimumFractionDigits: 1, maximumFractionDigits: 1})}</div>
                     </div>
                     <div>
                         <div class="text-xs text-amber-200/70 font-bold">${i18n.t('ui.pb_highest_infinite') || '最高無限層數'}</div>
-                        <div class="text-xl font-black text-purple-400">${metaData.stats.highestInfiniteLevel > 0 ? metaData.stats.highestInfiniteLevel : '-'}</div>
+                        <div class="text-xl font-black text-purple-400">${metaData.stats.highestInfiniteLevel > 0 ? metaData.stats.highestInfiniteLevel : dash}</div>
                     </div>
                 </div>
                 <div class="mt-3 flex flex-wrap gap-1">
@@ -962,10 +961,12 @@ export function renderHistoryModal(records, metaData) {
     }
 
     if (!records || records.length === 0) {
-        el.historyContent.innerHTML = pbHtml + `<div class="text-center text-slate-500 py-6 font-bold">${i18n.t('messages.history_empty')}</div>`;
+        el.historyContent.innerHTML =
+            (pbHtml ? `<div class="history-pb-sticky">${pbHtml}</div>` : '') +
+            `<div class="history-list-section justify-center"><div class="text-center text-slate-500 py-6 font-bold">${i18n.t('messages.history_empty')}</div></div>`;
         return;
     }
-    
+
     window._toggleHistoryEntry = function(idx) {
         const det = document.getElementById('hist-det-' + idx);
         const ico = document.getElementById('hist-ico-' + idx);
@@ -975,11 +976,30 @@ export function renderHistoryModal(records, metaData) {
         }
     };
 
-    el.historyContent.innerHTML = pbHtml + records.map((r, i) => {
+    const listHtml = records.map((r, i) => {
         let resultColor = r.win ? "text-violet-300" : "text-red-400";
         let resultText = r.stageName || (r.win ? "勝利" : "失敗");
         let dateObj = new Date(r.date || 0);
         let dateStr = dateObj.toLocaleDateString() + " " + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+        let stageTypeLabel = dash;
+        if (r.stageType === 'boss') stageTypeLabel = '👑 Boss';
+        else if (r.stageType === 'elite') stageTypeLabel = '⚡ 精英';
+        else if (r.stageType === 'infinite') stageTypeLabel = '♾️ 無限塔';
+        else if (r.stageType === 'normal') stageTypeLabel = '⚔️ 一般';
+        else if (r.isInfiniteMode) stageTypeLabel = '♾️ 無限塔';
+
+        let highestMultiStr = (r.highestMulti != null && r.highestMulti > 0)
+            ? `x${Number(r.highestMulti).toFixed(1)}`
+            : dash;
+
+        let shackleStr = dash;
+        if (r.shackle) {
+            let shackleDef = SHACKLE_DB.find(s => s.id === r.shackle);
+            shackleStr = shackleDef
+                ? (i18n.t(`shackles.${r.shackle}.name`) || shackleDef.name)
+                : r.shackle;
+        }
 
         let relicHtml = (r.relics && r.relics.length > 0) ? r.relics.map(id => {
             let relicDef = RELIC_DB.find(x => x.id === id);
@@ -997,20 +1017,40 @@ export function renderHistoryModal(records, metaData) {
                     <span id="hist-ico-${i}" class="text-slate-500 text-xs">▶</span>
                 </div>
             </div>
-            <div id="hist-det-${i}" class="hidden px-3 pb-3 pt-2 border-t border-slate-700/50 flex flex-col gap-1">
-                <div class="text-xs md:text-sm text-slate-300">
-                    <span class="text-slate-500">${i18n.t("messages.history_dmg_label")}:</span> <span class="font-black text-white">${Number(r.highestDamage || 0).toLocaleString()}</span>
+            <div id="hist-det-${i}" class="relative hidden px-3 pb-3 pt-2 border-t border-slate-700/50">
+                <div class="grid grid-cols-2 gap-x-3 gap-y-1.5 mb-2">
+                    <div class="text-xs text-slate-300">
+                        <div class="text-[10px] text-slate-500">關卡類型</div>
+                        <div class="font-bold">${stageTypeLabel}</div>
+                    </div>
+                    <div class="text-xs text-slate-300">
+                        <div class="text-[10px] text-slate-500">${i18n.t('ui.pb_highest_dmg') || '最終傷害'}</div>
+                        <div class="font-black text-white">${Number(r.highestDamage || 0).toLocaleString()}</div>
+                    </div>
+                    <div class="text-xs text-slate-300">
+                        <div class="text-[10px] text-slate-500">${i18n.t('ui.pb_highest_multi') || '最高倍率'}</div>
+                        <div class="font-bold text-emerald-400">${highestMultiStr}</div>
+                    </div>
+                    <div class="text-xs text-slate-300">
+                        <div class="text-[10px] text-slate-500">${i18n.t("messages.history_combo_label")}</div>
+                        <div class="font-bold text-blue-300">${r.combo || i18n.t('messages.none') || dash}</div>
+                    </div>
+                    <div class="col-span-2 text-xs text-slate-300">
+                        <div class="text-[10px] text-slate-500">${i18n.t('ui.tab_shackles') || '枷鎖'}</div>
+                        <div class="font-bold text-red-300">${shackleStr}</div>
+                    </div>
                 </div>
-                <div class="text-xs md:text-sm text-slate-300">
-                    <span class="text-slate-500">${i18n.t("messages.history_combo_label")}:</span> <span class="font-bold text-blue-300">${r.combo || i18n.t('messages.none')}</span>
-                </div>
-                <div class="mt-1">
-                    <div class="text-[10px] text-slate-500 mb-0.5">${i18n.t("messages.history_relics_label")}:</div>
+                <div>
+                    <div class="text-[10px] text-slate-500 mb-0.5">${i18n.t("messages.history_relics_label")}</div>
                     <div class="flex flex-wrap">${relicHtml}</div>
                 </div>
             </div>
         </div>`;
     }).reverse().join('');
+
+    el.historyContent.innerHTML =
+        (pbHtml ? `<div class="history-pb-sticky">${pbHtml}</div>` : '') +
+        `<div class="history-list-section">${listHtml}</div>`;
 }
 
 export function renderEndGameStats(highestDamage, highestDamageCombo, relics) {

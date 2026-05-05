@@ -691,6 +691,7 @@ function initNewGame() {
         maxRolls: startRerolls,
         highestDamage: 0,
         highestDamageCombo: '',
+        highestMulti: 0,
         isInfiniteMode: false, bonusBasePoints: 0, nextDamageMulti: 1.0,
         dismantledFusions: [], fivesRolled: 0
     };
@@ -1292,6 +1293,9 @@ window.fireAttack = function() {
             metaData.stats.highestMulti = battle.scoreResult.finalMultiplier;
             saveMetaData();
         }
+        if (battle.scoreResult.finalMultiplier > (player.highestMulti || 0)) {
+            player.highestMulti = battle.scoreResult.finalMultiplier;
+        }
 
         if (battle.scoreResult.tagA.name !== '無') unlockCollectionItem('hand', battle.scoreResult.tagA.name);
         if (battle.scoreResult.tagB.name !== '無') unlockCollectionItem('hand', battle.scoreResult.tagB.name);
@@ -1725,10 +1729,13 @@ function recordHistory(win) {
         isInfiniteMode: player.isInfiniteMode,
         infiniteLevel: player.isInfiniteMode ? (stage.level - ENEMY_DB.length + 1) : 0,
         stageName: getEnemyWithMeta(stage.level).name,
+        stageType: player.isInfiniteMode ? 'infinite' : (isBoss(stage.level) ? 'boss' : (isElite(stage.level) ? 'elite' : 'normal')),
         date: new Date().toISOString(),
         highestDamage: player.highestDamage || 0,
+        highestMulti: player.highestMulti || 0,
         combo: player.highestDamageCombo || '無',
-        relics: [...player.relics]
+        relics: [...player.relics],
+        shackle: stage.activeShackle || null
     };
     history.push(currentRecord);
     // 只保留最近 20 筆紀錄

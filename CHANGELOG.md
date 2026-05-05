@@ -1,5 +1,14 @@
 # 比比丟八-BIBBIDIBA [2.0版] 更新紀錄
 
+### Fix：歷史牌局展開顯示與滾動布局 [2026/05/05]
+* **CSS 布局修正**：
+  * `#history-modal > div` 限制 `max-height: 85vh`，避免 modal 超出螢幕。
+  * `#history-content` 加入 `overflow-y: hidden; min-height: 0; padding: 0`，讓 flex 子元素能正確縮小並各自滾動（修復因缺少 `min-height:0` 導致展開內容被外層 `overflow:hidden` 截斷的根本原因）。
+  * 新增 `.history-pb-sticky`（`flex-shrink:0`）與 `.history-list-section`（`overflow-y:auto; flex-grow:1; min-height:0`）兩個布局 class，實現「個人最佳紀錄固定頂部、歷史列表獨立滾動」。
+* **展開詳情擴充**：展開欄改為 `position: relative`，以 Grid 2 欄排列顯示以下欄位（舊存檔缺漏欄位一律 fallback 顯示「-」）：
+  * 關卡類型（一般 / 精英 / Boss / 無限塔）、最終傷害、最高倍率、觸發牌型、枷鎖名稱、持有遺物列表。
+* **資料存檔擴充**（`main.js`）：`recordHistory` 新增 `stageType`、`highestMulti`、`shackle` 三個欄位；`player` 物件新增 `highestMulti` 追蹤，於每次攻擊結算時更新（與 `player.highestDamage` 同步機制）。
+
 ### 視覺：骰子背板枷鎖/BOSS 背景變色 [2026/05/05]
 * **一般關卡有枷鎖**：骰子背板套用 `.board-shackled`（深紫紅放射漸層 + 3s 呼吸光暈動畫）。
 * **無限塔第三關（BOSS）**：套用 `.board-shackled-boss`（暗血紅放射漸層 + 2s 快節奏呼吸動畫）。

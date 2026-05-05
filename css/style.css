@@ -225,6 +225,36 @@ header {
     background: #1c1b1d !important;
 }
 
+/* History modal: fixed max-height + PB sticky / list scroll */
+#history-modal > div {
+    max-height: 85vh !important;
+}
+#history-content {
+    overflow-y: hidden !important;
+    min-height: 0;
+    padding: 0 !important;
+}
+.history-pb-sticky {
+    flex-shrink: 0;
+    padding: 0.5rem;
+    border-bottom: 1px solid #2a2a2c;
+}
+@media (min-width: 768px) {
+    .history-pb-sticky { padding: 1rem; }
+}
+.history-list-section {
+    overflow-y: auto;
+    flex-grow: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.5rem;
+}
+@media (min-width: 768px) {
+    .history-list-section { padding: 1rem; padding-top: 0.5rem; }
+}
+
 #owned-relics-area {
     border-top-color: #2a2a2c !important;
 }
