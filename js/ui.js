@@ -976,7 +976,8 @@ export function renderHistoryModal(records, metaData) {
         }
     };
 
-    const listHtml = records.filter(r => r && typeof r === 'object' && r.date && r.date > 0 && (r.stageName || r.win === true || r.win === false)).map((r, i) => {
+    const listHtml = records.filter(r => r && typeof r === 'object' && Object.keys(r).length > 0).map((r, i) => {
+        if (!r.stageName && r.win == null) return '';
         let resultColor = r.win ? "text-violet-300" : "text-red-400";
         let resultText = r.stageName || (r.win ? "勝利" : "失敗");
         let dateObj = new Date(r.date || 0);
@@ -1046,7 +1047,7 @@ export function renderHistoryModal(records, metaData) {
                 </div>
             </div>
         </div>`;
-    }).reverse().join('');
+    }).filter(Boolean).reverse().join('');
 
     el.historyContent.innerHTML =
         (pbHtml ? `<div class="history-pb-sticky">${pbHtml}</div>` : '') +

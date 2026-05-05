@@ -1,5 +1,10 @@
 # 比比丟八-BIBBIDIBA [2.0版] 更新紀錄
 
+### Fix：歷史紀錄過濾條件放寬與存檔欄位補強 [2026/05/05]
+* **`ui.js` `records.filter`**：條件放寬為 `r && typeof r === 'object' && Object.keys(r).length > 0`，不再依賴 `r.date > 0`（舊 ISO 字串格式無法通過數值比較），改由 map 內第一行 `if (!r.stageName && r.win == null) return ''` 作 fallback 排除空殼物件。
+* **`ui.js` `.filter(Boolean)`**：在 `.reverse().join('')` 前插入 `.filter(Boolean)`，過濾 map 回傳的空字串，防止空白卡片渲染。
+* **`main.js` `recordHistory`**：`date` 由 `new Date().toISOString()` 改為 `Date.now()`（數值時間戳），與 `new Date(r.date)` 建構子相容；`stageName` 加入 `|| '未知關卡'` fallback，確保三個必填欄位（`stageName`、`win`、`date`）永遠存在於存檔紀錄中。
+
 ### Fix：歷史 Modal Flex 布局精確修正 & 過濾條件強化 [2026/05/05]
 * **CSS `#history-modal > div`**：新增 `display: flex !important; flex-direction: column !important; overflow: hidden !important;`，使外層容器成為 flex 父層，配合 `max-height: 85vh` 限高後由子元素自然分配高度。
 * **CSS `#history-content`**：移除 `max-height: 85vh;`，改為 `flex: 1;`，讓內容區完整填滿外層 flex 容器剩餘空間，`overflow: hidden; min-height: 0;` 保持不變。
