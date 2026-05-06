@@ -158,7 +158,12 @@ export const ja_data = {
     'rule_d2': { name: 'オールユニーク', desc: '8つの数字が全て異なる' },
     'rule_d3': { name: '中庸の道', desc: '盤面に1と8が一つも無い' },
     'rule_d4': { name: 'フィボナッチ数列', desc: '112358' },
-    'rule_d5': { name: '円周率', desc: '3.1415' }
+    'rule_d5': { name: '円周率', desc: '3.1416' },
+    'rule_d6': { name: '自然対数', desc: '271828' },
+    'rule_d7': { name: 'バイナリ', desc: '1248' },
+    'rule_d8': { name: '絶対バイナリ', desc: '11224488' },
+    'rule_d9': { name: '素数', desc: '2357' },
+    'rule_d10': { name: '絶対素数', desc: '22335577' }
   },
 ui: {
     mute: 'ミュート', btn_confirm: '確認',

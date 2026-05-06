@@ -158,7 +158,12 @@ export const zh_cn_data = {
     'rule_d2': { name: '全异', desc: '8颗数字皆不相同' },
     'rule_d3': { name: '中庸之道', desc: '盘面完全没有 1 和 8' },
     'rule_d4': { name: '斐波那契数列', desc: '112358' },
-    'rule_d5': { name: '圆周率', desc: '3.1415' }
+    'rule_d5': { name: '圆周率', desc: '3.1416' },
+    'rule_d6': { name: '自然对数', desc: '271828' },
+    'rule_d7': { name: '二进制', desc: '1248' },
+    'rule_d8': { name: '绝对二进制', desc: '11224488' },
+    'rule_d9': { name: '质数', desc: '2357' },
+    'rule_d10': { name: '绝对质数', desc: '22335577' }
   },
 ui: {
     mute: '静音', btn_confirm: '确认',
