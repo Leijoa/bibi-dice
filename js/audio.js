@@ -85,3 +85,19 @@ export function playClickSound() {
     if (sfxVolume <= 0) return;
     playTone(400, 'sine', 0.05, 0.05);
 }
+
+export function playScoreStepSound(stepCount, isFinal = false) {
+    if (sfxVolume <= 0) return;
+
+    if (isFinal) {
+        // 結算完成時的清脆高音 (8-bit 勝利感)
+        playTone(880, 'square', 0.1, 0.1);
+        setTimeout(() => playTone(1760, 'square', 0.3, 0.15), 80);
+    } else {
+        // 隨著步驟疊加，音調越來越高 (基礎 400Hz，每步增加 80Hz)
+        let freq = 400 + (stepCount * 80);
+        // 限制最高音頻避免刺耳
+        freq = Math.min(freq, 1200);
+        playTone(freq, 'square', 0.06, 0.08);
+    }
+}

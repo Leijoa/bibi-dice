@@ -1,6 +1,7 @@
 // js/ui.js
 import { RARITY, RELIC_DB, ENEMY_DB, RULE_DB, SHACKLE_DB, getEnemy, FUSION_RECIPES } from './data.js';
 import { i18n } from './i18n.js';
+import * as Audio from './audio.js';
 window.i18n = i18n;
 
 const SOULS_UPG_DEFS = [
@@ -741,6 +742,7 @@ export function playDamageStepsAnimation(steps, callback) {
     const playNext = () => {
         if (i >= steps.length) { callback(); return; }
         const step = steps[i++];
+        Audio.playScoreStepSound(i, step.final);
 
         if (step.final) {
             countUpTo(el.finalScoreValue, step.damageAfter, 150, callback);
