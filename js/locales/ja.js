@@ -161,6 +161,7 @@ export const ja_data = {
     'rule_d5': { name: '円周率', desc: '3.1415' }
   },
 ui: {
+    mute: 'ミュート', btn_confirm: '確認',
     elite_tag: ' [エリート]',
     boss_tag: ' [ボス]',
     btn_settings: '⚙️ 設定',

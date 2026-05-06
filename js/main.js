@@ -520,6 +520,20 @@ function initTitleScreen() {
     const settingsModal = document.getElementById('settings-modal');
     const bgmSlider = document.getElementById('bgm-volume-slider');
     const sfxSlider = document.getElementById('sfx-volume-slider');
+    const bgmMuteToggle = document.getElementById('bgm-mute-toggle');
+    const sfxMuteToggle = document.getElementById('sfx-mute-toggle');
+
+    const applyMuteToggleUI = (el, isMuted) => {
+        if (!el) return;
+        const thumb = el.querySelector('span');
+        el.setAttribute('aria-checked', isMuted ? 'true' : 'false');
+        el.classList.toggle('bg-red-600', isMuted);
+        el.classList.toggle('bg-slate-600', !isMuted);
+        if (thumb) {
+            thumb.classList.toggle('translate-x-5', isMuted);
+            thumb.classList.toggle('translate-x-1', !isMuted);
+        }
+    };
     const settingsLangSelect = document.getElementById('settings-lang-select');
 
     // Load saved settings
@@ -535,6 +549,14 @@ function initTitleScreen() {
                 Audio.setSFXVolume(savedSettings.sfxVolume);
                 if (sfxSlider) sfxSlider.value = savedSettings.sfxVolume;
             }
+            if (savedSettings.bgmMuted !== undefined) {
+                Audio.setBGMMute(savedSettings.bgmMuted);
+                if (bgmMuteToggle) applyMuteToggleUI(bgmMuteToggle, savedSettings.bgmMuted);
+            }
+            if (savedSettings.sfxMuted !== undefined) {
+                Audio.setSFXMute(savedSettings.sfxMuted);
+                if (sfxMuteToggle) applyMuteToggleUI(sfxMuteToggle, savedSettings.sfxMuted);
+            }
         } catch (e) {
             console.error("Failed to parse settings", e);
         }
@@ -543,7 +565,9 @@ function initTitleScreen() {
     const saveSettings = () => {
         localStorage.setItem('bibbidiba_settings', JSON.stringify({
             bgmVolume: parseFloat(bgmSlider.value),
-            sfxVolume: parseFloat(sfxSlider.value)
+            sfxVolume: parseFloat(sfxSlider.value),
+            bgmMuted: bgmMuteToggle ? bgmMuteToggle.getAttribute('aria-checked') === 'true' : false,
+            sfxMuted: sfxMuteToggle ? sfxMuteToggle.getAttribute('aria-checked') === 'true' : false
         }));
     };
 
@@ -559,6 +583,25 @@ function initTitleScreen() {
             Audio.setSFXVolume(parseFloat(e.target.value));
             saveSettings();
             Audio.playClickSound(); // Preview SFX volume
+        });
+    }
+
+    if (bgmMuteToggle) {
+        bgmMuteToggle.addEventListener('click', () => {
+            const isMuted = bgmMuteToggle.getAttribute('aria-checked') !== 'true';
+            Audio.setBGMMute(isMuted);
+            applyMuteToggleUI(bgmMuteToggle, isMuted);
+            saveSettings();
+        });
+    }
+
+    if (sfxMuteToggle) {
+        sfxMuteToggle.addEventListener('click', () => {
+            const isMuted = sfxMuteToggle.getAttribute('aria-checked') !== 'true';
+            Audio.setSFXMute(isMuted);
+            applyMuteToggleUI(sfxMuteToggle, isMuted);
+            saveSettings();
+            if (!isMuted) Audio.playClickSound(); // Preview if unmuted
         });
     }
 
@@ -615,12 +658,10 @@ function initTitleScreen() {
         };
     }
 
-    const btnSettingsBack = document.getElementById('btn-settings-back-to-title');
-    if (btnSettingsBack) {
-        btnSettingsBack.onclick = () => {
-            if (window.confirm(i18n.t('ui.confirm_back_title'))) {
-                location.reload();
-            }
+    const btnSettingsConfirm = document.getElementById('btn-settings-confirm');
+    if (btnSettingsConfirm) {
+        btnSettingsConfirm.onclick = () => {
+            if (settingsModal) settingsModal.classList.add('hidden');
         };
     }
 }

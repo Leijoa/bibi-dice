@@ -161,6 +161,7 @@ export const zh_tw_data = {
     'rule_d5': { name: '圓周率', desc: '3.1415' }
   },
 ui: {
+    mute: '靜音', btn_confirm: '確認',
     elite_tag: ' [菁英]',
     boss_tag: ' [Boss]',
     btn_settings: '⚙️ 設定',

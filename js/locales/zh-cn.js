@@ -161,6 +161,7 @@ export const zh_cn_data = {
     'rule_d5': { name: '圆周率', desc: '3.1415' }
   },
 ui: {
+    mute: '静音', btn_confirm: '确认',
     elite_tag: ' [精英]',
     boss_tag: ' [Boss]',
     btn_settings: '⚙️ 设置',
