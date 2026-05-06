@@ -268,7 +268,7 @@ function applyCombatShackles(dmg, actualDamage, isEnemyDefeated) {
         let threshold = stage.enemyMaxHp * 0.10;
         if (dmg < threshold) {
             player.hp--;
-            if (player.relics.includes('berserker')) {
+            if (player.hp > 0 && player.relics.includes('berserker')) {
                 player.berserkerBonus = (player.berserkerBonus || 0) + 1;
                 UI.showToast(i18n.t('messages.toast_berserker'));
             }
@@ -1321,7 +1321,7 @@ window.fireAttack = function() {
                 stage.turnsLeft--;
                 if (stage.turnsLeft <= 0) {
                     player.hp--;
-                    if (player.relics.includes('berserker')) {
+                    if (player.hp > 0 && player.relics.includes('berserker')) {
                         player.berserkerBonus = (player.berserkerBonus || 0) + 1;
                         UI.showToast(i18n.t('messages.toast_berserker'));
                     }
