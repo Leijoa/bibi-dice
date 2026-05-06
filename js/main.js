@@ -6,6 +6,36 @@ import * as Audio from './audio.js';
 import { i18n } from './i18n.js';
 
 
+function getWeightedRandomRelics(availableList, count, customWeights = null) {
+    // Default weights: Common 50%, Rare 30%, Epic 15%, Legendary 5%
+    const weights = customWeights || { 1: 50, 2: 30, 3: 15, 4: 5 }; 
+    let result = [];
+    let pool = [...availableList];
+
+    for (let i = 0; i < count; i++) {
+        if (pool.length === 0) break;
+        
+        let totalWeight = pool.reduce((sum, item) => sum + (weights[item.rarity] || 10), 0);
+        let rand = Math.random() * totalWeight;
+        let cumulative = 0;
+        let selectedIdx = -1;
+        
+        for (let j = 0; j < pool.length; j++) {
+            cumulative += (weights[pool[j].rarity] || 10);
+            if (rand <= cumulative) {
+                selectedIdx = j;
+                break;
+            }
+        }
+        
+        if (selectedIdx !== -1) {
+            result.push(pool[selectedIdx]);
+            pool.splice(selectedIdx, 1);
+        }
+    }
+    return result;
+}
+
 export function getEnemyWithMeta(levelIndex) {
     let baseEnemy = getEnemy(levelIndex);
     let burstLevel = metaData.upgrades.soulBurst || 0;
@@ -1540,7 +1570,8 @@ function enemyDefeated() {
     let isEliteOrBossDrop = isElite(stage.level) || isBoss(stage.level);
 
     if (isEliteOrBossDrop && availableForShop.length > 0) {
-        let randomRelic = availableForShop[Math.floor(Math.random() * availableForShop.length)];
+        let dropWeights = { 1: 20, 2: 40, 3: 30, 4: 10 };
+        let randomRelic = getWeightedRandomRelics(availableForShop, 1, dropWeights)[0];
         player.relics.push(randomRelic.id);
         unlockCollectionItem('relic', randomRelic.id);
 
@@ -1657,8 +1688,7 @@ window.rerollShop = function(isInitial = false) {
         available = nonDuplicateAvailable;
     }
 
-    available.sort(() => 0.5 - Math.random());
-    let selectedItems = available.slice(0, 3);
+    let selectedItems = getWeightedRandomRelics(available, 3);
 
     // If empty or infinite mode, inject consumables
     if (selectedItems.length < 3 || player.isInfiniteMode) {
@@ -1667,10 +1697,10 @@ window.rerollShop = function(isInitial = false) {
         if (nonDuplicateCons.length >= (3 - selectedItems.length)) {
             cons = nonDuplicateCons;
         }
-        cons.sort(() => 0.5 - Math.random());
-
-        while(selectedItems.length < 3 && cons.length > 0) {
-            selectedItems.push(cons.pop());
+        let itemsNeeded = 3 - selectedItems.length;
+        let consSelected = getWeightedRandomRelics(cons, itemsNeeded);
+        for (let c of consSelected) {
+            selectedItems.push(c);
         }
     }
 
