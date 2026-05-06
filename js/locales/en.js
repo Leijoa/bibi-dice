@@ -158,7 +158,12 @@ export const en_data = {
     'rule_d2': { name: 'All Unique', desc: 'All 8 numbers are different' },
     'rule_d3': { name: 'The Middle Way', desc: 'Board contains exactly zero 1s and 8s' },
     'rule_d4': { name: 'Fibonacci', desc: '112358' },
-    'rule_d5': { name: 'Pi', desc: '3.1415' }
+    'rule_d5': { name: 'Pi', desc: '3.1416' },
+    'rule_d6': { name: 'Natural Logarithm', desc: '271828' },
+    'rule_d7': { name: 'Binary', desc: '1248' },
+    'rule_d8': { name: 'Absolute Binary', desc: '11224488' },
+    'rule_d9': { name: 'Primes', desc: '2357' },
+    'rule_d10': { name: 'Absolute Primes', desc: '22335577' }
   },
 ui: {
     mute: 'Mute', btn_confirm: 'Confirm',

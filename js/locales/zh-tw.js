@@ -158,7 +158,12 @@ export const zh_tw_data = {
     'rule_d2': { name: '全異', desc: '8顆數字皆不相同' },
     'rule_d3': { name: '中庸之道', desc: '盤面完全沒有 1 和 8' },
     'rule_d4': { name: '斐波那契數列', desc: '112358' },
-    'rule_d5': { name: '圓周率', desc: '3.1415' }
+    'rule_d5': { name: '圓周率', desc: '3.1416' },
+    'rule_d6': { name: '自然對數', desc: '271828' },
+    'rule_d7': { name: '二進位', desc: '1248' },
+    'rule_d8': { name: '絕對二進位', desc: '11224488' },
+    'rule_d9': { name: '質數', desc: '2357' },
+    'rule_d10': { name: '絕對質數', desc: '22335577' }
   },
 ui: {
     mute: '靜音', btn_confirm: '確認',
