@@ -1,4 +1,6 @@
 export const en_data = {
+  monsters: { 'monster_1':'Bloodthirsty Beast', 'monster_2':'Nether Bone Dragon', 'monster_3':'Abyssal Maw', 'monster_4':'Void Behemoth', 'monster_5':'Astral Guardian', 'monster_6':'Infernal Hound', 'monster_7':'Frost Giant', 'monster_8':'Venomous Spider', 'monster_9':'Enraged Ogre', 'monster_10':'Shadow Assassin', 'monster_11':'Flame Sprite', 'monster_12':'Earth Demon Bear', 'monster_13':'Chaos Demon', 'monster_14':'Blood Banshee', 'monster_15':'Skeleton Lord', 'monster_16':'Mist Wraith', 'monster_17':'Thunder Eagle', 'monster_18':'Storm Elemental', 'monster_19':'Stone Troll', 'monster_20':'Corrupted Treant', 'monster_21':'Two-Headed Wyvern', 'monster_22':'Soul-Devouring Ghost', 'monster_23':'Nightmare Knight', 'monster_24':'Deep Sea Kraken', 'monster_25':'Venomous Hydra', 'monster_26':'Sunbird', 'monster_27':'Dark Moon Werewolf', 'monster_28':'Iron Golem', 'monster_29':'Voidwalker', 'monster_30':'Plaguebringer', 'monster_31':'Pitch-Black Pterosaur', 'monster_32':'Fanatical Cultist', 'monster_33':'Grudge Amalgamation', 'monster_34':'Death Knight', 'monster_35':'Blood Colossus', 'monster_36':'Phantom Assassin', 'monster_37':'Toxic Slime King', 'monster_38':'Flaming Cerberus', 'monster_39':'Frost Wyvern', 'monster_40':'Abyss Watcher', 'monster_41':'Void Aberration', 'monster_42':'Chaos Hydra', 'monster_43':'Skeletal Dragon', 'monster_44':'Mist Lurker', 'monster_45':'Thunder Battlebear', 'monster_46':'Storm Lord', 'monster_47':'Lava Behemoth', 'monster_48':'Corrupted Evil God', 'monster_49':'Nightmare Devourer', 'monster_50':'Astral Ranger' },
+
   relics: {
     'b1': { name: '[Freshman]', desc: '1s are counted as 10 points' },
     'b2': { name: '[Sophomore]', desc: '2s are counted as 10 points' },
@@ -159,6 +161,8 @@ export const en_data = {
     'rule_d5': { name: 'Pi', desc: '3.1415' }
   },
 ui: {
+    elite_tag: ' [Elite]',
+    boss_tag: ' [Boss]',
     btn_settings: '⚙️ Settings',
     settings_title: '⚙️ Game Settings',
     bgm_volume: '🎵 BGM Volume',
