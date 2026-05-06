@@ -161,6 +161,7 @@ export const en_data = {
     'rule_d5': { name: 'Pi', desc: '3.1415' }
   },
 ui: {
+    mute: 'Mute', btn_confirm: 'Confirm',
     elite_tag: ' [Elite]',
     boss_tag: ' [Boss]',
     btn_settings: '⚙️ Settings',
