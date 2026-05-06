@@ -157,13 +157,13 @@ export const en_data = {
     'rule_d1': { name: 'Absolute Order', desc: '7+ numbers are all odd or all even' },
     'rule_d2': { name: 'All Unique', desc: 'All 8 numbers are different' },
     'rule_d3': { name: 'The Middle Way', desc: 'Board contains exactly zero 1s and 8s' },
-    'rule_d4': { name: 'Fibonacci', desc: '112358' },
-    'rule_d5': { name: 'Pi', desc: '3.1416' },
-    'rule_d6': { name: 'Natural Logarithm', desc: '271828' },
-    'rule_d7': { name: 'Binary', desc: '1248' },
-    'rule_d8': { name: 'Absolute Binary', desc: '11224488' },
-    'rule_d9': { name: 'Primes', desc: '2357' },
-    'rule_d10': { name: 'Absolute Primes', desc: '22335577' }
+    'rule_d4': { name: 'Fibonacci', desc: 'Nature\'s hidden golden spiral formula (112358)' },
+    'rule_d5': { name: 'Pi', desc: 'Precise rounding, the basic romance of science students (3.1416)' },
+    'rule_d6': { name: 'Natural Logarithm', desc: 'A constant etched in the DNA of the universe and engineers (271828)' },
+    'rule_d7': { name: 'Binary', desc: 'There are only 10 types of people who understand this code (1248)' },
+    'rule_d8': { name: 'Absolute Binary', desc: 'The ultimate pleasure of fully populated dual-channel RAM (11224488)' },
+    'rule_d9': { name: 'Primes', desc: 'The priest says to count prime numbers when you are nervous (2357)' },
+    'rule_d10': { name: 'Absolute Primes', desc: 'Priest\'s ecstasy! Double the loneliness, double the reassurance (22335577)' }
   },
 ui: {
     mute: 'Mute', btn_confirm: 'Confirm',

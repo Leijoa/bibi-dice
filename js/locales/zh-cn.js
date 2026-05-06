@@ -157,13 +157,13 @@ export const zh_cn_data = {
     'rule_d1': { name: '绝对秩序', desc: '7颗以上数字为全奇数或全偶数' },
     'rule_d2': { name: '全异', desc: '8颗数字皆不相同' },
     'rule_d3': { name: '中庸之道', desc: '盘面完全没有 1 和 8' },
-    'rule_d4': { name: '斐波那契数列', desc: '112358' },
-    'rule_d5': { name: '圆周率', desc: '3.1416' },
-    'rule_d6': { name: '自然对数', desc: '271828' },
-    'rule_d7': { name: '二进制', desc: '1248' },
-    'rule_d8': { name: '绝对二进制', desc: '11224488' },
-    'rule_d9': { name: '质数', desc: '2357' },
-    'rule_d10': { name: '绝对质数', desc: '22335577' }
+    'rule_d4': { name: '斐波那契数列', desc: '大自然隐藏的黄金螺旋公式 (112358)' },
+    'rule_d5': { name: '圆周率', desc: '精准四舍五入，理科生的基本浪漫 (3.1416)' },
+    'rule_d6': { name: '自然对数', desc: '刻在宇宙与工程师 DNA 里的常数 (271828)' },
+    'rule_d7': { name: '二进制', desc: '世界上只有 10 种人懂得这组密码 (1248)' },
+    'rule_d8': { name: '绝对二进制', desc: '双通道内存插满的极致愉悦 (11224488)' },
+    'rule_d9': { name: '质数', desc: '神父说紧张的时候就要数质数 (2357)' },
+    'rule_d10': { name: '绝对质数', desc: '神父狂喜！双倍的孤独，双倍的安心感 (22335577)' }
   },
 ui: {
     mute: '静音', btn_confirm: '确认',
