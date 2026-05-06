@@ -1080,7 +1080,7 @@ window.executeRoll = function(isInitial = false) {
                 activeRelics = player.relics.filter(r => !stage.shackleMeta.ignoredRelics.includes(r));
             }
 
-            battle.scoreResult = calculateEngineScore(battle.dice, activeRelics, battle.rollsLeft, player.hp, shackleConfig ? [shackleConfig] : [], stage.turnsLeft, { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled });
+            battle.scoreResult = calculateEngineScore(battle.dice, activeRelics, battle.rollsLeft, player.hp, shackleConfig ? [shackleConfig] : [], stage.turnsLeft, { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled, finalDamageUpgrade: metaData?.upgrades?.finalDamage || 0, damageBuffMulti: stage.damageBuffMulti || 1.0, isEliteOrBoss: isElite(stage.level) || isBoss(stage.level) });
 
             if (stage.activeShackle === 'blind' && stage.shackleMeta) {
                 let unlockedIndices = battle.dice.map((d, i) => !d.locked ? i : -1).filter(i => i !== -1);
@@ -1158,7 +1158,7 @@ window.fireAttack = function() {
             if (stage.activeShackle === 'relicseal' && stage.shackleMeta && stage.shackleMeta.ignoredRelics) {
                 activeRelics = player.relics.filter(r => !stage.shackleMeta.ignoredRelics.includes(r));
             }
-            battle.scoreResult = calculateEngineScore(battle.dice, activeRelics, battle.rollsLeft, player.hp, shackleConfig ? [shackleConfig] : [], stage.turnsLeft, { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled });
+            battle.scoreResult = calculateEngineScore(battle.dice, activeRelics, battle.rollsLeft, player.hp, shackleConfig ? [shackleConfig] : [], stage.turnsLeft, { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled, finalDamageUpgrade: metaData?.upgrades?.finalDamage || 0, damageBuffMulti: stage.damageBuffMulti || 1.0, isEliteOrBoss: isElite(stage.level) || isBoss(stage.level) });
             UI.showToast(i18n.t('messages.toast_tremor'));
         }
     }
@@ -1180,34 +1180,12 @@ window.fireAttack = function() {
 
     // --- Compute final damage (all modifiers) ---
     let finalDamage = Math.floor(battle.scoreResult.finalScore);
-    if (player.relics.includes('dragonslayer') && (isElite(stage.level) || isBoss(stage.level))) {
-        finalDamage = Math.floor(Math.min(Number.MAX_SAFE_INTEGER, finalDamage * 1.5));
-    }
-    if (metaData && metaData.upgrades && metaData.upgrades.finalDamage > 0) {
-        let buffMulti = 1.0 + (metaData.upgrades.finalDamage * 0.1);
-        finalDamage = Math.floor(Math.min(Number.MAX_SAFE_INTEGER, finalDamage * buffMulti));
-    }
-    if (stage.damageBuffMulti > 1.0) {
-        finalDamage = Math.floor(Math.min(Number.MAX_SAFE_INTEGER, finalDamage * stage.damageBuffMulti));
-    }
 
     // --- Build animation steps ---
-    const env = { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled };
+    const env = { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled, finalDamageUpgrade: metaData?.upgrades?.finalDamage || 0, damageBuffMulti: stage.damageBuffMulti || 1.0, isEliteOrBoss: isElite(stage.level) || isBoss(stage.level) };
     let steps = calculateDamageSteps(battle.dice, activeRelics, battle.rollsLeft, player.hp, shackleConfig ? [shackleConfig] : [], stage.turnsLeft, env);
 
-    // Insert dragonslayer step before the final if applicable
-    if (player.relics.includes('dragonslayer') && (isElite(stage.level) || isBoss(stage.level))) {
-        const preSlayScore = Math.floor(battle.scoreResult.finalScore);
-        steps.splice(steps.length - 1, 0, {
-            relicId: 'dragonslayer',
-            relicName: (window.i18n ? window.i18n.t('relics.dragonslayer.name') : null) || '【屠龍者】',
-            type: 'multiply', multiplier: 1.5, bonus: null, damageAfter: Math.floor(preSlayScore * 1.5)
-        });
-        UI.showToast(i18n.t('messages.toast_dragonslayer'));
-    }
-    if (stage.damageBuffMulti > 1.0) {
-        UI.showToast(i18n.t('messages.toast_power', stage.damageBuffMulti));
-    }
+
     // Ensure final step shows actual finalDamage
     steps[steps.length - 1].damageAfter = finalDamage;
 

@@ -1,5 +1,11 @@
 # 比比丟八-BIBBIDIBA [2.0版] 更新紀錄
 
+### Fix：修復預估傷害失準與結算參數錯位問題 [2026/05/06]
+* **結算計算整合**：將【力量覺醒】(Meta升級)、【力量藥劑】(消耗品) 與【屠龍者】(遺物) 的加成計算移入 `engine.js` 的 `calculateEngineScore` 內統一處理。
+* **動畫與計算同步**：上述加成現在會直接寫入 `stepCollector` 以產生對應的結算動畫，避免預估傷害與實際數字脫鉤。
+* **移除冗餘參數**：修正了 `main.js` 呼叫 `calculateEngineScore` 時殘留的 `isInitialRoll` 參數佔位導致錯位的問題（現在全面透過 `env` 物件傳遞 `finalDamageUpgrade`, `damageBuffMulti`, `isEliteOrBoss` 來提供環境參數）。
+* **移除冗餘邏輯**：移除了 `main.js` 在 `fireAttack` 內手動計算上述三項加成與插入 step 陣列的代碼。
+
 ### Fix：逐步結算動畫步驟與實際傷害完全同步 [2026/05/05]
 * **根本原因修復**：舊 `calculateDamageSteps` 是事後手動重建步驟，與 `calculateEngineScore` 的實際計算有落差，導致動畫走完 D 區後仍有神秘跳值。
 * **engine.js — `calculateEngineScore` 加入 `stepCollector` 參數**：新增可選第九參數 `stepCollector = null`，在每個倍率修改點即時埋入步驟，確保順序與計算完全一致。

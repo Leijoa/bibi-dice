@@ -742,6 +742,35 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         }
     }
 
+
+    // === 處理外部與獨立乘區倍率 ===
+
+
+    // 1. 屠龍者 (Dragonslayer)
+    if (playerRelics.includes('dragonslayer') && env.isEliteOrBoss) {
+        result.globalMulti *= 1.5;
+        result.finalMultiplier *= 1.5;
+        result.globalNotes.push(`${getRelicName('dragonslayer', '【屠龍者】')} x1.5`);
+        _collect('dragonslayer', getRelicName('dragonslayer', '【屠龍者】'), 1.5);
+    }
+
+    // 2. 力量覺醒 (Meta 升級)
+    if (env.finalDamageUpgrade > 0) {
+        let buffMulti = 1.0 + (env.finalDamageUpgrade * 0.1);
+        result.globalMulti *= buffMulti;
+        result.finalMultiplier *= buffMulti;
+        result.globalNotes.push(`【力量覺醒】 x${buffMulti.toFixed(1)}`);
+        _collect('meta_final_damage', '【力量覺醒】', buffMulti);
+    }
+
+    // 3. 力量藥劑 (消耗品)
+    if (env.damageBuffMulti > 1.0) {
+        result.globalMulti *= env.damageBuffMulti;
+        result.finalMultiplier *= env.damageBuffMulti;
+        result.globalNotes.push(`【力量藥劑】 x${env.damageBuffMulti.toFixed(1)}`);
+        _collect('cons_power', '【力量藥劑】', env.damageBuffMulti);
+    }
+
     result.finalScore = Math.min(Number.MAX_SAFE_INTEGER, result.totalBase * result.finalMultiplier);
 
     // Step 3: fill in damageAfter for each collected step via running reconstruction
