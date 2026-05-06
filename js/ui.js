@@ -1160,7 +1160,7 @@ export function renderCollectionModal(tab) {
                 let ruleDesc = i18n.t(`rules.rule_${letter}${rIdx}.desc`) || rule.desc;
 
                 const nameStr = unlocked ? `${ruleName} <span class="text-emerald-400 text-xs ml-1">✅</span>` : `???`;
-                const descStr = unlocked ? ruleDesc : i18n.t('locked'); // Hardcoded fallback for now
+                const descStr = unlocked ? ruleDesc : i18n.t('ui.locked'); // Hardcoded fallback for now
                 const opacity = unlocked ? 'opacity-100' : 'opacity-50 grayscale';
                 let rStyle = RARITY[rule.rarity] || RARITY[1];
                 let nameColor = unlocked ? rStyle.color : 'text-slate-200';
@@ -1210,7 +1210,7 @@ export function renderCollectionModal(tab) {
                     <div class="flex justify-between items-start mb-1">
                         <h3 class="text-sm md:text-base font-black text-slate-500">???</h3>
                     </div>
-                    <p class="text-xs md:text-sm text-slate-600 font-bold">${i18n.t('locked_relic')}</p>
+                    <p class="text-xs md:text-sm text-slate-600 font-bold">${i18n.t('ui.locked_relic')}</p>
                 </div>`;
             }
         });
@@ -1238,7 +1238,7 @@ export function renderCollectionModal(tab) {
                     <div class="flex justify-between items-start mb-1">
                         <h3 class="text-sm md:text-base font-black text-slate-500">???</h3>
                     </div>
-                    <p class="text-xs md:text-sm text-slate-600 font-bold">${i18n.t('locked_shackle')}</p>
+                    <p class="text-xs md:text-sm text-slate-600 font-bold">${i18n.t('ui.locked_shackle')}</p>
                 </div>`;
             }
         });
