@@ -1,3 +1,9 @@
+
+### Feature：無限塔敵人名稱多國語系動態生成 [2026/05/06]
+* **存檔擴充**：`main.js` 的 `saveGame` 與 `loadStage` 中新增 `infiniteMonsterId` 欄位（1-50），確保無盡模式下的敵人隨機 ID 可持久化存取。
+* **介面更新**：`ui.js` 的 `updateEnemyUI` 現改以 `i18n.t` 讀取動態 ID (`monsters.monster_X`) 取代寫死的中文陣列替換，並根據層數動態附加在地化的菁英與 Boss 標籤。
+* **語系更新**：同步擴充四國語系（`zh-tw.js`, `zh-cn.js`, `en.js`, `ja.js`），於 `ui` 節點新增 `elite_tag` 與 `boss_tag`，並於根目錄匯出 50 隻全新設計的無限塔專屬怪物名稱清單。
+
 # 比比丟八-BIBBIDIBA [2.0版] 更新紀錄
 
 ### Bug Fix：血量歸零時越戰越勇遺物觸發修正 [2026/05/06]

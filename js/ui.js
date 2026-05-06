@@ -194,10 +194,21 @@ export function updateEnemyUI(stage) {
     }
 
     let localizedEnemyName = enemy.name;
+
     if (stage.level < ENEMY_DB.length) {
         localizedEnemyName = i18n.t(`enemies.enemy_${stage.level}`) || enemy.name;
     } else {
-        localizedEnemyName = enemy.name.replace('虛空幻影', i18n.t('infinite_enemy_prefix') || '虛空幻影');
+        // Handle Infinite Tower dynamically via i18n
+        let baseName = i18n.t(`monsters.monster_${stage.infiniteMonsterId}`);
+
+        let infiniteLevel = stage.level - ENEMY_DB.length + 1;
+        let m = ((infiniteLevel - 1) % 3) + 1;
+
+        let eliteTag = i18n.t('ui.elite_tag') !== 'ui.elite_tag' ? i18n.t('ui.elite_tag') : ' [菁英]';
+        let bossTag = i18n.t('ui.boss_tag') !== 'ui.boss_tag' ? i18n.t('ui.boss_tag') : ' [Boss]';
+
+        let tag = m === 3 ? bossTag : (m === 2 ? eliteTag : '');
+        localizedEnemyName = `${baseName}${tag}`;
     }
 
     // Layer badge

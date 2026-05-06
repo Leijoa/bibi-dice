@@ -1,4 +1,6 @@
 export const zh_tw_data = {
+  monsters: { 'monster_1':'噬血狂獸', 'monster_2':'幽冥骨龍', 'monster_3':'深淵巨口', 'monster_4':'虛空巨獸', 'monster_5':'星界守衛', 'monster_6':'煉獄魔犬', 'monster_7':'冰霜巨人', 'monster_8':'劇毒蜘蛛', 'monster_9':'狂暴食人魔', 'monster_10':'暗影刺客', 'monster_11':'烈焰精靈', 'monster_12':'大地魔熊', 'monster_13':'混沌惡魔', 'monster_14':'鮮血女妖', 'monster_15':'骸骨領主', 'monster_16':'迷霧怨靈', 'monster_17':'雷霆巨鷹', 'monster_18':'風暴元素', 'monster_19':'岩石巨魔', 'monster_20':'腐化樹精', 'monster_21':'雙頭飛龍', 'monster_22':'噬魂幽靈', 'monster_23':'夢魘騎士', 'monster_24':'深海巨魷', 'monster_25':'劇毒九頭蛇', 'monster_26':'烈陽神鳥', 'monster_27':'暗月狼人', 'monster_28':'鋼鐵魔像', 'monster_29':'虛空行者', 'monster_30':'瘟疫使者', 'monster_31':'漆黑翼龍', 'monster_32':'狂熱邪教徒', 'monster_33':'怨念聚合體', 'monster_34':'死亡騎士', 'monster_35':'鮮血巨像', 'monster_36':'幻影刺客', 'monster_37':'劇毒史萊姆王', 'monster_38':'烈焰三頭犬', 'monster_39':'寒冰飛龍', 'monster_40':'深淵監視者', 'monster_41':'虛空畸變體', 'monster_42':'混沌九頭蛇', 'monster_43':'骸骨巨龍', 'monster_44':'迷霧潛伏者', 'monster_45':'雷霆戰熊', 'monster_46':'風暴領主', 'monster_47':'熔岩巨獸', 'monster_48':'腐化邪神', 'monster_49':'夢魘吞噬者', 'monster_50':'星界遊俠' },
+
   relics: {
     'b1': { name: '【大一】', desc: '1 以 10 點計算' },
     'b2': { name: '【大二】', desc: '2 以 10 點計算' },
@@ -159,6 +161,8 @@ export const zh_tw_data = {
     'rule_d5': { name: '圓周率', desc: '3.1415' }
   },
 ui: {
+    elite_tag: ' [菁英]',
+    boss_tag: ' [Boss]',
     btn_settings: '⚙️ 設定',
     settings_title: '⚙️ 遊戲設定',
     bgm_volume: '🎵 音樂音量',

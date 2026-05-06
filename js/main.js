@@ -309,7 +309,8 @@ function saveGame() {
             turnsLeft: stage.turnsLeft,
             activeShackle: stage.activeShackle,
             shackleMeta: stage.shackleMeta,
-            hasAttackedThisStage: stage.hasAttackedThisStage
+            hasAttackedThisStage: stage.hasAttackedThisStage,
+            infiniteMonsterId: stage.infiniteMonsterId
         },
         battle: {
             state: battle.state,
@@ -770,6 +771,7 @@ function loadStage(levelIndex, isLoad = false, parsedData = null) {
         stage.activeShackle = parsedData.stage.activeShackle || null;
         stage.shackleMeta = parsedData.stage.shackleMeta || null;
         stage.hasAttackedThisStage = parsedData.stage.hasAttackedThisStage || false;
+        stage.infiniteMonsterId = parsedData.stage.infiniteMonsterId || null;
 
         if (parsedData.player && parsedData.player.isInfiniteMode !== undefined) {
             player.isInfiniteMode = parsedData.player.isInfiniteMode;
@@ -789,6 +791,11 @@ function loadStage(levelIndex, isLoad = false, parsedData = null) {
         stage.enemyHp = enemy.hp;
         stage.turnsLeft = enemy.turns;
         stage.hasAttackedThisStage = false;
+        if (levelIndex >= ENEMY_DB.length) {
+            stage.infiniteMonsterId = Math.floor(Math.random() * 50) + 1;
+        } else {
+            stage.infiniteMonsterId = null;
+        }
         
         let shackleAssignment = assignShackleForStage(levelIndex);
         stage.activeShackle = shackleAssignment.id;

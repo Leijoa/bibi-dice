@@ -1,4 +1,6 @@
 export const ja_data = {
+  monsters: { 'monster_1':'吸血の狂獣', 'monster_2':'冥界の骨竜', 'monster_3':'深淵の巨口', 'monster_4':'虚空の巨獣', 'monster_5':'星界の守護者', 'monster_6':'煉獄の魔犬', 'monster_7':'霜の巨人', 'monster_8':'猛毒の蜘蛛', 'monster_9':'狂暴なオーガ', 'monster_10':'暗影の暗殺者', 'monster_11':'炎の精霊', 'monster_12':'大地の魔熊', 'monster_13':'混沌の悪魔', 'monster_14':'鮮血のバンシー', 'monster_15':'骸骨の領主', 'monster_16':'霧の怨霊', 'monster_17':'雷の巨鷲', 'monster_18':'嵐のエレメンタル', 'monster_19':'岩のトロール', 'monster_20':'腐敗した樹精', 'monster_21':'双頭のワイバーン', 'monster_22':'魂喰らいの幽霊', 'monster_23':'悪夢の騎士', 'monster_24':'深海のクラーケン', 'monster_25':'猛毒のヒドラ', 'monster_26':'太陽の神鳥', 'monster_27':'暗月の狼男', 'monster_28':'鋼鉄のゴーレム', 'monster_29':'ヴォイドウォーカー', 'monster_30':'疫病の使者', 'monster_31':'漆黒の翼竜', 'monster_32':'狂信的な邪教徒', 'monster_33':'怨念の集合体', 'monster_34':'デスナイト', 'monster_35':'鮮血の巨像', 'monster_36':'幻影の暗殺者', 'monster_37':'猛毒スライムキング', 'monster_38':'炎のケルベロス', 'monster_39':'氷のワイバーン', 'monster_40':'深淵の監視者', 'monster_41':'虚空の異形', 'monster_42':'混沌のヒドラ', 'monster_43':'骸骨の巨竜', 'monster_44':'霧の潜伏者', 'monster_45':'雷の戦熊', 'monster_46':'嵐の領主', 'monster_47':'溶岩の巨獣', 'monster_48':'腐敗の邪神', 'monster_49':'悪夢を喰らう者', 'monster_50':'星界のレンジャー' },
+
   relics: {
     'b1': { name: '【大一】', desc: '1を10点として計算' },
     'b2': { name: '【大二】', desc: '2を10点として計算' },
@@ -159,6 +161,8 @@ export const ja_data = {
     'rule_d5': { name: '円周率', desc: '3.1415' }
   },
 ui: {
+    elite_tag: ' [エリート]',
+    boss_tag: ' [ボス]',
     btn_settings: '⚙️ 設定',
     settings_title: '⚙️ ゲーム設定',
     bgm_volume: '🎵 BGM音量',
