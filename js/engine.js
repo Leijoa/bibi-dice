@@ -691,7 +691,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         _collect('brink', getRelicName('brink', '【極限拉扯】'), amt);
     }
 
-    let rerollMulti = 1.0 + (rollsLeft * 0.5);
+    let rerollMulti = Math.min(3.0, 1.0 + (rollsLeft * 0.5));
     if (rollsLeft > 0) {
         globalMulti *= rerollMulti;
         let resourceBonusMsg = typeof window !== 'undefined' && window.i18n ? window.i18n.t('ui.bonus_reroll', rollsLeft) : `剩餘資源加成 (剩 ${rollsLeft} 次)`;
