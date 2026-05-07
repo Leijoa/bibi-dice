@@ -479,8 +479,8 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     }
 
     if (counts[1] + counts[8] === 8 && workingDice.length === 8) tagD = { name: '兩極', multi: 30.0, used: workingDice.map(d=>d.val) };
-    else if (counts[1] === 2 && counts[2] === 2 && counts[4] === 2 && counts[8] === 2) tagD = { name: '絕對二進位', multi: 10.0, used: [1,1,2,2,4,4,8,8] };
-    else if (counts[2] === 2 && counts[3] === 2 && counts[5] === 2 && counts[7] === 2) tagD = { name: '絕對質數', multi: 10.0, used: [2,2,3,3,5,5,7,7] };
+    else if (counts[1] === 2 && counts[2] === 2 && counts[4] === 2 && counts[8] === 2) tagD = { name: '絕對二進位', multi: 30.0, used: [1,1,2,2,4,4,8,8] };
+    else if (counts[2] === 2 && counts[3] === 2 && counts[5] === 2 && counts[7] === 2) tagD = { name: '絕對質數', multi: 30.0, used: [2,2,3,3,5,5,7,7] };
     else if (freqs.length === 8 && workingDice.length === 8) tagD = { name: '全異', multi: 10.0, used: workingDice.map(d=>d.val) };
     else if (oddCount >= orderReq || evenCount >= orderReq) tagD = { name: '絕對秩序', multi: 8.0, used: orderUsed };
     else if (counts[1] >= 2 && counts[2] >= 1 && counts[3] >= 1 && counts[5] >= 1 && counts[8] >= 1) tagD = { name: '斐波那契數列', multi: 8.0, used: [1,1,2,3,5,8] };
