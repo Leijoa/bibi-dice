@@ -74,9 +74,23 @@ export const RELIC_DB = [
 
 
 export const CONSUMABLES_DB = [
+    { id: 'cons_bomb', name: '【起爆符】', desc: '', price: 110, rarity: 1 },
+    { id: 'cons_clover_3', name: '【幸運三葉草】', desc: '', price: 110, rarity: 1 },
+    { id: 'cons_clover_4', name: '【幸運四葉草】', desc: '', price: 110, rarity: 1 },
+    { id: 'cons_clover_5', name: '【幸運五葉草】', desc: '', price: 110, rarity: 1 },
+    { id: 'cons_clover_6', name: '【幸運六葉草】', desc: '', price: 110, rarity: 1 },
+    { id: 'cons_strike_a', name: '【精準打擊藥劑】', desc: '', price: 110, rarity: 2 },
+    { id: 'cons_fever_b', name: '【順子狂熱合劑】', desc: '', price: 110, rarity: 2 },
+    { id: 'cons_combo_c', name: '【複合強化藥劑】', desc: '', price: 110, rarity: 2 },
+    { id: 'cons_science_d', name: '【理科腦興奮劑】', desc: '', price: 110, rarity: 2 },
     { id: 'cons_power', name: '【力量藥劑】', desc: '下場戰鬥中，總傷害 x1.5 倍（單次消耗）', price: 110, rarity: 2 },
+    { id: 'cons_loaded_dice', name: '【灌鉛骰子】', desc: '', price: 110, rarity: 2 },
+    { id: 'cons_pliers', name: '【重型破壞鉗】', desc: '', price: 110, rarity: 3 },
+    { id: 'cons_doll', name: '【替身草人】', desc: '', price: 110, rarity: 3 },
     { id: 'cons_potential', name: '【潛能秘藥】', desc: '永久增加 50 點基礎點數總和', price: 310, rarity: 3 },
-    { id: 'cons_hp', name: '【生命紅藥】', desc: '立即回復 1 HP', price: 110, rarity: 1 }
+    { id: 'cons_hp', name: '【生命紅藥】', desc: '立即回復 1 HP', price: 110, rarity: 3 },
+    { id: 'cons_fruit', name: '【生命果實】', desc: '', price: 110, rarity: 4 },
+    { id: 'cons_guide', name: '【巧手指南】', desc: '', price: 110, rarity: 4 }
 ];
 
 export const ENEMY_DB = [

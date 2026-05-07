@@ -51,9 +51,23 @@ export const zh_cn_data = {
     'dragonslayer': { name: '【屠龙者】', desc: '面对「Boss」或「菁英怪」时，总伤害 x1.5。' }
   },
   consumables: {
-    'cons_power': { name: '【力量药剂】', desc: '下场战斗中，总伤害 x1.5 倍（单次消耗）' },
-    'cons_potential': { name: '【潜能秘药】', desc: '永久增加 50 点基础点数总和' },
-    'cons_hp': { name: '【生命红药】', desc: '立即回复 1 HP' }
+    'cons_bomb': { name: '【起爆符】', desc: '下局战斗，基础点数直接 +300。' },
+    'cons_clover_3': { name: '【幸运三叶草】', desc: '下局战斗，开场一定有三个3。' },
+    'cons_clover_4': { name: '【幸运四叶草】', desc: '下局战斗，开场一定有三个4。' },
+    'cons_clover_5': { name: '【幸运五叶草】', desc: '下局战斗，开场一定有三个5。' },
+    'cons_clover_6': { name: '【幸运六叶草】', desc: '下局战斗，开场一定有三个6。' },
+    'cons_strike_a': { name: '【精准打击药剂】', desc: '下局战斗，A 区 (同花/对子) 倍率额外 x2.0。' },
+    'cons_fever_b': { name: '【顺子狂热合剂】', desc: '下局战斗，B 区 (连顺) 倍率额外 x2.0。' },
+    'cons_combo_c': { name: '【复合强化药剂】', desc: '下局战斗，C 区 (复合) 倍率额外 x2.0。' },
+    'cons_science_d': { name: '【理科脑兴奋剂】', desc: '下局战斗，D 区 (特殊数列) 倍率额外 x2.0。' },
+    'cons_power': { name: '【力量药剂】', desc: '下场战斗，总伤害 x1.5 倍。' },
+    'cons_loaded_dice': { name: '【灌铅骰子】', desc: '下局战斗，额外获得 2 次重骰机会。' },
+    'cons_pliers': { name: '【重型破坏钳】', desc: '破坏下局战斗中的 1 个“枷锁”。' },
+    'cons_doll': { name: '【替身草人】', desc: '下局战斗，可抵挡一次 HP 扣除惩罚。' },
+    'cons_potential': { name: '【潜能秘药】', desc: '永久增加 50 点基础点数总和。' },
+    'cons_hp': { name: '【生命红药】', desc: '立即回复 1 HP。' },
+    'cons_fruit': { name: '【生命果实】', desc: '永久最大 HP +1。' },
+    'cons_guide': { name: '【巧手指南】', desc: '永久初始重骰次数 +1。' }
   },
   enemies: {
     'enemy_0': '史莱姆',

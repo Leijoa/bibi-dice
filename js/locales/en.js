@@ -51,9 +51,23 @@ export const en_data = {
     'dragonslayer': { name: '[Dragon Slayer]', desc: 'Total damage x1.5 against Bosses or Elites.' }
   },
   consumables: {
-    'cons_power': { name: '[Elixir of Power]', desc: 'Total damage x1.5 in the next battle (consumed upon use)' },
-    'cons_potential': { name: '[Secret Potential]', desc: 'Permanently adds 50 to total base points' },
-    'cons_hp': { name: '[Health Potion]', desc: 'Instantly restores 1 HP' }
+    'cons_bomb': { name: '[Explosive Tag]', desc: 'Next battle: Base points directly +300.' },
+    'cons_clover_3': { name: '[Lucky 3-Leaf Clover]', desc: 'Next battle: Starts with exactly three 3s.' },
+    'cons_clover_4': { name: '[Lucky 4-Leaf Clover]', desc: 'Next battle: Starts with exactly three 4s.' },
+    'cons_clover_5': { name: '[Lucky 5-Leaf Clover]', desc: 'Next battle: Starts with exactly three 5s.' },
+    'cons_clover_6': { name: '[Lucky 6-Leaf Clover]', desc: 'Next battle: Starts with exactly three 6s.' },
+    'cons_strike_a': { name: '[Precision Strike Potion]', desc: 'Next battle: Group A (Same/Pair) multiplier extra x2.0.' },
+    'cons_fever_b': { name: '[Straight Fever Mix]', desc: 'Next battle: Group B (Straight) multiplier extra x2.0.' },
+    'cons_combo_c': { name: '[Combo Enhancer Potion]', desc: 'Next battle: Group C (Combo) multiplier extra x2.0.' },
+    'cons_science_d': { name: '[Science Stimulant]', desc: 'Next battle: Group D (Special) multiplier extra x2.0.' },
+    'cons_power': { name: '[Elixir of Power]', desc: 'Next battle: Total damage x1.5.' },
+    'cons_loaded_dice': { name: '[Loaded Dice]', desc: 'Next battle: Gain 2 extra rerolls.' },
+    'cons_pliers': { name: '[Heavy Bolt Cutters]', desc: 'Destroys 1 "Shackle" in the next battle.' },
+    'cons_doll': { name: '[Scapegoat Doll]', desc: 'Next battle: Blocks one HP deduction penalty.' },
+    'cons_potential': { name: '[Secret Potential]', desc: 'Permanently adds 50 to total base points.' },
+    'cons_hp': { name: '[Health Potion]', desc: 'Instantly restores 1 HP.' },
+    'cons_fruit': { name: '[Life Fruit]', desc: 'Permanently Max HP +1.' },
+    'cons_guide': { name: '[Handy Guide]', desc: 'Permanently initial rerolls +1.' }
   },
   enemies: {
     'enemy_0': 'Slime',

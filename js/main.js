@@ -1710,6 +1710,33 @@ window.rerollShop = function(isInitial = false) {
         for (let c of consSelected) {
             selectedItems.push(c);
         }
+
+        // Filter out excess clover items (max 1 clover per shop)
+        let cloverCount = 0;
+        let filteredSelectedItems = [];
+        for (let item of selectedItems) {
+            if (item.id.startsWith('cons_clover_')) {
+                cloverCount++;
+                if (cloverCount <= 1) {
+                    filteredSelectedItems.push(item);
+                }
+            } else {
+                filteredSelectedItems.push(item);
+            }
+        }
+        selectedItems = filteredSelectedItems;
+
+        // Refill if clovers were removed
+        if (selectedItems.length < 3) {
+            let newlyNeeded = 3 - selectedItems.length;
+            let currentShopItemIds = selectedItems.map(i => i.id);
+            // Available cons that are not already in shop and not clovers
+            let refillCons = cons.filter(c => !currentShopItemIds.includes(c.id) && !c.id.startsWith('cons_clover_'));
+            let refillSelected = getWeightedRandomRelics(refillCons, newlyNeeded);
+            for (let c of refillSelected) {
+                selectedItems.push(c);
+            }
+        }
     }
 
     shopItems = selectedItems;
