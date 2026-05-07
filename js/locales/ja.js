@@ -51,9 +51,23 @@ export const ja_data = {
     'dragonslayer': { name: '【ドラゴンスレイヤー】', desc: '「ボス」または「エリート」の時、総ダメージ x1.5。' }
   },
   consumables: {
-    'cons_power': { name: '【力の秘薬】', desc: '次の戦闘で最終ダメージ x1.5倍（消耗品）' },
-    'cons_potential': { name: '【潜在能力の薬】', desc: '基礎点の合計が永久に +50' },
-    'cons_hp': { name: '【生命の赤薬】', desc: 'HPを1回復する' }
+    'cons_bomb': { name: '【起爆符】', desc: '次の戦闘、基礎ポイント直接 +300。' },
+    'cons_clover_3': { name: '【幸運の三つ葉】', desc: '次の戦闘、開始時に必ず3が3つある。' },
+    'cons_clover_4': { name: '【幸運の四つ葉】', desc: '次の戦闘、開始時に必ず4が3つある。' },
+    'cons_clover_5': { name: '【幸運の五つ葉】', desc: '次の戦闘、開始時に必ず5が3つある。' },
+    'cons_clover_6': { name: '【幸運の六つ葉】', desc: '次の戦闘、開始時に必ず6が3つある。' },
+    'cons_strike_a': { name: '【精密打撃の薬】', desc: '次の戦闘、A区（同じ数/ペア）の倍率が追加で x2.0。' },
+    'cons_fever_b': { name: '【ストレートフィーバー薬】', desc: '次の戦闘、B区（連続数）の倍率が追加で x2.0。' },
+    'cons_combo_c': { name: '【複合強化薬】', desc: '次の戦闘、C区（複合）の倍率が追加で x2.0。' },
+    'cons_science_d': { name: '【理系脳興奮剤】', desc: '次の戦闘、D区（特殊数列）の倍率が追加で x2.0。' },
+    'cons_power': { name: '【力のポーション】', desc: '次の戦闘、総ダメージ x1.5 倍。' },
+    'cons_loaded_dice': { name: '【イカサマダイス】', desc: '次の戦闘、追加の振り直しを2回獲得。' },
+    'cons_pliers': { name: '【大型破壊ばさみ】', desc: '次の戦闘中の「枷」を1つ破壊する。' },
+    'cons_doll': { name: '【身代わり人形】', desc: '次の戦闘、HP減少ペナルティを1回防ぐ。' },
+    'cons_potential': { name: '【潜在能力の秘薬】', desc: '基礎ポイントの合計を永久に 50 増加。' },
+    'cons_hp': { name: '【生命の赤薬】', desc: 'HPを即座に 1 回復。' },
+    'cons_fruit': { name: '【生命の果実】', desc: '最大HPを永久に +1。' },
+    'cons_guide': { name: '【便利なガイド】', desc: '初期の振り直し回数を永久に +1。' }
   },
   enemies: {
     'enemy_0': 'スライム',
