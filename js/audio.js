@@ -5,10 +5,17 @@ export let bgmVolume = 0.5;
 export let bgmMuted = false;
 export let sfxMuted = false;
 
+let bgmBuffers = {};
+let currentBGMNode = null;
+let currentBGMGain = null;
+let currentBGMTrackId = null;
+
 export function setBGMMute(muted) {
     bgmMuted = muted;
-    const bgmEl = document.getElementById('bgm');
-    if (bgmEl) bgmEl.volume = bgmMuted ? 0 : bgmVolume;
+    if (currentBGMGain && audioCtx) {
+        const targetVol = bgmMuted ? 0 : (currentBGMTrackId === '02' ? bgmVolume * 0.8 : bgmVolume);
+        currentBGMGain.gain.linearRampToValueAtTime(targetVol, audioCtx.currentTime + 0.1);
+    }
 }
 
 export function setSFXMute(muted) {
@@ -21,8 +28,10 @@ export function setSFXVolume(vol) {
 
 export function setBGMVolume(vol) {
     bgmVolume = Math.max(0, Math.min(1, vol));
-    const bgmEl = document.getElementById('bgm');
-    if (bgmEl) bgmEl.volume = bgmMuted ? 0 : bgmVolume;
+    if (currentBGMGain && audioCtx && !bgmMuted) {
+        const targetVol = currentBGMTrackId === '02' ? bgmVolume * 0.8 : bgmVolume;
+        currentBGMGain.gain.linearRampToValueAtTime(targetVol, audioCtx.currentTime + 0.1);
+    }
 }
 
 export function initAudio() {
@@ -30,22 +39,94 @@ export function initAudio() {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (AudioContext) {
             audioCtx = new AudioContext();
+            loadBGM('01', 'bibbidiba_BGM_01.wav');
+            loadBGM('02', 'bibbidiba_BGM_02.wav');
         }
+    } else if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
     }
 }
 
+async function loadBGM(trackId, url) {
+    if (bgmBuffers[trackId]) return; // Already loaded
+    try {
+        const response = await fetch(url);
+        const arrayBuffer = await response.arrayBuffer();
+        const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+        bgmBuffers[trackId] = audioBuffer;
+    } catch (e) {
+        console.warn(`Failed to load BGM ${trackId}:`, e);
+    }
+}
+
+export function playBGMTrack(trackId) {
+    if (!audioCtx) initAudio();
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    if (currentBGMTrackId === trackId) return; // Already playing
+
+    const fadeOutDuration = 1.5;
+    const fadeInDuration = 1.5;
+
+    // Fade out current BGM
+    if (currentBGMGain && currentBGMNode) {
+        const prevGain = currentBGMGain;
+        const prevNode = currentBGMNode;
+        prevGain.gain.setValueAtTime(prevGain.gain.value, audioCtx.currentTime);
+        prevGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + fadeOutDuration);
+
+        setTimeout(() => {
+            try { prevNode.stop(); } catch(e){}
+            prevNode.disconnect();
+            prevGain.disconnect();
+        }, fadeOutDuration * 1000 + 100);
+    }
+
+    currentBGMTrackId = trackId;
+    currentBGMNode = null;
+    currentBGMGain = null;
+
+    if (!bgmBuffers[trackId]) {
+        // If not loaded yet, try to load and play
+        loadBGM(trackId, `bibbidiba_BGM_${trackId}.wav`).then(() => {
+            if (currentBGMTrackId === trackId) startBGMPlayback(trackId, fadeInDuration);
+        });
+    } else {
+        startBGMPlayback(trackId, fadeInDuration);
+    }
+}
+
+function startBGMPlayback(trackId, fadeInDuration) {
+    if (!bgmBuffers[trackId] || !audioCtx) return;
+
+    currentBGMNode = audioCtx.createBufferSource();
+    currentBGMNode.buffer = bgmBuffers[trackId];
+    currentBGMNode.loop = true;
+
+    currentBGMGain = audioCtx.createGain();
+    currentBGMGain.gain.setValueAtTime(0, audioCtx.currentTime);
+
+    const targetVol = bgmMuted ? 0 : (trackId === '02' ? bgmVolume * 0.8 : bgmVolume);
+    currentBGMGain.gain.linearRampToValueAtTime(targetVol, audioCtx.currentTime + fadeInDuration);
+
+    currentBGMNode.connect(currentBGMGain);
+    currentBGMGain.connect(audioCtx.destination);
+
+    currentBGMNode.start();
+}
+
 export function playBGM() {
-    const bgmEl = document.getElementById('bgm');
-    if (bgmEl && bgmEl.src && bgmEl.paused) {
-        bgmEl.volume = bgmVolume;
-        bgmEl.play().catch(e => console.warn("BGM autoplay blocked:", e));
+    // Legacy support, default to 01 if none playing
+    if (!currentBGMTrackId) {
+        playBGMTrack('01');
+    } else if (audioCtx && audioCtx.state === 'suspended') {
+        audioCtx.resume();
     }
 }
 
 export function pauseBGM() {
-    const bgmEl = document.getElementById('bgm');
-    if (bgmEl && !bgmEl.paused) {
-        bgmEl.pause();
+    if (audioCtx && audioCtx.state === 'running') {
+        audioCtx.suspend();
     }
 }
 

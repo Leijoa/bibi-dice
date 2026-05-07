@@ -199,16 +199,7 @@ export function updateEnemyUI(stage) {
         localizedEnemyName = i18n.t(`enemies.enemy_${stage.level}`) || enemy.name;
     } else {
         // Handle Infinite Tower dynamically via i18n
-        let baseName = i18n.t(`monsters.monster_${stage.infiniteMonsterId}`);
-
-        let infiniteLevel = stage.level - ENEMY_DB.length + 1;
-        let m = ((infiniteLevel - 1) % 3) + 1;
-
-        let eliteTag = i18n.t('ui.elite_tag') !== 'ui.elite_tag' ? i18n.t('ui.elite_tag') : ' [菁英]';
-        let bossTag = i18n.t('ui.boss_tag') !== 'ui.boss_tag' ? i18n.t('ui.boss_tag') : ' [Boss]';
-
-        let tag = m === 3 ? bossTag : (m === 2 ? eliteTag : '');
-        localizedEnemyName = `${baseName}${tag}`;
+        localizedEnemyName = i18n.t(`monsters.monster_${stage.infiniteMonsterId}`);
     }
 
     // Layer badge

@@ -58,14 +58,14 @@ export const zh_cn_data = {
   enemies: {
     'enemy_0': '史莱姆',
     'enemy_1': '哥布林',
-    'enemy_2': '巨石傀儡 (精英)',
+    'enemy_2': '巨石傀儡',
     'enemy_3': '幽暗卫士',
     'enemy_4': '吸血鬼男爵',
-    'enemy_5': '深渊魔龙 (精英)',
+    'enemy_5': '深渊魔龙',
     'enemy_6': '影焰刺客',
     'enemy_7': '遗忘守护者',
-    'enemy_8': '虚空大祭司 (精英)',
-    'enemy_9': '创世神 (最终Boss)'
+    'enemy_8': '虚空大祭司',
+    'enemy_9': '创世神'
   },
   shackles: {
     'blind': { name: '【盲眼】', desc: '随机覆盖 2 颗骰子面值为「？」，点击攻击时才揭晓。' },

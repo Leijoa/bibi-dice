@@ -82,14 +82,14 @@ export const CONSUMABLES_DB = [
 export const ENEMY_DB = [
     { name: '史萊姆', hp: 1500, turns: 3 },                  // Stage 1 (Index 0)
     { name: '哥布林', hp: 3500, turns: 3 },                  // Stage 2 (Index 1)
-    { name: '巨石傀儡 (菁英)', hp: 8000, turns: 3 },           // Stage 3 (Index 2)
+    { name: '巨石傀儡', hp: 8000, turns: 3 },           // Stage 3 (Index 2)
     { name: '幽暗衛士', hp: 20000, turns: 3 },                  // Stage 4 (Index 3)
     { name: '吸血鬼男爵', hp: 45000, turns: 3 },               // Stage 5 (Index 4)
-    { name: '深淵魔龍 (菁英)', hp: 100000, turns: 3 },          // Stage 6 (Index 5)
+    { name: '深淵魔龍', hp: 100000, turns: 3 },          // Stage 6 (Index 5)
     { name: '影焰刺客', hp: 250000, turns: 3 },                 // Stage 7 (Index 6)
     { name: '遺忘守護者', hp: 500000, turns: 3 },                 // Stage 8 (Index 7)
-    { name: '虛空大祭司 (菁英)', hp: 900000, turns: 3 },         // Stage 9 (Index 8)
-    { name: '創世神 (最終Boss)', hp: 1500000, turns: 3 },       // Stage 10 (Index 9)
+    { name: '虛空大祭司', hp: 900000, turns: 3 },         // Stage 9 (Index 8)
+    { name: '創世神', hp: 1500000, turns: 3 },       // Stage 10 (Index 9)
 ];
 
 export const SHACKLE_DB = [
@@ -174,12 +174,11 @@ export function getEnemy(levelIndex) {
         let n = Math.floor((infiniteLevel - 1) / 3) + 1;
         let m = ((infiniteLevel - 1) % 3) + 1;
         
-        let hp = Math.floor(baseHp * Math.pow(1.5, infiniteLevel));
+        let baseMultiplier = Math.pow(1.5, infiniteLevel - 1);
+        let hp = Math.floor(baseHp * baseMultiplier * (m === 3 ? 2.0 : 1.5));
         if (hp > Number.MAX_SAFE_INTEGER) hp = Number.MAX_SAFE_INTEGER;
         
         let name = `無限塔 ${n}-${m}`;
-        if (m === 3) name += ' (Boss)';
-        else if (m === 2) name += ' (菁英)';
         
         return { name: name, hp: hp, turns: 3 };
     }
