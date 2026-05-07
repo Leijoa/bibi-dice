@@ -1007,7 +1007,7 @@ export function renderHistoryModal(records, metaData) {
                     </div>
                     <div>
                         <div class="text-xs text-amber-200/70 font-bold">${i18n.t('ui.pb_highest_infinite') || '最高無限層數'}</div>
-                        <div class="text-xl font-black text-purple-400">${metaData.stats.highestInfiniteLevel > 0 ? metaData.stats.highestInfiniteLevel : dash}</div>
+                        <div class="text-xl font-black text-purple-400">${parseInt(localStorage.getItem('bibbidiba_pb_infinite')) > 0 ? `PB: Floor ${parseInt(localStorage.getItem('bibbidiba_pb_infinite'))}` : dash}</div>
                     </div>
                 </div>
                 <div class="mt-3 flex flex-wrap gap-1">
