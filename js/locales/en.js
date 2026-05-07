@@ -58,14 +58,14 @@ export const en_data = {
   enemies: {
     'enemy_0': 'Slime',
     'enemy_1': 'Goblin',
-    'enemy_2': 'Golem (Elite)',
+    'enemy_2': 'Golem',
     'enemy_3': 'Dark Guard',
     'enemy_4': 'Vampire Baron',
-    'enemy_5': 'Abyssal Dragon (Elite)',
+    'enemy_5': 'Abyssal Dragon',
     'enemy_6': 'Shadow Assassin',
     'enemy_7': 'Forgotten Guardian',
-    'enemy_8': 'Void High Priest (Elite)',
-    'enemy_9': 'The Creator (Final Boss)'
+    'enemy_8': 'Void High Priest',
+    'enemy_9': 'The Creator'
   },
   shackles: {
     'blind': { name: '[Blind]', desc: 'Randomly covers 2 dice faces with "?", revealed only upon attacking.' },

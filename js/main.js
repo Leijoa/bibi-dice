@@ -924,6 +924,14 @@ function loadStage(levelIndex, isLoad = false, parsedData = null) {
 
     UI.el.shopOverlay.classList.add('hidden');
 
+    // Play correct BGM
+    if ((levelIndex < ENEMY_DB.length && (isElite(levelIndex) || isBoss(levelIndex))) ||
+        (levelIndex >= ENEMY_DB.length && isBoss(levelIndex))) {
+        Audio.playBGMTrack('02');
+    } else {
+        Audio.playBGMTrack('01');
+    }
+
     saveGame();
     renderAll();
 
