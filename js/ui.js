@@ -569,7 +569,7 @@ export function renderScore(battle, activeHighlight) {
     let res = battle.scoreResult;
     let isAmnesia = window.getStageActiveShackle && window.getStageActiveShackle() === 'amnesia';
 
-    let notesHtml = res.globalNotes.map(n => `<span class="text-[9px] text-violet-300 bg-violet-950/50 px-1.5 py-0.5 rounded border border-violet-800/50 font-bold whitespace-nowrap">${isAmnesia ? '???' : n}</span>`).join('');
+    let notesHtml = res.globalNotes.map((n, i) => `<span id="note-${i}" class="text-[9px] text-violet-300 bg-violet-950/50 px-1.5 py-0.5 rounded border border-violet-800/50 font-bold whitespace-nowrap transition-all duration-300 ease-in-out">${isAmnesia ? '???' : n}</span>`).join('');
 
 
     const getTagLocalName = (tagName) => {
@@ -747,29 +747,32 @@ export function playDamageStepsAnimation(steps, callback) {
 
     if (!steps || steps.length === 0 || !el.finalScoreValue) { callback(); return; }
 
-    const STEP_DELAY = 400;
+    let currentDelay = 400;
     let i = 0;
 
     const playNext = () => {
         if (i >= steps.length) { callback(); return; }
         const step = steps[i++];
+        currentDelay = Math.max(50, currentDelay * 0.8);
+        const animDuration = Math.max(50, currentDelay * 0.4);
+
         Audio.playScoreStepSound(i, step.final);
 
         if (step.final) {
-            countUpTo(el.finalScoreValue, step.damageAfter, 150, callback);
+            countUpTo(el.finalScoreValue, step.damageAfter, animDuration, callback);
             return;
         }
 
         if (step.zero) {
             el.finalScoreValue.innerText = '0';
-            setTimeout(playNext, STEP_DELAY);
+            setTimeout(playNext, currentDelay);
             return;
         }
 
         if (step.base) {
             playDiceSumFly(step.damageAfter, () => {
-                countUpTo(el.finalScoreValue, step.damageAfter, 150, () => {
-                    setTimeout(playNext, STEP_DELAY);
+                countUpTo(el.finalScoreValue, step.damageAfter, animDuration, () => {
+                    setTimeout(playNext, currentDelay);
                 });
             });
             return;
@@ -778,7 +781,7 @@ export function playDamageStepsAnimation(steps, callback) {
         if (step.zone) {
             const zoneEl = document.getElementById('zone-box-' + step.zone);
             if (zoneEl) zoneEl.classList.add('zone-active');
-            countUpTo(el.finalScoreValue, step.damageAfter, 150, () => {
+            countUpTo(el.finalScoreValue, step.damageAfter, animDuration, () => {
                 el.finalScoreValue.classList.remove('zone-multiply');
                 void el.finalScoreValue.offsetWidth;
                 el.finalScoreValue.classList.add('zone-multiply');
@@ -786,7 +789,7 @@ export function playDamageStepsAnimation(steps, callback) {
                     if (zoneEl) zoneEl.classList.remove('zone-active');
                     el.finalScoreValue.classList.remove('zone-multiply');
                     playNext();
-                }, STEP_DELAY);
+                }, currentDelay);
             });
             return;
         }
@@ -796,7 +799,16 @@ export function playDamageStepsAnimation(steps, callback) {
             : null;
         if (relicEl) relicEl.classList.add('relic-active');
 
-        countUpTo(el.finalScoreValue, step.damageAfter, 150, () => {
+        let noteEl = null;
+        if (step.noteIndex !== undefined && step.noteIndex !== null) {
+            noteEl = document.getElementById(`note-${step.noteIndex}`);
+            if (noteEl) {
+                noteEl.classList.add('multiplier-pop');
+                noteEl.style.animationDuration = `${currentDelay}ms`;
+            }
+        }
+
+        countUpTo(el.finalScoreValue, step.damageAfter, animDuration, () => {
             if (step.type === 'multiply') {
                 el.finalScoreValue.classList.remove('damage-multiply');
                 void el.finalScoreValue.offsetWidth;
@@ -811,9 +823,10 @@ export function playDamageStepsAnimation(steps, callback) {
             }
             setTimeout(() => {
                 if (relicEl) relicEl.classList.remove('relic-active');
+                if (noteEl) { noteEl.classList.remove('multiplier-pop'); noteEl.style.animationDuration = ''; }
                 el.finalScoreValue.classList.remove('damage-multiply');
                 playNext();
-            }, STEP_DELAY);
+            }, currentDelay);
         });
     };
 

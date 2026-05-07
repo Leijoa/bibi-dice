@@ -567,7 +567,8 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     // Step collector helper: push a multiply step, skip trivial multipliers (|x-1| ≤ 0.001)
     const _collect = (relicId, relicName, multiplier) => {
         if (!stepCollector || Math.abs(multiplier - 1.0) <= 0.001) return;
-        stepCollector.push({ relicId, relicName, type: 'multiply', multiplier, damageAfter: null });
+        const noteIndex = result.globalNotes ? result.globalNotes.length - 1 : globalNotes.length - 1;
+        stepCollector.push({ relicId, relicName, type: 'multiply', multiplier, damageAfter: null, noteIndex });
     };
 
     if (playerRelics.includes('fusion_nebula') && (counts[1] > 0 || counts[2] > 0 || counts[3] > 0)) {
@@ -711,7 +712,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     if (stepCollector && Math.abs(result.globalMulti - preHookGlobalMulti) > 0.001) {
         const shackleEffMult = preHookGlobalMulti > 0.001 ? result.globalMulti / preHookGlobalMulti : 0;
         if (Math.abs(shackleEffMult - 1.0) > 0.001) {
-            stepCollector.push({ relicId: 'shackle_debuff', relicName: '枷鎖減益', type: 'multiply', multiplier: shackleEffMult, damageAfter: null });
+            stepCollector.push({ relicId: 'shackle_debuff', relicName: '枷鎖減益', type: 'multiply', multiplier: shackleEffMult, damageAfter: null, noteIndex: result.globalNotes.length - 1 });
         }
     }
 
@@ -743,7 +744,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         // Mediocre overrides the entire multiplier chain: clear collector and replace with a single ×5.0 step
         if (stepCollector) {
             stepCollector.length = 0;
-            stepCollector.push({ relicId: 'mediocre', relicName: getRelicName('mediocre', '【平庸之善】'), type: 'multiply', multiplier: 5.0, damageAfter: null });
+            stepCollector.push({ relicId: 'mediocre', relicName: getRelicName('mediocre', '【平庸之善】'), type: 'multiply', multiplier: 5.0, damageAfter: null, noteIndex: result.globalNotes.length - 1 });
         }
     }
 
