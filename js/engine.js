@@ -567,7 +567,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     // Step collector helper: push a multiply step, skip trivial multipliers (|x-1| ≤ 0.001)
     const _collect = (relicId, relicName, multiplier) => {
         if (!stepCollector || Math.abs(multiplier - 1.0) <= 0.001) return;
-        const noteIndex = result.globalNotes ? result.globalNotes.length - 1 : globalNotes.length - 1;
+        const noteIndex = globalNotes.length - 1;
         stepCollector.push({ relicId, relicName, type: 'multiply', multiplier, damageAfter: null, noteIndex });
     };
 
