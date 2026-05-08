@@ -8,9 +8,12 @@
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <link rel="stylesheet" href="css/style.css">
 </head>
-<body class="p-1 md:p-4 h-[100dvh] flex flex-col relative overflow-hidden">
+<body class="bg-[#131315] text-[#e5e1e4] overflow-hidden">
 
-  <div id="title-screen" class="absolute inset-0 z-[60] flex flex-col items-center justify-center p-6 text-center">
+  <div id="game-scaler">
+    <div id="game-container" class="flex flex-col relative">
+
+      <div id="title-screen" class="absolute inset-0 z-[60] flex flex-col items-center justify-center p-6 text-center">
 
     <div class="mb-5 title-enter">
       <div class="dice-pips-deco mb-3">⚀ ⚁ ⚂ ⚃ ⚄ ⚅</div>
@@ -304,6 +307,9 @@
         <button id="dev-relic-confirm" class="bg-amber-600 hover:bg-amber-500 text-white font-black px-4 py-2 rounded-lg transition-colors active:scale-95 shadow-sm">確定取得</button>
       </div>
       <div id="dev-shackle-section"></div>
+    </div>
+  </div>
+
     </div>
   </div>
 

@@ -238,3 +238,6 @@
 * **無盡之塔最高層數 PB 追蹤修復**：修正了 `js/main.js` 中 `recordHistory` 未正確追蹤與儲存玩家在無盡之塔所達到的最高層數。現在會精確計算當前層數，並在超越歷史最高時存入 localStorage 的 `bibbidiba_pb_infinite` 鍵中。
 * **歷史牌局介面更新**：更新了 `js/ui.js` 的 `renderHistoryModal`，現在會直接從 localStorage 讀取 `bibbidiba_pb_infinite` 的值，並確保在介面的「最高無限層數」區塊中以「PB: Floor {0}」的格式清楚顯示。
 * **標題畫面全域點擊音效**：為 `UI.el.titleScreen` 加上全域 click 事件監聽，當玩家點擊任何按鈕（`e.target.closest('button')`）時，會主動觸發 `Audio.initAudio()`（解鎖 AudioContext）並播放 `Audio.playClickSound()`，強化遊戲初始回饋感。
+
+### 新增
+- 實裝「響應式縮放」外觀系統：現在遊戲畫面會自動縮放以適應螢幕大小與 iframe 環境，確保不會有裁切與跑版問題。
