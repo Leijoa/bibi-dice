@@ -200,6 +200,7 @@ ui: {
     version: '[バージョン 2.0]',
     author_info: '作者: Leijoalan | Youtube: 雷爪獅遊戲頻道 | threads:@leijoalan',
     stage: 'ステージ {0}',
+    next_stage: '次のステージ：{0}',
     hp: 'HP',
     sound_on: '🔈 サウンド: オン',
     sound_off: '🔈 サウンド: オフ',

@@ -1139,6 +1139,22 @@ window.executeRoll = function(isInitial = false) {
                 tutorialForcedDice = null;
             }
 
+            // Apply Consumables: Lucky Clovers
+            if (isInitial) {
+                [3, 4, 5, 6].forEach(num => {
+                    let cloverId = `cons_clover_${num}`;
+                    if (player.relics.includes(cloverId)) {
+                        let unlocked = battle.dice.filter(d => !d.locked);
+                        for (let i = 0; i < Math.min(3, unlocked.length); i++) {
+                            unlocked[i].val = num;
+                        }
+                        UI.showToast(`🍀 發動幸運${num}葉草！`);
+                        // Consume the item
+                        player.relics = player.relics.filter(r => r !== cloverId);
+                    }
+                });
+            }
+
             battle.dice.sort((a, b) => a.val - b.val);
 
             player.fivesRolled += battle.dice.filter(d => d.val === 5).length;
@@ -1794,9 +1810,14 @@ window.buyItem = function(idx) {
         } else if (r.id === 'cons_hp') {
             player.hp = Math.min(window.getMaxHp(), player.hp + 1);
             UI.showToast(i18n.t('messages.toast_cons_hp'));
-        } else if (r.id === 'cons_guide') {
+        } else {
+            // Push clovers, bombs, strike potions, etc., into relics to be processed by engine/rolls
             player.relics.push(r.id);
-            UI.showToast(i18n.t('consumables.cons_guide.name') + ' +1');
+            if (r.id === 'cons_guide') {
+                UI.showToast((i18n.t('consumables.cons_guide.name') || '巧手指南') + ' +1');
+            } else {
+                UI.showToast('獲得：' + (i18n.t(`consumables.${r.id}.name`) || r.name));
+            }
         }
     } else {
         // Relic logic

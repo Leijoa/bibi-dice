@@ -154,15 +154,31 @@ export function renderRulesDB() {
 
 // --- 更新 UI 狀態 ---
 export function updateHeaderUI(player, stage) {
-    if (stage.level < ENEMY_DB.length) {
-        el.stageInfo.innerText = i18n.t('ui.stage', `${stage.level + 1} / ${ENEMY_DB.length}`);
-        el.stageInfo.setAttribute('data-i18n-args', `${stage.level + 1} / ${ENEMY_DB.length}`);
+    // Check if the shop is visible
+    const shopOverlay = document.getElementById('shop-overlay');
+    const isShopOpen = shopOverlay && !shopOverlay.classList.contains('hidden');
+
+    // Determine which level index to display
+    const targetLevel = isShopOpen ? stage.level + 1 : stage.level;
+
+    let stageStr = "";
+    if (targetLevel < ENEMY_DB.length) {
+        stageStr = `${targetLevel + 1} / ${ENEMY_DB.length}`;
     } else {
-        let infiniteLevel = stage.level - ENEMY_DB.length + 1;
+        let infiniteLevel = targetLevel - ENEMY_DB.length + 1;
         let n = Math.floor((infiniteLevel - 1) / 3) + 1;
         let m = ((infiniteLevel - 1) % 3) + 1;
-        el.stageInfo.innerText = i18n.t('ui.stage', `∞ ${n}-${m}`);
-        el.stageInfo.setAttribute('data-i18n-args', `∞ ${n}-${m}`); // Will be migrated later
+        stageStr = `∞ ${n}-${m}`;
+    }
+
+    const i18nKey = isShopOpen ? 'ui.next_stage' : 'ui.stage';
+
+    if (el.stageInfo) {
+        el.stageInfo.setAttribute('data-i18n', i18nKey);
+        el.stageInfo.setAttribute('data-i18n-args', stageStr);
+        if (window.i18n) {
+            el.stageInfo.innerText = window.i18n.t(i18nKey, stageStr);
+        }
     }
     
     let maxHp = window.getMaxHp ? window.getMaxHp() : 3;

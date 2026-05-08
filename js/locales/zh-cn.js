@@ -200,6 +200,7 @@ ui: {
     version: '[2.0版]',
     author_info: '作者:雷爪狮 | Youtube:雷爪狮游戏频道 | threads:@leijoalan',
     stage: '关卡 {0}',
+    next_stage: '下一关：{0}',
     hp: 'HP',
     sound_on: '🔈 音效: 开',
     sound_off: '🔈 音效: 关',
