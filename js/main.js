@@ -1918,19 +1918,33 @@ window.addEventListener('keydown', (e) => {
 });
 
 window.devKillEnemy = () => {
-    if (battle.state !== 'IDLE' && battle.state !== 'ROLLING') return;
+    if (battle.state === 'ATTACKING') return;
     stage.enemyHp = 0;
     UI.updateEnemyUI(stage);
     enemyDefeated();
 };
 
 window.devSetDice = (digitString) => {
-    if (battle.state !== 'IDLE' && battle.state !== 'ROLLING') return;
+    if (battle.state === 'ATTACKING') return;
     for (let i = 0; i < 8; i++) {
         if (digitString[i]) {
             battle.dice[i].val = parseInt(digitString[i], 10);
             battle.dice[i].locked = false;
         }
+    }
+    battle.dice.sort((a, b) => a.val - b.val);
+
+    if (battle.state === 'WAIT_ACTION') {
+        let shackleConfig = null;
+        if (stage.activeShackle) {
+            shackleConfig = { id: stage.activeShackle };
+            if (stage.shackleMeta) Object.assign(shackleConfig, stage.shackleMeta);
+        }
+        let activeRelics = player.relics;
+        if (stage.activeShackle === 'relicseal' && stage.shackleMeta && stage.shackleMeta.ignoredRelics) {
+            activeRelics = player.relics.filter(r => !stage.shackleMeta.ignoredRelics.includes(r));
+        }
+        battle.scoreResult = calculateEngineScore(battle.dice, activeRelics, battle.rollsLeft, player.hp, shackleConfig ? [shackleConfig] : [], stage.turnsLeft, { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled, finalDamageUpgrade: metaData?.upgrades?.finalDamage || 0, damageBuffMulti: stage.damageBuffMulti || 1.0, isEliteOrBoss: isElite(stage.level) || isBoss(stage.level) });
     }
     renderAll();
 };

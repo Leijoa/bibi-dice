@@ -7,6 +7,7 @@ export const translations = {
   'zh-tw': {
     ...zh_tw_data,
     'ui': {
+      ...(zh_tw_data.ui || {}),
       'mute': '靜音', 'btn_confirm': '確認',
       'setting_step_animation_label': '🎬 逐步結算動畫',
       'title_main': 'BIBBIDIBA',
@@ -89,6 +90,7 @@ export const translations = {
   'zh-cn': {
     ...zh_cn_data,
     'ui': {
+      ...(zh_cn_data.ui || {}),
       'mute': '静音', 'btn_confirm': '确认',
       'setting_step_animation_label': '🎬 逐步结算动画',
       'title_main': 'BIBBIDIBA',
@@ -165,6 +167,7 @@ export const translations = {
   'en': {
     ...en_data,
     'ui': {
+      ...(en_data.ui || {}),
       'mute': 'Mute', 'btn_confirm': 'Confirm',
       'setting_step_animation_label': '🎬 Step Animation',
       'title_main': 'BIBBIDIBA',
@@ -242,6 +245,7 @@ export const translations = {
   'ja': {
     ...ja_data,
     'ui': {
+      ...(ja_data.ui || {}),
       'mute': 'ミュート', 'btn_confirm': '確認',
       'setting_step_animation_label': '🎬 ステップアニメ',
       'title_main': 'BIBBIDIBA',
