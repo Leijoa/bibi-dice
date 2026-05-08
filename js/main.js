@@ -438,6 +438,13 @@ function initTitleScreen() {
     UI.renderRulesDB();
     checkSaveExists();
 
+    UI.el.titleScreen.addEventListener('click', (e) => {
+        if (e.target.closest('button')) {
+            Audio.initAudio();
+            Audio.playClickSound();
+        }
+    });
+
     UI.el.btnNewGame.onclick = () => {
         clearSave();
         UI.el.titleScreen.classList.add('hidden');
@@ -1812,6 +1819,15 @@ function recordHistory(win) {
         clearTimeout(stage.shackleTimer);
         stage.shackleTimer = null;
     }
+
+    if (player.isInfiniteMode) {
+        let currentInfiniteFloor = stage.level - ENEMY_DB.length + 1;
+        let pbInfinite = parseInt(localStorage.getItem('bibbidiba_pb_infinite')) || 0;
+        if (currentInfiniteFloor > pbInfinite) {
+            localStorage.setItem('bibbidiba_pb_infinite', currentInfiniteFloor.toString());
+        }
+    }
+
     let history = secureParseStorage(HISTORY_KEY, [], (data) => Array.isArray(data));
     let currentRecord = {
         win: win,
