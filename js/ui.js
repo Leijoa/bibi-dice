@@ -59,6 +59,7 @@ export const el = {
     soulsContent: document.getElementById('souls-content'),
     soulsHeaderText: document.getElementById('souls-header-text'),
     devModal: document.getElementById('dev-modal'),
+    settingsTitle: document.getElementById('settings-title'),
     devRelicSelect: document.getElementById('dev-relic-select'),
     devRelicCancel: document.getElementById('dev-relic-cancel'),
     devRelicConfirm: document.getElementById('dev-relic-confirm'),
@@ -1623,3 +1624,20 @@ export function initResponsiveScaling() {
 }
 
 initResponsiveScaling();
+
+let settingsTapCount = 0;
+let settingsTapTimer = null;
+if (el.settingsTitle) {
+    el.settingsTitle.addEventListener('click', () => {
+        settingsTapCount++;
+        clearTimeout(settingsTapTimer);
+        settingsTapTimer = setTimeout(() => { settingsTapCount = 0; }, 2000);
+
+        if (settingsTapCount >= 5) {
+            settingsTapCount = 0;
+            const settingsModal = document.getElementById('settings-modal');
+            if (settingsModal) settingsModal.classList.add('hidden');
+            if (window.openDevModal) window.openDevModal();
+        }
+    });
+}

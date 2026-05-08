@@ -963,7 +963,7 @@ function startTurn() {
         }
     }
     
-    let baseMaxRolls = 2 + (player.relics.filter(id => id === 'refresh').length * 2) + (player.berserkerBonus || 0);
+    let baseMaxRolls = 2 + (metaData.upgrades?.rerolls || 0) + (player.relics.filter(id => id === 'refresh').length * 2) + (player.berserkerBonus || 0) + player.relics.filter(id => id === 'cons_guide').length;
     if (stage.activeShackle === 'fatigue') {
         baseMaxRolls = 1;
     }
@@ -1794,6 +1794,9 @@ window.buyItem = function(idx) {
         } else if (r.id === 'cons_hp') {
             player.hp = Math.min(window.getMaxHp(), player.hp + 1);
             UI.showToast(i18n.t('messages.toast_cons_hp'));
+        } else if (r.id === 'cons_guide') {
+            player.relics.push(r.id);
+            UI.showToast(i18n.t('consumables.cons_guide.name') + ' +1');
         }
     } else {
         // Relic logic
@@ -1896,6 +1899,68 @@ function gameWin() {
     let endInterval = setInterval(UI.shootConfetti, 1000);
     setTimeout(() => clearInterval(endInterval), 5000);
 }
+
+let cheatBuffer = '';
+window.addEventListener('keydown', (e) => {
+    cheatBuffer += e.key;
+    if (cheatBuffer.length > 20) cheatBuffer = cheatBuffer.slice(-20);
+
+    if (cheatBuffer.endsWith('8989889')) {
+        if (window.devKillEnemy) window.devKillEnemy();
+        cheatBuffer = '';
+    } else {
+        let match = cheatBuffer.match(/ss([1-8]{8})$/);
+        if (match) {
+            if (window.devSetDice) window.devSetDice(match[1]);
+            cheatBuffer = '';
+        }
+    }
+});
+
+window.devKillEnemy = () => {
+    if (battle.state !== 'IDLE' && battle.state !== 'ROLLING') return;
+    stage.enemyHp = 0;
+    UI.updateEnemyUI(stage);
+    enemyDefeated();
+};
+
+window.devSetDice = (digitString) => {
+    if (battle.state !== 'IDLE' && battle.state !== 'ROLLING') return;
+    for (let i = 0; i < 8; i++) {
+        if (digitString[i]) {
+            battle.dice[i].val = parseInt(digitString[i], 10);
+            battle.dice[i].locked = false;
+        }
+    }
+    renderAll();
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+    const btnDevKill = document.getElementById('dev-kill-btn');
+    const btnDevDice = document.getElementById('dev-dice-btn');
+    const inputDevDice = document.getElementById('dev-dice-input');
+
+    if (btnDevKill) {
+        btnDevKill.addEventListener('click', () => {
+            if (window.devKillEnemy) {
+                window.devKillEnemy();
+                if (window.closeDevModal) window.closeDevModal();
+            }
+        });
+    }
+
+    if (btnDevDice && inputDevDice) {
+        btnDevDice.addEventListener('click', () => {
+            const val = inputDevDice.value.trim();
+            if (/^[1-8]{8}$/.test(val) && window.devSetDice) {
+                window.devSetDice(val);
+                if (window.closeDevModal) window.closeDevModal();
+            } else {
+                alert('請輸入精確的 8 個數字 (1-8)');
+            }
+        });
+    }
+});
 
 // 啟動遊戲
 loadCollection();
