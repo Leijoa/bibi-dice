@@ -248,7 +248,7 @@ window.unlockCollectionItem = unlockCollectionItem; // Export for external usage
 window.getCollection = () => collection;
 window.getStageActiveShackle = () => stage.activeShackle;
 window.getStageLevel = () => stage.level;
-window.getMaxHp = () => 3 + (metaData.upgrades.hp * 1);
+window.getMaxHp = () => 3 + (metaData.upgrades.hp * 1) + player.relics.filter(r => r === 'cons_fruit').length;
 window.getShackleMeta = () => stage.shackleMeta;
 window.getStageEnemyHp = () => stage.enemyHp;
 window.getStageEnemyMaxHp = () => stage.enemyMaxHp;
@@ -297,27 +297,37 @@ function applyCombatShackles(dmg, actualDamage, isEnemyDefeated) {
     if (stage.activeShackle === 'thornarmor') {
         let threshold = stage.enemyMaxHp * 0.10;
         if (dmg < threshold) {
-            player.hp--;
-            if (player.hp > 0 && player.relics.includes('berserker')) {
-                player.berserkerBonus = (player.berserkerBonus || 0) + 1;
-                UI.showToast(i18n.t('messages.toast_berserker'));
+            if (player.relics.includes('cons_doll')) {
+                UI.showToast('🎎 替身草人為你抵擋了傷害！');
+                player.relics.splice(player.relics.indexOf('cons_doll'), 1);
+            } else {
+                player.hp--;
+                if (player.hp > 0 && player.relics.includes('berserker')) {
+                    player.berserkerBonus = (player.berserkerBonus || 0) + 1;
+                    UI.showToast(i18n.t('messages.toast_berserker'));
+                }
+                UI.updateHeaderUI(player, stage);
+                UI.showToast(i18n.t('messages.toast_thornarmor'));
+                if (player.hp <= 0) playerDied = true;
             }
-            UI.updateHeaderUI(player, stage);
-            UI.showToast(i18n.t('messages.toast_thornarmor'));
-            if (player.hp <= 0) playerDied = true;
         }
     }
 
     if (stage.activeShackle === 'mutualdestruction') {
         let recoil = Math.floor(dmg * 0.05);
         if (recoil > 0) {
-            player.hp -= recoil;
-            UI.updateHeaderUI(player, stage);
-            UI.showToast(i18n.t('messages.toast_mutual_destruct', recoil));
-            if (player.hp <= 0) {
-                player.hp = 1;
+            if (player.relics.includes('cons_doll')) {
+                UI.showToast('🎎 替身草人為你抵擋了傷害！');
+                player.relics.splice(player.relics.indexOf('cons_doll'), 1);
+            } else {
+                player.hp -= recoil;
                 UI.updateHeaderUI(player, stage);
-                UI.showToast(i18n.t('messages.toast_mutual_destruct_survive'));
+                UI.showToast(i18n.t('messages.toast_mutual_destruct', recoil));
+                if (player.hp <= 0) {
+                    player.hp = 1;
+                    UI.updateHeaderUI(player, stage);
+                    UI.showToast(i18n.t('messages.toast_mutual_destruct_survive'));
+                }
             }
         }
     }
@@ -892,6 +902,13 @@ function loadStage(levelIndex, isLoad = false, parsedData = null) {
             player.hp = 1;
         }
         
+        if (stage.activeShackle && player.relics.includes('cons_pliers')) {
+            stage.activeShackle = null;
+            stage.shackleMeta = null;
+            player.relics.splice(player.relics.indexOf('cons_pliers'), 1);
+            UI.showToast('🛠️ 重型破壞鉗發揮作用，破壞了本關的枷鎖！');
+        }
+
         if (stage.activeShackle) {
             unlockCollectionItem('shackle', stage.activeShackle);
             let sDef = SHACKLE_DB.find(s => s.id === stage.activeShackle);
@@ -963,7 +980,7 @@ function startTurn() {
         }
     }
     
-    let baseMaxRolls = 2 + (metaData.upgrades?.rerolls || 0) + (player.relics.filter(id => id === 'refresh').length * 2) + (player.berserkerBonus || 0) + player.relics.filter(id => id === 'cons_guide').length;
+    let baseMaxRolls = 2 + (metaData.upgrades?.rerolls || 0) + (player.relics.filter(id => id === 'refresh').length * 2) + (player.berserkerBonus || 0) + player.relics.filter(id => id === 'cons_guide').length + (player.relics.filter(id => id === 'cons_loaded_dice').length * 2);
     if (stage.activeShackle === 'fatigue') {
         baseMaxRolls = 1;
     }
@@ -1189,7 +1206,7 @@ window.executeRoll = function(isInitial = false) {
                 activeRelics = player.relics.filter(r => !stage.shackleMeta.ignoredRelics.includes(r));
             }
 
-            battle.scoreResult = calculateEngineScore(battle.dice, activeRelics, battle.rollsLeft, player.hp, shackleConfig ? [shackleConfig] : [], stage.turnsLeft, { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled, finalDamageUpgrade: metaData?.upgrades?.finalDamage || 0, damageBuffMulti: stage.damageBuffMulti || 1.0, isEliteOrBoss: isElite(stage.level) || isBoss(stage.level) });
+            battle.scoreResult = calculateEngineScore(battle.dice, activeRelics, battle.rollsLeft, player.hp, shackleConfig ? [shackleConfig] : [], stage.turnsLeft, { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled, finalDamageUpgrade: metaData?.upgrades?.finalDamage || 0, damageBuffMulti: stage.damageBuffMulti || 1.0, isEliteOrBoss: isElite(stage.level) || isBoss(stage.level), bonusBasePoints: (player.bonusBasePoints || 0) });
 
             if (stage.activeShackle === 'blind' && stage.shackleMeta) {
                 let unlockedIndices = battle.dice.map((d, i) => !d.locked ? i : -1).filter(i => i !== -1);
@@ -1267,7 +1284,7 @@ window.fireAttack = function() {
             if (stage.activeShackle === 'relicseal' && stage.shackleMeta && stage.shackleMeta.ignoredRelics) {
                 activeRelics = player.relics.filter(r => !stage.shackleMeta.ignoredRelics.includes(r));
             }
-            battle.scoreResult = calculateEngineScore(battle.dice, activeRelics, battle.rollsLeft, player.hp, shackleConfig ? [shackleConfig] : [], stage.turnsLeft, { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled, finalDamageUpgrade: metaData?.upgrades?.finalDamage || 0, damageBuffMulti: stage.damageBuffMulti || 1.0, isEliteOrBoss: isElite(stage.level) || isBoss(stage.level) });
+            battle.scoreResult = calculateEngineScore(battle.dice, activeRelics, battle.rollsLeft, player.hp, shackleConfig ? [shackleConfig] : [], stage.turnsLeft, { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled, finalDamageUpgrade: metaData?.upgrades?.finalDamage || 0, damageBuffMulti: stage.damageBuffMulti || 1.0, isEliteOrBoss: isElite(stage.level) || isBoss(stage.level), bonusBasePoints: (player.bonusBasePoints || 0) });
             UI.showToast(i18n.t('messages.toast_tremor'));
         }
     }
@@ -1291,7 +1308,7 @@ window.fireAttack = function() {
     let finalDamage = Math.floor(battle.scoreResult.finalScore);
 
     // --- Build animation steps ---
-    const env = { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled, finalDamageUpgrade: metaData?.upgrades?.finalDamage || 0, damageBuffMulti: stage.damageBuffMulti || 1.0, isEliteOrBoss: isElite(stage.level) || isBoss(stage.level) };
+    const env = { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled, finalDamageUpgrade: metaData?.upgrades?.finalDamage || 0, damageBuffMulti: stage.damageBuffMulti || 1.0, isEliteOrBoss: isElite(stage.level) || isBoss(stage.level), bonusBasePoints: (player.bonusBasePoints || 0) };
     let steps = calculateDamageSteps(battle.dice, activeRelics, battle.rollsLeft, player.hp, shackleConfig ? [shackleConfig] : [], stage.turnsLeft, env);
 
 
@@ -1429,25 +1446,33 @@ window.fireAttack = function() {
             } else {
                 stage.turnsLeft--;
                 if (stage.turnsLeft <= 0) {
-                    player.hp--;
-                    if (player.hp > 0 && player.relics.includes('berserker')) {
-                        player.berserkerBonus = (player.berserkerBonus || 0) + 1;
-                        UI.showToast(i18n.t('messages.toast_berserker'));
-                    }
-                    if (player.hp <= 0) {
-                        playerTakesFatalDamage(i18n.t('messages.death_hp'));
-                        if (player.hp <= 0) return;
-                        UI.showToast(i18n.t('messages.toast_timeout_wealth'), () => {
-                            stage.turnsLeft = getEnemyWithMeta(stage.level).turns;
-                            if (stage.activeShackle === 'timecompress') stage.turnsLeft = 2;
-                            startTurn();
-                        });
+                    if (player.relics.includes('cons_doll')) {
+                        UI.showToast('🎎 替身草人抵擋了超時懲罰！');
+                        player.relics.splice(player.relics.indexOf('cons_doll'), 1);
+                        stage.turnsLeft = getEnemyWithMeta(stage.level).turns;
+                        if (stage.activeShackle === 'timecompress') stage.turnsLeft = 2;
+                        startTurn();
                     } else {
-                        UI.showToast(i18n.t('messages.toast_timeout_retry'), () => {
-                            stage.turnsLeft = getEnemyWithMeta(stage.level).turns;
-                            if (stage.activeShackle === 'timecompress') stage.turnsLeft = 2;
-                            startTurn();
-                        });
+                        player.hp--;
+                        if (player.hp > 0 && player.relics.includes('berserker')) {
+                            player.berserkerBonus = (player.berserkerBonus || 0) + 1;
+                            UI.showToast(i18n.t('messages.toast_berserker'));
+                        }
+                        if (player.hp <= 0) {
+                            playerTakesFatalDamage(i18n.t('messages.death_hp'));
+                            if (player.hp <= 0) return;
+                            UI.showToast(i18n.t('messages.toast_timeout_wealth'), () => {
+                                stage.turnsLeft = getEnemyWithMeta(stage.level).turns;
+                                if (stage.activeShackle === 'timecompress') stage.turnsLeft = 2;
+                                startTurn();
+                            });
+                        } else {
+                            UI.showToast(i18n.t('messages.toast_timeout_retry'), () => {
+                                stage.turnsLeft = getEnemyWithMeta(stage.level).turns;
+                                if (stage.activeShackle === 'timecompress') stage.turnsLeft = 2;
+                                startTurn();
+                            });
+                        }
                     }
                 } else startTurn();
             }
@@ -1574,6 +1599,11 @@ window.triggerFusionReplace = function(currentFusions, newFusionId, mat1, mat2) 
 };
 
 function enemyDefeated() {
+    ['cons_strike_a', 'cons_fever_b', 'cons_combo_c', 'cons_science_d', 'cons_bomb', 'cons_loaded_dice'].forEach(consId => {
+        let idx = player.relics.indexOf(consId);
+        if (idx !== -1) player.relics.splice(idx, 1);
+    });
+
     let shouldTriggerFirstAid = (stage.level + 1) % 3 === 0;
     if (player.relics.includes('firstaid') && shouldTriggerFirstAid && player.hp < window.getMaxHp()) {
         player.hp++;
@@ -1981,7 +2011,7 @@ window.devSetDice = (digitString) => {
         if (stage.activeShackle === 'relicseal' && stage.shackleMeta && stage.shackleMeta.ignoredRelics) {
             activeRelics = player.relics.filter(r => !stage.shackleMeta.ignoredRelics.includes(r));
         }
-        battle.scoreResult = calculateEngineScore(battle.dice, activeRelics, battle.rollsLeft, player.hp, shackleConfig ? [shackleConfig] : [], stage.turnsLeft, { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled, finalDamageUpgrade: metaData?.upgrades?.finalDamage || 0, damageBuffMulti: stage.damageBuffMulti || 1.0, isEliteOrBoss: isElite(stage.level) || isBoss(stage.level) });
+        battle.scoreResult = calculateEngineScore(battle.dice, activeRelics, battle.rollsLeft, player.hp, shackleConfig ? [shackleConfig] : [], stage.turnsLeft, { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled, finalDamageUpgrade: metaData?.upgrades?.finalDamage || 0, damageBuffMulti: stage.damageBuffMulti || 1.0, isEliteOrBoss: isElite(stage.level) || isBoss(stage.level), bonusBasePoints: (player.bonusBasePoints || 0) });
     }
     renderAll();
 };

@@ -157,6 +157,9 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     workingDice.forEach(d => counts[d.val]++);
 
     let totalBase = env.bonusBasePoints || 0;
+    if (playerRelics.includes('cons_bomb')) {
+        totalBase += 300;
+    }
     let baseContributions = {};
     let globalNotes = [];
 
@@ -698,6 +701,11 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         globalNotes.push(`${resourceBonusMsg} x${rerollMulti.toFixed(1)}`);
         _collect('reroll_bonus', 'reroll_bonus', rerollMulti);
     }
+
+    if (playerRelics.includes('cons_strike_a')) tagA.multi += 2.0;
+    if (playerRelics.includes('cons_fever_b')) tagB.multi += 2.0;
+    if (playerRelics.includes('cons_combo_c')) tagC.multi += 2.0;
+    if (playerRelics.includes('cons_science_d')) tagD.multi += 2.0;
 
     // Capture globalMulti before shackle post-hooks so we can detect changes
     const preHookGlobalMulti = globalMulti;
