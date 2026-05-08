@@ -266,3 +266,4 @@
 - 修復 `js/i18n.js` 中多語系物件解析錯誤的問題，透過合併展開 `ui` 物件確保開發者工具相關文字正確顯示。
 - 修復開發者工具中的戰鬥控制功能 (`devKillEnemy` 與 `devSetDice`) 在 `WAIT_ACTION` 狀態下無法使用的問題。
 - 修復使用開發者工具手動設定骰子時 (`devSetDice`) 未重新計算預估傷害分數的問題，現在會動態觸發引擎計分並更新 UI。
+- 修復開發者模式面板（Dev Modal）中的按鈕在部分瀏覽器或載入時機下沒有反應的問題。這藉由移除 `DOMContentLoaded` 事件監聽器並直接綁定 DOM 元素的 `onclick` 事件（如 `btnDevKill`、`btnDevDice`、`inputDevDice` 與 `btnDevGetAll`）來解決。
