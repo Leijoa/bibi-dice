@@ -1610,3 +1610,16 @@ export function renderHowToPlayTab(tabKey) {
     };
     contentEl.innerHTML = i18n.t(`tutorial.${keyMap[tabKey]}`) || '';
 }
+
+export function initResponsiveScaling() {
+    const container = document.getElementById('game-container');
+    if (!container) return;
+    function resize() {
+        const scale = Math.min(window.innerWidth / 450, window.innerHeight / 800);
+        container.style.transform = `scale(${scale})`;
+    }
+    window.addEventListener('resize', resize);
+    resize();
+}
+
+initResponsiveScaling();
