@@ -1965,39 +1965,37 @@ window.devSetDice = (digitString) => {
     renderAll();
 };
 
-document.addEventListener('DOMContentLoaded', () => {
-    const btnDevKill = document.getElementById('dev-kill-btn');
-    const btnDevDice = document.getElementById('dev-dice-btn');
-    const inputDevDice = document.getElementById('dev-dice-input');
+const btnDevKill = document.getElementById('dev-kill-btn');
+const btnDevDice = document.getElementById('dev-dice-btn');
+const inputDevDice = document.getElementById('dev-dice-input');
+const btnDevGetAll = document.getElementById('dev-get-all-relics-btn');
 
-    const btnDevGetAll = document.getElementById('dev-get-all-relics-btn');
-    if (btnDevGetAll) {
-        btnDevGetAll.addEventListener('click', () => {
-            if (window.devGetAllRelics) window.devGetAllRelics();
-        });
-    }
+if (btnDevGetAll) {
+    btnDevGetAll.onclick = () => {
+        if (window.devGetAllRelics) window.devGetAllRelics();
+    };
+}
 
-    if (btnDevKill) {
-        btnDevKill.addEventListener('click', () => {
-            if (window.devKillEnemy) {
-                window.devKillEnemy();
-                if (window.closeDevModal) window.closeDevModal();
-            }
-        });
-    }
+if (btnDevKill) {
+    btnDevKill.onclick = () => {
+        if (window.devKillEnemy) {
+            window.devKillEnemy();
+            if (window.closeDevModal) window.closeDevModal();
+        }
+    };
+}
 
-    if (btnDevDice && inputDevDice) {
-        btnDevDice.addEventListener('click', () => {
-            const val = inputDevDice.value.trim();
-            if (/^[1-8]{8}$/.test(val) && window.devSetDice) {
-                window.devSetDice(val);
-                if (window.closeDevModal) window.closeDevModal();
-            } else {
-                alert('請輸入精確的 8 個數字 (1-8)');
-            }
-        });
-    }
-});
+if (btnDevDice && inputDevDice) {
+    btnDevDice.onclick = () => {
+        const val = inputDevDice.value.trim();
+        if (/^[1-8]{8}$/.test(val) && window.devSetDice) {
+            window.devSetDice(val);
+            if (window.closeDevModal) window.closeDevModal();
+        } else {
+            alert('請輸入精確的 8 個數字 (1-8)');
+        }
+    };
+}
 
 // 啟動遊戲
 loadCollection();
