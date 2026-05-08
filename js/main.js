@@ -1579,7 +1579,7 @@ function enemyDefeated() {
         return mats;
     };
     let availableForShop = RELIC_DB.filter(r => !player.relics.includes(r.id) && r.rarity !== 5 && !getDropFusedMaterials().includes(r.id));
-    let nextStep = (availableForShop.length === 0 && !player.isInfiniteMode) ? nextStage : openShop;
+    let nextStep = openShop;
 
     // Boss (9) or Elite (2, 5, 8)
     let isEliteOrBossDrop = isElite(stage.level) || isBoss(stage.level);
@@ -1594,7 +1594,7 @@ function enemyDefeated() {
         checkRelicFusion();
 
         availableForShop = RELIC_DB.filter(r => !player.relics.includes(r.id) && r.rarity !== 5 && !getDropFusedMaterials().includes(r.id));
-        nextStep = (availableForShop.length === 0 && !player.isInfiniteMode) ? nextStage : openShop;
+        nextStep = openShop;
 
         if (isBoss(stage.level) && !player.isInfiniteMode) {
             nextStep = gameWin; // End game normally instead of shopping after boss in standard mode

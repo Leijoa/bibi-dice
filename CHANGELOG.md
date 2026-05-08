@@ -267,3 +267,6 @@
 - 修復開發者工具中的戰鬥控制功能 (`devKillEnemy` 與 `devSetDice`) 在 `WAIT_ACTION` 狀態下無法使用的問題。
 - 修復使用開發者工具手動設定骰子時 (`devSetDice`) 未重新計算預估傷害分數的問題，現在會動態觸發引擎計分並更新 UI。
 - 修復開發者模式面板（Dev Modal）中的按鈕在部分瀏覽器或載入時機下沒有反應的問題。這藉由移除 `DOMContentLoaded` 事件監聽器並直接綁定 DOM 元素的 `onclick` 事件（如 `btnDevKill`、`btnDevDice`、`inputDevDice` 與 `btnDevGetAll`）來解決。
+
+### 修復商店於遺物池空時跳過問題 [2026/05/08]
+* **Fix (Bug)**：修復在獲得所有遺物後商店會直接被跳過的問題。現在商店無論遺物池是否耗盡都會開啟，確保玩家能持續購買消耗品。
