@@ -1924,6 +1924,22 @@ window.devKillEnemy = () => {
     enemyDefeated();
 };
 
+window.devGetAllRelics = () => {
+    // Add all relics (including mythic) to bypass fusion limit logic and empty the shop pool
+    RELIC_DB.forEach(r => {
+        if (!r.id.startsWith('cons_') && !player.relics.includes(r.id)) {
+            player.relics.push(r.id);
+            if (typeof unlockCollectionItem === 'function') unlockCollectionItem('relic', r.id);
+        }
+    });
+
+    UI.renderInventory(player, battle);
+    if (typeof saveGame === 'function') saveGame();
+
+    UI.showToast('🛠️ 【開發者模式】已獲得所有遺物！商店將開始販售消耗品。');
+    if (window.closeDevModal) window.closeDevModal();
+};
+
 window.devSetDice = (digitString) => {
     if (battle.state === 'ATTACKING') return;
     for (let i = 0; i < 8; i++) {
@@ -1953,6 +1969,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnDevKill = document.getElementById('dev-kill-btn');
     const btnDevDice = document.getElementById('dev-dice-btn');
     const inputDevDice = document.getElementById('dev-dice-input');
+
+    const btnDevGetAll = document.getElementById('dev-get-all-relics-btn');
+    if (btnDevGetAll) {
+        btnDevGetAll.addEventListener('click', () => {
+            if (window.devGetAllRelics) window.devGetAllRelics();
+        });
+    }
 
     if (btnDevKill) {
         btnDevKill.addEventListener('click', () => {
