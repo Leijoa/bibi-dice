@@ -234,6 +234,9 @@
 2026-05-07 - 新增17種新消耗品、調整生命紅藥稀有度至3、商店過濾最多一個幸運草系列道具、並新增各語系消耗品翻譯。
 
 
+### Fix：手機版瀏覽器敵人倒數 UI 抖動修復 [2026/05/08]
+* **敵人倒數動畫重構**：移除了 `.countdown-urgent` 狀態下 `@keyframes countdown-pulse` 產生的 `transform: scale` 動畫，改用強度更高的 `text-shadow`、`box-shadow` 與 `background` 脈衝發光效果替代。此修改徹底解決了部分手機瀏覽器（如 Chrome on Sony Xperia）因動畫引發的佈局重繪 (reflow) 而導致的嚴重 UI 抖動與跳動問題。
+
 ### 無盡之塔 PB 追蹤修復與標題畫面音效 [2026/05/08]
 * **無盡之塔最高層數 PB 追蹤修復**：修正了 `js/main.js` 中 `recordHistory` 未正確追蹤與儲存玩家在無盡之塔所達到的最高層數。現在會精確計算當前層數，並在超越歷史最高時存入 localStorage 的 `bibbidiba_pb_infinite` 鍵中。
 * **歷史牌局介面更新**：更新了 `js/ui.js` 的 `renderHistoryModal`，現在會直接從 localStorage 讀取 `bibbidiba_pb_infinite` 的值，並確保在介面的「最高無限層數」區塊中以「PB: Floor {0}」的格式清楚顯示。
