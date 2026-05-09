@@ -1599,13 +1599,10 @@ window.triggerFusionReplace = function(currentFusions, newFusionId, mat1, mat2) 
 };
 
 function enemyDefeated() {
-    // Strictly remove all single-use consumables at the end of the stage, regardless of whether they were triggered.
-    const singleUseConsumables = [
-        'cons_strike_a', 'cons_fever_b', 'cons_combo_c', 'cons_science_d',
-        'cons_bomb', 'cons_loaded_dice', 'cons_pliers', 'cons_doll',
-        'cons_clover_3', 'cons_clover_4', 'cons_clover_5', 'cons_clover_6'
-    ];
-    player.relics = player.relics.filter(r => !singleUseConsumables.includes(r));
+    ['cons_strike_a', 'cons_fever_b', 'cons_combo_c', 'cons_science_d', 'cons_bomb', 'cons_loaded_dice'].forEach(consId => {
+        let idx = player.relics.indexOf(consId);
+        if (idx !== -1) player.relics.splice(idx, 1);
+    });
 
     let shouldTriggerFirstAid = (stage.level + 1) % 3 === 0;
     if (player.relics.includes('firstaid') && shouldTriggerFirstAid && player.hp < window.getMaxHp()) {
