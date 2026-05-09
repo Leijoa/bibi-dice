@@ -38,7 +38,9 @@
       "PowerShell(\\(Get-Content \"d:\\\\unity\\\\BIBBIDIBA\\\\index.html\" | Measure-Object -Line\\).Lines)",
       "Bash(grep -n \"^\\\\s*[a-z_]*: {$\\\\|^  [a-z_]*: {\" d:/unity/BIBBIDIBA/js/locales/zh-tw.js)",
       "Bash(grep -n \"^\\\\s*[a-z_-]*: {$\\\\|^  [a-z_-]*: {\" d:/unity/BIBBIDIBA/js/locales/en.js)",
-      "Bash(grep -n \"^\\\\s*[a-z_-]*: {$\\\\|^  [a-z_-]*: {\" d:/unity/BIBBIDIBA/js/locales/zh-cn.js)"
+      "Bash(grep -n \"^\\\\s*[a-z_-]*: {$\\\\|^  [a-z_-]*: {\" d:/unity/BIBBIDIBA/js/locales/zh-cn.js)",
+      "Bash(git merge *)",
+      "Bash(git rm *)"
     ]
   }
 }
