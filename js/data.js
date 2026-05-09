@@ -20,6 +20,16 @@ export const FUSION_RECIPES = {
     'fusion_scale_apex': { mat1: 'order', mat2: 'extremist' }
 };
 
+export const FUSION_MATERIAL_LOOKUP = (() => {
+    const lookup = {};
+    for (let fid in FUSION_RECIPES) {
+        let rec = FUSION_RECIPES[fid];
+        lookup[rec.mat1] = { mat: rec.mat2, fid: fid };
+        lookup[rec.mat2] = { mat: rec.mat1, fid: fid };
+    }
+    return lookup;
+})();
+
 export const RELIC_DB = [
     { id: 'b1', name: '【大一】', desc: '1 以 10 點計算', price: 20, rarity: 1 },
     { id: 'b2', name: '【大二】', desc: '2 以 10 點計算', price: 20, rarity: 1 },
