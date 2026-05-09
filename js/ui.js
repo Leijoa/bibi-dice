@@ -310,6 +310,16 @@ export function renderInventory(player, battle) {
     
     let isNoise = window.getStageActiveShackle && window.getStageActiveShackle() === 'noise';
 
+    let fusionMaterialLookup = {};
+    if (player && player.relics) {
+        let playerRelicSet = new Set(player.relics);
+        for (let fid in FUSION_RECIPES) {
+            let rec = FUSION_RECIPES[fid];
+            if (playerRelicSet.has(rec.mat2)) fusionMaterialLookup[rec.mat1] = fid;
+            if (playerRelicSet.has(rec.mat1)) fusionMaterialLookup[rec.mat2] = fid;
+        }
+    }
+
     el.inventoryGrid.innerHTML = sortedRelics.map(id => {
         if (isNoise) {
             return `
@@ -322,17 +332,12 @@ export function renderInventory(player, battle) {
         let style = RARITY[r.rarity];
         let isFusionMaterial = false;
         let fusionResultId = null;
-        if (player && player.relics) {
-            for (let fid in FUSION_RECIPES) {
-                let rec = FUSION_RECIPES[fid];
-                if ((rec.mat1 === r.id && player.relics.includes(rec.mat2)) ||
-                    (rec.mat2 === r.id && player.relics.includes(rec.mat1))) {
-                    isFusionMaterial = true;
-                    fusionResultId = fid;
-                    break;
-                }
-            }
+
+        if (fusionMaterialLookup[r.id]) {
+            isFusionMaterial = true;
+            fusionResultId = fusionMaterialLookup[r.id];
         }
+
         let rName = id.startsWith('cons_') ? i18n.t(`consumables.${id}.name`) : (i18n.t(`relics.${id}.name`) || r.name);
         return `
         <div data-relic-id="${r.id}" onclick="window.showRelicInfo('${r.id}')" class="${style.bg} px-2 py-1 rounded-full border ${style.border} shadow-sm flex items-center gap-1 cursor-pointer hover:scale-105 transition-transform active:scale-95">
@@ -857,21 +862,25 @@ const RARITY_LEFT_COLOR = {
     5: 'rgba(6,182,212,0.55)'
 };
 export function renderShopItems(shopItems, player) {
+    let fusionMaterialLookup = {};
+    if (player && player.relics) {
+        let playerRelicSet = new Set(player.relics);
+        for (let fid in FUSION_RECIPES) {
+            let rec = FUSION_RECIPES[fid];
+            if (playerRelicSet.has(rec.mat2)) fusionMaterialLookup[rec.mat1] = fid;
+            if (playerRelicSet.has(rec.mat1)) fusionMaterialLookup[rec.mat2] = fid;
+        }
+    }
+
     el.shopItemsContainer.innerHTML = shopItems.map((r, idx) => {
         let style = RARITY[r.rarity];
 
         let isFusionMaterial = false;
         let fusionResultId = null;
-        if (player && player.relics) {
-            for (let fid in FUSION_RECIPES) {
-                let rec = FUSION_RECIPES[fid];
-                if ((rec.mat1 === r.id && player.relics.includes(rec.mat2)) ||
-                    (rec.mat2 === r.id && player.relics.includes(rec.mat1))) {
-                    isFusionMaterial = true;
-                    fusionResultId = fid;
-                    break;
-                }
-            }
+
+        if (fusionMaterialLookup[r.id]) {
+            isFusionMaterial = true;
+            fusionResultId = fusionMaterialLookup[r.id];
         }
 
         let rName = r.id.startsWith('cons_') ? i18n.t(`consumables.${r.id}.name`) : (i18n.t(`relics.${r.id}.name`) || r.name);
