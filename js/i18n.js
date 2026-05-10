@@ -85,7 +85,10 @@ export const translations = {
       'rules_title': '📖 全牌型倍率表',
       'tab_hands': '牌型',
       'tab_relics': '遺物',
-      'tab_shackles': '枷鎖'
+      'tab_shackles': '枷鎖',
+      'locked': '未解鎖',
+      'locked_relic': '未解鎖遺物',
+      'locked_shackle': '未解鎖枷鎖'
     }
   },
   'zh-cn': {
