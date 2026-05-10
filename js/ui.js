@@ -222,7 +222,7 @@ export function updateEnemyUI(stage) {
     // Layer badge
     let layerBadgeText;
     if (stage.level < ENEMY_DB.length) {
-        layerBadgeText = `第${stage.level + 1}層`;
+        layerBadgeText = i18n.t('ui.stage', stage.level + 1);
     } else {
         const _inf = stage.level - ENEMY_DB.length + 1;
         const _n = Math.floor((_inf - 1) / 3) + 1;
@@ -1023,7 +1023,7 @@ export function renderHistoryModal(records, metaData) {
                     </div>
                     <div>
                         <div class="text-xs text-amber-200/70 font-bold">${i18n.t('ui.pb_highest_infinite') || '最高無限層數'}</div>
-                        <div class="text-xl font-black text-purple-400">${parseInt(localStorage.getItem('bibbidiba_pb_infinite')) > 0 ? `PB: Floor ${parseInt(localStorage.getItem('bibbidiba_pb_infinite'))}` : dash}</div>
+                        <div class="text-xl font-black text-purple-400">${parseInt(localStorage.getItem('bibbidiba_pb_infinite')) > 0 ? `PB: ${i18n.t('ui.stage', parseInt(localStorage.getItem('bibbidiba_pb_infinite')))}` : dash}</div>
                     </div>
                 </div>
                 <div class="mt-3 flex flex-wrap gap-1">
