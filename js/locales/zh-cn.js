@@ -239,7 +239,15 @@ ui: {
     dev_shackle_apply: '套用枷锁',
     dev_shackle_filter: '搜索枷锁...',
     dev_shackle_select_ph: '-- 选择枷锁 --',
-    dev_shackle_conflict: '⚠️ 已有枷锁套用中，强制套用将覆盖现有枷锁。'
+    dev_shackle_conflict: '⚠️ 已有枷锁套用中，强制套用将覆盖现有枷锁。',
+    stage_type_boss: '👑 Boss',
+    stage_type_elite: '⚡ 精英',
+    stage_type_infinite: '♾️ 无限塔',
+    stage_type_normal: '⚔️ 一般',
+    history_stage_type: '关卡类型',
+    history_best_hand: '最佳牌型',
+    history_relics: '遗物',
+    history_shackles: '枷锁'
   },
   tutorial: {
     btn_start: '🎓 新手教程',

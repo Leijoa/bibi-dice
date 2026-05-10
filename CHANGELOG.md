@@ -1,5 +1,15 @@
 
 
+### Fix：歷史紀錄、結算統計與關卡標籤全面動態多語系化，解決牌型與敵人名稱卡在中文的問題 [2026/05/11]
+* **問題**：`renderHistoryModal` 中所有靜態標籤（「關卡類型」、「最佳牌型」、「遺物」、「枷鎖」）硬編碼繁中；`stageTypeLabel` 固定輸出中文字串（如「精英」、「無限塔」）；歷史紀錄的 `r.combo` 以儲存時的語系顯示，不跟隨當前語系；結算畫面的 `highestDamageCombo` 同樣卡中文。
+* **locale 新增**（4 個語系）：在 `ui` 區塊補齊 `stage_type_boss/elite/infinite/normal`、`history_stage_type`、`history_best_hand`、`history_relics`、`history_shackles` 共 8 個鍵值。
+* **`js/main.js`**：`recordHistory` 的 `currentRecord` 新增 `level: stage.level` 與 `infiniteMonsterId: stage.infiniteMonsterId`，供 UI 層動態查名使用。
+* **`js/ui.js`**：
+  - 新增 `getLocalizedCombo(comboStr)` 輔助函式：以 RULE_DB 查找各牌型的 i18n key，支援複合 combo（` + ` 分隔）逐段翻譯後拼回；
+  - `renderHistoryModal`：`resultText` 改用 `i18n.t('enemies.enemy_N')` / `i18n.t('monsters.monster_N')` 動態查名；`stageTypeLabel` 改用 `ui.stage_type_*` 鍵值；所有標籤改用 `ui.history_*` 鍵值；`r.combo` 與 PB combo 改用 `getLocalizedCombo()` 翻譯；
+  - `renderEndGameStats`：`highestDamageCombo` 改用 `getLocalizedCombo()`；
+  - `updateEnemyUI` layerBadgeText 已於上次任務修正，無需再改。
+
 ### Refactor：戰鬥狀態列支援物件化類型區分，實現枷鎖優先排序與視覺化變色，並徹底多語系化 [2026/05/11]
 * **重構目標**：將 `js/engine.js` 的 `globalNotes` 由純字串陣列改為物件陣列 `{ text: string, type: 'relic' | 'shackle' }`，以承載類型元數據，供 UI 層排序與上色使用。
 * **locale 新增**（4 個語系）：在 `messages` 區塊加入 `relic_trigger`（`[{0}] 發動: {1}` 等）與 `shackle_trigger`（`[{0}] 影響: {1}` 等）兩組格式字串，描述性遺物與枷鎖觸發說明均透過 `_t()` 動態生成，不再有硬編碼繁中文字。
