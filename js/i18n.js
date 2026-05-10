@@ -88,7 +88,8 @@ export const translations = {
       'tab_shackles': '枷鎖',
       'locked': '未解鎖',
       'locked_relic': '未解鎖遺物',
-      'locked_shackle': '未解鎖枷鎖'
+      'locked_shackle': '未解鎖枷鎖',
+      'souls_warning': '⚠️ 警告：進行任何靈魂奉獻將會清除當前進行中的遊戲進度。'
     }
   },
   'zh-cn': {
@@ -166,7 +167,8 @@ export const translations = {
       'rules_title': '📖 全牌型倍率表',
       'tab_hands': '牌型',
       'tab_relics': '遗物',
-      'tab_shackles': '枷锁'
+      'tab_shackles': '枷锁',
+      'souls_warning': '⚠️ 警告：进行任何灵魂奉献将会清除当前进行中的游戏进度。'
     }
   },
   'en': {
@@ -245,7 +247,8 @@ export const translations = {
       'rules_title': '📖 Hands Multipliers',
       'tab_hands': 'Hands',
       'tab_relics': 'Relics',
-      'tab_shackles': 'Shackles'
+      'tab_shackles': 'Shackles',
+      'souls_warning': '⚠️ Warning: Any soul sacrifice will erase your current run progress.'
     }
   },
   'ja': {
@@ -324,7 +327,8 @@ export const translations = {
       'rules_title': '📖 役の倍率表',
       'tab_hands': '役',
       'tab_relics': '遺物',
-      'tab_shackles': '枷鎖'
+      'tab_shackles': '枷鎖',
+      'souls_warning': '⚠️ 警告：魂の奉献を行うと、現在進行中のゲーム進行状況が消去されます。'
     }
   }
 };

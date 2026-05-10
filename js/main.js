@@ -127,6 +127,7 @@ function saveMetaData() {
 
 window.getMetaData = () => metaData;
 window.saveMetaData = saveMetaData;
+window.clearSave = clearSave;
 
 
 // 開發者模式

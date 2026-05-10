@@ -1,5 +1,11 @@
 
 
+### Feature：靈魂奉獻後自動清除當前單局存檔，並新增 i18n 警告提示 [2026/05/11]
+* **新增機制**：玩家在靈魂奉獻視窗成功購買任何升級後，系統將立即清除 `localStorage` 中的局內存檔（`SAVE_KEY`），並隱藏首頁的「繼續旅程」按鈕，強制玩家下次以新遊戲開始。
+* **存檔隔離**：僅移除局內進度存檔，靈魂總數、已解鎖天賦（`META_KEY`）、收集冊（`COLLECTION_KEY`）、歷史紀錄（`HISTORY_KEY`）一律不受影響。
+* **i18n 警告提示**：靈魂奉獻彈窗頂部新增紅色警告文字（`text-xs text-red-400 font-bold`），透過 `i18n.t('ui.souls_warning')` 顯示，四個語系（`zh-tw`、`zh-cn`、`en`、`ja`）均已在 `js/i18n.js` 補齊對應翻譯。
+* **實作細節**：`js/main.js` 暴露 `window.clearSave`；`js/ui.js` 的 `buySoulUpgrade` 於購買成功後呼叫 `window.clearSave()` 並隱藏 `#btn-continue`；`renderSoulsModal` 於升級列表前插入警告段落。
+
 ### Fix：修復繁體中文收集冊鎖定項目顯示原始 i18n Key 值 [2026/05/11]
 * **問題**：切換至繁體中文（`zh-tw`）語系後，收集冊「牌型」、「遺物」、「枷鎖」三個分頁中，尚未解鎖項目的描述欄位會顯示原始 key 值 `ui.locked`，而非翻譯文字。
 * **根本原因**：`js/i18n.js` 中 `zh-tw` 語系的 `ui` 覆寫物件缺少 `'locked'`、`'locked_relic'`、`'locked_shackle'` 三個 key（簡體中文、英文、日文均已定義）。

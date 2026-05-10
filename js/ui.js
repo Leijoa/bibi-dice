@@ -1392,7 +1392,8 @@ export function renderSoulsModal(metaData) {
     if (!el.soulsContent) return;
     el.soulsHeaderText.innerText = i18n.t('souls.owned', metaData.souls);
 
-    el.soulsContent.innerHTML = SOULS_UPG_DEFS.map(u => {
+    const warningHtml = `<p class="text-xs text-red-400 font-bold mb-2">${i18n.t('ui.souls_warning')}</p>`;
+    el.soulsContent.innerHTML = warningHtml + SOULS_UPG_DEFS.map(u => {
         let currentLv = metaData.upgrades[u.id] || 0;
         let isMax = currentLv >= u.max;
         let currentCost = u.cost(currentLv);
@@ -1433,6 +1434,8 @@ window.buySoulUpgrade = function(id, cost) {
         meta.souls -= cost;
         meta.upgrades[id] = (meta.upgrades[id] || 0) + 1;
         window.saveMetaData();
+        if (window.clearSave) window.clearSave();
+        if (el.btnContinue) el.btnContinue.classList.add('hidden');
         renderSoulsModal(meta);
     } else {
         showToast(i18n.t('messages.toast_no_money'));
