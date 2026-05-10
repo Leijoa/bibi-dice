@@ -740,69 +740,85 @@ button[id^="btn-close"]:hover {
 
 /* ===== Crystal Border System ===== */
 
-/* 金色水晶：光澤從左下掃向右上，循環流動 */
-@keyframes crystal-gold-sweep {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* 金色水晶：邊框線在暗金與亮白金之間閃爍，模擬折射光 */
+@keyframes crystal-gold-pulse {
+  0%, 100% {
+    border-color: rgba(160, 110, 8, 0.75);
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.25), 0 0 14px rgba(255, 215, 0, 0.1);
+  }
+  45% {
+    border-color: rgba(255, 225, 60, 0.95);
+    box-shadow: 0 0 9px rgba(255, 215, 0, 0.55), 0 0 22px rgba(255, 215, 0, 0.25);
+  }
+  50% {
+    border-color: rgba(255, 252, 210, 1);
+    box-shadow: 0 0 14px rgba(255, 240, 120, 0.85), 0 0 30px rgba(255, 215, 0, 0.35);
+  }
+  55% {
+    border-color: rgba(255, 225, 60, 0.95);
+    box-shadow: 0 0 9px rgba(255, 215, 0, 0.55), 0 0 22px rgba(255, 215, 0, 0.25);
+  }
 }
 
-/* 銀色水晶：較慢、冷冽的流光 */
-@keyframes crystal-silver-sweep {
-  0%   { background-position: 0% 50%; }
-  50%  { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+/* 銀色水晶：冷冽的鋼鐵銀閃光 */
+@keyframes crystal-silver-pulse {
+  0%, 100% {
+    border-color: rgba(70, 90, 110, 0.6);
+    box-shadow: 0 0 4px rgba(180, 205, 225, 0.15), 0 0 10px rgba(180, 205, 225, 0.06);
+  }
+  50% {
+    border-color: rgba(205, 220, 238, 0.9);
+    box-shadow: 0 0 9px rgba(200, 220, 242, 0.5), 0 0 22px rgba(180, 205, 225, 0.2);
+  }
 }
 
-/* 金色水晶邊框：btn-primary（開始遊戲等主要按鈕）+ 攻擊按鈕 */
-.btn-primary::before,
-.btn-attack-ready::before {
-  content: '';
-  position: absolute;
-  inset: -2px;
-  border-radius: inherit;
-  background: linear-gradient(135deg,
-    #3b1f00 0%,
-    #c8860a 15%,
-    #ffd700 30%,
-    #fff8c0 45%,
-    #ffe066 50%,
-    #fff8c0 55%,
-    #ffd700 70%,
-    #c8860a 85%,
-    #3b1f00 100%
-  );
-  background-size: 300% 300%;
-  animation: crystal-gold-sweep 4s ease-in-out infinite;
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* 銀色水晶邊框：btn-secondary（次要按鈕）+ 重骰按鈕 */
-.btn-secondary::before,
-.btn-roll::before {
+/* 金色邊框：主要按鈕 */
+.btn-primary::after {
   content: '';
   position: absolute;
   inset: -1.5px;
   border-radius: inherit;
-  background: linear-gradient(135deg,
-    #1a1f2e 0%,
-    #4a5568 15%,
-    #a0aec0 30%,
-    #e8edf5 45%,
-    #c0ccd8 50%,
-    #e8edf5 55%,
-    #a0aec0 70%,
-    #4a5568 85%,
-    #1a1f2e 100%
-  );
-  background-size: 300% 300%;
-  animation: crystal-silver-sweep 5s ease-in-out infinite;
-  z-index: -1;
+  border: 1.5px solid rgba(160, 110, 8, 0.8);
   pointer-events: none;
+  z-index: 2;
+  animation: crystal-gold-pulse 3.5s ease-in-out infinite;
 }
 
-/* 攻擊按鈕額外需要 position:relative（Tailwind 動態生成無繼承保證） */
+/* 銀色邊框：次要按鈕 */
+.btn-secondary::after {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  border: 1px solid rgba(70, 90, 110, 0.65);
+  pointer-events: none;
+  z-index: 2;
+  animation: crystal-silver-pulse 5s ease-in-out infinite;
+}
+
+/* 攻擊按鈕：金色水晶邊框 */
 .btn-attack-ready {
   position: relative;
+}
+.btn-attack-ready::after {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  border: 1.5px solid rgba(160, 110, 8, 0.8);
+  pointer-events: none;
+  z-index: 2;
+  animation: crystal-gold-pulse 3.5s ease-in-out infinite;
+}
+
+/* 重骰按鈕：銀色水晶邊框 */
+.btn-roll::after {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  border: 1px solid rgba(70, 90, 110, 0.65);
+  pointer-events: none;
+  z-index: 2;
+  animation: crystal-silver-pulse 5s ease-in-out infinite;
 }
