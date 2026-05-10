@@ -394,6 +394,8 @@ ui: {
     'toast_noise_interfere': '🔇 【噪音】干擾，無法查看遺物效果！',
     'toast_obtained': '獲得：',
     'toast_dev_get_all': '🛠️ 【開發者模式】已獲得所有遺物！商店將開始販售消耗品。',
+    'toast_doll_block': '🎎 替身草人為你抵擋了傷害！',
+    'toast_doll_timeout': '🎎 替身草人抵擋了超時懲罰！',
     'relic_points_note': '+{0} 點數 ({1})',
     'relic_multi_note': 'x{0} ({1})',
     'shackle_multi_note': 'x{0} ({1})',

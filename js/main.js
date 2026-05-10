@@ -299,7 +299,7 @@ function applyCombatShackles(dmg, actualDamage, isEnemyDefeated) {
         let threshold = stage.enemyMaxHp * 0.10;
         if (dmg < threshold) {
             if (player.relics.includes('cons_doll')) {
-                UI.showToast('🎎 替身草人為你抵擋了傷害！');
+                UI.showToast(i18n.t('messages.toast_doll_block'));
                 player.relics.splice(player.relics.indexOf('cons_doll'), 1);
             } else {
                 player.hp--;
@@ -318,7 +318,7 @@ function applyCombatShackles(dmg, actualDamage, isEnemyDefeated) {
         let recoil = Math.floor(dmg * 0.05);
         if (recoil > 0) {
             if (player.relics.includes('cons_doll')) {
-                UI.showToast('🎎 替身草人為你抵擋了傷害！');
+                UI.showToast(i18n.t('messages.toast_doll_block'));
                 player.relics.splice(player.relics.indexOf('cons_doll'), 1);
             } else {
                 player.hp -= recoil;
@@ -1454,7 +1454,7 @@ window.fireAttack = function() {
                 stage.turnsLeft--;
                 if (stage.turnsLeft <= 0) {
                     if (player.relics.includes('cons_doll')) {
-                        UI.showToast('🎎 替身草人抵擋了超時懲罰！');
+                        UI.showToast(i18n.t('messages.toast_doll_timeout'));
                         player.relics.splice(player.relics.indexOf('cons_doll'), 1);
                         stage.turnsLeft = getEnemyWithMeta(stage.level).turns;
                         if (stage.activeShackle === 'timecompress') stage.turnsLeft = 2;

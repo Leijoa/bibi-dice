@@ -348,6 +348,8 @@ ui: {
     'toast_noise_interfere': '🔇 【ノイズ】干渉中、遺物の効果を確認できません！',
     'toast_obtained': '獲得：',
     'toast_dev_get_all': '🛠️ 【デバッグモード】すべての遺物を獲得しました！ショップで消耗品の販売を開始します。',
+    'toast_doll_block': '🎎 身代わり人形がダメージを肩代わりしました！',
+    'toast_doll_timeout': '🎎 身代わり人形がタイムオーバーの罰を防ぎました！',
     'relic_points_note': '+{0} 点 ({1})',
     'relic_multi_note': 'x{0} ({1})',
     'shackle_multi_note': 'x{0} ({1})',

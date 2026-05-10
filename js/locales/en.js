@@ -348,6 +348,8 @@ ui: {
     'toast_noise_interfere': '🔇 [Noise] interference, cannot view relic effects!',
     'toast_obtained': 'Obtained: ',
     'toast_dev_get_all': '🛠️ [Dev Mode] All relics obtained! Shop will now sell consumables.',
+    'toast_doll_block': '🎎 The Straw Doll blocked the damage for you!',
+    'toast_doll_timeout': '🎎 The Straw Doll blocked the timeout penalty!',
     'relic_points_note': '+{0} Pts ({1})',
     'relic_multi_note': 'x{0} ({1})',
     'shackle_multi_note': 'x{0} ({1})',
