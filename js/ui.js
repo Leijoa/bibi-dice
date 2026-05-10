@@ -1173,11 +1173,15 @@ export function renderCollectionModal(tab) {
         groups.forEach(g => {
             html += `<h3 class="text-base md:text-lg font-black text-slate-300 mt-2 mb-1 border-b border-slate-700 pb-1">${i18n.t(g.titleKey)}</h3>`;
             html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">`;
-            RULE_DB[g.key].forEach((rule, rIdx) => {
+            let letter = g.key.replace('group', '').toLowerCase();
+            let renderArr = g.key === 'groupD'
+                ? RULE_DB[g.key].slice().sort((a, b) => b.rarity - a.rarity)
+                : RULE_DB[g.key];
+            renderArr.forEach((rule, rIdx) => {
+                const origIdx = g.key === 'groupD' ? RULE_DB[g.key].indexOf(rule) : rIdx;
                 const unlocked = coll.hands.includes(rule.name);
-                let letter = g.key.replace('group', '').toLowerCase();
-                let ruleName = i18n.t(`rules.rule_${letter}${rIdx}.name`) || rule.name;
-                let ruleDesc = i18n.t(`rules.rule_${letter}${rIdx}.desc`) || rule.desc;
+                let ruleName = i18n.t(`rules.rule_${letter}${origIdx}.name`) || rule.name;
+                let ruleDesc = i18n.t(`rules.rule_${letter}${origIdx}.desc`) || rule.desc;
 
                 const nameStr = unlocked ? `${ruleName} <span class="text-emerald-400 text-xs ml-1">✅</span>` : `???`;
                 const descStr = unlocked ? ruleDesc : i18n.t('ui.locked'); // Hardcoded fallback for now

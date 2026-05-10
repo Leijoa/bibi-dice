@@ -7,6 +7,10 @@
 * **教學重骰限制**：修正 `js/main.js` 的 `startTurn()` 中，當 `tutorialMode` 為 `true` 時，`baseMaxRolls` 未被強制設為 `1` 的問題，避免玩家在教學期間可多次重骰而破壞引導流程。
 * **商店高亮層級修正**：修正 `js/ui.js` 的 `showTutorialStep()` 中，位於 `#shop-overlay` 內的元素因父層 `z-index` 形成的堆疊上下文而被背景遮罩蓋住的問題。現在高亮時會暫時將 `#shop-overlay` 的 `z-index` 提升至 `196`，並在 `_unhighlightTutorialElement()` 中還原原始值。
 
+### Fix：收集冊 D 區牌型依稀有度排序 [2026/05/09]
+* **排序調整**：收集冊「牌型」頁籤的 D 區（特殊牌型）現在依稀有度由高至低排列（傳說 → 史詩 → 稀有 → 普通），視覺上更清晰。
+* **不影響原始資料**：僅在 `renderCollectionModal` 渲染時對 D 區做 `.slice().sort()` 排序，不修改 `RULE_DB.groupD` 的原始陣列，其他邏輯不受影響。
+
 ### Perf：優化 FUSION_RECIPES 查找效能 [2026/05/09]
 * **優化查找效能**：在 `js/data.js` 中新增了 `FUSION_MATERIAL_LOOKUP` 查找表，將原本在 `js/ui.js` 渲染介面時 O(M) 的 `FUSION_RECIPES` 陣列迴圈查找替換為 O(1) 的 Map 查找，並在介面渲染時將玩家持有的遺物轉為 Set 來加快檢索速度，有效減少不必要的 CPU 運算並避免介面卡頓。
 ### Fix：修復靈魂奉獻與巧手指南重骰加成無效的問題 [2026/05/08]
