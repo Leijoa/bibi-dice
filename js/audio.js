@@ -39,8 +39,8 @@ export function initAudio() {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (AudioContext) {
             audioCtx = new AudioContext();
-            loadBGM('01', 'bibbidiba_BGM_01.wav');
-            loadBGM('02', 'bibbidiba_BGM_02.wav');
+            loadBGM('01', 'bibbidiba_BGM_01.mp3');
+            loadBGM('02', 'bibbidiba_BGM_02.mp3');
         }
     } else if (audioCtx.state === 'suspended') {
         audioCtx.resume();
@@ -88,7 +88,7 @@ export function playBGMTrack(trackId) {
 
     if (!bgmBuffers[trackId]) {
         // If not loaded yet, try to load and play
-        loadBGM(trackId, `bibbidiba_BGM_${trackId}.wav`).then(() => {
+        loadBGM(trackId, `bibbidiba_BGM_${trackId}.mp3`).then(() => {
             if (currentBGMTrackId === trackId) startBGMPlayback(trackId, fadeInDuration);
         });
     } else {

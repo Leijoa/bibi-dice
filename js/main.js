@@ -55,7 +55,7 @@ export function getEnemyWithMeta(levelIndex) {
 }
 
 // --- 遊戲狀態 ---
-let player = { hp: 3, relics: [], maxRolls: 3, dismantledFusions: [], fivesRolled: 0, fivesRolled: 0 };
+let player = { hp: 3, relics: [], maxRolls: 3, dismantledFusions: [], fivesRolled: 0 };
 let stage = { level: 0, enemyMaxHp: 0, enemyHp: 0, turnsLeft: 0, activeShackle: null, shackleMeta: null };
 let drunkInterval = null;
 let battle = { state: 'IDLE', dice: Array(8).fill().map((_, i) => ({ val: 1, locked: false, id: i, matchedGroups: {A:false, B:false, C:false, D:false} })), rollsLeft: 0, scoreResult: null };
@@ -130,15 +130,18 @@ window.saveMetaData = saveMetaData;
 window.clearSave = clearSave;
 
 
-// 開發者模式
-let devSecretBuffer = "";
-window.addEventListener('keydown', (e) => {
-    devSecretBuffer += e.key;
-    if (devSecretBuffer.length > 7) devSecretBuffer = devSecretBuffer.slice(-7);
-    if (devSecretBuffer === "3345678") {
-        triggerDevMode();
-    }
-});
+// 開發者模式（僅限本地開發環境）
+const IS_DEV = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+if (IS_DEV) {
+    let devSecretBuffer = "";
+    window.addEventListener('keydown', (e) => {
+        devSecretBuffer += e.key;
+        if (devSecretBuffer.length > 7) devSecretBuffer = devSecretBuffer.slice(-7);
+        if (devSecretBuffer === "3345678") {
+            triggerDevMode();
+        }
+    });
+}
 
 function triggerDevMode() {
     UI.updateHeaderUI(player, stage);
