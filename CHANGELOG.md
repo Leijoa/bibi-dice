@@ -1,5 +1,10 @@
 
 
+### Feature：調整首頁說明文位置，並強化其視覺辨識度與背景質感 [2026/05/10]
+* **搬移說明文**：將 `#title-screen` 內 `<p data-i18n="ui.title_desc">` 從 `.title-enter` 容器移至 `title-divider` 分隔線正下方，讓插畫上半部完全顯露。
+* **視覺強化**：說明文改以 `bg-black/60`（60% 黑底）+ `border border-purple-500/30`（紫色微亮邊）+ `rounded-xl p-4` 呈現，字體升為 `text-sm text-purple-100 font-bold`，在插畫背景下清晰可讀。
+* **清除多餘空格**：移除 `.title-enter` 容器內原本為說明文保留的 `mt-4` 邊距，避免標題區留有大空白。
+
 ### Fix：移除擋圖的首頁標題文字，並將按鈕全面升級為紫水晶玻璃擬態 [2026/05/10]
 * **移除文字標題**：從 `index.html` 的 `#title-screen` 中移除 `<h1>BIBBIDIBA</h1>` 與 `<h2>比比丟八</h2>`，讓背景插畫完全顯露出來，提升沉浸感。
 * **紫水晶玻璃按鈕**：將 `css/style.css` 中 `#title-screen .btn-primary` 重寫為 `rgba(122,59,245,0.25)` 半透明底 + `backdrop-filter: blur(15px) saturate(200%)`，hover 時背景透明度提升且邊框呈現紫色發光（`rgba(167,139,250,0.6)`）。`.btn-secondary` 同步改為中性半透明水晶玻璃風格。
