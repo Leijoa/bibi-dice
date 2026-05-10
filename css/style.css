@@ -216,7 +216,7 @@ body {
 
 .btn-primary {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   background: linear-gradient(135deg, #5600c9 0%, #7a3bf5 50%, #5600c9 100%);
   background-size: 200% 100%;
   color: #eee4ff;
@@ -234,6 +234,7 @@ body {
 .btn-primary:active { transform: scale(0.97) translateY(0); }
 
 .btn-secondary {
+  position: relative;
   background: rgba(19, 19, 21, 0.75);
   border: 1px solid rgba(100, 116, 139, 0.28);
   color: #958da1;
@@ -735,4 +736,73 @@ button[id^="btn-close"] {
 button[id^="btn-close"]:hover {
   background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
+}
+
+/* ===== Crystal Border System ===== */
+
+/* 金色水晶：光澤從左下掃向右上，循環流動 */
+@keyframes crystal-gold-sweep {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 銀色水晶：較慢、冷冽的流光 */
+@keyframes crystal-silver-sweep {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* 金色水晶邊框：btn-primary（開始遊戲等主要按鈕）+ 攻擊按鈕 */
+.btn-primary::before,
+.btn-attack-ready::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: linear-gradient(135deg,
+    #3b1f00 0%,
+    #c8860a 15%,
+    #ffd700 30%,
+    #fff8c0 45%,
+    #ffe066 50%,
+    #fff8c0 55%,
+    #ffd700 70%,
+    #c8860a 85%,
+    #3b1f00 100%
+  );
+  background-size: 300% 300%;
+  animation: crystal-gold-sweep 4s ease-in-out infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* 銀色水晶邊框：btn-secondary（次要按鈕）+ 重骰按鈕 */
+.btn-secondary::before,
+.btn-roll::before {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  background: linear-gradient(135deg,
+    #1a1f2e 0%,
+    #4a5568 15%,
+    #a0aec0 30%,
+    #e8edf5 45%,
+    #c0ccd8 50%,
+    #e8edf5 55%,
+    #a0aec0 70%,
+    #4a5568 85%,
+    #1a1f2e 100%
+  );
+  background-size: 300% 300%;
+  animation: crystal-silver-sweep 5s ease-in-out infinite;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* 攻擊按鈕額外需要 position:relative（Tailwind 動態生成無繼承保證） */
+.btn-attack-ready {
+  position: relative;
 }
