@@ -1,5 +1,11 @@
 
 
+### Feature：實作首頁 3 秒沉浸式開場與閃白漸顯動畫 [2026/05/10]
+* **開場演出**：頁面載入後前 3 秒隱藏所有 UI，僅顯示背景插畫與呼吸動畫，製造沉浸感。3 秒後觸發 `flash-bang` 閃白特效（0.8s），同步讓主 UI（`intro-main-ui`：開始按鈕、說明文）以 `ui-fade-in` 動畫漸顯；再延遲 400ms 讓次要 UI（`intro-sub-ui`：教學、設定等按鈕與底部資訊）漸顯，形成視覺層次。
+* **跳過功能**：點擊畫面任意處可立即觸發開場演出，自動清除 3 秒倒數計時。
+* **HTML 結構**：`index.html` 加入 `#intro-flash`（`z-[200]` 全螢幕閃白層，置於 `#game-container` 外側以避免 transform stacking context 問題），首頁 UI 元素依顯示優先度分別標記 `intro-main-ui` / `intro-sub-ui`。
+* **CSS**：`style.css` 新增 `.intro-hidden`（初始隱藏）、`.intro-fade-in` + `@keyframes ui-fade-in`（漸顯進場）、`.animate-flash` + `@keyframes flash-bang`（閃白特效）。
+
 ### Feature：調整首頁說明文位置，並強化其視覺辨識度與背景質感 [2026/05/10]
 * **搬移說明文**：將 `#title-screen` 內 `<p data-i18n="ui.title_desc">` 從 `.title-enter` 容器移至 `title-divider` 分隔線正下方，讓插畫上半部完全顯露。
 * **視覺強化**：說明文改以 `bg-black/60`（60% 黑底）+ `border border-purple-500/30`（紫色微亮邊）+ `rounded-xl p-4` 呈現，字體升為 `text-sm text-purple-100 font-bold`，在插畫背景下清晰可讀。

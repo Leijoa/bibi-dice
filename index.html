@@ -11,41 +11,47 @@
 </head>
 <body class="bg-[#131315] text-[#e5e1e4] overflow-hidden">
 
+  <!-- 開場閃白圖層，z-200 置頂，不受 game-container transform 影響 -->
+  <div id="intro-flash" class="fixed inset-0 bg-white z-[200] pointer-events-none opacity-0 hidden"></div>
+
   <div id="game-scaler">
     <div id="game-container" class="flex flex-col relative">
 
       <div id="title-screen" class="absolute inset-0 z-[60] flex flex-col items-center justify-center p-6 text-center">
 
-    <div class="mb-5 title-enter">
+    <!-- 主 UI：骰子裝飾、主按鈕、遊戲說明文（開場後第一波漸顯） -->
+    <div class="mb-5 title-enter intro-main-ui">
       <div class="dice-pips-deco mb-3">⚀ ⚁ ⚂ ⚃ ⚄ ⚅</div>
     </div>
 
     <div class="flex flex-col gap-3 w-full max-w-xs">
-      <button id="btn-continue" class="hidden btn-primary py-4 px-8 rounded-xl text-lg" data-i18n="ui.btn_continue">繼續旅程</button>
-      <button id="btn-new-game" class="btn-primary py-4 px-8 rounded-xl text-lg" data-i18n="ui.btn_new_game">開始新遊戲</button>
+      <button id="btn-continue" class="hidden btn-primary py-4 px-8 rounded-xl text-lg intro-main-ui" data-i18n="ui.btn_continue">繼續旅程</button>
+      <button id="btn-new-game" class="btn-primary py-4 px-8 rounded-xl text-lg intro-main-ui" data-i18n="ui.btn_new_game">開始新遊戲</button>
 
-      <div class="grid grid-cols-2 gap-2">
+      <!-- 次要 UI：教學按鈕（開場後第二波漸顯） -->
+      <div class="grid grid-cols-2 gap-2 intro-sub-ui">
         <button id="btn-tutorial" class="btn-secondary py-3 px-4 rounded-xl text-sm" data-i18n="tutorial.btn_start">🎓 新手教學</button>
         <button id="btn-how-to-play" class="btn-secondary py-3 px-4 rounded-xl text-sm" data-i18n="tutorial.btn_rules">📖 玩法說明</button>
       </div>
 
-      <div class="title-divider">⚄</div>
+      <div class="title-divider intro-sub-ui">⚄</div>
 
-      <p class="text-sm text-purple-100 font-bold p-4 rounded-xl border border-purple-500/30 bg-black/60 leading-relaxed w-full" data-i18n="ui.title_desc">
+      <p class="text-sm text-purple-100 font-bold p-4 rounded-xl border border-purple-500/30 bg-black/60 leading-relaxed w-full intro-main-ui" data-i18n="ui.title_desc">
         擲八顆骰子湊牌型疊加倍率！每回合重骰兩次，在限制回合內打倒敵人獲取遺物強化流派，挑戰連過十關！
       </p>
 
-      <div class="grid grid-cols-2 gap-2">
+      <div class="grid grid-cols-2 gap-2 intro-sub-ui">
         <button id="btn-souls" class="btn-secondary py-3 px-4 rounded-xl text-sm" data-i18n="ui.btn_souls">👻 靈魂奉獻</button>
         <button id="btn-collection" class="btn-secondary py-3 px-4 rounded-xl text-sm" data-i18n="ui.btn_collection">📖 收集冊</button>
       </div>
-      <div class="grid grid-cols-2 gap-2">
+      <div class="grid grid-cols-2 gap-2 intro-sub-ui">
         <button id="btn-history" class="btn-secondary py-2.5 px-4 rounded-xl text-sm" data-i18n="ui.btn_history">歷史牌局</button>
         <button id="btn-title-settings" class="btn-secondary py-2.5 px-4 rounded-xl text-sm" data-i18n="ui.btn_settings">⚙️ 設定</button>
       </div>
     </div>
 
-    <div class="absolute bottom-4 flex flex-col items-center gap-2">
+    <!-- 底部語系與版本資訊（次要 UI） -->
+    <div class="absolute bottom-4 flex flex-col items-center gap-2 intro-sub-ui">
       <div class="flex items-center gap-3">
         <select id="lang-select" class="bg-slate-900/80 text-slate-500 border border-slate-800 rounded-lg px-3 py-1 font-bold text-xs focus:outline-none focus:ring-1 focus:ring-violet-700/50">
           <option value="zh-tw">繁體中文</option>
@@ -324,6 +330,60 @@
 
     </div>
   </div>
+
+  <!-- 沉浸式開場動畫：3 秒只顯示背景插畫，再觸發閃白與 UI 漸顯 -->
+  <script>
+  (function () {
+    document.addEventListener('DOMContentLoaded', function () {
+      var mainEls = document.querySelectorAll('#title-screen .intro-main-ui');
+      var subEls  = document.querySelectorAll('#title-screen .intro-sub-ui');
+      var flash   = document.getElementById('intro-flash');
+      var done    = false;
+      var timer;
+
+      // 初始隱藏所有首頁 UI
+      mainEls.forEach(function (el) { el.classList.add('intro-hidden'); });
+      subEls.forEach(function (el)  { el.classList.add('intro-hidden'); });
+
+      function reveal() {
+        if (done) return;
+        done = true;
+        clearTimeout(timer);
+        document.removeEventListener('click', skipHandler);
+
+        // 閃白特效
+        if (flash) {
+          flash.classList.remove('hidden');
+          flash.classList.add('animate-flash');
+          setTimeout(function () {
+            flash.classList.add('hidden');
+            flash.classList.remove('animate-flash');
+          }, 900);
+        }
+
+        // 主 UI（開始按鈕、說明文）立即漸顯
+        mainEls.forEach(function (el) {
+          el.classList.remove('intro-hidden');
+          el.classList.add('intro-fade-in');
+        });
+
+        // 次要 UI（教學、設定等）延遲 400ms 後漸顯，製造層次感
+        setTimeout(function () {
+          subEls.forEach(function (el) {
+            el.classList.remove('intro-hidden');
+            el.classList.add('intro-fade-in');
+          });
+        }, 400);
+      }
+
+      function skipHandler() { reveal(); }
+
+      // 3 秒後自動觸發；點擊任意處可立即跳過
+      timer = setTimeout(reveal, 3000);
+      document.addEventListener('click', skipHandler, { once: true });
+    });
+  }());
+  </script>
 
 </body>
 </html>
