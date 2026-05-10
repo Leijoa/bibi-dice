@@ -216,7 +216,7 @@ body {
 
 .btn-primary {
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   background: linear-gradient(135deg, #5600c9 0%, #7a3bf5 50%, #5600c9 100%);
   background-size: 200% 100%;
   color: #eee4ff;
@@ -234,6 +234,7 @@ body {
 .btn-primary:active { transform: scale(0.97) translateY(0); }
 
 .btn-secondary {
+  position: relative;
   background: rgba(19, 19, 21, 0.75);
   border: 1px solid rgba(100, 116, 139, 0.28);
   color: #958da1;
@@ -735,4 +736,89 @@ button[id^="btn-close"] {
 button[id^="btn-close"]:hover {
   background: rgba(255, 255, 255, 0.1);
   color: #ffffff;
+}
+
+/* ===== Crystal Border System ===== */
+
+/* 金色水晶：邊框線在暗金與亮白金之間閃爍，模擬折射光 */
+@keyframes crystal-gold-pulse {
+  0%, 100% {
+    border-color: rgba(160, 110, 8, 0.75);
+    box-shadow: 0 0 5px rgba(255, 215, 0, 0.25), 0 0 14px rgba(255, 215, 0, 0.1);
+  }
+  45% {
+    border-color: rgba(255, 225, 60, 0.95);
+    box-shadow: 0 0 9px rgba(255, 215, 0, 0.55), 0 0 22px rgba(255, 215, 0, 0.25);
+  }
+  50% {
+    border-color: rgba(255, 252, 210, 1);
+    box-shadow: 0 0 14px rgba(255, 240, 120, 0.85), 0 0 30px rgba(255, 215, 0, 0.35);
+  }
+  55% {
+    border-color: rgba(255, 225, 60, 0.95);
+    box-shadow: 0 0 9px rgba(255, 215, 0, 0.55), 0 0 22px rgba(255, 215, 0, 0.25);
+  }
+}
+
+/* 銀色水晶：冷冽的鋼鐵銀閃光 */
+@keyframes crystal-silver-pulse {
+  0%, 100% {
+    border-color: rgba(70, 90, 110, 0.6);
+    box-shadow: 0 0 4px rgba(180, 205, 225, 0.15), 0 0 10px rgba(180, 205, 225, 0.06);
+  }
+  50% {
+    border-color: rgba(205, 220, 238, 0.9);
+    box-shadow: 0 0 9px rgba(200, 220, 242, 0.5), 0 0 22px rgba(180, 205, 225, 0.2);
+  }
+}
+
+/* 金色邊框：主要按鈕 */
+.btn-primary::after {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  border: 1.5px solid rgba(160, 110, 8, 0.8);
+  pointer-events: none;
+  z-index: 2;
+  animation: crystal-gold-pulse 3.5s ease-in-out infinite;
+}
+
+/* 銀色邊框：次要按鈕 */
+.btn-secondary::after {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  border: 1px solid rgba(70, 90, 110, 0.65);
+  pointer-events: none;
+  z-index: 2;
+  animation: crystal-silver-pulse 5s ease-in-out infinite;
+}
+
+/* 攻擊按鈕：金色水晶邊框 */
+.btn-attack-ready {
+  position: relative;
+}
+.btn-attack-ready::after {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  border: 1.5px solid rgba(160, 110, 8, 0.8);
+  pointer-events: none;
+  z-index: 2;
+  animation: crystal-gold-pulse 3.5s ease-in-out infinite;
+}
+
+/* 重骰按鈕：銀色水晶邊框 */
+.btn-roll::after {
+  content: '';
+  position: absolute;
+  inset: -1.5px;
+  border-radius: inherit;
+  border: 1px solid rgba(70, 90, 110, 0.65);
+  pointer-events: none;
+  z-index: 2;
+  animation: crystal-silver-pulse 5s ease-in-out infinite;
 }
