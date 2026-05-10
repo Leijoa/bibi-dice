@@ -1,5 +1,5 @@
 // js/ui.js
-import { RARITY, RELIC_DB, ENEMY_DB, RULE_DB, SHACKLE_DB, getEnemy, FUSION_RECIPES, FUSION_MATERIAL_LOOKUP } from './data.js';
+import { RARITY, RELIC_DB, ENEMY_DB, RULE_DB, SHACKLE_DB, getEnemy, FUSION_RECIPES, FUSION_MATERIAL_LOOKUP, CONSUMABLES_DB } from './data.js';
 import { i18n } from './i18n.js';
 import * as Audio from './audio.js';
 window.i18n = i18n;
@@ -306,7 +306,13 @@ export function renderInventory(player, battle) {
         el.inventoryGrid.innerHTML = `<div class="text-[10px] text-slate-500 font-bold p-1">${i18n.t("ui.empty_inventory")}</div>`;
         return;
     }
-    let sortedRelics = [...player.relics].sort((a,b) => RELIC_DB.find(x=>x.id===b).rarity - RELIC_DB.find(x=>x.id===a).rarity);
+    let sortedRelics = [...player.relics].sort((a,b) => {
+        let defA = RELIC_DB.find(x=>x.id===a) || CONSUMABLES_DB.find(x=>x.id===a);
+        let defB = RELIC_DB.find(x=>x.id===b) || CONSUMABLES_DB.find(x=>x.id===b);
+        let rarityA = defA ? defA.rarity : 1;
+        let rarityB = defB ? defB.rarity : 1;
+        return rarityB - rarityA;
+    });
     
     let isNoise = window.getStageActiveShackle && window.getStageActiveShackle() === 'noise';
 
@@ -320,7 +326,7 @@ export function renderInventory(player, battle) {
             </div>`;
         }
 
-        let r = RELIC_DB.find(x => x.id === id);
+        let r = RELIC_DB.find(x => x.id === id) || CONSUMABLES_DB.find(x => x.id === id);
         let style = RARITY[r.rarity];
         let isFusionMaterial = false;
         let fusionResultId = null;
@@ -343,7 +349,7 @@ export function renderInventory(player, battle) {
 
 // 註冊給 inventory 點擊用的全域函式
 window.showRelicInfo = function(id) {
-    let r = RELIC_DB.find(x => x.id === id);
+    let r = RELIC_DB.find(x => x.id === id) || CONSUMABLES_DB.find(x => x.id === id);
     if(r) {
         let rName = id.startsWith('cons_') ? i18n.t(`consumables.${id}.name`) : (i18n.t(`relics.${id}.name`) || r.name);
         let rDesc = id.startsWith('cons_') ? i18n.t(`consumables.${id}.desc`) : (i18n.t(`relics.${id}.desc`) || r.desc);
@@ -577,7 +583,19 @@ export function renderScore(battle, activeHighlight) {
     let res = battle.scoreResult;
     let isAmnesia = window.getStageActiveShackle && window.getStageActiveShackle() === 'amnesia';
 
-    let notesHtml = res.globalNotes.map((n, i) => `<span id="note-${i}" class="text-[9px] text-violet-300 bg-violet-950/50 px-1.5 py-0.5 rounded border border-violet-800/50 font-bold whitespace-nowrap transition-all duration-300 ease-in-out">${isAmnesia ? '???' : n}</span>`).join('');
+    const sortedNotes = [...res.globalNotes].sort((a, b) => {
+        if (a.type === 'shackle' && b.type !== 'shackle') return -1;
+        if (a.type !== 'shackle' && b.type === 'shackle') return 1;
+        return 0;
+    });
+    let notesHtml = sortedNotes.map((n, i) => {
+        const isShackle = n.type === 'shackle';
+        const colorClass = isShackle
+            ? 'text-red-300 bg-red-950/50 border-red-800/50'
+            : 'text-violet-300 bg-violet-950/50 border-violet-800/50';
+        const displayText = isAmnesia ? '???' : n.text;
+        return `<span id="note-${i}" class="text-[9px] ${colorClass} px-1.5 py-0.5 rounded border font-bold whitespace-nowrap transition-all duration-300 ease-in-out">${displayText}</span>`;
+    }).join('');
 
 
     const getTagLocalName = (tagName) => {
@@ -1028,7 +1046,7 @@ export function renderHistoryModal(records, metaData) {
                 </div>
                 <div class="mt-3 flex flex-wrap gap-1">
                     ${(metaData.stats.highestDamageRelics || []).map(r => {
-                        let relicDef = RELIC_DB.find(x => x.id === r);
+                        let relicDef = RELIC_DB.find(x => x.id === r) || CONSUMABLES_DB.find(x => x.id === r);
                         if (!relicDef) return null;
                         let rName = r.startsWith('cons_') ? i18n.t(`consumables.${r}.name`) : (i18n.t(`relics.${r}.name`) || relicDef.name);
                         return `<span class="bg-slate-700 px-1.5 py-0.5 rounded text-[10px] text-slate-300 inline-block">${rName}</span>`;
@@ -1081,7 +1099,7 @@ export function renderHistoryModal(records, metaData) {
         }
 
         let relicHtml = (r.relics && r.relics.length > 0) ? r.relics.map(id => {
-            let relicDef = RELIC_DB.find(x => x.id === id);
+            let relicDef = RELIC_DB.find(x => x.id === id) || CONSUMABLES_DB.find(x => x.id === id);
             if (!relicDef) return null;
             let rName = id.startsWith('cons_') ? i18n.t(`consumables.${id}.name`) : (i18n.t(`relics.${id}.name`) || relicDef.name);
             return `<span class="bg-slate-700 px-1.5 py-0.5 rounded text-[10px] text-slate-300 mr-1 mb-1 inline-block">${rName}</span>`;
@@ -1136,7 +1154,7 @@ export function renderEndGameStats(highestDamage, highestDamageCombo, relics) {
     if(!el.endStats) return;
     
     let relicHtml = (relics && relics.length > 0) ? relics.map(id => {
-        let relicDef = RELIC_DB.find(x => x.id === id);
+        let relicDef = RELIC_DB.find(x => x.id === id) || CONSUMABLES_DB.find(x => x.id === id);
         if (!relicDef) return '';
         let style = RARITY[relicDef.rarity] || RARITY[1];
         let rName = id.startsWith('cons_') ? i18n.t(`consumables.${id}.name`) : (i18n.t(`relics.${id}.name`) || relicDef.name);

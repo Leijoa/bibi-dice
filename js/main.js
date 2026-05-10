@@ -1853,7 +1853,7 @@ window.buyItem = function(idx) {
             if (r.id === 'cons_guide') {
                 UI.showToast((i18n.t('consumables.cons_guide.name') || '巧手指南') + ' +1');
             } else {
-                UI.showToast('獲得：' + (i18n.t(`consumables.${r.id}.name`) || r.name));
+                UI.showToast(i18n.t('messages.toast_obtained') + (i18n.t(`consumables.${r.id}.name`) || r.name));
             }
         }
     } else {
@@ -1994,7 +1994,7 @@ window.devGetAllRelics = () => {
     UI.renderInventory(player, battle);
     if (typeof saveGame === 'function') saveGame();
 
-    UI.showToast('🛠️ 【開發者模式】已獲得所有遺物！商店將開始販售消耗品。');
+    UI.showToast(i18n.t('messages.toast_dev_get_all'));
     if (window.closeDevModal) window.closeDevModal();
 };
 
