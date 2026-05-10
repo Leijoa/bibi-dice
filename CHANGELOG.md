@@ -1,5 +1,35 @@
 
 
+### Refactor：戰鬥狀態列支援物件化類型區分，實現枷鎖優先排序與視覺化變色，並徹底多語系化 [2026/05/11]
+* **重構目標**：將 `js/engine.js` 的 `globalNotes` 由純字串陣列改為物件陣列 `{ text: string, type: 'relic' | 'shackle' }`，以承載類型元數據，供 UI 層排序與上色使用。
+* **locale 新增**（4 個語系）：在 `messages` 區塊加入 `relic_trigger`（`[{0}] 發動: {1}` 等）與 `shackle_trigger`（`[{0}] 影響: {1}` 等）兩組格式字串，描述性遺物與枷鎖觸發說明均透過 `_t()` 動態生成，不再有硬編碼繁中文字。
+* **engine.js 改動**：共轉換約 35 處 `globalNotes.push(string)` 為 `globalNotes.push({ text, type })`：
+  - 枷鎖觸發注記（12 處）→ `type: 'shackle'`，文字改用 `shackle_trigger` 模板 + locale desc
+  - 遺物描述性觸發（hodgepodge、fusion_samsara、sixsmooth、order、fusion_scale_apex、mediocre 等）→ `type: 'relic'`，文字改用 `relic_trigger` 模板 + locale desc
+  - 遺物點數/倍率注記（已有 `relic_points_note`/`relic_multi_note`）→ 直接加上 `type: 'relic'`
+* **ui.js 改動**：`renderScore` 中新增 `sortedNotes` 排序（枷鎖優先），並以 `n.text` 取代原先的字串 `n`；枷鎖注記使用紅色樣式（`text-red-300 bg-red-950/50 border-red-800/50`），遺物注記保留紫色樣式。
+
+### Fix：將戰鬥結算狀態列（點數與倍率說明）全面多語系化 [2026/05/11]
+* **問題**：`js/engine.js` 的 `calculateEngineScore` 函式中，所有遺物點數加成與倍率說明均以硬編碼繁中格式（如 `【等差數列】 +16 基礎點數`、`【破釜沉舟】 x1.50`）推送至 `globalNotes`，切換語系後狀態列仍顯示繁中文字。
+* **修復**：新增 `_t` 輔助函式（`window.i18n` 的薄包裝），並在四個 locale 檔案的 `messages` 區塊加入三組格式字串：
+  - `relic_points_note`：`+{0} 點數 ({1})` / `+{0} Pts ({1})` / `+{0} 点数 ({1})` / `+{0} 点 ({1})`
+  - `relic_multi_note` / `shackle_multi_note`：`x{0} ({1})`（四語系格式相同）
+* **涵蓋範圍**：共替換 16 處 `globalNotes.push`：4 處點數加成（`arithmetic`、`luckyseven`、`fusion_death_sequence`、`fusion_blood_crusade`）、12 處倍率說明（`fusion_nebula`、`fusion_pillar`、`pansy`、`pongo`、`highlow`、`laststand`、`allin`、`fourdeath`、`rebel`、`royalflush`、`brink`、`dragonslayer`）。帶有特殊上下文的描述性說明（散牌計算、D區倍率、枷鎖發動說明等）不在本次改動範圍內。
+
+### Fix：將商店獲得物品與開發者模式提示全面多語系化 [2026/05/11]
+* **問題**：`js/main.js` 的 `window.buyItem` 函式在購買消耗品後，以硬編碼繁中字串 `'獲得：'` 拼接 toast 訊息；`window.devGetAllRelics` 同樣硬編碼整段開發者模式通知文字，兩者均無法隨語系切換。
+* **修復**：在四個 locale 檔案（`zh-tw`、`zh-cn`、`en`、`ja`）的 `messages` 區塊新增 `toast_obtained` 與 `toast_dev_get_all` 兩組翻譯鍵值，並將 `main.js` 中對應的硬編碼字串替換為 `i18n.t('messages.toast_obtained')` 與 `i18n.t('messages.toast_dev_get_all')`。
+
+### Fix：修復購買消耗品放入背包時導致 UI 渲染崩潰與商店卡死的 Bug [2026/05/11]
+* **問題根因**：`player.relics` 陣列會存放消耗品 ID（`cons_` 前綴），但 `js/ui.js` 在背包渲染、遺物資訊彈窗、歷史紀錄、結算畫面等多處，僅從 `RELIC_DB` 查表，導致消耗品回傳 `undefined`，引發 JavaScript 崩潰並使商店流程中斷。
+* **修復方式**：在 `js/ui.js` 頂部引入 `CONSUMABLES_DB`，並將所有遍歷 `player.relics`（或傳入的 relics 陣列）後執行 `RELIC_DB.find` 的地方，統一加上 `|| CONSUMABLES_DB.find` 後備查詢，共修復 7 處：
+  1. `renderInventory` — `sortedRelics` 排序比較函式
+  2. `renderInventory` — 渲染迴圈內的 `let r` 查表
+  3. `window.showRelicInfo` — 遺物資訊彈窗查表
+  4. `renderHistoryModal` — PB 最高傷害遺物列表 (`highestDamageRelics`)
+  5. `renderHistoryModal` — 歷史紀錄清單遺物欄位 (`r.relics`)
+  6. `renderEndGameStats` — 結算畫面遺物列表
+
 ### Fix：統一全域關卡顯示格式並修復硬編碼問題 [2026/05/11]
 * **語系格式統一**：將 `js/i18n.js` 中四個語系的 `ui.stage` 改為含 `{0}` 的格式字串（`zh-tw`→`'第 {0} 層'`、`zh-cn`→`'第 {0} 层'`、`en`→`'Floor {0}'`、`ja`→`'第 {0} 層'`），修復原先 `#stage-info` 頭部只顯示靜態文字（未代入關卡編號）的問題。
 * **修復層級徽章硬編碼**：將 `js/ui.js` 敵人名稱區的層級徽章由硬編碼 `` `第${stage.level+1}層` `` 改為 `i18n.t('ui.stage', stage.level + 1)`，隨語系正確顯示。

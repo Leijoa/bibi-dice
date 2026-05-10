@@ -7,6 +7,7 @@ const relicBaseVals = { 1: 10, 2: 10, 3: 11, 4: 11, 5: 11, 6: 11, 7: 12, 8: 12 }
 const getLocalName = (type, id, fallback) => window.i18n ? window.i18n.t(`${type}.${id}.name`) || fallback : fallback;
 const getShackleName = (id, fallback) => getLocalName('shackles', id, fallback);
 const getRelicName = (id, fallback) => getLocalName('relics', id, fallback);
+const _t = (key, ...args) => window.i18n ? window.i18n.t(key, ...args) : key;
 
 
 // --- Modular Shackle Hooks ---
@@ -33,13 +34,13 @@ const ShackleHooks = {
     isolated: {
         postCalc: (res) => {
             if (res.tagA.name !== '無') res.tagA.multi /= 2.0;
-            res.globalNotes.push(`${getShackleName('isolated', '【孤立無援】')} 發動: A區倍率減半。`);
+            res.globalNotes.push({ text: _t('messages.shackle_trigger', getShackleName('isolated', '【孤立無援】'), _t('shackles.isolated.desc')), type: 'shackle' });
         }
     },
     ordercollapse: {
         postCalc: (res) => {
             res.tagB = { name: '無', multi: 1.0, used: [] };
-            res.globalNotes.push(`${getShackleName('ordercollapse', '【秩序崩壞】')} 發動: B區倍率強制失效。`);
+            res.globalNotes.push({ text: _t('messages.shackle_trigger', getShackleName('ordercollapse', '【秩序崩壞】'), _t('shackles.ordercollapse.desc')), type: 'shackle' });
         }
     },
     chaoslaw: {
@@ -47,19 +48,19 @@ const ShackleHooks = {
             let temp = { ...res.tagA };
             res.tagA = { ...res.tagB };
             res.tagB = temp;
-            res.globalNotes.push(`${getShackleName('chaoslaw', '【混沌法則】')} 發動: A、B區計分表對調。`);
+            res.globalNotes.push({ text: _t('messages.shackle_trigger', getShackleName('chaoslaw', '【混沌法則】'), _t('shackles.chaoslaw.desc')), type: 'shackle' });
         }
     },
     banality: {
         postCalc: (res) => {
             if (res.tagD.name !== '無') res.tagD.multi = 1.0;
-            res.globalNotes.push(`${getShackleName('banality', '【平庸之惡】')} 發動: D區倍率強制為 1.0。`);
+            res.globalNotes.push({ text: _t('messages.shackle_trigger', getShackleName('banality', '【平庸之惡】'), _t('shackles.banality.desc')), type: 'shackle' });
         }
     },
     shortcircuit: {
         postCalc: (res) => {
             res.globalMulti = Math.max(1.0, res.globalMulti - 0.5);
-            res.globalNotes.push(`${getShackleName('shortcircuit', '【短路】')} 發動: 總倍率 -0.5x。`);
+            res.globalNotes.push({ text: _t('messages.shackle_trigger', getShackleName('shortcircuit', '【短路】'), _t('shackles.shortcircuit.desc')), type: 'shackle' });
         }
     },
     badluck: {
@@ -67,7 +68,7 @@ const ShackleHooks = {
             let count1 = ctx.workingDice.filter(d => d.val === 1).length;
             if (count1 > 0) {
                 res.globalMulti = Math.max(1.0, res.globalMulti - (count1 * 0.1));
-                res.globalNotes.push(`${getShackleName('badluck', '【霉運】')} 發動: 扣除 ${count1 * 0.1}x 總倍率。`);
+                res.globalNotes.push({ text: _t('messages.shackle_trigger', getShackleName('badluck', '【霉運】'), _t('shackles.badluck.desc')), type: 'shackle' });
             }
         }
     },
@@ -99,7 +100,7 @@ const ShackleHooks = {
 
             if (penalty > 0) {
                 res.totalBase = Math.max(0, res.totalBase - penalty);
-                res.globalNotes.push(`${getShackleName('lonely', '【孤立】')} 發動: 散牌不計入基礎點數。`);
+                res.globalNotes.push({ text: _t('messages.shackle_trigger', getShackleName('lonely', '【孤立】'), _t('shackles.lonely.desc')), type: 'shackle' });
             }
         }
     },
@@ -107,7 +108,7 @@ const ShackleHooks = {
         postCalc: (res) => {
             if (res.tagA.name === '無') {
                 res.globalMulti = 0;
-                res.globalNotes.push(`${getShackleName('sealeddoor', '【封印之門】')} 發動: 沒有對子，傷害歸零。`);
+                res.globalNotes.push({ text: _t('messages.shackle_trigger', getShackleName('sealeddoor', '【封印之門】'), _t('shackles.sealeddoor.desc')), type: 'shackle' });
             }
         }
     }
@@ -117,10 +118,10 @@ function applyShacklePostHooks(scoreResult, activeShackles, workingDice, baseCon
     if (!activeShackles || activeShackles.length === 0) return;
     
     activeShackles.forEach(sh => {
-        if (sh.id === 'blackhole') scoreResult.globalNotes.push(`${getShackleName('blackhole', '【黑洞】')} 發動: 所有的 8 變成 1。`);
-        if (sh.id === 'parityfear') scoreResult.globalNotes.push(`${getShackleName('parityfear', '【奇/偶數恐懼】')} 發動: ${sh.fearType === 'odd' ? '奇數' : '偶數'}點數歸零。`);
-        if (sh.id === 'numberplunder') scoreResult.globalNotes.push(`${getShackleName('numberplunder', '【數字掠奪】')} 發動: 數字 ${sh.targetNumber} 視為廢牌。`);
-        if (sh.id === 'drowning') scoreResult.globalNotes.push(`${getShackleName('drowning', '【沉溺】')} 發動: 5 點數歸零。`);
+        if (sh.id === 'blackhole') scoreResult.globalNotes.push({ text: _t('messages.shackle_trigger', getShackleName('blackhole', '【黑洞】'), _t('shackles.blackhole.desc')), type: 'shackle' });
+        if (sh.id === 'parityfear') scoreResult.globalNotes.push({ text: _t('messages.shackle_trigger', getShackleName('parityfear', '【奇/偶數恐懼】'), _t('shackles.parityfear.desc')), type: 'shackle' });
+        if (sh.id === 'numberplunder') scoreResult.globalNotes.push({ text: _t('messages.shackle_trigger', getShackleName('numberplunder', '【數字掠奪】'), _t('shackles.numberplunder.desc')), type: 'shackle' });
+        if (sh.id === 'drowning') scoreResult.globalNotes.push({ text: _t('messages.shackle_trigger', getShackleName('drowning', '【沉溺】'), _t('shackles.drowning.desc')), type: 'shackle' });
 
         let hookDef = ShackleHooks[sh.id];
         if (hookDef && hookDef.postCalc) {
@@ -231,20 +232,20 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     if (playerRelics.includes('arithmetic')) {
         let uniqueCount = freqs.length;
         totalBase += uniqueCount * 8;
-        globalNotes.push(`${getRelicName('arithmetic', '【等差數列】')} +${uniqueCount * 8} 基礎點數`);
+        globalNotes.push({ text: _t('messages.relic_points_note', uniqueCount * 8, getRelicName('arithmetic', '【等差數列】')), type: 'relic' });
     }
 
     if (playerRelics.includes('luckyseven') && counts[7] > 0) {
         let extra = counts[7] * 77;
         totalBase += extra;
-        globalNotes.push(`${getRelicName('luckyseven', '【幸運七】')} +${extra} 基礎點數`);
+        globalNotes.push({ text: _t('messages.relic_points_note', extra, getRelicName('luckyseven', '【幸運七】')), type: 'relic' });
     }
 
     if (playerRelics.includes('fusion_death_sequence')) {
         let uniqueCount = freqs.length;
         let bonus = uniqueCount * 5 * E;
         totalBase += bonus;
-        globalNotes.push(`${getRelicName('fusion_death_sequence', '【等差死神】')} +${bonus} 基礎點數`);
+        globalNotes.push({ text: _t('messages.relic_points_note', bonus, getRelicName('fusion_death_sequence', '【等差死神】')), type: 'relic' });
     }
 
     if (playerRelics.includes('fusion_blood_crusade')) {
@@ -252,7 +253,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         if (lostHp > 0) {
             let bonus = lostHp * 10 * workingDice.length;
             totalBase += bonus;
-            globalNotes.push(`${getRelicName('fusion_blood_crusade', '【血色聖戰】')} HP損失加成: +${bonus} 基礎點數`);
+            globalNotes.push({ text: _t('messages.relic_points_note', bonus, getRelicName('fusion_blood_crusade', '【血色聖戰】')), type: 'relic' });
         }
     }
 
@@ -496,7 +497,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
 
     if (playerRelics.includes('hodgepodge') && tagA.name !== '無' && tagB.name !== '無' && tagC.name !== '無') {
         totalBase += 100;
-        globalNotes.push(`${getRelicName('hodgepodge', '【大雜燴】')} 發動: A、B、C 區同時觸發，+100 基礎點數。`);
+        globalNotes.push({ text: _t('messages.relic_trigger', getRelicName('hodgepodge', '【大雜燴】'), _t('relics.hodgepodge.desc')), type: 'relic' });
     }
 
     if (playerRelics.includes('fusion_samsara')) {
@@ -521,7 +522,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
                     totalBase += scatterBase;
                 }
             });
-            globalNotes.push(`${getRelicName('fusion_samsara', '【六道輪迴】')} 發動: ${scatterCount} 顆散牌變為 ${scatterBase} 點計算。`);
+            globalNotes.push({ text: _t('messages.relic_trigger', getRelicName('fusion_samsara', '【六道輪迴】'), _t('relics.fusion_samsara.desc')), type: 'relic' });
         }
     } else if (playerRelics.includes('sixsmooth') && counts[6] > 0) {
         let usedIds = new Set();
@@ -550,7 +551,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
             }
         });
         if (scatterAdded > 0) {
-            globalNotes.push(`${getRelicName('sixsmooth', '【六六大順】')} 發動: ${scatterAdded} 顆散牌變為 15 點計算。`);
+            globalNotes.push({ text: _t('messages.relic_trigger', getRelicName('sixsmooth', '【六六大順】'), _t('relics.sixsmooth.desc')), type: 'relic' });
         }
     }
 
@@ -577,7 +578,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     if (playerRelics.includes('fusion_nebula') && (counts[1] > 0 || counts[2] > 0 || counts[3] > 0)) {
         let amt = 1.0 + scatterCount * 1.0;
         globalMulti *= amt;
-        globalNotes.push(`${getRelicName('fusion_nebula', '【微縮星雲】')} x${amt.toFixed(1)}`);
+        globalNotes.push({ text: _t('messages.relic_multi_note', amt.toFixed(1), getRelicName('fusion_nebula', '【微縮星雲】')), type: 'relic' });
         _collect('fusion_nebula', getRelicName('fusion_nebula', '【微縮星雲】'), amt);
     }
 
@@ -585,49 +586,49 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         let basePillar = 3.0;
         let amt = basePillar + (kills * 0.2);
         globalMulti *= amt;
-        globalNotes.push(`${getRelicName('fusion_pillar', '【中流砥柱】')} x${amt.toFixed(1)}`);
+        globalNotes.push({ text: _t('messages.relic_multi_note', amt.toFixed(1), getRelicName('fusion_pillar', '【中流砥柱】')), type: 'relic' });
         _collect('fusion_pillar', getRelicName('fusion_pillar', '【中流砥柱】'), amt);
     }
 
-    if (activeShackles.some(sh => sh.id === 'oblivion')) globalNotes.push(`${getShackleName('oblivion', '【忘卻】')} 發動: 無視遺物基礎點數。`);
-    if (isExploited) globalNotes.push(`${getShackleName('exploitation', '【剝削】')} 發動: 遺物倍率減半。`);
+    if (activeShackles.some(sh => sh.id === 'oblivion')) globalNotes.push({ text: _t('messages.shackle_trigger', getShackleName('oblivion', '【忘卻】'), _t('shackles.oblivion.desc')), type: 'shackle' });
+    if (isExploited) globalNotes.push({ text: _t('messages.shackle_trigger', getShackleName('exploitation', '【剝削】'), _t('shackles.exploitation.desc')), type: 'shackle' });
 
     if (playerRelics.includes('order')) {
-        globalNotes.push(`${getRelicName('order', '【寬容】')} 發動: 絕對秩序只要七顆即可發動。`);
+        globalNotes.push({ text: _t('messages.relic_trigger', getRelicName('order', '【寬容】'), _t('relics.order.desc')), type: 'relic' });
     }
 
     if (playerRelics.includes('pansy') && counts[1] > 0) {
         let amt = isExploited ? 1.5 : 3.0;
         globalMulti *= amt;
-        globalNotes.push(`${getRelicName('pansy', '【雷爪獅的祝福】')} x${amt.toFixed(1)}`);
+        globalNotes.push({ text: _t('messages.relic_multi_note', amt.toFixed(1), getRelicName('pansy', '【雷爪獅的祝福】')), type: 'relic' });
         _collect('pansy', getRelicName('pansy', '【雷爪獅的祝福】'), amt);
     }
 
     if (playerRelics.includes('pongo') && counts[8] > 0) {
         let amt = isExploited ? 1.5 : 3.0;
         globalMulti *= amt;
-        globalNotes.push(`${getRelicName('pongo', '【捧夠的祝福】')} x${amt.toFixed(1)}`);
+        globalNotes.push({ text: _t('messages.relic_multi_note', amt.toFixed(1), getRelicName('pongo', '【捧夠的祝福】')), type: 'relic' });
         _collect('pongo', getRelicName('pongo', '【捧夠的祝福】'), amt);
     }
 
     if (playerRelics.includes('highlow') && counts[1] > 0 && counts[8] > 0) {
         let amt = isExploited ? 1.25 : 1.5;
         globalMulti *= amt;
-        globalNotes.push(`${getRelicName('highlow', '【高低差】')} x${amt.toFixed(2)}`);
+        globalNotes.push({ text: _t('messages.relic_multi_note', amt.toFixed(2), getRelicName('highlow', '【高低差】')), type: 'relic' });
         _collect('highlow', getRelicName('highlow', '【高低差】'), amt);
     }
 
     if (playerRelics.includes('laststand') && rollsLeft === 0) {
         let amt = isExploited ? 1.25 : 1.5;
         globalMulti *= amt;
-        globalNotes.push(`${getRelicName('laststand', '【破釜沉舟】')} x${amt.toFixed(2)}`);
+        globalNotes.push({ text: _t('messages.relic_multi_note', amt.toFixed(2), getRelicName('laststand', '【破釜沉舟】')), type: 'relic' });
         _collect('laststand', getRelicName('laststand', '【破釜沉舟】'), amt);
     }
 
     if (playerRelics.includes('allin') && playerHp === 1) {
         let amt = isExploited ? 1.0 : 2.0;
         globalMulti *= amt;
-        globalNotes.push(`${getRelicName('allin', '【孤注一擲】')} x${amt.toFixed(2)}`);
+        globalNotes.push({ text: _t('messages.relic_multi_note', amt.toFixed(2), getRelicName('allin', '【孤注一擲】')), type: 'relic' });
         _collect('allin', getRelicName('allin', '【孤注一擲】'), amt);
     }
 
@@ -635,7 +636,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         const addAmt = (isExploited ? 1.5 : 3.0);
         const prevGM = globalMulti;
         globalMulti += addAmt;
-        globalNotes.push(`${getRelicName('flicker', '【凡人微光】')} +${addAmt.toFixed(1)}x`);
+        globalNotes.push({ text: `${getRelicName('flicker', '【凡人微光】')} +${addAmt.toFixed(1)}x`, type: 'relic' });
         // Additive change: express as effective multiplier (globalMulti_after / globalMulti_before)
         _collect('flicker', getRelicName('flicker', '【凡人微光】'), prevGM > 0.001 ? globalMulti / prevGM : globalMulti);
     }
@@ -645,30 +646,30 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         const addAmt = (isExploited ? amt / 2 : amt);
         const prevGM = globalMulti;
         globalMulti += addAmt;
-        globalNotes.push(`${getRelicName('fivebless', '【五福臨門】')} +${addAmt.toFixed(1)}x`);
+        globalNotes.push({ text: `${getRelicName('fivebless', '【五福臨門】')} +${addAmt.toFixed(1)}x`, type: 'relic' });
         _collect('fivebless', getRelicName('fivebless', '【五福臨門】'), prevGM > 0.001 ? globalMulti / prevGM : globalMulti);
     }
 
     if (playerRelics.includes('fourdeath') && counts[4] === 4) {
         let amt = isExploited ? 2.0 : 4.0;
         globalMulti *= amt;
-        globalNotes.push(`${getRelicName('fourdeath', '【四死如歸】')} x${amt.toFixed(1)}`);
+        globalNotes.push({ text: _t('messages.relic_multi_note', amt.toFixed(1), getRelicName('fourdeath', '【四死如歸】')), type: 'relic' });
         _collect('fourdeath', getRelicName('fourdeath', '【四死如歸】'), amt);
     }
 
     if (playerRelics.includes('extremist') && tagD.name !== '無') {
         let amt = isExploited ? 1.25 : 1.5;
         tagD.multi *= amt;
-        globalNotes.push(`${getRelicName('extremist', '【極端份子】')} D區 x${amt.toFixed(2)}`);
+        globalNotes.push({ text: `${getRelicName('extremist', '【極端份子】')} D區 x${amt.toFixed(2)}`, type: 'relic' });
         // tagD.multi modification: captured in zone D step below (using final tagD.multi)
     }
 
     if (playerRelics.includes('fusion_scale_apex')) {
-        globalNotes.push(`${getRelicName('fusion_scale_apex', '【天秤之極】')} 發動: 絕對秩序只要六顆即可發動。`);
+        globalNotes.push({ text: _t('messages.relic_trigger', getRelicName('fusion_scale_apex', '【天秤之極】'), _t('relics.fusion_scale_apex.desc')), type: 'relic' });
         if (tagD.name === '絕對秩序') {
             let scaleAmt = playerHp === 1 ? 2.0 : (playerHp === 2 ? 1.75 : 1.5);
             tagD.multi *= scaleAmt;
-            globalNotes.push(`${getRelicName('fusion_scale_apex', '【天秤之極】')} 絕對秩序倍率 x${scaleAmt.toFixed(2)}`);
+            globalNotes.push({ text: `${getRelicName('fusion_scale_apex', '【天秤之極】')} 絕對秩序倍率 x${scaleAmt.toFixed(2)}`, type: 'relic' });
             // tagD.multi modification: captured in zone D step below (using final tagD.multi)
         }
     }
@@ -676,21 +677,21 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     if (playerRelics.includes('rebel') && activeShackles.length > 0) {
         let amt = isExploited ? 1.25 : 1.5;
         globalMulti *= amt;
-        globalNotes.push(`${getRelicName('rebel', '【反抗軍】')} x${amt.toFixed(2)}`);
+        globalNotes.push({ text: _t('messages.relic_multi_note', amt.toFixed(2), getRelicName('rebel', '【反抗軍】')), type: 'relic' });
         _collect('rebel', getRelicName('rebel', '【反抗軍】'), amt);
     }
 
     if (playerRelics.includes('royalflush') && tagA.name !== '無' && tagB.name !== '無') {
         let amt = isExploited ? 1.5 : 2.0;
         globalMulti *= amt;
-        globalNotes.push(`${getRelicName('royalflush', '【同花順】')} x${amt.toFixed(1)}`);
+        globalNotes.push({ text: _t('messages.relic_multi_note', amt.toFixed(1), getRelicName('royalflush', '【同花順】')), type: 'relic' });
         _collect('royalflush', getRelicName('royalflush', '【同花順】'), amt);
     }
 
     if (playerRelics.includes('brink') && turnsLeft === 1) {
         let amt = isExploited ? 1.25 : 2.5;
         globalMulti *= amt;
-        globalNotes.push(`${getRelicName('brink', '【極限拉扯】')} x${amt.toFixed(2)}`);
+        globalNotes.push({ text: _t('messages.relic_multi_note', amt.toFixed(2), getRelicName('brink', '【極限拉扯】')), type: 'relic' });
         _collect('brink', getRelicName('brink', '【極限拉扯】'), amt);
     }
 
@@ -698,7 +699,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     if (rollsLeft > 0) {
         globalMulti *= rerollMulti;
         let resourceBonusMsg = typeof window !== 'undefined' && window.i18n ? window.i18n.t('ui.bonus_reroll', rollsLeft) : `剩餘資源加成 (剩 ${rollsLeft} 次)`;
-        globalNotes.push(`${resourceBonusMsg} x${rerollMulti.toFixed(1)}`);
+        globalNotes.push({ text: `${resourceBonusMsg} x${rerollMulti.toFixed(1)}`, type: 'relic' });
         _collect('reroll_bonus', 'reroll_bonus', rerollMulti);
     }
 
@@ -748,7 +749,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
 
     if (playerRelics.includes('mediocre') && result.finalMultiplier < 5.0) {
         result.finalMultiplier = 5.0;
-        result.globalNotes.push(`${getRelicName('mediocre', '【平庸之善】')} 發動: 總倍率提升至 x5.0。`);
+        result.globalNotes.push({ text: _t('messages.relic_trigger', getRelicName('mediocre', '【平庸之善】'), _t('relics.mediocre.desc')), type: 'relic' });
         // Mediocre overrides the entire multiplier chain: clear collector and replace with a single ×5.0 step
         if (stepCollector) {
             stepCollector.length = 0;
@@ -764,7 +765,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     if (playerRelics.includes('dragonslayer') && env.isEliteOrBoss) {
         result.globalMulti *= 1.5;
         result.finalMultiplier *= 1.5;
-        result.globalNotes.push(`${getRelicName('dragonslayer', '【屠龍者】')} x1.5`);
+        result.globalNotes.push({ text: _t('messages.relic_multi_note', '1.5', getRelicName('dragonslayer', '【屠龍者】')), type: 'relic' });
         _collect('dragonslayer', getRelicName('dragonslayer', '【屠龍者】'), 1.5);
     }
 
@@ -773,7 +774,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         let buffMulti = 1.0 + (env.finalDamageUpgrade * 0.1);
         result.globalMulti *= buffMulti;
         result.finalMultiplier *= buffMulti;
-        result.globalNotes.push(`【力量覺醒】 x${buffMulti.toFixed(1)}`);
+        result.globalNotes.push({ text: `【力量覺醒】 x${buffMulti.toFixed(1)}`, type: 'relic' });
         _collect('meta_final_damage', '【力量覺醒】', buffMulti);
     }
 
@@ -781,7 +782,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     if (env.damageBuffMulti > 1.0) {
         result.globalMulti *= env.damageBuffMulti;
         result.finalMultiplier *= env.damageBuffMulti;
-        result.globalNotes.push(`【力量藥劑】 x${env.damageBuffMulti.toFixed(1)}`);
+        result.globalNotes.push({ text: `【力量藥劑】 x${env.damageBuffMulti.toFixed(1)}`, type: 'relic' });
         _collect('cons_power', '【力量藥劑】', env.damageBuffMulti);
     }
 
