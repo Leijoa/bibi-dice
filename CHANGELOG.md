@@ -1,5 +1,17 @@
 
 
+### Feature：實作首頁視覺升級與背景呼吸動畫 [2026/05/10]
+* **背景插畫**：`css/style.css` 的 `#title-screen` 現在使用 `img/home_bg.webp` 作為全螢幕背景圖（`background-size: cover`），並透過 `::before` 偽元素搭配 `@keyframes title-breathing` 實現 10 秒週期的呼吸縮放（scale 1.0 → 1.05），帶來動態臨場感。
+* **漸層蒙層 (Scrim)**：`::after` 偽元素疊加了原有兩組 `radial-gradient` 輝光與底部漸暗 `linear-gradient`（0% 黑 30%→中透明→底部 70% 黑），確保按鈕與文字在任何圖片內容下均清晰可讀。
+* **玻璃擬態按鈕 (Glassmorphism)**：首頁的 `.btn-primary` 與 `.btn-secondary` 套用 `backdrop-filter: blur(10px)` 及帶透明度的背景色，並加入細框線 `rgba` 亮邊，hover 時主按鈕呈現增強光暈效果。
+* **標題容器底板**：`.title-enter` 容器加入 `backdrop-filter: blur(4px)` 微幅毛玻璃效果，提升遊戲標題與描述文字在複雜背景下的可讀性。
+
+### Fix：新手教學系列體驗修復 [2026/05/10]
+* **攻擊按鈕無法點擊**：修正 `js/ui.js` 的 `showTutorialStep()` 中，教學步驟 4（attack-btn）時 `#game-container` 因 `transform:scale()` 建立 stacking context，導致 `#board-panel`（無 z-index）被 backdrop（z-195）遮蔽，攻擊按鈕因此無法被點擊的問題。現在高亮攻擊步驟時會暫時將 `#board-panel` 的 `z-index` 提升至 `196`，並在 `_unhighlightTutorialElement()` 中還原。
+* **教學重骰限制**：`js/main.js` 的 `startTurn()` 中，`tutorialMode` 為 `true` 時強制將 `baseMaxRolls` 設為 `1`，避免玩家在教學中多次重骰。
+* **商店高亮層級**：`showTutorialStep()` 高亮 `#shop-overlay` 內元素時暫時提升父層 `z-index` 至 `196`，結束後還原。
+* **Tooltip 邊界限制**：`_positionTutorialTooltip()` 改用實際 `offsetWidth/offsetHeight` 取代硬編碼估值，並統一對四邊進行 clamp，確保任何螢幕下提示視窗均不溢出。
+
 ### Fix：修復新手教學提示視窗溢出畫面邊界的問題 [2026/05/10]
 * **Tooltip 邊界限制**：修正 `js/ui.js` 的 `_positionTutorialTooltip()` 中，使用硬編碼尺寸估值且垂直方向（往下定位）及無目標元素時缺少邊界鎖定的問題。現在改為讀取 `tooltip.offsetWidth/offsetHeight` 取得實際渲染尺寸，並在計算結束後統一對四個方向進行 clamp，確保提示視窗在任何螢幕（包含手機直式窄螢幕）下均不會溢出可視範圍。
 

@@ -100,11 +100,73 @@ body {
 }
 
 /* --- Title Screen --- */
+@keyframes title-breathing {
+  0%, 100% { transform: scale(1.0); }
+  50%       { transform: scale(1.05); }
+}
+
 #title-screen {
+  background: none; /* 背景改由 ::before / ::after 偽元素承載 */
+  overflow: hidden;
+}
+
+/* 背景插畫層（呼吸縮放動畫） */
+#title-screen::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url('../img/home_bg.webp');
+  background-size: cover;
+  background-position: center;
+  animation: title-breathing 10s ease-in-out infinite;
+  z-index: -2;
+  pointer-events: none;
+}
+
+/* 漸層蒙層：保留原輝光並添加漸暗 Scrim 提升可讀性 */
+#title-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
   background:
     radial-gradient(ellipse at 50% 20%, rgba(122, 59, 245, 0.22) 0%, transparent 55%),
     radial-gradient(ellipse at 50% 95%, rgba(0, 219, 233, 0.08) 0%, transparent 50%),
-    #131315;
+    linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.7) 100%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* 首頁按鈕玻璃擬態 (Glassmorphism) */
+#title-screen .btn-primary {
+  background: linear-gradient(135deg, rgba(86,0,201,0.8) 0%, rgba(122,59,245,0.85) 50%, rgba(86,0,201,0.8) 100%);
+  background-size: 200% 100%;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(208,188,255,0.2);
+}
+#title-screen .btn-primary:hover {
+  box-shadow: 0 0 50px rgba(122,59,245,0.7), 0 0 80px rgba(122,59,245,0.25), inset 0 1px 0 rgba(208,188,255,0.35);
+  transform: translateY(-3px);
+}
+
+#title-screen .btn-secondary {
+  background: rgba(30,30,35,0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+#title-screen .btn-secondary:hover {
+  background: rgba(42,42,50,0.85);
+  border-color: rgba(208,188,255,0.3);
+  color: #d0c3e8;
+}
+
+/* 標題文字容器微幅玻璃底板，強化可讀性 */
+#title-screen .title-enter {
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  padding: 12px 16px;
+  border-radius: 14px;
 }
 
 .game-logo {
