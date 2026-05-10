@@ -1,5 +1,10 @@
 
 
+### Fix：移除擋圖的首頁標題文字，並將按鈕全面升級為紫水晶玻璃擬態 [2026/05/10]
+* **移除文字標題**：從 `index.html` 的 `#title-screen` 中移除 `<h1>BIBBIDIBA</h1>` 與 `<h2>比比丟八</h2>`，讓背景插畫完全顯露出來，提升沉浸感。
+* **紫水晶玻璃按鈕**：將 `css/style.css` 中 `#title-screen .btn-primary` 重寫為 `rgba(122,59,245,0.25)` 半透明底 + `backdrop-filter: blur(15px) saturate(200%)`，hover 時背景透明度提升且邊框呈現紫色發光（`rgba(167,139,250,0.6)`）。`.btn-secondary` 同步改為中性半透明水晶玻璃風格。
+* **Scrim 調輕**：將 `#title-screen::after` 的 `linear-gradient` 調整為頂部極輕（黑 5%）、中央透明（30%）、底部適中（65% @ 80%），讓角色與魔法陣清晰透出，不再被重疊遮蔽。
+
 ### Feature：實作首頁視覺升級與背景呼吸動畫 [2026/05/10]
 * **背景插畫**：`css/style.css` 的 `#title-screen` 現在使用 `img/home_bg.webp` 作為全螢幕背景圖（`background-size: cover`），並透過 `::before` 偽元素搭配 `@keyframes title-breathing` 實現 10 秒週期的呼吸縮放（scale 1.0 → 1.05），帶來動態臨場感。
 * **漸層蒙層 (Scrim)**：`::after` 偽元素疊加了原有兩組 `radial-gradient` 輝光與底部漸暗 `linear-gradient`（0% 黑 30%→中透明→底部 70% 黑），確保按鈕與文字在任何圖片內容下均清晰可讀。

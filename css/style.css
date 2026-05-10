@@ -131,42 +131,41 @@ body {
   background:
     radial-gradient(ellipse at 50% 20%, rgba(122, 59, 245, 0.22) 0%, transparent 55%),
     radial-gradient(ellipse at 50% 95%, rgba(0, 219, 233, 0.08) 0%, transparent 50%),
-    linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.7) 100%);
+    linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0) 30%, rgba(0,0,0,0.65) 80%);
   z-index: -1;
   pointer-events: none;
 }
 
-/* 首頁按鈕玻璃擬態 (Glassmorphism) */
+/* 首頁按鈕：紫水晶玻璃擬態 (Crystal Glassmorphism) */
 #title-screen .btn-primary {
-  background: linear-gradient(135deg, rgba(86,0,201,0.8) 0%, rgba(122,59,245,0.85) 50%, rgba(86,0,201,0.8) 100%);
-  background-size: 200% 100%;
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(208,188,255,0.2);
+  background: rgba(122, 59, 245, 0.25);
+  backdrop-filter: blur(15px) saturate(200%);
+  -webkit-backdrop-filter: blur(15px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+  color: #eee4ff;
 }
 #title-screen .btn-primary:hover {
-  box-shadow: 0 0 50px rgba(122,59,245,0.7), 0 0 80px rgba(122,59,245,0.25), inset 0 1px 0 rgba(208,188,255,0.35);
-  transform: translateY(-3px);
+  background: rgba(122, 59, 245, 0.4);
+  border: 1px solid rgba(167, 139, 250, 0.6);
+  box-shadow: 0 0 25px rgba(122, 59, 245, 0.5);
+  transform: translateY(-2px);
 }
 
 #title-screen .btn-secondary {
-  background: rgba(30,30,35,0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(40, 40, 45, 0.45);
+  backdrop-filter: blur(12px) saturate(150%);
+  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+  color: #b5a8c8;
 }
 #title-screen .btn-secondary:hover {
-  background: rgba(42,42,50,0.85);
-  border-color: rgba(208,188,255,0.3);
+  background: rgba(60, 55, 75, 0.6);
+  border-color: rgba(167, 139, 250, 0.4);
   color: #d0c3e8;
-}
-
-/* 標題文字容器微幅玻璃底板，強化可讀性 */
-#title-screen .title-enter {
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  padding: 12px 16px;
-  border-radius: 14px;
+  transform: translateY(-1px);
 }
 
 .game-logo {
