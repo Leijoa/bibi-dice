@@ -987,7 +987,10 @@ function startTurn() {
     if (stage.activeShackle === 'destinychain') {
         baseMaxRolls = 1;
     }
-    
+    if (tutorialMode) {
+        baseMaxRolls = 1;
+    }
+
     player.maxRolls = baseMaxRolls;
     battle.rollsLeft = player.maxRolls;
     battle.balanceUsedThisTurn = false;

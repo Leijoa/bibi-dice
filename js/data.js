@@ -210,7 +210,7 @@ export function getEnemy(levelIndex) {
 
 export const RULE_DB = {
     groupA: [
-        { name: '比比丟八(ビビデバ)', desc: '8顆相同數字', multi: 'x50.0' , rarity: 4 },
+        { name: '比比丟八', desc: '8顆相同數字', multi: 'x50.0' , rarity: 4 },
         { name: '七同', desc: '7顆相同數字', multi: 'x25.0' , rarity: 4 },
         { name: '六同', desc: '6顆相同數字', multi: 'x12.0' , rarity: 3 },
         { name: '五同', desc: '5顆相同數字', multi: 'x6.0' , rarity: 3 },

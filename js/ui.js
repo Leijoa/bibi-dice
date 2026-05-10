@@ -1456,7 +1456,7 @@ window.resetSouls = function() {
 
 // ===== Tutorial UI =====
 
-const _tutorialHighlighted = { el: null, origPos: '', origZ: '', origShadow: '' };
+const _tutorialHighlighted = { el: null, origPos: '', origZ: '', origShadow: '', shopOverlay: null, origShopZ: '' };
 
 export function showTutorialStep(stepIndex, totalSteps) {
     const overlay = document.getElementById('tutorial-overlay');
@@ -1511,6 +1511,12 @@ export function showTutorialStep(stepIndex, totalSteps) {
         targetEl.style.position = 'relative';
         targetEl.style.zIndex = '196';
         targetEl.classList.add('tutorial-highlight');
+        const shopOverlay = targetEl.closest('#shop-overlay');
+        if (shopOverlay) {
+            _tutorialHighlighted.shopOverlay = shopOverlay;
+            _tutorialHighlighted.origShopZ = shopOverlay.style.zIndex;
+            shopOverlay.style.zIndex = '196';
+        }
     }
 
     // Show overlay
@@ -1532,33 +1538,43 @@ function _unhighlightTutorialElement() {
         _tutorialHighlighted.el.classList.remove('tutorial-highlight');
         _tutorialHighlighted.el = null;
     }
+    if (_tutorialHighlighted.shopOverlay) {
+        _tutorialHighlighted.shopOverlay.style.zIndex = _tutorialHighlighted.origShopZ;
+        _tutorialHighlighted.shopOverlay = null;
+    }
 }
 
 function _positionTutorialTooltip(targetEl) {
     const tooltip = document.getElementById('tutorial-tooltip');
     if (!tooltip) return;
 
-    const TOOLTIP_W = 290, TOOLTIP_H = 150, PAD = 12;
+    const PAD = 12;
     const vw = window.innerWidth, vh = window.innerHeight;
+    // 使用實際渲染尺寸（overlay 已在此函式呼叫前移除 hidden），確保手機窄螢幕下也準確
+    const TOOLTIP_W = tooltip.offsetWidth || 290;
+    const TOOLTIP_H = tooltip.offsetHeight || 150;
 
     let left, top;
 
     if (targetEl) {
         const rect = targetEl.getBoundingClientRect();
-        // Prefer below, fallback above
+        // 優先顯示於元素下方，空間不足則改顯示於上方
         if (rect.bottom + TOOLTIP_H + PAD < vh) {
             top = rect.bottom + PAD;
         } else {
-            top = Math.max(PAD, rect.top - TOOLTIP_H - PAD);
+            top = rect.top - TOOLTIP_H - PAD;
         }
-        // Center horizontally on element, clamp to viewport
+        // 水平置中對齊目標元素
         left = rect.left + rect.width / 2 - TOOLTIP_W / 2;
-        left = Math.max(PAD, Math.min(vw - TOOLTIP_W - PAD, left));
     } else {
-        // Center of screen, near bottom
+        // 無目標時置中螢幕
         left = vw / 2 - TOOLTIP_W / 2;
         top = vh / 2 - TOOLTIP_H / 2;
     }
+
+    // 統一進行四邊邊界限制，避免任何情況下溢出螢幕（手機直式螢幕極端情況亦安全）
+    left = Math.max(PAD, Math.min(vw - TOOLTIP_W - PAD, left));
+    top = Math.max(PAD, Math.min(vh - TOOLTIP_H - PAD, top));
 
     tooltip.style.left = `${left}px`;
     tooltip.style.top = `${top}px`;
