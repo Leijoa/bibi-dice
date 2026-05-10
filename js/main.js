@@ -1894,6 +1894,8 @@ function recordHistory(win) {
         win: win,
         isInfiniteMode: player.isInfiniteMode,
         infiniteLevel: player.isInfiniteMode ? (stage.level - ENEMY_DB.length + 1) : 0,
+        level: stage.level,
+        infiniteMonsterId: stage.infiniteMonsterId || null,
         stageName: (getEnemyWithMeta(stage.level) || {}).name || '未知關卡',
         stageType: player.isInfiniteMode ? 'infinite' : (isBoss(stage.level) ? 'boss' : (isElite(stage.level) ? 'elite' : 'normal')),
         date: Date.now(),

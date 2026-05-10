@@ -239,7 +239,15 @@ ui: {
     dev_shackle_apply: 'Apply Shackle',
     dev_shackle_filter: 'Search shackles...',
     dev_shackle_select_ph: '-- Select Shackle --',
-    dev_shackle_conflict: '⚠️ A shackle is already active. Applying will override it.'
+    dev_shackle_conflict: '⚠️ A shackle is already active. Applying will override it.',
+    stage_type_boss: '👑 Boss',
+    stage_type_elite: '⚡ Elite',
+    stage_type_infinite: '♾️ Infinite',
+    stage_type_normal: '⚔️ Normal',
+    history_stage_type: 'Stage Type',
+    history_best_hand: 'Best Hand',
+    history_relics: 'Relics',
+    history_shackles: 'Shackles'
   },
   tutorial: {
     btn_start: '🎓 Tutorial',

@@ -239,7 +239,15 @@ ui: {
     dev_shackle_apply: '枷鎖を適用',
     dev_shackle_filter: '枷鎖を検索...',
     dev_shackle_select_ph: '-- 枷鎖を選択 --',
-    dev_shackle_conflict: '⚠️ 既に枷鎖が適用中です。強制適用すると上書きされます。'
+    dev_shackle_conflict: '⚠️ 既に枷鎖が適用中です。強制適用すると上書きされます。',
+    stage_type_boss: '👑 Boss',
+    stage_type_elite: '⚡ エリート',
+    stage_type_infinite: '♾️ 無限の塔',
+    stage_type_normal: '⚔️ 通常',
+    history_stage_type: 'ステージタイプ',
+    history_best_hand: '最高役',
+    history_relics: '遺物',
+    history_shackles: '枷鎖'
   },
   tutorial: {
     btn_start: '🎓 チュートリアル',

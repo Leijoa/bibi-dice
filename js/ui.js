@@ -539,11 +539,12 @@ export function renderControls(battle) {
     let scoreClass = isScoreDisabled ? "opacity-40 cursor-not-allowed" : "hover:bg-red-500 active:border-b-0 active:translate-y-1 shadow-lg shadow-red-950/60";
 
     el.controlsContainer.innerHTML = `
-    <button onclick="window.executeRoll(false)" ${isRollDisabled ? 'disabled="disabled"' : ''} class="w-full flex-1 bg-violet-700 text-violet-100 font-black rounded-lg md:rounded-xl transition-all flex flex-col items-center justify-center border-b-4 border-violet-900 ${rollClass}">
+    <button onclick="window.executeRoll(false)" ${isRollDisabled ? 'disabled="disabled"' : ''} class="w-full flex-1 bg-violet-700 text-violet-100 font-black rounded-lg md:rounded-xl transition-all flex flex-col items-center justify-center border-b-4 border-violet-900 btn-roll ${rollClass}">
+        <span class="btn-roll-icon text-base md:text-lg mb-0.5">🎲</span>
         <span class="text-sm md:text-lg leading-tight">${i18n.t('ui.btn_roll')}</span>
         <span class="text-[8px] md:text-[10px] opacity-75 mt-0.5 font-semibold">${i18n.t('ui.btn_roll_hint')}</span>
     </button>
-    <button onclick="window.fireAttack()" ${isScoreDisabled ? 'disabled="disabled"' : ''} class="w-full flex-[1.5] bg-red-700 text-red-100 font-black rounded-lg md:rounded-xl transition-all flex flex-col items-center justify-center border-b-4 border-red-900 ${scoreClass}">
+    <button onclick="window.fireAttack()" ${isScoreDisabled ? 'disabled="disabled"' : ''} class="w-full flex-[1.5] bg-red-700 text-red-100 font-black rounded-lg md:rounded-xl transition-all flex flex-col items-center justify-center border-b-4 border-red-900 ${isScoreDisabled ? '' : 'btn-attack-ready'} ${scoreClass}">
         <span class="text-lg md:text-2xl mb-0.5">🗡️</span>
         <span class="text-xs md:text-base leading-tight">${i18n.t('ui.btn_attack')}</span>
     </button>
@@ -1004,27 +1005,30 @@ export function updateShopRerollBtn(shopRerollsUsed, hasScavenger = false, hasFu
     }
 }
 
+function getLocalizedCombo(comboStr) {
+    if (!comboStr || comboStr === '無') return i18n.t('messages.none') || '無';
+    const groups = ['groupA', 'groupB', 'groupC', 'groupD'];
+    const prefixes = { groupA: 'a', groupB: 'b', groupC: 'c', groupD: 'd' };
+    return comboStr.split(' + ').map(part => {
+        const name = part.trim();
+        if (!name || name === '無') return i18n.t('messages.none') || '無';
+        for (const g of groups) {
+            const found = RULE_DB?.[g]?.find(r => r.name === name);
+            if (found) {
+                const idx = RULE_DB[g].indexOf(found);
+                const key = `rules.rule_${prefixes[g]}${idx}.name`;
+                return (window.i18n ? window.i18n.t(key) : null) || name;
+            }
+        }
+        return name;
+    }).join(' + ');
+}
+
 export function renderHistoryModal(records, metaData) {
     const dash = '-';
     let pbHtml = '';
     if (metaData && metaData.stats) {
-        let comboTag = metaData.stats.highestDamageCombo;
-        let comboKey = '';
-        if(comboTag === '無') comboKey = 'messages.none';
-        else {
-           for (let g of ['groupA', 'groupB', 'groupC', 'groupD']) {
-               let found = RULE_DB?.[g]?.find(r=>r.name === comboTag);
-               if(found) {
-                  let idx = RULE_DB[g].indexOf(found);
-                  if(g==='groupA') comboKey = 'rules.rule_a'+idx+'.name';
-                  else if(g==='groupB') comboKey = 'rules.rule_b'+idx+'.name';
-                  else if(g==='groupC') comboKey = 'rules.rule_c'+idx+'.name';
-                  else if(g==='groupD') comboKey = 'rules.rule_d'+idx+'.name';
-                  break;
-               }
-           }
-        }
-        let highestDamageComboTranslated = (comboKey && window.i18n) ? window.i18n.t(comboKey) : comboTag;
+        let highestDamageComboTranslated = getLocalizedCombo(metaData.stats.highestDamageCombo);
 
         pbHtml = `
             <div class="bg-amber-900/40 border border-amber-600/50 p-4 rounded-xl shadow-inner">
@@ -1075,16 +1079,22 @@ export function renderHistoryModal(records, metaData) {
     const listHtml = records.filter(r => r && typeof r === 'object' && Object.keys(r).length > 0).map((r, i) => {
         if (!r.stageName && r.win == null) return '';
         let resultColor = r.win ? "text-violet-300" : "text-red-400";
-        let resultText = r.stageName || (r.win ? "勝利" : "失敗");
+        let stageDisplayName;
+        if (r.level != null) {
+            stageDisplayName = r.level < 10
+                ? i18n.t('enemies.enemy_' + r.level)
+                : i18n.t('monsters.monster_' + (r.infiniteMonsterId || 1));
+        }
+        let resultText = stageDisplayName || r.stageName || (r.win ? i18n.t('messages.win') || '勝利' : i18n.t('messages.lose') || '失敗');
         let dateObj = new Date(r.date || 0);
         let dateStr = dateObj.toLocaleDateString() + " " + dateObj.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
 
         let stageTypeLabel = dash;
-        if (r.stageType === 'boss') stageTypeLabel = '👑 Boss';
-        else if (r.stageType === 'elite') stageTypeLabel = '⚡ 精英';
-        else if (r.stageType === 'infinite') stageTypeLabel = '♾️ 無限塔';
-        else if (r.stageType === 'normal') stageTypeLabel = '⚔️ 一般';
-        else if (r.isInfiniteMode) stageTypeLabel = '♾️ 無限塔';
+        if (r.stageType === 'boss') stageTypeLabel = i18n.t('ui.stage_type_boss');
+        else if (r.stageType === 'elite') stageTypeLabel = i18n.t('ui.stage_type_elite');
+        else if (r.stageType === 'infinite') stageTypeLabel = i18n.t('ui.stage_type_infinite');
+        else if (r.stageType === 'normal') stageTypeLabel = i18n.t('ui.stage_type_normal');
+        else if (r.isInfiniteMode) stageTypeLabel = i18n.t('ui.stage_type_infinite');
 
         let highestMultiStr = (r.highestMulti != null && r.highestMulti > 0)
             ? `x${Number(r.highestMulti).toFixed(1)}`
@@ -1117,7 +1127,7 @@ export function renderHistoryModal(records, metaData) {
             <div id="hist-det-${i}" class="relative hidden px-3 pb-3 pt-2 border-t border-slate-700/50">
                 <div class="grid grid-cols-2 gap-x-3 gap-y-1.5 mb-2">
                     <div class="text-xs text-slate-300">
-                        <div class="text-[10px] text-slate-500">關卡類型</div>
+                        <div class="text-[10px] text-slate-500">${i18n.t('ui.history_stage_type')}</div>
                         <div class="font-bold">${stageTypeLabel}</div>
                     </div>
                     <div class="text-xs text-slate-300">
@@ -1129,16 +1139,16 @@ export function renderHistoryModal(records, metaData) {
                         <div class="font-bold text-emerald-400">${highestMultiStr}</div>
                     </div>
                     <div class="text-xs text-slate-300">
-                        <div class="text-[10px] text-slate-500">${i18n.t("messages.history_combo_label")}</div>
-                        <div class="font-bold text-blue-300">${r.combo || i18n.t('messages.none') || dash}</div>
+                        <div class="text-[10px] text-slate-500">${i18n.t('ui.history_best_hand')}</div>
+                        <div class="font-bold text-blue-300">${getLocalizedCombo(r.combo)}</div>
                     </div>
                     <div class="col-span-2 text-xs text-slate-300">
-                        <div class="text-[10px] text-slate-500">${i18n.t('ui.tab_shackles') || '枷鎖'}</div>
+                        <div class="text-[10px] text-slate-500">${i18n.t('ui.history_shackles')}</div>
                         <div class="font-bold text-red-300">${shackleStr}</div>
                     </div>
                 </div>
                 <div>
-                    <div class="text-[10px] text-slate-500 mb-0.5">${i18n.t("messages.history_relics_label")}</div>
+                    <div class="text-[10px] text-slate-500 mb-0.5">${i18n.t('ui.history_relics')}</div>
                     <div class="flex flex-wrap">${relicHtml}</div>
                 </div>
             </div>
@@ -1166,7 +1176,7 @@ export function renderEndGameStats(highestDamage, highestDamageCombo, relics) {
             <div class="mb-2 border-b border-slate-700/50 pb-2">
                 <div class="text-xs text-slate-400 mb-1">${i18n.t('messages.history_dmg_label')}</div>
                 <div class="text-2xl md:text-3xl font-black text-white">${Number(highestDamage).toLocaleString()}</div>
-                <div class="text-sm font-bold text-blue-300 mt-1">${highestDamageCombo || i18n.t('messages.none')}</div>
+                <div class="text-sm font-bold text-blue-300 mt-1">${getLocalizedCombo(highestDamageCombo)}</div>
             </div>
             <div>
                 <div class="text-xs text-slate-400 mb-1.5">${i18n.t('messages.history_relics_label')}</div>

@@ -648,11 +648,91 @@ header {
 }
 
 /* 新增：乘數標籤的彈出閃爍動畫 */
-.multiplier-pop { 
-  animation: popScale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-} 
-@keyframes popScale { 
-  0% { transform: scale(1); background-color: rgba(139, 92, 246, 0.2); } 
-  50% { transform: scale(1.1); background-color: rgba(139, 92, 246, 0.6); box-shadow: 0 0 15px rgba(139, 92, 246, 0.8); } 
-  100% { transform: scale(1); background-color: rgba(139, 92, 246, 0.2); } 
+.multiplier-pop {
+  animation: popScale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+@keyframes popScale {
+  0% { transform: scale(1); background-color: rgba(139, 92, 246, 0.2); }
+  50% { transform: scale(1.1); background-color: rgba(139, 92, 246, 0.6); box-shadow: 0 0 15px rgba(139, 92, 246, 0.8); }
+  100% { transform: scale(1); background-color: rgba(139, 92, 246, 0.2); }
+}
+
+/* ===== Button Enhancement Pack ===== */
+
+/* --- Fix 1: 商店刷新按鈕（補上金色主題） --- */
+#shop-reroll-btn {
+  background: linear-gradient(135deg, #b45309 0%, #d97706 50%, #b45309 100%);
+  background-size: 200% 100%;
+  border-bottom-color: #92400e;
+  color: #fef3c7;
+  box-shadow: 0 0 16px rgba(217, 119, 6, 0.25), inset 0 1px 0 rgba(254, 243, 199, 0.12);
+  transition: background-position 0.4s, box-shadow 0.3s, transform 0.1s, border-bottom-width 0.1s;
+}
+#shop-reroll-btn:hover:not(:disabled) {
+  background-position: 100% 0;
+  box-shadow: 0 0 28px rgba(217, 119, 6, 0.55), inset 0 1px 0 rgba(254, 243, 199, 0.2);
+}
+#shop-reroll-btn:active:not(:disabled) {
+  transform: translateY(2px);
+  border-bottom-width: 1px;
+}
+#shop-reroll-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* --- Fix 2: 攻擊按鈕脈動光暈（可用時閃爍） --- */
+@keyframes attack-ready-pulse {
+  0%, 100% {
+    box-shadow: 0 4px 20px rgba(127, 29, 29, 0.6), 0 0 10px rgba(239, 68, 68, 0.3);
+  }
+  50% {
+    box-shadow: 0 4px 20px rgba(127, 29, 29, 0.6), 0 0 28px rgba(239, 68, 68, 0.8), 0 0 8px rgba(252, 165, 165, 0.4);
+  }
+}
+.btn-attack-ready {
+  animation: attack-ready-pulse 1.4s ease-in-out infinite;
+}
+
+/* --- Fix 3: 重骰按鈕骰子震動 hover --- */
+.btn-roll .btn-roll-icon {
+  display: inline-block;
+  transition: transform 0.15s;
+}
+.btn-roll:not(:disabled):hover .btn-roll-icon {
+  animation: rollJiggle 0.08s linear infinite alternate;
+}
+
+/* --- Fix 4: 標題「開始新遊戲」3D 立體按壓感 --- */
+#title-screen .btn-primary {
+  border-bottom: 3px solid rgba(60, 0, 160, 0.6) !important;
+}
+#title-screen .btn-primary:active {
+  transform: translateY(3px) !important;
+  border-bottom-width: 1px !important;
+  box-shadow: 0 0 10px rgba(122, 59, 245, 0.25) !important;
+}
+
+/* --- Fix 5: 標題次要按鈕左邊紫色 accent 線 --- */
+#title-screen .btn-secondary {
+  border-left: 2px solid rgba(139, 92, 246, 0.35) !important;
+}
+#title-screen .btn-secondary:hover {
+  border-left-color: rgba(167, 139, 250, 0.7) !important;
+}
+
+/* --- Fix 6: Modal 關閉按鈕圓形 hover --- */
+button[id^="btn-close"] {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s, color 0.2s;
+  flex-shrink: 0;
+}
+button[id^="btn-close"]:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
 }
