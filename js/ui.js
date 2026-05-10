@@ -1460,7 +1460,7 @@ window.resetSouls = function() {
 
 // ===== Tutorial UI =====
 
-const _tutorialHighlighted = { el: null, origPos: '', origZ: '', origShadow: '', shopOverlay: null, origShopZ: '' };
+const _tutorialHighlighted = { el: null, origPos: '', origZ: '', origShadow: '', shopOverlay: null, origShopZ: '', boardPanel: null, origBoardPanelZ: '' };
 
 export function showTutorialStep(stepIndex, totalSteps) {
     const overlay = document.getElementById('tutorial-overlay');
@@ -1521,15 +1521,25 @@ export function showTutorialStep(stepIndex, totalSteps) {
             _tutorialHighlighted.origShopZ = shopOverlay.style.zIndex;
             shopOverlay.style.zIndex = '196';
         }
+        // 攻擊步驟：#game-container 有 transform:scale() 建立 stacking context，
+        // board-panel 無 z-index 故會被 backdrop(z-195) 遮蔽；暫時提升至 196 使按鈕可點擊
+        if (step.highlight === 'attack-btn') {
+            const boardPanel = document.getElementById('board-panel');
+            if (boardPanel) {
+                _tutorialHighlighted.boardPanel = boardPanel;
+                _tutorialHighlighted.origBoardPanelZ = boardPanel.style.zIndex;
+                boardPanel.style.zIndex = '196';
+            }
+        }
     }
 
     // Show overlay
     overlay.classList.remove('hidden');
 
-    // For steps where the user must interact with an element inside a low-z-index
-    // stacking context (e.g. shop-overlay is z-50, below backdrop z-195),
-    // disable backdrop pointer-events so clicks pass through to the shop.
-    backdrop.style.pointerEvents = step.waitFor === 'shop_select' ? 'none' : 'auto';
+    // 需要玩家直接點擊遊戲元素的步驟（shop_select、attack_action），
+    // 將 backdrop 設為 pointer-events:none，讓點擊穿透至下方遊戲按鈕
+    const needsClickThrough = step.waitFor === 'shop_select' || step.waitFor === 'attack_action';
+    backdrop.style.pointerEvents = needsClickThrough ? 'none' : 'auto';
 
     // Position tooltip near highlighted element (or center-bottom if none)
     _positionTutorialTooltip(targetEl);
@@ -1545,6 +1555,10 @@ function _unhighlightTutorialElement() {
     if (_tutorialHighlighted.shopOverlay) {
         _tutorialHighlighted.shopOverlay.style.zIndex = _tutorialHighlighted.origShopZ;
         _tutorialHighlighted.shopOverlay = null;
+    }
+    if (_tutorialHighlighted.boardPanel) {
+        _tutorialHighlighted.boardPanel.style.zIndex = _tutorialHighlighted.origBoardPanelZ;
+        _tutorialHighlighted.boardPanel = null;
     }
 }
 

@@ -749,6 +749,9 @@ window.advanceTutorialStep = function() {
     }
     tutorialStep++;
     if (tutorialStep < TUTORIAL_STEPS.length) {
+        // 步驟推進後重新渲染控制器，確保攻擊按鈕的 disabled 狀態與當前 tutorialStep 同步
+        // （renderControls 內 isTutorialAttackLocked = step < 4，step 3→4 時按鈕需解除禁用）
+        UI.renderControls(battle);
         UI.showTutorialStep(tutorialStep, TUTORIAL_STEPS.length);
     }
 };
