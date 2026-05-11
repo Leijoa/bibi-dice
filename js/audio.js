@@ -194,10 +194,16 @@ export function playRollSound() {
 
 export function playAttackSound() {
     if (sfxMuted || sfxVolume <= 0) return;
-    // MP3 優先，否則合成音
-    if (playSFXBuffer('attack', 0.85)) return;
+    // 按鈕即時回饋：只播合成衝擊音
+    // MP3 劍擊聲由 playAttackImpactSound() 在分數動畫結尾觸發
     playTone(150, 'sawtooth', 0.2, 0.2);
     setTimeout(() => playTone(100, 'square', 0.3, 0.3), 50);
+}
+
+// 分數動畫最後一步完成後落地的劍擊聲（MP3）
+export function playAttackImpactSound() {
+    if (sfxMuted || sfxVolume <= 0) return;
+    playSFXBuffer('attack', 0.85);
 }
 
 export function playBuySound() {

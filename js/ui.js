@@ -806,6 +806,7 @@ export function playDamageStepsAnimation(steps, callback) {
         Audio.playScoreStepSound(i, step.final);
 
         if (step.final) {
+            Audio.playAttackImpactSound();
             countUpTo(el.finalScoreValue, step.damageAfter, animDuration, callback);
             return;
         }
