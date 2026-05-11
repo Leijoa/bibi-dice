@@ -864,12 +864,15 @@ function setBoardTexture(levelIndex) {
         8: 'board_blue_brick',  9: 'board_blue_brick',
     };
     const name = map[levelIndex] ?? 'board_lava';
-    board.style.setProperty('--board-texture-url', `url('img/${name}.webp')`);
+    board.style.setProperty('background-image', `url('img/${name}.webp')`, 'important');
+    board.style.setProperty('background-size', 'cover', 'important');
+    board.style.setProperty('background-position', 'center', 'important');
 }
 
 function loadStage(levelIndex, isLoad = false, parsedData = null) {
     if (levelIndex >= ENEMY_DB.length && !player.isInfiniteMode) return gameWin();
     stage.level = levelIndex;
+    console.log('setBoardTexture called:', levelIndex);
     setBoardTexture(levelIndex);
     let enemy = getEnemyWithMeta(levelIndex);
     stage.enemyMaxHp = enemy.hp;
