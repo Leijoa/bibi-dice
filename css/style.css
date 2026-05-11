@@ -696,8 +696,20 @@ header {
   display: inline-block;
   transition: transform 0.15s;
 }
-.btn-roll:not(:disabled):hover .btn-roll-icon {
-  animation: rollJiggle 0.08s linear infinite alternate;
+
+@keyframes dice-idle-sway {
+  0%   { transform: rotate(-8deg) scale(0.95); }
+  50%  { transform: rotate(8deg)  scale(1.05); }
+  100% { transform: rotate(-8deg) scale(0.95); }
+}
+
+.btn-roll:not(:disabled) .btn-roll-icon {
+  animation: dice-idle-sway 1.8s ease-in-out infinite;
+}
+
+.btn-roll:disabled .btn-roll-icon {
+  animation: none;
+  transform: none;
 }
 
 /* --- Fix 4: 標題「開始新遊戲」3D 立體按壓感 --- */

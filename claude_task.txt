@@ -1,14 +1,27 @@
 請讀取並執行以下開發指令：
 
-請修改 style.css，解決手機發燙問題，進行以下兩項優化：
+請修改 css/style.css，將重骰按鈕的小骰子 icon 動畫從 hover 觸發改為「待機呼吸搖晃」效果：
 
-**1. 簡化 Crystal Border System（最主要元凶）**
-將 .btn-primary::after、.btn-secondary::after、.btn-attack-ready::after、.btn-roll::after 的 animation 全部移除，改為固定靜態邊框樣式（保留 border 顏色即可，不要動畫）：
-- .btn-primary::after 和 .btn-attack-ready::after：border: 1.5px solid rgba(180, 130, 20, 0.7)
-- .btn-secondary::after 和 .btn-roll::after：border: 1px solid rgba(90, 110, 130, 0.5)
-同時將 crystal-gold-pulse 和 crystal-silver-pulse 兩個 @keyframes 定義也一併刪除。
+1. 刪除舊的 hover 動畫規則，找到並刪除這段：
+.btn-roll:not(:disabled):hover .btn-roll-icon {
+  animation: rollJiggle 0.08s linear infinite alternate;
+}
 
-**2. 移除 backdrop-filter（次要元凶）**
-將 #title-screen .btn-primary 和 #title-screen .btn-secondary 的 backdrop-filter 與 -webkit-backdrop-filter 屬性全部刪除。
+2. 在 .btn-roll .btn-roll-icon 的規則下方新增以下內容：
 
-修改完成後請告訴我改了哪些行。
+@keyframes dice-idle-sway {
+  0%   { transform: rotate(-8deg) scale(0.95); }
+  50%  { transform: rotate(8deg)  scale(1.05); }
+  100% { transform: rotate(-8deg) scale(0.95); }
+}
+
+.btn-roll:not(:disabled) .btn-roll-icon {
+  animation: dice-idle-sway 1.8s ease-in-out infinite;
+}
+
+.btn-roll:disabled .btn-roll-icon {
+  animation: none;
+  transform: none;
+}
+
+修改完成後告訴我。
