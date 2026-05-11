@@ -391,8 +391,8 @@ export function renderDice(battle, activeHighlight, player) {
     updateBoardBackground(window.getStageLevel ? window.getStageLevel() : 0, shackleId);
 
     el.diceContainer.innerHTML = battle.dice.map((d, idx) => {
-        let wrapperClass = "w-11 h-11 md:w-16 md:h-16 relative mx-auto my-0.5 cursor-pointer dice-btn transition-transform duration-200";
-        
+        let wrapperClass = "w-12 h-12 md:w-[72px] md:h-[72px] relative mx-auto my-0.5 cursor-pointer dice-btn transition-transform duration-200";
+
         let outerColor = "bg-slate-600";
         let innerColor = "bg-slate-900";
         let innerHover = "hover:bg-slate-800";
@@ -411,25 +411,27 @@ export function renderDice(battle, activeHighlight, player) {
             } else if (battle.state === 'WAIT_ACTION') {
                 if (activeHighlight) {
                     if (d.matchedGroups[activeHighlight]) {
-                        if (activeHighlight === 'A') { innerColor = "bg-blue-600"; outerColor = "bg-blue-300"; extraClass = "scale-110 z-20 drop-shadow-[0_0_10px_rgba(96,165,250,0.8)]"; }
-                        else if (activeHighlight === 'B') { innerColor = "bg-pink-600"; outerColor = "bg-pink-300"; extraClass = "scale-110 z-20 drop-shadow-[0_0_10px_rgba(244,114,182,0.8)]"; }
-                        else if (activeHighlight === 'C') { innerColor = "bg-purple-600"; outerColor = "bg-purple-300"; extraClass = "scale-110 z-20 drop-shadow-[0_0_10px_rgba(192,132,252,0.8)]"; }
-                        else if (activeHighlight === 'D') { innerColor = "bg-teal-600"; outerColor = "bg-teal-300"; extraClass = "scale-110 z-20 drop-shadow-[0_0_10px_rgba(45,212,191,0.8)]"; }
+                        if (activeHighlight === 'A') { innerColor = "bg-blue-600"; outerColor = "bg-blue-300"; extraClass = "scale-110 z-20 dice-glow-A"; }
+                        else if (activeHighlight === 'B') { innerColor = "bg-pink-600"; outerColor = "bg-pink-300"; extraClass = "scale-110 z-20 dice-glow-B"; }
+                        else if (activeHighlight === 'C') { innerColor = "bg-purple-600"; outerColor = "bg-purple-300"; extraClass = "scale-110 z-20 dice-glow-C"; }
+                        else if (activeHighlight === 'D') { innerColor = "bg-teal-600"; outerColor = "bg-teal-300"; extraClass = "scale-110 z-20 dice-glow-D"; }
                         innerHover = "";
                     } else {
                         innerColor = "bg-slate-800"; outerColor = "bg-slate-700"; textColor = "text-slate-600"; extraClass = "opacity-30"; innerHover = "";
                     }
                 } else {
                     if (d.locked) {
-                        innerColor = "bg-emerald-900"; outerColor = "bg-emerald-400"; textColor = "text-emerald-300"; extraClass = "drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]"; innerHover = "";
+                        innerColor = "bg-emerald-900"; outerColor = "bg-emerald-400"; textColor = "text-emerald-300"; extraClass = "dice-glow-locked"; innerHover = "";
                     } else {
                         if (d.matchedGroups['A'] || d.matchedGroups['B'] || d.matchedGroups['C'] || d.matchedGroups['D']) {
-                            innerColor = "bg-blue-900"; outerColor = "bg-blue-400"; textColor = "text-blue-200"; extraClass = "drop-shadow-[0_0_8px_rgba(96,165,250,0.8)]";
+                            innerColor = "bg-blue-900"; outerColor = "bg-blue-400"; textColor = "text-blue-200"; extraClass = "dice-glow-A";
+                        } else {
+                            extraClass = "dice-glow-idle";
                         }
                     }
                 }
             } else if (d.locked) {
-                innerColor = "bg-emerald-900"; outerColor = "bg-emerald-400"; textColor = "text-emerald-300"; extraClass = "drop-shadow-[0_0_8px_rgba(52,211,153,0.5)]"; innerHover = "";
+                innerColor = "bg-emerald-900"; outerColor = "bg-emerald-400"; textColor = "text-emerald-300"; extraClass = "dice-glow-locked"; innerHover = "";
             }
         }
 
@@ -516,7 +518,7 @@ export function renderDice(battle, activeHighlight, player) {
         <div id="dice-element-${idx}" onclick="window.toggleLock(${idx})" class="${wrapperClass} ${extraClass}" ${displayOrderStyle}>
             <div class="absolute inset-0 ${outerColor} ${octagonClip} transition-colors duration-200"></div>
             <div class="absolute inset-[2px] md:inset-[3px] ${innerColor} ${innerHover} ${octagonClip} flex items-center justify-center transition-colors duration-200">
-                <span class="text-2xl md:text-4xl font-black ${textColor}">${valDisplay}</span>
+                <span class="text-2xl md:text-[2.2rem] font-black ${textColor}" style="text-shadow:0 1px 4px rgba(0,0,0,0.7)">${valDisplay}</span>
             </div>
             ${lockIconHtml}
             ${baseBadgeHtml}
@@ -542,11 +544,12 @@ export function renderControls(battle) {
 
     el.controlsContainer.innerHTML = `
     <button onclick="window.executeRoll(false)" ${isRollDisabled ? 'disabled="disabled"' : ''} class="w-full flex-1 bg-violet-700 text-violet-100 font-black rounded-lg md:rounded-xl transition-all flex flex-col items-center justify-center border-b-4 border-violet-900 btn-roll ${rollClass}">
-        <span class="btn-roll-icon text-base md:text-lg mb-0.5">🎲</span>
-        <span class="text-sm md:text-lg leading-tight">${i18n.t('ui.btn_roll')}</span>
+        <span class="btn-roll-icon text-base md:text-xl mb-0.5">🎲</span>
+        <span class="text-xs md:text-base leading-tight">${i18n.t('ui.btn_roll')}</span>
+        <span class="text-[8px] md:text-[10px] opacity-60 mt-0.5 font-semibold">${battle.rollsLeft}/${battle.rollsLeft + (isRollDisabled && battle.rollsLeft === 0 ? 0 : 0)}</span>
     </button>
     <button onclick="window.fireAttack()" ${isScoreDisabled ? 'disabled="disabled"' : ''} class="w-full flex-[1.5] bg-red-700 text-red-100 font-black rounded-lg md:rounded-xl transition-all flex flex-col items-center justify-center border-b-4 border-red-900 ${isScoreDisabled ? '' : 'btn-attack-ready'} ${scoreClass}">
-        <span class="text-lg md:text-2xl mb-0.5">🗡️</span>
+        <span class="text-xl md:text-3xl mb-0.5">🗡️</span>
         <span class="text-xs md:text-base leading-tight">${i18n.t('ui.btn_attack')}</span>
     </button>
     `;
@@ -634,19 +637,19 @@ export function renderScore(battle, activeHighlight) {
 
     <div class="grid grid-cols-4 gap-1 mb-1">
         <div id="zone-box-A" onclick="window.setHighlight('A')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('A', res.tagA)}">
-            <div class="text-[8px] md:text-[10px] font-bold truncate opacity-70 w-full px-1 text-center leading-tight">${isAmnesia ? '???' : getTagLocalName(res.tagA.name)}</div>
+            <div class="text-[7px] md:text-[9px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagA.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagA.multi.toFixed(1)}</div>
         </div>
         <div id="zone-box-B" onclick="window.setHighlight('B')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('B', res.tagB)}">
-            <div class="text-[8px] md:text-[10px] font-bold truncate opacity-70 w-full px-1 text-center leading-tight">${isAmnesia ? '???' : getTagLocalName(res.tagB.name)}</div>
+            <div class="text-[7px] md:text-[9px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagB.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagB.multi.toFixed(1)}</div>
         </div>
         <div id="zone-box-C" onclick="window.setHighlight('C')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('C', res.tagC)}">
-            <div class="text-[8px] md:text-[10px] font-bold truncate opacity-70 w-full px-1 text-center leading-tight">${isAmnesia ? '???' : getTagLocalName(res.tagC.name)}</div>
+            <div class="text-[7px] md:text-[9px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagC.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagC.multi.toFixed(1)}</div>
         </div>
         <div id="zone-box-D" onclick="window.setHighlight('D')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('D', res.tagD)}">
-            <div class="text-[8px] md:text-[10px] font-bold truncate opacity-70 w-full px-1 text-center leading-tight">${isAmnesia ? '???' : getTagLocalName(res.tagD.name)}</div>
+            <div class="text-[7px] md:text-[9px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagD.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagD.multi.toFixed(1)}</div>
         </div>
     </div>
@@ -1717,6 +1720,15 @@ export function initResponsiveScaling() {
 }
 
 initResponsiveScaling();
+
+// 遺物欄：桌機用滑鼠滾輪橫向捲動
+if (el.inventoryGrid) {
+    el.inventoryGrid.addEventListener('wheel', (e) => {
+        if (Math.abs(e.deltaX) > Math.abs(e.deltaY)) return; // 已有橫向滾動時跳過
+        e.preventDefault();
+        el.inventoryGrid.scrollLeft += e.deltaY * 0.8;
+    }, { passive: false });
+}
 
 let settingsTapCount = 0;
 let settingsTapTimer = null;
