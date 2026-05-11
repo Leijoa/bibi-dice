@@ -138,8 +138,8 @@ body {
 
 /* 首頁按鈕：紫水晶玻璃擬態 (Crystal Glassmorphism) */
 #title-screen .btn-primary {
-  background: rgba(122, 59, 245, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(80, 40, 120, 0.85);
+  border: 2px solid rgba(180, 130, 255, 0.9);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
   color: #eee4ff;
@@ -152,8 +152,8 @@ body {
 }
 
 #title-screen .btn-secondary {
-  background: rgba(40, 40, 45, 0.45);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(30, 30, 50, 0.85);
+  border: 2px solid rgba(120, 100, 180, 0.8);
   transition: all 0.3s ease;
   color: #b5a8c8;
 }
@@ -714,7 +714,7 @@ header {
 
 /* --- Fix 4: 標題「開始新遊戲」3D 立體按壓感 --- */
 #title-screen .btn-primary {
-  border-bottom: 3px solid rgba(60, 0, 160, 0.6) !important;
+  border-bottom: 4px solid rgba(180, 130, 255, 0.9) !important;
 }
 #title-screen .btn-primary:active {
   transform: translateY(3px) !important;
@@ -728,6 +728,13 @@ header {
 }
 #title-screen .btn-secondary:hover {
   border-left-color: rgba(167, 139, 250, 0.7) !important;
+}
+
+/* --- Fix 6-pre: 語系選單邊框與背景 --- */
+#lang-select,
+#title-screen select {
+  border: 2px solid rgba(150, 100, 255, 0.8) !important;
+  background: rgba(30, 25, 60, 0.9) !important;
 }
 
 /* --- Fix 6: Modal 關閉按鈕圓形 hover --- */

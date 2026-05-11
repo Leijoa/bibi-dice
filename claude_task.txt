@@ -1,26 +1,21 @@
 請讀取並執行以下開發指令：
 
-請修改 index.html，調整首頁語系選單的位置與樣式：
+請修改 css/style.css，加強首頁按鈕的視覺存在感：
 
-**1. 移除底部的語系選單區塊**
-找到第 74 行開始的這個 div（包含 lang-select 和版本資訊）：
-<div class="absolute bottom-4 flex flex-col items-center gap-2 intro-sub-ui">
+**1. 主要按鈕（.btn-primary）背景與邊框**
+找到 .btn-primary 的樣式，進行以下調整：
+- background：從現有的半透明色改為更不透明，例如 rgba(80, 40, 120, 0.85) 或類似深紫色
+- border：加粗為 2px，顏色改為 rgba(180, 130, 255, 0.9)（更亮的紫金色）
+- border-bottom：加粗為 4px，顏色同上或更深
 
-將其中的語系 select（id="lang-select"）獨立抽出，底部區塊只保留版本資訊。
+**2. 次要按鈕（.btn-secondary）背景與邊框**
+找到 .btn-secondary 的樣式：
+- background：改為 rgba(30, 30, 50, 0.85) 左右的深色半透明
+- border：加粗為 2px，顏色改為 rgba(120, 100, 180, 0.8)
 
-**2. 將語系選單移到按鈕群內，歷史牌局/設定那排的下方（第 70 行後）**
-在 </div>（第 71 行，按鈕群結尾）之前，新增語系選單：
+**3. 語系選單（#lang-select 或 #title-screen select）**
+- border 加粗為 2px，顏色改為 rgba(150, 100, 255, 0.8)
+- background 改為 rgba(30, 25, 60, 0.9)
 
-<div class="flex justify-center intro-sub-ui">
-  <select id="lang-select" class="bg-slate-800 text-slate-200 border border-violet-500/50 rounded-lg px-4 py-2 font-bold text-sm focus:outline-none focus:ring-2 focus:ring-violet-500 cursor-pointer">
-    <option value="zh-tw">繁體中文</option>
-    <option value="zh-cn">简体中文</option>
-    <option value="en">English</option>
-    <option value="ja">日本語</option>
-  </select>
-</div>
-
-**3. 版本資訊保留在底部，但字色稍微調亮一點**
-將版本資訊的 text-slate-700 改為 text-slate-500。
-
-完成後告訴我修改了哪些行。
+目標效果：按鈕在深色背景圖上清晰可辨，有明顯框線，背景不完全透明但仍保有質感。
+完成後告訴我修改了哪些 class 和屬性。
