@@ -307,13 +307,15 @@ header {
 
 #final-score-value.score-hot {
     color: #fbbf24;
+    fill: #fbbf24;
     text-shadow: 0 0 28px rgba(251, 191, 36, 0.65), 0 0 8px rgba(251, 191, 36, 0.4);
-    transition: color 0.3s, text-shadow 0.3s;
+    transition: color 0.3s, fill 0.3s, text-shadow 0.3s;
 }
 #final-score-value.score-normal {
     color: #ffffff;
+    fill: #ffffff;
     text-shadow: none;
-    transition: color 0.3s, text-shadow 0.3s;
+    transition: color 0.3s, fill 0.3s, text-shadow 0.3s;
 }
 
 /* Modal panels */
@@ -893,9 +895,11 @@ button[id^="btn-close"]:hover {
 
 /* Fix 6: 傷害數字 glow 加強 */
 #final-score-value {
+  fill: #ffffff;
   text-shadow: 0 2px 12px rgba(0,0,0,0.6);
 }
 #final-score-value.score-hot {
+  fill: #fbbf24;
   text-shadow:
     0 0 24px rgba(251,191,36,0.9),
     0 0 50px rgba(251,191,36,0.45),
