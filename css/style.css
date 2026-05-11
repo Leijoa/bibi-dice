@@ -829,7 +829,7 @@ button[id^="btn-close"]:hover {
 /* ===== UI Fixes & Visual Upgrade ===== */
 
 /* Fix 1: 水平捲軸 — 鎖住各區塊橫向溢出 */
-#battle-area, #score-area, #main-container, #board-panel {
+#battle-area, #score-area, #main-container {
   overflow-x: hidden;
 }
 
@@ -915,4 +915,30 @@ button[id^="btn-close"]:hover {
   background: radial-gradient(ellipse at center, rgba(40,20,70,0.4) 0%, rgba(10,10,15,0.2) 100%);
   border-radius: 8px;
   padding: 6px 4px;
+}
+
+/* ===== Board Panel 石板紋理系統 ===== */
+#board-panel {
+  overflow-x: hidden;
+  position: relative;
+  background-image: url('../img/board_stone_blue.webp'); /* 預設；JS 動態切換 */
+  background-size: cover;
+  background-position: center;
+}
+
+/* 半透明遮罩層，讓紋理不搶骰子視覺焦點 */
+#board-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: rgba(12, 8, 32, 0.70);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 確保板面所有子元素顯示在遮罩上方 */
+#board-panel > * {
+  position: relative;
+  z-index: 1;
 }

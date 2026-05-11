@@ -853,9 +853,24 @@ function assignShackleForStage(levelIndex) {
     return { id: null, meta: null };
 }
 
+function setBoardTexture(levelIndex) {
+    const board = document.getElementById('board-panel');
+    if (!board) return;
+    const map = {
+        0: 'board_stone_blue',  1: 'board_stone_blue',
+        2: 'board_brick_brown', 3: 'board_brick_brown',
+        4: 'board_rock',        5: 'board_rock',
+        6: 'board_asphalt',     7: 'board_asphalt',
+        8: 'board_blue_brick',  9: 'board_blue_brick',
+    };
+    const name = map[levelIndex] ?? 'board_lava';
+    board.style.backgroundImage = `url('img/${name}.webp')`;
+}
+
 function loadStage(levelIndex, isLoad = false, parsedData = null) {
     if (levelIndex >= ENEMY_DB.length && !player.isInfiniteMode) return gameWin();
     stage.level = levelIndex;
+    setBoardTexture(levelIndex);
     let enemy = getEnemyWithMeta(levelIndex);
     stage.enemyMaxHp = enemy.hp;
             stage.enemyName = enemy.name;
