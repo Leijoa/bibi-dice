@@ -709,14 +709,14 @@ export function refreshDamageDisplay(battle, activeHighlight) {
 // --- 遺物逐步結算演出 ---
 function countUpTo(targetEl, targetValue, duration, onDone) {
     if (!targetEl) { if (onDone) onDone(); return; }
-    const startValue = parseInt(targetEl.innerText.replace(/[^0-9]/g, '')) || 0;
+    const startValue = parseInt(targetEl.textContent.replace(/[^0-9]/g, '')) || 0;
     const diff = targetValue - startValue;
     const startTime = performance.now();
     const animate = (now) => {
         const progress = Math.min((now - startTime) / duration, 1);
-        targetEl.innerText = Math.floor(startValue + diff * progress).toLocaleString();
+        targetEl.textContent = Math.floor(startValue + diff * progress).toLocaleString();
         if (progress < 1) requestAnimationFrame(animate);
-        else { targetEl.innerText = targetValue.toLocaleString(); if (onDone) onDone(); }
+        else { targetEl.textContent = targetValue.toLocaleString(); if (onDone) onDone(); }
     };
     requestAnimationFrame(animate);
 }
