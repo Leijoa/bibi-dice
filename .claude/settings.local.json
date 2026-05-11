@@ -40,7 +40,14 @@
       "Bash(grep -n \"^\\\\s*[a-z_-]*: {$\\\\|^  [a-z_-]*: {\" d:/unity/BIBBIDIBA/js/locales/en.js)",
       "Bash(grep -n \"^\\\\s*[a-z_-]*: {$\\\\|^  [a-z_-]*: {\" d:/unity/BIBBIDIBA/js/locales/zh-cn.js)",
       "Bash(git merge *)",
-      "Bash(git rm *)"
+      "Bash(git rm *)",
+      "PowerShell(git -C \"d:\\\\unity\\\\BIBBIDIBA\" diff --stat HEAD)",
+      "PowerShell(git -C \"d:\\\\unity\\\\BIBBIDIBA\" add CHANGELOG.md css/style.css)",
+      "PowerShell(git -C \"d:\\\\unity\\\\BIBBIDIBA\" commit -m $msg)",
+      "PowerShell(git -C \"d:\\\\unity\\\\BIBBIDIBA\" push origin main)",
+      "PowerShell(git -C \"d:\\\\unity\\\\BIBBIDIBA\" add index.html css/style.css CHANGELOG.md)",
+      "PowerShell(git -C \"d:\\\\unity\\\\BIBBIDIBA\" add index.html CHANGELOG.md)",
+      "Bash(node -e \"import\\('./js/data.js'\\).then\\(m => { const db = m.RULE_DB; console.log\\('groupA:', db.groupA.length, 'groupB:', db.groupB.length, 'groupC:', db.groupC.length, 'groupD:', db.groupD.length\\); }\\)\")"
     ]
   }
 }
