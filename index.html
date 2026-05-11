@@ -80,7 +80,7 @@
           <option value="ja">日本語</option>
         </select>
       </div>
-      <div class="flex flex-col items-center text-slate-700 text-[10px] font-bold">
+      <div class="flex flex-col items-center text-slate-700 text-xs font-bold">
         <div data-i18n="ui.version">[2.0版]</div>
         <div class="mt-0.5"><span data-i18n="ui.author_info">作者:雷爪獅 | Youtube:雷爪獅遊戲頻道 | threads:@leijoalan</span></div>
       </div>
@@ -94,7 +94,7 @@
     <div class="flex items-end gap-2">
       <div>
         <h1 class="game-logo text-lg md:text-2xl font-black text-violet-300 flex items-center gap-1 tracking-tight">BIBBIDIBA</h1>
-        <div class="text-[10px] md:text-sm text-slate-400 font-bold" id="stage-info" data-i18n="ui.stage" data-i18n-args="1-1">關卡 1-1</div>
+        <div class="text-xs md:text-sm text-slate-400 font-bold" id="stage-info" data-i18n="ui.stage" data-i18n-args="1-1">關卡 1-1</div>
       </div>
     </div>
     <div class="flex gap-2.5 md:gap-4 text-right items-center">
@@ -102,7 +102,7 @@
       <button id="btn-back-to-title" class="btn-secondary text-xs py-1.5 px-2.5 rounded-lg flex items-center" data-i18n="ui.btn_back_to_title">🏠 回標題</button>
       <button id="btn-rules"></button>
       <div>
-        <div class="text-[9px] md:text-xs text-slate-400 uppercase leading-none font-bold" data-i18n="ui.hp">HP</div>
+        <div class="text-xs md:text-xs text-slate-400 uppercase leading-none font-bold" data-i18n="ui.hp">HP</div>
         <div class="font-black text-red-400 text-sm md:text-base leading-none mt-0.5" id="player-hp">3/3</div>
       </div>
     </div>
@@ -125,25 +125,28 @@
       <div class="card-enemy bg-slate-800/90 p-1.5 md:p-3 rounded-lg border border-slate-700/60 shrink-0 relative shadow-md">
         <div class="flex justify-between items-center mb-1">
           <h2 class="text-sm md:text-lg font-bold text-red-300 flex items-center gap-1" id="enemy-name">⚔️ 史萊姆</h2>
-          <span class="text-[9px] md:text-xs bg-slate-700 px-1.5 py-0.5 rounded text-slate-300 font-bold" id="turns-left" data-i18n="ui.turns_left" data-i18n-args="3">剩餘 3 回合</span>
+          <span class="text-sm md:text-sm bg-slate-700 px-1.5 py-0.5 rounded text-slate-300 font-bold" id="turns-left" data-i18n="ui.turns_left" data-i18n-args="3">剩餘 3 回合</span>
         </div>
         <div class="w-full bg-slate-900 rounded-full h-4 md:h-6 relative border border-slate-700 overflow-hidden">
           <div id="enemy-hp-bar" class="bg-gradient-to-r from-red-700 to-red-500 h-full rounded-full transition-all duration-300" style="width: 100%"></div>
           <div id="damage-preview-bar" class="damage-preview-bar absolute h-full hidden"></div>
-          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[9px] md:text-xs font-black" id="enemy-hp-text">1000/1000</div>
+          <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-sm md:text-sm font-black" id="enemy-hp-text">1000/1000</div>
         </div>
         <div id="damage-container" class="absolute inset-0 pointer-events-none flex items-center justify-center z-10 overflow-visible"></div>
       </div>
 
       <div id="final-damage-preview" class="rounded-lg shrink-0 relative overflow-hidden">
-          <div class="text-[10px] md:text-xs font-bold tracking-[0.18em] uppercase text-slate-400 leading-none mb-1.5" data-i18n="ui.damage_preview">DAMAGE</div>
+          <div class="text-xs md:text-xs font-bold tracking-[0.18em] uppercase text-slate-400 leading-none mb-1.5" data-i18n="ui.damage_preview">DAMAGE</div>
           <div class="text-5xl md:text-7xl font-black text-white leading-none" id="final-score-value">0</div>
       </div>
 
       <div id="board-panel" class="card-board bg-slate-800/90 p-1.5 md:p-3 rounded-lg border border-slate-700/60 shrink-0 shadow-md flex flex-col relative flex-grow lg:flex-grow-0">
         <div class="flex justify-between items-center mb-1 px-1">
           <h2 class="text-sm md:text-lg font-bold text-slate-200" data-i18n="ui.board">盤面</h2>
-          <span id="rolls-left-badge" class="bg-slate-800 px-1.5 py-0.5 rounded text-[9px] md:text-xs font-bold text-violet-300" data-i18n="ui.rolls_left" data-i18n-args="2">剩餘重骰：2</span>
+          <div class="flex items-center gap-1.5">
+            <span id="rolls-left-badge" class="bg-slate-800 px-2 py-0.5 rounded text-sm font-bold text-violet-300" data-i18n="ui.rolls_left" data-i18n-args="2">剩餘重骰：2</span>
+            <span class="text-sm text-slate-500 font-bold" data-i18n="ui.lock_hint">點擊骰子可鎖定</span>
+          </div>
         </div>
         <div class="flex flex-row gap-1 items-stretch justify-between h-full">
           <div id="dice-container" class="grid grid-cols-4 gap-x-1 gap-y-1 flex-grow px-1 py-1 items-center justify-items-center"></div>
@@ -158,7 +161,7 @@
       <div id="score-display"></div>
       
       <div id="owned-relics-area" class="mt-1 border-t border-slate-700 pt-1 flex-grow overflow-hidden">
-          <div class="text-[9px] text-slate-500 font-bold mb-1 px-1" data-i18n="ui.owned_relics">🎒 已持有遺物</div>
+          <div class="text-sm text-slate-500 font-bold mb-1 px-1" data-i18n="ui.owned_relics">🎒 已持有遺物</div>
           <div id="inventory-grid" class="flex flex-wrap gap-1"></div>
       </div>
     </div>

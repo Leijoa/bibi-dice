@@ -1,14 +1,32 @@
 請讀取並執行以下開發指令：
 
-請針對以下三個效能問題進行優化，請先閱讀相關檔案再修改：
+請進行以下兩項修改：
 
-1. **Nested Loop in Inventory Rendering**
-找出遺物清單（inventory）渲染函式中的巢狀迴圈，改用 Map 或預先建立查找表（lookup table）來取代內層迴圈，降低時間複雜度。
+**1. 合併「剩餘重骰」和「點擊骰子可以鎖定」提示**
 
-2. **Nested Loop in Shop Rendering**
-找出商店（shop）渲染函式中的巢狀迴圈，同樣改用 Map 或查找表取代，避免每次渲染都重複遍歷。
+先搜尋「點擊骰子可以鎖定」（或對應 i18n key）的文字在哪個檔案產生（可能在 ui.js 或 i18n.js），找到後：
+- 將這段提示文字移除原本的位置
+- 改為附加在 index.html 第 146 行的 rolls-left-badge 旁邊，格式如下：
 
-3. **Unnecessary DOM Query in Loop**
-找出所有在迴圈內重複呼叫 document.getElementById、document.querySelector 或 document.querySelectorAll 的地方，將 DOM 查詢移到迴圈外部，用變數快取結果。
+將第 146 行改為：
+<div class="flex items-center gap-1.5">
+  <span id="rolls-left-badge" class="bg-slate-800 px-2 py-0.5 rounded text-xs font-bold text-violet-300" data-i18n="ui.rolls_left" data-i18n-args="2">剩餘重骰：2</span>
+  <span class="text-[10px] text-slate-500 font-bold" data-i18n="ui.lock_hint">點擊骰子可鎖定</span>
+</div>
 
-請逐一說明每個問題在哪個檔案哪個函式、原本的寫法是什麼、改成什麼，修改完後做一次摘要報告。
+若 i18n 沒有 lock_hint key，請在各語言檔新增：
+- zh-tw: "點擊骰子可鎖定"
+- zh-cn: "点击骰子可锁定"
+- en: "Tap dice to lock"
+- ja: "サイコロをタップしてロック"
+
+**2. 整體字體放大**
+
+修改 index.html，將以下 class 全域替換：
+- text-[9px] → text-xs（12px）
+- text-[10px] → text-xs（12px）
+- text-xs 出現在遊戲核心 UI（board-panel、score-area、enemy 區域）的地方 → text-sm（14px）
+
+注意：shop-overlay、modal、history、collection 等彈出層的字體不用動，只調整主遊戲畫面的文字。
+
+完成後告訴我修改了哪些檔案與行數。
