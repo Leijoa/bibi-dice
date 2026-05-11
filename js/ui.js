@@ -207,7 +207,10 @@ export function updateEnemyUI(stage) {
     // new logic using activeShackle
     const activeShackleId = window.getStageActiveShackle && window.getStageActiveShackle();
     if (activeShackleId) {
-        shackleHtml += `<span onclick="window.showShackleInfo('${activeShackleId}')" class="ml-2 bg-red-900/80 hover:bg-red-800 text-[10px] md:text-xs text-red-300 px-1.5 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0">⛓️ ${i18n.t('ui.tab_shackles') || '當前枷鎖'}</span>`;
+        const _shackleDef = SHACKLE_DB.find(s => s.id === activeShackleId);
+        const _shackleName = _shackleDef ? (i18n.t(`shackles.${activeShackleId}.name`) || _shackleDef.name) : '';
+        const _shackleLabel = _shackleName.replace(/[【】\[\]]/g, '').trim();
+        shackleHtml += `<span onclick="window.showShackleInfo('${activeShackleId}')" class="ml-1.5 bg-red-900/80 hover:bg-red-800 text-[9px] md:text-[10px] text-red-300 px-1 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0 max-w-[72px] md:max-w-none truncate" title="${_shackleLabel}">⛓️ ${_shackleLabel}</span>`;
     }
 
     let localizedEnemyName = enemy.name;
@@ -239,7 +242,7 @@ export function updateEnemyUI(stage) {
         if (_stripped) shackleTitleHtml = `<span class="shackle-title-badge">${_stripped}</span>`;
     }
 
-    el.enemyName.innerHTML = `⚔️ <span class="stage-layer-badge">${layerBadgeText}</span>${shackleTitleHtml}<span class="enemy-name-text">${localizedEnemyName}</span>${shackleHtml}`;
+    el.enemyName.innerHTML = `⚔️ <span class="stage-layer-badge">${layerBadgeText}</span><span class="enemy-name-text">${localizedEnemyName}</span>${shackleHtml}`;
 
     el.enemyName.className = "text-xl font-bold flex-1 flex items-center min-w-0";
     if (stage.level >= ENEMY_DB.length) {
