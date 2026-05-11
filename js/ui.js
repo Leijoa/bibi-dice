@@ -306,14 +306,16 @@ export function renderInventory(player, battle) {
         el.inventoryGrid.innerHTML = `<div class="text-[10px] text-slate-500 font-bold p-1">${i18n.t("ui.empty_inventory")}</div>`;
         return;
     }
-    let sortedRelics = [...player.relics].sort((a,b) => {
-        let defA = RELIC_DB.find(x=>x.id===a) || CONSUMABLES_DB.find(x=>x.id===a);
-        let defB = RELIC_DB.find(x=>x.id===b) || CONSUMABLES_DB.find(x=>x.id===b);
-        let rarityA = defA ? defA.rarity : 1;
-        let rarityB = defB ? defB.rarity : 1;
+    const itemMap = new Map([
+        ...RELIC_DB.map(x => [x.id, x]),
+        ...CONSUMABLES_DB.map(x => [x.id, x])
+    ]);
+    let sortedRelics = [...player.relics].sort((a, b) => {
+        const rarityA = (itemMap.get(a) || {rarity: 1}).rarity;
+        const rarityB = (itemMap.get(b) || {rarity: 1}).rarity;
         return rarityB - rarityA;
     });
-    
+
     let isNoise = window.getStageActiveShackle && window.getStageActiveShackle() === 'noise';
 
     let playerRelicSet = (player && player.relics) ? new Set(player.relics) : null;
@@ -326,7 +328,7 @@ export function renderInventory(player, battle) {
             </div>`;
         }
 
-        let r = RELIC_DB.find(x => x.id === id) || CONSUMABLES_DB.find(x => x.id === id);
+        let r = itemMap.get(id);
         let style = RARITY[r.rarity];
         let isFusionMaterial = false;
         let fusionResultId = null;
@@ -748,31 +750,44 @@ function playDiceSumFly(baseValue, onDone) {
 }
 
 export function playDamageStepsAnimation(steps, callback) {
-    // Sync mythic-suppressed visuals on relic cards
+    // Sync mythic-suppressed visuals on relic cards (single pass)
     if (el.inventoryGrid) {
+        const _asid = window.getStageActiveShackle && window.getStageActiveShackle();
+        const _asd = _asid ? SHACKLE_DB.find(s => s.id === _asid) : null;
+        const suppressMythic = !!(_asd && _asd.suppressMythic);
         el.inventoryGrid.querySelectorAll('[data-relic-id]').forEach(relEl => {
             relEl.classList.remove('mythic-suppressed');
             const oldIcon = relEl.querySelector('.mythic-suppress-icon');
             if (oldIcon) oldIcon.remove();
-        });
-        const _asid = window.getStageActiveShackle && window.getStageActiveShackle();
-        if (_asid) {
-            const _asd = SHACKLE_DB.find(s => s.id === _asid);
-            if (_asd && _asd.suppressMythic) {
-                el.inventoryGrid.querySelectorAll('[data-relic-id]').forEach(relEl => {
-                    if ((relEl.dataset.relicId || '').startsWith('fusion_')) {
-                        relEl.classList.add('mythic-suppressed');
-                        const icon = document.createElement('span');
-                        icon.className = 'mythic-suppress-icon';
-                        icon.textContent = '🚫';
-                        relEl.appendChild(icon);
-                    }
-                });
+            if (suppressMythic && (relEl.dataset.relicId || '').startsWith('fusion_')) {
+                relEl.classList.add('mythic-suppressed');
+                const icon = document.createElement('span');
+                icon.className = 'mythic-suppress-icon';
+                icon.textContent = '🚫';
+                relEl.appendChild(icon);
             }
-        }
+        });
     }
 
     if (!steps || steps.length === 0 || !el.finalScoreValue) { callback(); return; }
+
+    // Pre-cache DOM elements to avoid repeated getElementById/querySelector inside animation loop
+    const zoneElCache = {};
+    const noteElCache = {};
+    const relicElCache = {};
+    steps.forEach(step => {
+        if (step.zone && !(step.zone in zoneElCache)) {
+            zoneElCache[step.zone] = document.getElementById('zone-box-' + step.zone);
+        }
+        if (step.noteIndex !== undefined && step.noteIndex !== null && !(step.noteIndex in noteElCache)) {
+            noteElCache[step.noteIndex] = document.getElementById(`note-${step.noteIndex}`);
+        }
+        if (step.relicId && !(step.relicId in relicElCache)) {
+            relicElCache[step.relicId] = el.inventoryGrid
+                ? el.inventoryGrid.querySelector(`[data-relic-id="${step.relicId}"]`)
+                : null;
+        }
+    });
 
     let currentDelay = 400;
     let i = 0;
@@ -806,7 +821,7 @@ export function playDamageStepsAnimation(steps, callback) {
         }
 
         if (step.zone) {
-            const zoneEl = document.getElementById('zone-box-' + step.zone);
+            const zoneEl = zoneElCache[step.zone] || null;
             if (zoneEl) zoneEl.classList.add('zone-active');
             countUpTo(el.finalScoreValue, step.damageAfter, animDuration, () => {
                 el.finalScoreValue.classList.remove('zone-multiply');
@@ -821,14 +836,12 @@ export function playDamageStepsAnimation(steps, callback) {
             return;
         }
 
-        const relicEl = el.inventoryGrid
-            ? el.inventoryGrid.querySelector(`[data-relic-id="${step.relicId}"]`)
-            : null;
+        const relicEl = relicElCache[step.relicId] || null;
         if (relicEl) relicEl.classList.add('relic-active');
 
         let noteEl = null;
         if (step.noteIndex !== undefined && step.noteIndex !== null) {
-            noteEl = document.getElementById(`note-${step.noteIndex}`);
+            noteEl = noteElCache[step.noteIndex] || null;
             if (noteEl) {
                 noteEl.classList.add('multiplier-pop');
                 noteEl.style.animationDuration = `${currentDelay}ms`;
@@ -925,8 +938,9 @@ export function showFusionReplaceModal(currentFusions, newFusionId, callback) {
     let html = '';
     const allRelics = [...currentFusions, newFusionId];
 
+    const relicMap = new Map(RELIC_DB.map(r => [r.id, r]));
     allRelics.forEach((id, index) => {
-        let relic = RELIC_DB.find(r => r.id === id);
+        let relic = relicMap.get(id);
         if (!relic) return;
 
         let style = RARITY[relic.rarity] || RARITY[1];
@@ -937,8 +951,8 @@ export function showFusionReplaceModal(currentFusions, newFusionId, callback) {
 
         let materialsHtml = '';
         if (FUSION_RECIPES[id]) {
-            let mat1 = RELIC_DB.find(x => x.id === FUSION_RECIPES[id].mat1);
-            let mat2 = RELIC_DB.find(x => x.id === FUSION_RECIPES[id].mat2);
+            let mat1 = relicMap.get(FUSION_RECIPES[id].mat1);
+            let mat2 = relicMap.get(FUSION_RECIPES[id].mat2);
             // 取得素材的翻譯名稱
             let mat1Name = mat1 ? (i18n.t(`relics.${mat1.id}.name`) || mat1.name) : FUSION_RECIPES[id].mat1;
             let mat2Name = mat2 ? (i18n.t(`relics.${mat2.id}.name`) || mat2.name) : FUSION_RECIPES[id].mat2;

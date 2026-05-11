@@ -1,27 +1,14 @@
 請讀取並執行以下開發指令：
 
-請修改 css/style.css，將重骰按鈕的小骰子 icon 動畫從 hover 觸發改為「待機呼吸搖晃」效果：
+請針對以下三個效能問題進行優化，請先閱讀相關檔案再修改：
 
-1. 刪除舊的 hover 動畫規則，找到並刪除這段：
-.btn-roll:not(:disabled):hover .btn-roll-icon {
-  animation: rollJiggle 0.08s linear infinite alternate;
-}
+1. **Nested Loop in Inventory Rendering**
+找出遺物清單（inventory）渲染函式中的巢狀迴圈，改用 Map 或預先建立查找表（lookup table）來取代內層迴圈，降低時間複雜度。
 
-2. 在 .btn-roll .btn-roll-icon 的規則下方新增以下內容：
+2. **Nested Loop in Shop Rendering**
+找出商店（shop）渲染函式中的巢狀迴圈，同樣改用 Map 或查找表取代，避免每次渲染都重複遍歷。
 
-@keyframes dice-idle-sway {
-  0%   { transform: rotate(-8deg) scale(0.95); }
-  50%  { transform: rotate(8deg)  scale(1.05); }
-  100% { transform: rotate(-8deg) scale(0.95); }
-}
+3. **Unnecessary DOM Query in Loop**
+找出所有在迴圈內重複呼叫 document.getElementById、document.querySelector 或 document.querySelectorAll 的地方，將 DOM 查詢移到迴圈外部，用變數快取結果。
 
-.btn-roll:not(:disabled) .btn-roll-icon {
-  animation: dice-idle-sway 1.8s ease-in-out infinite;
-}
-
-.btn-roll:disabled .btn-roll-icon {
-  animation: none;
-  transform: none;
-}
-
-修改完成後告訴我。
+請逐一說明每個問題在哪個檔案哪個函式、原本的寫法是什麼、改成什麼，修改完後做一次摘要報告。
