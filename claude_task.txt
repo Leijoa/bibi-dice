@@ -1,1 +1,14 @@
-我成功將遊戲上架到 itch了 存成草稿模式測試中
+請讀取並執行以下開發指令：
+
+請修改 style.css，解決手機發燙問題，進行以下兩項優化：
+
+**1. 簡化 Crystal Border System（最主要元凶）**
+將 .btn-primary::after、.btn-secondary::after、.btn-attack-ready::after、.btn-roll::after 的 animation 全部移除，改為固定靜態邊框樣式（保留 border 顏色即可，不要動畫）：
+- .btn-primary::after 和 .btn-attack-ready::after：border: 1.5px solid rgba(180, 130, 20, 0.7)
+- .btn-secondary::after 和 .btn-roll::after：border: 1px solid rgba(90, 110, 130, 0.5)
+同時將 crystal-gold-pulse 和 crystal-silver-pulse 兩個 @keyframes 定義也一併刪除。
+
+**2. 移除 backdrop-filter（次要元凶）**
+將 #title-screen .btn-primary 和 #title-screen .btn-secondary 的 backdrop-filter 與 -webkit-backdrop-filter 屬性全部刪除。
+
+修改完成後請告訴我改了哪些行。

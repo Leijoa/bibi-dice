@@ -139,8 +139,6 @@ body {
 /* 首頁按鈕：紫水晶玻璃擬態 (Crystal Glassmorphism) */
 #title-screen .btn-primary {
   background: rgba(122, 59, 245, 0.25);
-  backdrop-filter: blur(15px) saturate(200%);
-  -webkit-backdrop-filter: blur(15px) saturate(200%);
   border: 1px solid rgba(255, 255, 255, 0.15);
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
   transition: all 0.3s ease;
@@ -155,8 +153,6 @@ body {
 
 #title-screen .btn-secondary {
   background: rgba(40, 40, 45, 0.45);
-  backdrop-filter: blur(12px) saturate(150%);
-  -webkit-backdrop-filter: blur(12px) saturate(150%);
   border: 1px solid rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
   color: #b5a8c8;
@@ -740,48 +736,15 @@ button[id^="btn-close"]:hover {
 
 /* ===== Crystal Border System ===== */
 
-/* 金色水晶：邊框線在暗金與亮白金之間閃爍，模擬折射光 */
-@keyframes crystal-gold-pulse {
-  0%, 100% {
-    border-color: rgba(160, 110, 8, 0.75);
-    box-shadow: 0 0 5px rgba(255, 215, 0, 0.25), 0 0 14px rgba(255, 215, 0, 0.1);
-  }
-  45% {
-    border-color: rgba(255, 225, 60, 0.95);
-    box-shadow: 0 0 9px rgba(255, 215, 0, 0.55), 0 0 22px rgba(255, 215, 0, 0.25);
-  }
-  50% {
-    border-color: rgba(255, 252, 210, 1);
-    box-shadow: 0 0 14px rgba(255, 240, 120, 0.85), 0 0 30px rgba(255, 215, 0, 0.35);
-  }
-  55% {
-    border-color: rgba(255, 225, 60, 0.95);
-    box-shadow: 0 0 9px rgba(255, 215, 0, 0.55), 0 0 22px rgba(255, 215, 0, 0.25);
-  }
-}
-
-/* 銀色水晶：冷冽的鋼鐵銀閃光 */
-@keyframes crystal-silver-pulse {
-  0%, 100% {
-    border-color: rgba(70, 90, 110, 0.6);
-    box-shadow: 0 0 4px rgba(180, 205, 225, 0.15), 0 0 10px rgba(180, 205, 225, 0.06);
-  }
-  50% {
-    border-color: rgba(205, 220, 238, 0.9);
-    box-shadow: 0 0 9px rgba(200, 220, 242, 0.5), 0 0 22px rgba(180, 205, 225, 0.2);
-  }
-}
-
 /* 金色邊框：主要按鈕 */
 .btn-primary::after {
   content: '';
   position: absolute;
   inset: -1.5px;
   border-radius: inherit;
-  border: 1.5px solid rgba(160, 110, 8, 0.8);
+  border: 1.5px solid rgba(180, 130, 20, 0.7);
   pointer-events: none;
   z-index: 2;
-  animation: crystal-gold-pulse 3.5s ease-in-out infinite;
 }
 
 /* 銀色邊框：次要按鈕 */
@@ -790,10 +753,9 @@ button[id^="btn-close"]:hover {
   position: absolute;
   inset: -1.5px;
   border-radius: inherit;
-  border: 1px solid rgba(70, 90, 110, 0.65);
+  border: 1px solid rgba(90, 110, 130, 0.5);
   pointer-events: none;
   z-index: 2;
-  animation: crystal-silver-pulse 5s ease-in-out infinite;
 }
 
 /* 攻擊按鈕：金色水晶邊框 */
@@ -805,10 +767,9 @@ button[id^="btn-close"]:hover {
   position: absolute;
   inset: -1.5px;
   border-radius: inherit;
-  border: 1.5px solid rgba(160, 110, 8, 0.8);
+  border: 1.5px solid rgba(180, 130, 20, 0.7);
   pointer-events: none;
   z-index: 2;
-  animation: crystal-gold-pulse 3.5s ease-in-out infinite;
 }
 
 /* 重骰按鈕：銀色水晶邊框 */
@@ -817,8 +778,7 @@ button[id^="btn-close"]:hover {
   position: absolute;
   inset: -1.5px;
   border-radius: inherit;
-  border: 1px solid rgba(70, 90, 110, 0.65);
+  border: 1px solid rgba(90, 110, 130, 0.5);
   pointer-events: none;
   z-index: 2;
-  animation: crystal-silver-pulse 5s ease-in-out infinite;
 }
