@@ -1,21 +1,19 @@
 請讀取並執行以下開發指令：
 
-請修改 css/style.css，加強首頁按鈕的視覺存在感：
+請先讀取 css/style.css，找出攻擊按鈕（.btn-attack-ready）和重骰按鈕（.btn-roll）的完整樣式定義，然後參考剛才修改過的 .btn-primary 和 .btn-secondary 的背景不透明度與邊框粗細風格，對攻擊與重骰按鈕做相同方向的調整：
 
-**1. 主要按鈕（.btn-primary）背景與邊框**
-找到 .btn-primary 的樣式，進行以下調整：
-- background：從現有的半透明色改為更不透明，例如 rgba(80, 40, 120, 0.85) 或類似深紫色
-- border：加粗為 2px，顏色改為 rgba(180, 130, 255, 0.9)（更亮的紫金色）
-- border-bottom：加粗為 4px，顏色同上或更深
+1. **攻擊按鈕（.btn-attack-ready 及一般攻擊狀態）**
+   - 背景改為更不透明的深色（參考 btn-primary 風格，偏暖紅/金色系）
+   - border 加粗為 2px，顏色更明顯
+   - border-bottom 加粗為 4px 保持立體感
 
-**2. 次要按鈕（.btn-secondary）背景與邊框**
-找到 .btn-secondary 的樣式：
-- background：改為 rgba(30, 30, 50, 0.85) 左右的深色半透明
-- border：加粗為 2px，顏色改為 rgba(120, 100, 180, 0.8)
+2. **重骰按鈕（.btn-roll）**
+   - 背景改為更不透明的深色（參考 btn-secondary 風格，偏冷色系）
+   - border 加粗為 2px，顏色更明顯
+   - border-bottom 加粗為 4px 保持立體感
 
-**3. 語系選單（#lang-select 或 #title-screen select）**
-- border 加粗為 2px，顏色改為 rgba(150, 100, 255, 0.8)
-- background 改為 rgba(30, 25, 60, 0.9)
+3. **disabled 狀態也要調整**
+   - 確保 disabled 時背景同樣不透明，只靠降低 opacity 或灰化顏色來表示不可用
 
-目標效果：按鈕在深色背景圖上清晰可辨，有明顯框線，背景不完全透明但仍保有質感。
-完成後告訴我修改了哪些 class 和屬性。
+請保留 .btn-attack-ready 的 attack-ready-pulse 動畫和 .btn-roll-icon 的 dice-idle-sway 動畫不變。
+完成後告訴我修改了哪些屬性。

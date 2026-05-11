@@ -801,3 +801,27 @@ button[id^="btn-close"]:hover {
   pointer-events: none;
   z-index: 2;
 }
+
+/* ===== Button Opacity & Border Enhancement ===== */
+
+/* 攻擊按鈕：暖紅/金色系不透明漸層 + 立體邊框 */
+.btn-attack-ready {
+  background: linear-gradient(135deg, #7f1d1d 0%, #b91c1c 50%, #7f1d1d 100%) !important;
+  background-size: 200% 100%;
+  border: 2px solid rgba(252, 165, 165, 0.6) !important;
+  border-bottom: 4px solid rgba(127, 29, 29, 0.95) !important;
+}
+
+/* 重骰按鈕：冷紫色系不透明漸層 + 立體邊框 */
+.btn-roll {
+  background: linear-gradient(135deg, #2e1065 0%, #4c1d95 50%, #2e1065 100%) !important;
+  background-size: 200% 100%;
+  border: 2px solid rgba(167, 139, 250, 0.55) !important;
+  border-bottom: 4px solid #1e1040 !important;
+}
+
+/* disabled 狀態：背景保持不透明，只降低 opacity */
+.btn-roll:disabled {
+  background: linear-gradient(135deg, #2e1065 0%, #4c1d95 50%, #2e1065 100%) !important;
+  opacity: 0.4;
+}
