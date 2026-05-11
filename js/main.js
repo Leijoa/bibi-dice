@@ -1509,7 +1509,7 @@ window.fireAttack = function() {
 
     if (localStorage.getItem('setting_stepAnimation') === 'false') {
         const finalStep = steps && steps.find(s => s.final);
-        if (finalStep && UI.el.finalScoreValue) UI.el.finalScoreValue.innerText = finalStep.damageAfter.toLocaleString();
+        if (finalStep && UI.el.finalScoreValue) UI.el.finalScoreValue.textContent = finalStep.damageAfter.toLocaleString();
         doAttack();
     } else {
         UI.playDamageStepsAnimation(steps, doAttack);

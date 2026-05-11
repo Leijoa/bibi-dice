@@ -583,7 +583,7 @@ function updateDamagePreviewBar(damage) {
 export function renderScore(battle, activeHighlight) {
     if (!battle.scoreResult || battle.state === 'ROLLING') {
         el.scoreDisplay.innerHTML = `<div class="text-slate-500 text-center mt-2 mb-2 font-bold animate-pulse text-xs">盤面結算中...</div>`;
-        if (el.finalScoreValue) el.finalScoreValue.innerText = '0';
+        if (el.finalScoreValue) el.finalScoreValue.textContent = '0';
         if (el.damagePreviewBar) el.damagePreviewBar.classList.add('hidden');
         if (el.enemyHpBar) el.enemyHpBar.classList.remove('hp-bar-killshot');
         return;
@@ -663,7 +663,7 @@ export function renderScore(battle, activeHighlight) {
         const isDrunk = window.getStageActiveShackle && window.getStageActiveShackle() === 'shackle_drunk';
 
         if (!damageVisible) {
-            el.finalScoreValue.innerText = '???';
+            el.finalScoreValue.textContent = '???';
             el.finalScoreValue.classList.add('score-normal');
             el.finalScoreValue.classList.remove('score-hot');
             el.finalScoreValue.classList.remove('damage-drunk');
@@ -673,7 +673,7 @@ export function renderScore(battle, activeHighlight) {
             const displayScore = window.getDisplayedEstimatedDamage
                 ? window.getDisplayedEstimatedDamage(res.finalScore)
                 : res.finalScore;
-            el.finalScoreValue.innerText = Math.floor(displayScore).toLocaleString();
+            el.finalScoreValue.textContent = Math.floor(displayScore).toLocaleString();
             let enemyHp = window.getStageEnemyHp ? window.getStageEnemyHp() : Infinity;
             if (displayScore >= enemyHp * 0.5) {
                 el.finalScoreValue.classList.add('score-hot');
@@ -812,7 +812,7 @@ export function playDamageStepsAnimation(steps, callback) {
         }
 
         if (step.zero) {
-            el.finalScoreValue.innerText = '0';
+            el.finalScoreValue.textContent = '0';
             setTimeout(playNext, currentDelay);
             return;
         }
