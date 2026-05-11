@@ -864,7 +864,7 @@ function setBoardTexture(levelIndex) {
         8: 'board_blue_brick',  9: 'board_blue_brick',
     };
     const name = map[levelIndex] ?? 'board_lava';
-    board.style.backgroundImage = `url('img/${name}.webp')`;
+    board.style.setProperty('--board-texture-url', `url('img/${name}.webp')`);
 }
 
 function loadStage(levelIndex, isLoad = false, parsedData = null) {
