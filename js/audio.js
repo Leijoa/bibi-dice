@@ -10,6 +10,37 @@ let currentBGMNode = null;
 let currentBGMGain = null;
 let currentBGMTrackId = null;
 
+let sfxBuffers = {};
+let sfxLastPlayed = {}; // 冷卻時間用
+
+async function loadSFX(name, url) {
+    if (sfxBuffers[name]) return;
+    try {
+        const res = await fetch(url);
+        const buf = await res.arrayBuffer();
+        sfxBuffers[name] = await audioCtx.decodeAudioData(buf);
+    } catch(e) {
+        console.warn(`SFX load failed (${name}):`, e);
+    }
+}
+
+// 播放已載入的 SFX buffer，cooldownSec 防止短時間重疊觸發
+function playSFXBuffer(name, vol = 1.0, cooldownSec = 0) {
+    if (sfxMuted || sfxVolume <= 0 || !audioCtx || !sfxBuffers[name]) return false;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    const now = audioCtx.currentTime;
+    if (cooldownSec > 0 && sfxLastPlayed[name] && now - sfxLastPlayed[name] < cooldownSec) return true;
+    sfxLastPlayed[name] = now;
+    const src = audioCtx.createBufferSource();
+    src.buffer = sfxBuffers[name];
+    const gain = audioCtx.createGain();
+    gain.gain.setValueAtTime(Math.min(vol * sfxVolume, 1), now);
+    src.connect(gain);
+    gain.connect(audioCtx.destination);
+    src.start();
+    return true;
+}
+
 export function setBGMMute(muted) {
     bgmMuted = muted;
     if (currentBGMGain && audioCtx) {
@@ -41,6 +72,8 @@ export function initAudio() {
             audioCtx = new AudioContext();
             loadBGM('01', 'bibbidiba_BGM_01.mp3');
             loadBGM('02', 'bibbidiba_BGM_02.mp3');
+            loadSFX('dice', 'sfx/dice.mp3');
+            loadSFX('attack', 'sfx/attack.mp3');
         }
     } else if (audioCtx.state === 'suspended') {
         audioCtx.resume();
@@ -154,13 +187,15 @@ function playTone(freq, type, duration, vol=0.1) {
 
 export function playRollSound() {
     if (sfxMuted || sfxVolume <= 0) return;
-    // Rapid tick for rolling
+    // 180ms 冷卻避免 15 幀動畫疊爆；MP3 優先，否則合成音
+    if (playSFXBuffer('dice', 0.75, 0.18)) return;
     playTone(600 + Math.random()*200, 'square', 0.02, 0.05);
 }
 
 export function playAttackSound() {
     if (sfxMuted || sfxVolume <= 0) return;
-    // Impact sound
+    // MP3 優先，否則合成音
+    if (playSFXBuffer('attack', 0.85)) return;
     playTone(150, 'sawtooth', 0.2, 0.2);
     setTimeout(() => playTone(100, 'square', 0.3, 0.3), 50);
 }
