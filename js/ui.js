@@ -1574,7 +1574,7 @@ export function showTutorialStep(stepIndex, totalSteps) {
         }
         // 攻擊步驟：#game-container 有 transform:scale() 建立 stacking context，
         // board-panel 無 z-index 故會被 backdrop(z-195) 遮蔽；暫時提升至 196 使按鈕可點擊
-        if (step.highlight === 'attack-btn') {
+        if (step.highlight === 'attack-btn' || step.highlight === 'dice-container' || step.highlight === 'roll-btn') {
             const boardPanel = document.getElementById('board-panel');
             if (boardPanel) {
                 _tutorialHighlighted.boardPanel = boardPanel;
