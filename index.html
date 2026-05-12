@@ -136,43 +136,24 @@
       </div>
 
       <div id="final-damage-preview" class="rounded-lg shrink-0 relative overflow-hidden" style="min-height:120px;">
-        <svg width="100%" viewBox="0 0 680 160" xmlns="http://www.w3.org/2000/svg" style="display:block;">
-          <defs>
-            <linearGradient id="bg5" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#7c3aed" stop-opacity="0.5"/>
-              <stop offset="50%" stop-color="#5b21b6" stop-opacity="0.7"/>
-              <stop offset="100%" stop-color="#3b1f6b" stop-opacity="0.5"/>
-            </linearGradient>
-            <linearGradient id="shine5" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#ede9fe" stop-opacity="0.35"/>
-              <stop offset="30%" stop-color="#ede9fe" stop-opacity="0.05"/>
-              <stop offset="100%" stop-color="#4c1d95" stop-opacity="0.1"/>
-            </linearGradient>
-            <linearGradient id="gripGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stop-color="#1e1040" stop-opacity="0"/>
-              <stop offset="60%" stop-color="#3b1f6b" stop-opacity="0.9"/>
-              <stop offset="100%" stop-color="#4c1d95" stop-opacity="1"/>
-            </linearGradient>
-          </defs>
-          <ellipse cx="-8" cy="80" rx="16" ry="12" fill="#3b1f6b" opacity="0.9"/>
-          <ellipse cx="-8" cy="80" rx="9" ry="7" fill="#6d28d9" opacity="0.7"/>
-          <rect x="-8" y="73" width="42" height="14" rx="5" fill="url(#gripGrad)"/>
-          <line x1="4"  y1="73" x2="4"  y2="87" stroke="#a78bfa" stroke-width="1" opacity="0.4"/>
-          <line x1="14" y1="73" x2="14" y2="87" stroke="#a78bfa" stroke-width="1" opacity="0.4"/>
-          <line x1="24" y1="73" x2="24" y2="87" stroke="#a78bfa" stroke-width="1" opacity="0.4"/>
-          <ellipse cx="36" cy="80" rx="8" ry="46" fill="none" stroke="#a78bfa" stroke-width="2.5" opacity="0.85"/>
-          <rect x="31" y="34" width="10" height="92" rx="5" fill="#4c1d95" opacity="0.6"/>
-          <rect x="44" y="46" width="574" height="68" fill="url(#bg5)"/>
-          <rect x="44" y="46" width="574" height="68" fill="url(#shine5)"/>
-          <line x1="44" y1="46" x2="618" y2="46" stroke="#c4b5fd" stroke-width="1.2" opacity="0.6"/>
-          <line x1="44" y1="114" x2="618" y2="114" stroke="#7c3aed" stroke-width="0.8" opacity="0.4"/>
-          <line x1="44" y1="80" x2="618" y2="80" stroke="#ddd6fe" stroke-width="0.5" opacity="0.15"/>
-          <polygon points="618,46 665,80 618,114" fill="url(#bg5)"/>
-          <line x1="618" y1="46" x2="665" y2="80" stroke="#c4b5fd" stroke-width="1.2" opacity="0.6"/>
-          <line x1="618" y1="114" x2="665" y2="80" stroke="#7c3aed" stroke-width="0.8" opacity="0.4"/>
-          <text x="350" y="34" text-anchor="middle" font-size="11" fill="#94a3b8" font-family="sans-serif" letter-spacing="3" font-weight="700" data-i18n="ui.damage_preview">預估造成傷害</text>
-          <text id="final-score-value" x="350" y="93" text-anchor="middle" font-size="58" fill="white" font-family="'Space Grotesk', 'Noto Sans TC', monospace" font-weight="900" letter-spacing="-1" opacity="0.97">0</text>
-        </svg>
+        <!-- 劍圖背景 -->
+        <img src="img/sword_h.webp" alt="" aria-hidden="true" style="
+          position:absolute;
+          top:50%;
+          left:50%;
+          transform:translate(-50%,-50%);
+          width:100%;
+          height:auto;
+          object-fit:cover;
+          opacity:0.75;
+          pointer-events:none;
+          z-index:0;
+        "/>
+        <!-- 內容層 -->
+        <div style="position:relative;z-index:1;padding:12px 16px;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:120px;">
+          <div class="text-xs font-bold tracking-widest uppercase text-slate-400 leading-none mb-2" data-i18n="ui.damage_preview">預估造成傷害</div>
+          <div id="final-score-value" class="font-black text-white leading-none" style="font-size:clamp(32px,8vw,56px);font-family:'Space Grotesk','Noto Sans TC',monospace;">0</div>
+        </div>
       </div>
 
       <div id="board-panel" class="card-board bg-slate-800/90 p-1.5 md:p-3 rounded-lg border border-slate-700/60 shrink-0 shadow-md flex flex-col relative flex-grow lg:flex-grow-0">
