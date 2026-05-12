@@ -1037,7 +1037,7 @@ function renderAll() {
 
 // --- 註冊給 UI onclick 呼叫的全域函式 ---
 window.toggleLock = function(idx) {
-    if (battle.state === 'WAIT_ACTION' && !activeHighlight) {
+    if (battle.state === 'WAIT_ACTION' && (!activeHighlight || tutorialMode)) {
         if (stage.activeShackle === 'fragile') {
             return UI.showToast(i18n.t('messages.toast_fragile'));
         }
