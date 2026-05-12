@@ -1589,7 +1589,7 @@ export function showTutorialStep(stepIndex, totalSteps) {
 
     // 需要玩家直接點擊遊戲元素的步驟（shop_select、attack_action），
     // 將 backdrop 設為 pointer-events:none，讓點擊穿透至下方遊戲按鈕
-    const needsClickThrough = step.waitFor === 'shop_select' || step.waitFor === 'attack_action';
+    const needsClickThrough = step.waitFor === 'shop_select' || step.waitFor === 'attack_action' || step.waitFor === 'lock_two_dice' || step.waitFor === 'roll_action';
     backdrop.style.pointerEvents = needsClickThrough ? 'none' : 'auto';
 
     // Position tooltip near highlighted element (or center-bottom if none)
