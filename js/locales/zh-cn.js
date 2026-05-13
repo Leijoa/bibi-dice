@@ -139,7 +139,7 @@ export const zh_cn_data = {
     'groupB_desc': 'B区：连续的顺子',
     'groupC_desc': 'C区：复合牌型(包含对子、3同、4同与3顺、4顺的组合)',
     'groupD_desc': 'D区：特殊牌型',
-    'rule_a0': { name: '比比丢八(ビビデバ)', desc: '8颗相同数字' },
+    'rule_a0': { name: '比比丢八', desc: '8颗相同数字' },
     'rule_a1': { name: '七同', desc: '7颗相同数字' },
     'rule_a2': { name: '六同', desc: '6颗相同数字' },
     'rule_a3': { name: '五同', desc: '5颗相同数字' },

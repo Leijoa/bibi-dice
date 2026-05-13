@@ -631,7 +631,7 @@ export function renderScore(battle, activeHighlight) {
     el.scoreDisplay.innerHTML = `
     <div class="flex flex-col gap-1 px-2 py-1.5 rounded-lg border mb-1.5" style="background:#0e0e10;border-color:#2a2a2c;">
         <div class="flex items-baseline gap-2 whitespace-nowrap">
-            <span class="text-[9px] md:text-[10px] font-semibold tracking-widest uppercase text-slate-600">${i18n.t('ui.score_total_base')}</span>
+            <span class="text-[9px] md:text-[10px] font-semibold tracking-widest uppercase text-slate-200">${i18n.t('ui.score_total_base')}</span>
             <span id="score-total-base-value" class="text-base md:text-lg font-black text-white">${res.totalBase.toFixed(1)}</span>
         </div>
         <div class="flex overflow-x-auto gap-1 pb-0.5 scroll-smooth hide-scrollbar">${notesHtml}</div>

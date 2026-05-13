@@ -53,7 +53,8 @@
       "Bash(Select-Object -Last 2)",
       "Bash(Get-Content d:/unity/bibi-dice/js/locales/en.js)",
       "Bash(Get-Content d:/unity/bibi-dice/js/locales/ja.js)",
-      "PowerShell(\"---\")"
+      "PowerShell(\"---\")",
+      "Bash(git stash *)"
     ]
   }
 }
