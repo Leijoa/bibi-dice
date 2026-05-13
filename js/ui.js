@@ -976,7 +976,7 @@ export function showFusionReplaceModal(currentFusions, newFusionId, callback) {
         // 修正右上角文字看不清楚的問題：將原本的 right-8 改為 right-6，並稍微增加 padding
         html += `
         <div class="bg-slate-900/80 border-2 ${isNew ? 'border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.3)]' : 'border-slate-600'} rounded-xl p-3 md:p-4 flex flex-col justify-between h-full relative overflow-hidden">
-            ${isNew ? `<div class="absolute -top-1 -right-6 bg-amber-500 text-slate-900 text-[10px] font-black px-10 py-1 rotate-45">${newFusionText}</div>` : ''}
+            ${isNew ? `<div class="absolute -top-1 -right-6 bg-amber-500 text-slate-900 text-[10px] font-black px-10 py-1 rotate-45 text-center">${newFusionText}</div>` : ''}
             <div>
                 <div class="flex justify-between items-start mb-2 mt-2">
                     <h3 class="text-base md:text-lg font-black ${style.color}">${rName}</h3>
