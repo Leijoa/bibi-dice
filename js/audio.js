@@ -25,7 +25,7 @@ async function loadSFX(name, url) {
 }
 
 // 播放已載入的 SFX buffer，cooldownSec 防止短時間重疊觸發
-function playSFXBuffer(name, vol = 1.0, cooldownSec = 0) {
+function playSFXBuffer(name, vol = 1.0, cooldownSec = 0, onended = null) {
     if (sfxMuted || sfxVolume <= 0 || !audioCtx || !sfxBuffers[name]) return false;
     if (audioCtx.state === 'suspended') audioCtx.resume();
     const now = audioCtx.currentTime;
@@ -38,6 +38,7 @@ function playSFXBuffer(name, vol = 1.0, cooldownSec = 0) {
     src.connect(gain);
     gain.connect(audioCtx.destination);
     src.start();
+    if (onended) src.onended = onended;
     return true;
 }
 
@@ -67,12 +68,13 @@ export function setBGMVolume(vol) {
 
 export function playTitleSound() {
     if (!audioCtx) initAudio();
+    const afterSFX = () => playBGMTrack('title');
     if (!sfxBuffers['bibiTitle']) {
         loadSFX('bibiTitle', 'sfx/bibi_title.mp3').then(() => {
-            playSFXBuffer('bibiTitle', 0.8);
+            playSFXBuffer('bibiTitle', 0.8, 0, afterSFX);
         });
     } else {
-        playSFXBuffer('bibiTitle', 0.8);
+        playSFXBuffer('bibiTitle', 0.8, 0, afterSFX);
     }
 }
 
@@ -81,8 +83,9 @@ export function initAudio() {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (AudioContext) {
             audioCtx = new AudioContext();
-            loadBGM('01', 'bibbidiba_BGM_01.mp3');
-            loadBGM('02', 'bibbidiba_BGM_02.mp3');
+            loadBGM('01', 'bgm/bibbidiba_BGM_01.mp3');
+            loadBGM('02', 'bgm/bibbidiba_BGM_02.mp3');
+            loadBGM('title', 'bgm/bibi_title_bgm.mp3');
             loadSFX('dice', 'sfx/dice.mp3');
             loadSFX('attack', 'sfx/attack.mp3');
             loadSFX('bibiTitle', 'sfx/bibi_title.mp3');
@@ -133,7 +136,8 @@ export function playBGMTrack(trackId) {
 
     if (!bgmBuffers[trackId]) {
         // If not loaded yet, try to load and play
-        loadBGM(trackId, `bibbidiba_BGM_${trackId}.mp3`).then(() => {
+        const bgmUrls = {'01':'bgm/bibbidiba_BGM_01.mp3','02':'bgm/bibbidiba_BGM_02.mp3','title':'bgm/bibi_title_bgm.mp3'};
+        loadBGM(trackId, bgmUrls[trackId] || `bgm/bibbidiba_BGM_${trackId}.mp3`).then(() => {
             if (currentBGMTrackId === trackId) startBGMPlayback(trackId, fadeInDuration);
         });
     } else {
