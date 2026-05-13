@@ -65,6 +65,17 @@ export function setBGMVolume(vol) {
     }
 }
 
+export function playTitleSound() {
+    if (!audioCtx) initAudio();
+    if (!sfxBuffers['bibiTitle']) {
+        loadSFX('bibiTitle', 'sfx/bibi_title.mp3').then(() => {
+            playSFXBuffer('bibiTitle', 0.8);
+        });
+    } else {
+        playSFXBuffer('bibiTitle', 0.8);
+    }
+}
+
 export function initAudio() {
     if (!audioCtx) {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -74,6 +85,7 @@ export function initAudio() {
             loadBGM('02', 'bibbidiba_BGM_02.mp3');
             loadSFX('dice', 'sfx/dice.mp3');
             loadSFX('attack', 'sfx/attack.mp3');
+            loadSFX('bibiTitle', 'sfx/bibi_title.mp3');
         }
     } else if (audioCtx.state === 'suspended') {
         audioCtx.resume();

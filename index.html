@@ -363,7 +363,8 @@
   </div>
 
   <!-- 沉浸式開場動畫：3 秒只顯示背景插畫，再觸發閃白與 UI 漸顯 -->
-  <script>
+  <script type="module">
+  import * as Audio from './js/audio.js';
   (function () {
     document.addEventListener('DOMContentLoaded', function () {
       var mainEls = document.querySelectorAll('#title-screen .intro-main-ui');
@@ -397,6 +398,12 @@
           el.classList.remove('intro-hidden');
           el.classList.add('intro-fade-in');
         });
+
+        // 播放標題音效，只播放一次
+        if (!window.titleSoundPlayed) {
+          window.titleSoundPlayed = true;
+          Audio.playTitleSound();
+        }
 
         // 次要 UI（教學、設定等）延遲 400ms 後漸顯，製造層次感
         setTimeout(function () {
