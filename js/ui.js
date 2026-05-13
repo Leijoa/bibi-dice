@@ -1749,3 +1749,25 @@ if (el.settingsTitle) {
         }
     });
 }
+
+// --- 滑鼠拖曳橫向滾動 ---
+function enableDragScroll(el) {
+    let isDown = false, startX, scrollLeft;
+    el.addEventListener('mousedown', e => {
+        isDown = true;
+        startX = e.pageX - el.offsetLeft;
+        scrollLeft = el.scrollLeft;
+    });
+    el.addEventListener('mouseleave', () => { isDown = false; });
+    el.addEventListener('mouseup', () => { isDown = false; });
+    el.addEventListener('mousemove', e => {
+        if (!isDown) return;
+        e.preventDefault();
+        const x = e.pageX - el.offsetLeft;
+        el.scrollLeft = scrollLeft - (x - startX);
+    });
+}
+
+export function initDragScrollAll() {
+    document.querySelectorAll('.scrollable-row').forEach(enableDragScroll);
+}

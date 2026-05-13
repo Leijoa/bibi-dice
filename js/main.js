@@ -2085,5 +2085,6 @@ if (btnDevDice && inputDevDice) {
 // 啟動遊戲
 loadCollection();
 initTitleScreen();
+UI.initDragScrollAll();
 
 window.getEnemyWithMeta = getEnemyWithMeta;
