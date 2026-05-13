@@ -394,7 +394,7 @@ export function renderDice(battle, activeHighlight, player) {
     updateBoardBackground(window.getStageLevel ? window.getStageLevel() : 0, shackleId);
 
     el.diceContainer.innerHTML = battle.dice.map((d, idx) => {
-        let wrapperClass = "w-12 h-12 md:w-[72px] md:h-[72px] relative mx-auto my-0.5 cursor-pointer dice-btn transition-transform duration-200";
+        let wrapperClass = "w-[58px] h-[58px] md:w-[86px] md:h-[86px] relative mx-auto my-0.5 cursor-pointer dice-btn transition-transform duration-200";
 
         let outerColor = "bg-slate-600";
         let innerColor = "bg-slate-900";
@@ -521,10 +521,7 @@ export function renderDice(battle, activeHighlight, player) {
 
         return `
         <div id="dice-element-${idx}" onclick="window.toggleLock(${idx})" class="${wrapperClass} ${extraClass}" ${displayOrderStyle}>
-            <div class="absolute inset-0 ${outerColor} ${octagonClip} transition-colors duration-200"></div>
-            <div class="absolute inset-[2px] md:inset-[3px] ${innerColor} ${innerHover} ${octagonClip} flex items-center justify-center transition-colors duration-200 overflow-hidden">
-                <img src="${getDiceImageUrl(imgVal)}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;display:block;" alt="${d.val}">
-            </div>
+            <img src="${getDiceImageUrl(imgVal)}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;display:block;" alt="${d.val}">
             ${lockIconHtml}
             ${baseBadgeHtml}
         </div>`;
