@@ -68,18 +68,6 @@ export const translations = {
       'pb_highest_infinite': '最高無限層數',      'btn_rules': '📖 牌型表',      'empty_inventory': '背包空空如也',
       'fusion_condition': '\n\n合成條件: {0} + {1}',
       'fusion_text_short': '合成: {0} + {1}',
-      'fusion_limit_msg': '你必須選擇捨棄並分解其中一件遺物（退回基礎素材），才能容納新的力量！',
-      'fusion_limit_title': '⚠️ 力量超載！再生遺物達上限 (2/2)',
-      'fusion_materials': '退回素材：',
-      'fusion_new_item': 'NEW',
-      'fusion_discard_btn': '捨棄並分解',      'empty_inventory': '背包空空如也',
-      'fusion_condition': '\n\n合成条件: {0} + {1}',
-      'fusion_text_short': '合成: {0} + {1}',
-      'fusion_limit_msg': '你必须选择舍弃并分解其中一件遗物（退回基础素材），才能容纳新的力量！',
-      'fusion_limit_title': '⚠️ 力量超载！再生遗物达上限 (2/2)',
-      'fusion_materials': '退回素材：',
-      'fusion_new_item': 'NEW',
-      'fusion_discard_btn': '舍弃并分解',
 
 
 

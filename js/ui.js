@@ -304,7 +304,7 @@ window.showShackleInfo = function(id) {
 
 // --- ★ 任務4：遺物點擊顯示說明 ---
 export function renderInventory(player, battle) {
-    el.inventoryGrid.className = "flex overflow-x-auto gap-1.5 pb-2 scroll-smooth items-center hide-scrollbar";
+    el.inventoryGrid.className = "flex overflow-x-auto gap-1.5 pb-2 scroll-smooth items-center hide-scrollbar scrollable-row";
     if (player.relics.length === 0) {
         el.inventoryGrid.innerHTML = `<div class="text-[10px] text-slate-500 font-bold p-1">${i18n.t("ui.empty_inventory")}</div>`;
         return;
