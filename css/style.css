@@ -381,7 +381,6 @@ header {
     border-top-color: #2a2a2c !important;
 }
 #owned-relics-area > div:first-child {
-    color: #4a4455;
     text-transform: uppercase;
     letter-spacing: 0.12em;
 }
