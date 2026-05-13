@@ -532,7 +532,7 @@ export function renderDice(battle, activeHighlight, player) {
 }
 
 // --- 控制器渲染 ---
-export function renderControls(battle) {
+export function renderControls(battle, maxRolls) {
     if (battle.state === 'IDLE') { el.controlsContainer.innerHTML = ''; return; }
     let isRolling = battle.state === 'ROLLING', isAttacking = battle.state === 'ATTACKING';
 
@@ -548,7 +548,7 @@ export function renderControls(battle) {
     <button onclick="window.executeRoll(false)" ${isRollDisabled ? 'disabled="disabled"' : ''} class="w-full flex-1 bg-violet-700 text-violet-100 font-black rounded-lg md:rounded-xl transition-all flex flex-col items-center justify-center border-b-4 border-violet-900 btn-roll ${rollClass}">
         <span class="btn-roll-icon text-base md:text-xl mb-0.5">🎲</span>
         <span class="text-xs md:text-base leading-tight">${i18n.t('ui.btn_roll')}</span>
-        <span class="text-[8px] md:text-[10px] opacity-60 mt-0.5 font-semibold">${battle.rollsLeft}/${battle.rollsLeft + (isRollDisabled && battle.rollsLeft === 0 ? 0 : 0)}</span>
+        <span class="text-[8px] md:text-[10px] opacity-60 mt-0.5 font-semibold">${battle.rollsLeft} / ${maxRolls}</span>
     </button>
     <button onclick="window.fireAttack()" ${isScoreDisabled ? 'disabled="disabled"' : ''} class="w-full flex-[1.5] bg-red-700 text-red-100 font-black rounded-lg md:rounded-xl transition-all flex flex-col items-center justify-center border-b-4 border-red-900 ${isScoreDisabled ? '' : 'btn-attack-ready'} ${scoreClass}">
         <span class="text-xl md:text-3xl mb-0.5">🗡️</span>

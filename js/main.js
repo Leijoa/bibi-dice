@@ -755,7 +755,7 @@ window.advanceTutorialStep = function() {
     if (tutorialStep < TUTORIAL_STEPS.length) {
         // 步驟推進後重新渲染控制器，確保攻擊按鈕的 disabled 狀態與當前 tutorialStep 同步
         // （renderControls 內 isTutorialAttackLocked = step < 4，step 3→4 時按鈕需解除禁用）
-        UI.renderControls(battle);
+        UI.renderControls(battle, player.maxRolls);
         UI.showTutorialStep(tutorialStep, TUTORIAL_STEPS.length);
     }
 };
@@ -1031,7 +1031,7 @@ function renderAll() {
     UI.updateEnemyUI(stage);
     UI.renderInventory(player, battle);
     UI.renderDice(battle, activeHighlight, player);
-    UI.renderControls(battle);
+    UI.renderControls(battle, player.maxRolls);
     UI.renderScore(battle, activeHighlight);
 }
 
@@ -1318,7 +1318,7 @@ window.fireAttack = function() {
     }
 
     UI.renderDice(battle, activeHighlight, player);
-    UI.renderControls(battle);
+    UI.renderControls(battle, player.maxRolls);
     Audio.playAttackSound();
 
     // --- Build shackleConfig + activeRelics for steps calculation ---
