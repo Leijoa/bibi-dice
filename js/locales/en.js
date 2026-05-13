@@ -367,5 +367,13 @@ ui: {
     'shop_rerolled': '🚫 Already Rerolled',
     'shop_leave': 'Leave Shop & Next Stage 👉',
     'confirm_back_title': 'Are you sure you want to return to the title?'
+  },
+  enemy_lines: {
+    arrogant:{t0:[],t1:[],t2:[],t3:[],t4:[]},
+    rough:{t0:[],t1:[],t2:[],t3:[],t4:[]},
+    cowardly:{t0:[],t1:[],t2:[],t3:[],t4:[]},
+    mysterious:{t0:[],t1:[],t2:[],t3:[],t4:[]},
+    fanatic:{t0:[],t1:[],t2:[],t3:[],t4:[]},
+    beast:{t0:[],t1:[],t2:[],t3:[],t4:[]},
   }
 };

@@ -367,5 +367,13 @@ ui: {
     'shop_rerolled': '🚫 已刷新过',
     'shop_leave': '离开商店前往下一关 👉',
     'confirm_back_title': '确定要回到标题吗？'
+  },
+  enemy_lines: {
+    arrogant:{t0:[],t1:[],t2:[],t3:[],t4:[]},
+    rough:{t0:[],t1:[],t2:[],t3:[],t4:[]},
+    cowardly:{t0:[],t1:[],t2:[],t3:[],t4:[]},
+    mysterious:{t0:[],t1:[],t2:[],t3:[],t4:[]},
+    fanatic:{t0:[],t1:[],t2:[],t3:[],t4:[]},
+    beast:{t0:[],t1:[],t2:[],t3:[],t4:[]},
   }
 };

@@ -367,5 +367,13 @@ ui: {
     'shop_rerolled': '🚫 更新済み',
     'shop_leave': '店を出て次のステージへ 👉',
     'confirm_back_title': 'タイトルに戻りますか？'
+  },
+  enemy_lines: {
+    arrogant:{t0:[],t1:[],t2:[],t3:[],t4:[]},
+    rough:{t0:[],t1:[],t2:[],t3:[],t4:[]},
+    cowardly:{t0:[],t1:[],t2:[],t3:[],t4:[]},
+    mysterious:{t0:[],t1:[],t2:[],t3:[],t4:[]},
+    fanatic:{t0:[],t1:[],t2:[],t3:[],t4:[]},
+    beast:{t0:[],t1:[],t2:[],t3:[],t4:[]},
   }
 };

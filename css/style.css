@@ -949,3 +949,11 @@ button[id^="btn-close"]:hover {
   position: relative;
   z-index: 1;
 }
+
+.damage-float--epic {
+  animation-duration: 1.8s !important;
+  font-size: 2.2em !important;
+  color: #fbbf24 !important;
+  text-shadow: 0 0 20px rgba(251,191,36,0.8), 0 0 40px rgba(251,191,36,0.4) !important;
+  filter: drop-shadow(0 0 8px rgba(251,191,36,0.6)) !important;
+}

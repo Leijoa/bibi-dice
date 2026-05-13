@@ -406,5 +406,21 @@ class I18nManager {
 
 export const i18n = new I18nManager();
 if (typeof window !== 'undefined') window.i18n = i18n;
-if (typeof window !== 'undefined') window.i18n = i18n;
-window.i18n = i18n; // For easy console access and inline event handlers
+window.i18n = i18n;
+
+export function getEnemyLine(personality, damageRatio) {
+  const lang = i18n.getLocale();
+  const t = translations[lang]?.enemy_lines;
+  const lines = t?.[personality] || t?.cowardly;
+  if (!lines) return '';
+  let tier;
+  if (damageRatio < 0.3)      tier = lines.t0;
+  else if (damageRatio < 0.7) tier = lines.t1;
+  else if (damageRatio < 1.0) tier = lines.t2;
+  else if (damageRatio < 5.0) tier = lines.t3;
+  else                         tier = lines.t4;
+  if (!tier || tier.length === 0) {
+    tier = translations['zh-tw']?.enemy_lines?.[personality]?.t0 || [];
+  }
+  return tier[Math.floor(Math.random() * tier.length)] || '';
+}
