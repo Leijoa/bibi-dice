@@ -188,7 +188,7 @@ ui: {
     bgm_volume: '🎵 音樂音量',
     sfx_volume: '🔊 音效音量',
     setting_step_animation_label: '🎬 逐步結算動畫',
-    title_main: 'BIBBIDIBA',
+    title_main: 'BIBI DICE',
     title_sub: '比比丟八',
     title_desc: '擲八顆骰子湊牌型疊加倍率！每回合重骰兩次，在限制回合內打倒敵人獲取遺物強化流派，挑戰連過十關！',
     btn_continue: '繼續旅程',
