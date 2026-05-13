@@ -68,7 +68,7 @@
 * **清除多餘空格**：移除 `.title-enter` 容器內原本為說明文保留的 `mt-4` 邊距，避免標題區留有大空白。
 
 ### Fix：移除擋圖的首頁標題文字，並將按鈕全面升級為紫水晶玻璃擬態 [2026/05/10]
-* **移除文字標題**：從 `index.html` 的 `#title-screen` 中移除 `<h1>BIBBIDIBA</h1>` 與 `<h2>比比丟八</h2>`，讓背景插畫完全顯露出來，提升沉浸感。
+* **移除文字標題**：從 `index.html` 的 `#title-screen` 中移除 `<h1>bibi-dice</h1>` 與 `<h2>比比丟八</h2>`，讓背景插畫完全顯露出來，提升沉浸感。
 * **紫水晶玻璃按鈕**：將 `css/style.css` 中 `#title-screen .btn-primary` 重寫為 `rgba(122,59,245,0.25)` 半透明底 + `backdrop-filter: blur(15px) saturate(200%)`，hover 時背景透明度提升且邊框呈現紫色發光（`rgba(167,139,250,0.6)`）。`.btn-secondary` 同步改為中性半透明水晶玻璃風格。
 * **Scrim 調輕**：將 `#title-screen::after` 的 `linear-gradient` 調整為頂部極輕（黑 5%）、中央透明（30%）、底部適中（65% @ 80%），讓角色與魔法陣清晰透出，不再被重疊遮蔽。
 
@@ -140,7 +140,7 @@
 * **介面更新**：`ui.js` 的 `updateEnemyUI` 現改以 `i18n.t` 讀取動態 ID (`monsters.monster_X`) 取代寫死的中文陣列替換，並根據層數動態附加在地化的菁英與 Boss 標籤。
 * **語系更新**：同步擴充四國語系（`zh-tw.js`, `zh-cn.js`, `en.js`, `ja.js`），於 `ui` 節點新增 `elite_tag` 與 `boss_tag`，並於根目錄匯出 50 隻全新設計的無限塔專屬怪物名稱清單。
 
-# 比比丟八-BIBBIDIBA [2.0版] 更新紀錄
+# 比比丟八-bibi-dice [2.0版] 更新紀錄
 
 ### Bug Fix：血量歸零時越戰越勇遺物觸發修正 [2026/05/06]
 * **Fix【越戰越勇】血量歸零誤觸發**：在 `js/main.js` 中修改了 `applyCombatShackles`（處理反傷裝甲）以及 `doAttack`（處理回合超時）兩處扣血邏輯，增加 `player.hp > 0` 判斷。防止玩家在受到致命傷 HP 歸 0 時，仍不合理地觸發並跳出【越戰越勇】加成提示。

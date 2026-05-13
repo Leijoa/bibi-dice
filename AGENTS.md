@@ -1,6 +1,6 @@
-content = """# 🤖 AI Agent 全域開發規範文件 (AGENTS.md) - Bibbidiba 專案
+content = """# 🤖 AI Agent 全域開發規範文件 (AGENTS.md) - bibi-dice 專案
 
-本專案為 Web 網頁前端開發的骰子構築 Roguelite 遊戲『Bibbidiba』。
+本專案為 Web 網頁前端開發的骰子構築 Roguelite 遊戲『bibi-dice』。
 製作人（阿雷）主要負責遊戲企劃、UI 介面設計與核心數值企劃。為了確保 AI Agent (如 JULES) 能夠高效率對接並避免破壞現有架構，執行任務前請**嚴格遵守以下開發規範**。
 
 ## ⚠️ 0. 語言絕對強制指令 (CRUCIAL LANGUAGE OVERRIDE)
