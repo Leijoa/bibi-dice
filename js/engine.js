@@ -729,20 +729,21 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     // Zone multipliers for non-order: tagA × tagB × tagC × tagD
     // Zone multipliers for order:    (tagA + tagB) × tagC × tagD
     if (stepCollector) {
+        const _hn = (name) => (name && name !== '無') ? name : null;
         if (playerRelics.includes('order')) {
             const combined = result.tagA.multi + result.tagB.multi;
             if (Math.abs(combined - 1.0) > 0.001)
-                stepCollector.push({ zone: 'AB', multiplier: combined, damageAfter: null });
+                stepCollector.push({ zone: 'AB', multiplier: combined, damageAfter: null, handName: null });
         } else {
             if (Math.abs(result.tagA.multi - 1.0) > 0.001)
-                stepCollector.push({ zone: 'A', multiplier: result.tagA.multi, damageAfter: null });
+                stepCollector.push({ zone: 'A', multiplier: result.tagA.multi, damageAfter: null, handName: _hn(result.tagA.name) });
             if (Math.abs(result.tagB.multi - 1.0) > 0.001)
-                stepCollector.push({ zone: 'B', multiplier: result.tagB.multi, damageAfter: null });
+                stepCollector.push({ zone: 'B', multiplier: result.tagB.multi, damageAfter: null, handName: _hn(result.tagB.name) });
         }
         if (Math.abs(result.tagC.multi - 1.0) > 0.001)
-            stepCollector.push({ zone: 'C', multiplier: result.tagC.multi, damageAfter: null });
+            stepCollector.push({ zone: 'C', multiplier: result.tagC.multi, damageAfter: null, handName: _hn(result.tagC.name) });
         if (Math.abs(result.tagD.multi - 1.0) > 0.001)
-            stepCollector.push({ zone: 'D', multiplier: result.tagD.multi, damageAfter: null });
+            stepCollector.push({ zone: 'D', multiplier: result.tagD.multi, damageAfter: null, handName: _hn(result.tagD.name) });
     }
 
     result.finalMultiplier = (playerRelics.includes('order') ? (result.tagA.multi + result.tagB.multi) * result.tagC.multi * result.tagD.multi : result.tagA.multi * result.tagB.multi * result.tagC.multi * result.tagD.multi) * result.globalMulti;

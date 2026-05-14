@@ -1,5 +1,60 @@
 
 
+### Fix：牌型浮現文字可見度與錯開間距修正 [2026/05/15]
+* **`css/style.css`**（各 `.hand-float-*` class，第 1017–1102 行）：所有稀有度加入四角黑色描邊（`-2px/-2px` 各方向 `rgba(0,0,0,0.9)`），使文字在任意背景下均清晰可讀；各稀有度調亮顏色（Common `#cbd5e1`→`#e2e8f0`、Rare `#60a5fa`→`#93c5fd`、Epic `#c084fc`→`#d8b4fe`、Legendary `#fbbf24`→`#fde68a`、Mythic `#22d3ee`→`#67e8f9`）；光暈強度同步提升。
+* **`js/ui.js`**（`showHandNamesPreview`，第 892 行）：stagger 間隔由 280ms 延長至 **380ms**，避免多牌型同時重疊；元素自動移除 timeout 由 1000ms 調整為 **1050ms** 配合間隔。
+* **`js/main.js`**（`window.fireAttack`，第 1524 行）：預覽完成後延遲啟動傷害動畫由 1200ms 調整為 **1600ms**（覆蓋最多 4 牌型 × 380ms + 顯示時間的最壞情況）。
+
+### Feat：攻擊前預覽牌型名稱浮現特效（時機前移＋尺寸提升） [2026/05/15]
+* **效果**：牌型名稱浮現改在攻擊動畫**開始前**出現（而非傷害步驟中），最多 4 個名稱依 280ms 錯開依序飄出，顯示在骰子區中心，傷害動畫延遲 1200ms 後才啟動；字體大幅放大（Common 2.0rem → Mythic 4.5rem），位置動態對準 `#dice-container` 中心而非固定螢幕座標。
+* **`js/main.js`**（`window.fireAttack`，第 1521–1524 行）：移除舊有 `UI.playDamageStepsAnimation(steps, doAttack)` 的直接呼叫，改為先執行 `UI.showHandNamesPreview(battle.scoreResult)`，再用 `setTimeout(..., 1200)` 延遲啟動傷害動畫。
+* **`js/ui.js`**（新增 `export function showHandNamesPreview` 及 `function getRarityClass`，約第 836–900 行；移除 `playDamageStepsAnimation` zone 步驟中的 `showHandNameFloat` 行）：
+  * `showHandNamesPreview(scoreResult)` — 蒐集 tagA/B/C/D 中 `multi > 1.0` 且非 `'無'` 的手牌，讀取 `#dice-container` 的 `getBoundingClientRect()` 計算中心座標，以 `idx * 280ms` 錯開 `setTimeout`，建立 `div` 並以 `style.left/top` 動態定位，1000ms 後自動 `remove()`。
+  * `getRarityClass(rarity)` — 將數值稀有度對映至 CSS 類別名稱（1→common … 5→mythic）。
+  * `playDamageStepsAnimation` zone handler：刪除 `if (step.handName) showHandNameFloat(step.handName)` 呼叫。
+* **`css/style.css`**（第 1003–1094 行）：更新 `.hand-float-base`（移除固定 `left: 50%; top: 42%`，改由 JS 設定）；各稀有度 class 字體大幅放大：Common 2.0rem、Rare 2.6rem、Epic 3.2rem、Legendary 3.8rem、Mythic 4.5rem；更新對應 `@keyframes`（調整 scale 與 glow 強度）。
+
+### Feat：攻擊結算時顯示牌型名稱浮現特效 [2026/05/15]
+* **效果**：每當 Zone A/B/C/D 倍率步驟觸發（傷害動畫播放中），畫面中央依牌型稀有度浮現對應名稱文字，並以 Common→Mythic 五段差異化的尺寸、顏色、光暈與動畫呈現。
+* **`js/engine.js`**（第 731–748 行）：在 `stepCollector.push` 的各 zone 物件中補上 `handName` 欄位：取 `result.tagX.name`（非 `'無'` 時）；AB 合區傳 `null`。新增 `_hn` 輔助 arrow function 用於空值篩濾。
+* **`js/ui.js`**（`playDamageStepsAnimation`，第 908 行；新增 `showHandNameFloat` 函數，第 805–833 行）：
+  * 新增 `showHandNameFloat(rawName)` — 從 `RULE_DB.groupA/B/C/D` 以 `name.startsWith` 做模糊比對（處理 `'比比丟八(ビビデバ)'` 等含附加字串的情況），查出稀有度與 i18n key（格式：`rules.rule_a{idx}.name`），建立 `div.hand-float-base.hand-float-{rarity}` 並 append 至 `document.body`，動畫結束後自動移除。
+  * `if (step.zone)` 區塊在 `zone-active` class 加入後、`countUpTo` 前新增 `if (step.handName) showHandNameFloat(step.handName)`。
+* **`css/style.css`**（第 1003–1097 行）：新增 `.hand-float-base` 基底定位樣式（`fixed`、`z-index: 9998`）及五個稀有度 class（`hand-float-common/rare/epic/legendary/mythic`），各帶獨立 `@keyframes`：Common 簡單淡出上浮，Rare 縮放入場，Epic 光暈脈衝，Legendary 橫向抖動金色，Mythic 超大青色震撼。
+
+### Feat：重骰波浪彈跳 + 數字亂跳動畫 [2026/05/15]
+* **效果**：骰子重骰後不再即時顯示最終數字，而是播放「彈跳起跳 → 左右搖擺 → 快速亂數」三段動畫，逐一錯開揭示真實值，視覺層次更豐富。
+* **`css/style.css`**（第 48–66 行）：移除舊有 `.rolling-dice-anim` 及 `@keyframes rollJiggle`（未被使用的殘留 CSS），替換為四個新定義：
+  * `@keyframes diceRerollJump`：translateY + scale 跳起效果，0.15s ease-out
+  * `@keyframes diceSway`：±15deg 左右旋轉搖擺，0.06s linear infinite
+  * `.dice-rerolling-jump`、`.dice-rerolling-sway`：分段套用上述 keyframes
+* **`js/ui.js`**（第 535–580 行）：新增 `export function startRerollAnimation(unlockedIndices, finalDice)`：
+  * 先同步將所有未鎖骰子 `img.src` 設為隨機值（讓瀏覽器首幀就顯示亂數）
+  * 每顆骰子以 `staggerPos × 35ms` 錯開：先加 `.dice-rerolling-jump`（150ms 後切換為 `.dice-rerolling-sway`），同時每 40ms 換一次隨機骰面圖片
+  * 280ms 後清除 interval、還原正確 `img.src`、移除 CSS class
+  * 模組層級維護 `_rerollAnimTimers` 陣列，重複呼叫時自動清除前次計時器
+* **`js/main.js`**（`executeRoll`，第 1275–1276 行）：在現有 `renderAll()` 之後追加 `UI.startRerollAnimation(_unlockedForAnim, battle.dice)`；`_unlockedForAnim` 為排序後的未鎖索引陣列。
+
+### Fix：補齊消耗品戰鬥激活 toast 的多語系支援 [2026/05/15]
+* **問題**：`js/main.js` 中有兩處消耗品於戰鬥中激活時仍顯示硬編碼繁中文字，切換語系後無法正確呈現。
+* **發現的硬編碼字串**：
+  * `loadStage()` 第 934 行：`'🛠️ 重型破壞鉗發揮作用，破壞了本關的枷鎖！'`（`cons_pliers` 激活）
+  * `rollDice()`/幸運葉草觸發邏輯 第 1196 行：`` `🍀 發動幸運${num}葉草！` ``（`cons_clover_3/4/5/6` 激活，含動態數字）
+* **新增 i18n key**（四個 locale 的 `toast_cons_science_d` 之後，各增 2 行）：
+  * `toast_cons_pliers_activate`：`zh-tw.js` 第 403 行、`zh-cn.js` 第 357 行、`en.js` 第 357 行、`ja.js` 第 357 行
+  * `toast_cons_clover_activate`（含 `{0}` 參數承接葉草數字）：同上各 +1 行
+* **`js/main.js`** 第 934 行改為 `i18n.t('messages.toast_cons_pliers_activate')`；第 1196 行改為 `i18n.t('messages.toast_cons_clover_activate', num)`。
+
+### Fix：重置靈魂後同步清除存檔並隱藏「繼續」按鈕 [2026/05/15]
+* **問題**：`window.resetSouls()` 退還靈魂點數後未呼叫 `window.clearSave()` 也未隱藏 `#btn-continue`，導致玩家可帶著已退款的升級繼續舊存檔，使重置形同虛設。
+* **修復**：於 `js/ui.js` 的 `window.resetSouls`（第 1515–1517 行）在 `renderSoulsModal(meta)` 之後補上與 `buySoulUpgrade` 相同的兩行邏輯：`if (window.clearSave) window.clearSave()` 及取得 `#btn-continue` 元素後加上 `hidden` class。純邏輯補齊，不涉及退款計算。
+
+### Fix：補齊消耗品購買時的多語系 toast 訊息 [2026/05/15]
+* **問題**：商店購買 `cons_pliers`、`cons_doll`、`cons_fruit`、`cons_loaded_dice`、`cons_guide`、`cons_strike_a`、`cons_fever_b`、`cons_combo_c`、`cons_science_d` 等消耗品時，toast 訊息使用硬編碼文字或通用格式，切換語系後無法正確顯示。
+* **四個 locale 檔案**（`zh-tw.js` 第 394–402 行、`zh-cn.js` 第 348–356 行、`en.js` 第 348–356 行、`ja.js` 第 348–356 行）：在 `toast_cons_hp` 後新增 9 個 toast key：`toast_cons_pliers`、`toast_cons_doll`、`toast_cons_fruit`、`toast_cons_loaded_dice`、`toast_cons_guide`、`toast_cons_combo_a`、`toast_cons_fever_b`、`toast_cons_combo_c`、`toast_cons_science_d`。
+* **`js/main.js`**（`window.buyItem`，第 1880–1890 行）：將原本的單一 `else` 區塊（含通用 toast）替換為各消耗品獨立的 `if/else if` 鏈，每個分支先 `player.relics.push(r.id)` 再顯示對應 i18n toast；未識別的消耗品仍保留通用 fallback。
+* **注意**：任務說明中 A 區藥劑 ID 標示為 `cons_combo_a`，但引擎實際使用 `cons_strike_a`（見 `main.js:1634`）；此處以 `r.id === 'cons_strike_a'` 對應 `toast_cons_combo_a` locale key，確保功能正確。
+
 ### Fix：切換分頁或最小化時自動暫停／恢復 BGM [2026/05/14]
 * **問題**：使用者切換分頁或最小化瀏覽器（尤其行動裝置）時，BGM 持續播放，造成背景音效干擾。
 * **修復**：於 `js/audio.js` 的 `initAudio()` 函式中，在 `audioCtx = new AudioContext()` 建立後（第 90 行）新增 `visibilitychange` 事件監聽器：頁面隱藏時呼叫現有的 `pauseBGM()`，頁面重新顯示時呼叫現有的 `playBGM()`。監聽器僅在 `audioCtx` 首次建立時註冊一次，不會重複綁定。未新增任何新函式，亦未更動其他邏輯。

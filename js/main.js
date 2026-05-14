@@ -931,7 +931,7 @@ function loadStage(levelIndex, isLoad = false, parsedData = null) {
             stage.activeShackle = null;
             stage.shackleMeta = null;
             player.relics.splice(player.relics.indexOf('cons_pliers'), 1);
-            UI.showToast('🛠️ 重型破壞鉗發揮作用，破壞了本關的枷鎖！');
+            UI.showToast(i18n.t('messages.toast_cons_pliers_activate'));
         }
 
         if (stage.activeShackle) {
@@ -1193,7 +1193,7 @@ window.executeRoll = function(isInitial = false) {
                         for (let i = 0; i < Math.min(3, unlocked.length); i++) {
                             unlocked[i].val = num;
                         }
-                        UI.showToast(`🍀 發動幸運${num}葉草！`);
+                        UI.showToast(i18n.t('messages.toast_cons_clover_activate', num));
                         // Consume the item
                         player.relics = player.relics.filter(r => r !== cloverId);
                     }
@@ -1272,7 +1272,9 @@ window.executeRoll = function(isInitial = false) {
             }
 
             if (!tutorialMode) saveGame();
+            const _unlockedForAnim = battle.dice.map((d, i) => !d.locked ? i : -1).filter(i => i !== -1);
             renderAll();
+            UI.startRerollAnimation(_unlockedForAnim, battle.dice);
 
             // Tutorial: show current step tooltip after roll completes
             if (tutorialMode) {
@@ -1516,7 +1518,10 @@ window.fireAttack = function() {
         if (finalStep && UI.el.finalScoreValue) UI.el.finalScoreValue.textContent = finalStep.damageAfter.toLocaleString();
         doAttack();
     } else {
-        UI.playDamageStepsAnimation(steps, doAttack);
+        UI.showHandNamesPreview(battle.scoreResult);
+        setTimeout(() => {
+            UI.playDamageStepsAnimation(steps, doAttack);
+        }, 1600);
     }
 };
 
@@ -1878,13 +1883,16 @@ window.buyItem = function(idx) {
             player.hp = Math.min(window.getMaxHp(), player.hp + 1);
             UI.showToast(i18n.t('messages.toast_cons_hp'));
         } else {
-            // Push clovers, bombs, strike potions, etc., into relics to be processed by engine/rolls
-            player.relics.push(r.id);
-            if (r.id === 'cons_guide') {
-                UI.showToast((i18n.t('consumables.cons_guide.name') || '巧手指南') + ' +1');
-            } else {
-                UI.showToast(i18n.t('messages.toast_obtained') + (i18n.t(`consumables.${r.id}.name`) || r.name));
-            }
+            if (r.id === 'cons_pliers') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_pliers')); }
+            else if (r.id === 'cons_doll') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_doll')); }
+            else if (r.id === 'cons_fruit') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_fruit')); }
+            else if (r.id === 'cons_loaded_dice') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_loaded_dice')); }
+            else if (r.id === 'cons_guide') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_guide')); }
+            else if (r.id === 'cons_strike_a') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_combo_a')); }
+            else if (r.id === 'cons_fever_b') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_fever_b')); }
+            else if (r.id === 'cons_combo_c') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_combo_c')); }
+            else if (r.id === 'cons_science_d') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_science_d')); }
+            else { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_obtained') + (i18n.t(`consumables.${r.id}.name`) || r.name)); }
         }
     } else {
         // Relic logic

@@ -532,6 +532,54 @@ export function renderDice(battle, activeHighlight, player) {
     el.rollsBadge.className = battle.rollsLeft === 0 ? "bg-slate-800 px-2 py-0.5 rounded-full text-[10px] md:text-sm font-bold text-slate-500 transition-colors" : "bg-slate-800 px-2 py-0.5 rounded-full text-[10px] md:text-sm font-bold text-violet-300 transition-colors";
 }
 
+// --- 重骰波浪動畫 ---
+let _rerollAnimTimers = [];
+
+export function startRerollAnimation(unlockedIndices, finalDice) {
+    _rerollAnimTimers.forEach(({ interval, timeout }) => {
+        if (interval !== null) clearInterval(interval);
+        if (timeout !== null) clearTimeout(timeout);
+    });
+    _rerollAnimTimers = [];
+
+    unlockedIndices.forEach((diceIdx, staggerPos) => {
+        const dieEl = document.getElementById(`dice-element-${diceIdx}`);
+        if (!dieEl) return;
+        const img = dieEl.querySelector('img');
+        if (!img) return;
+
+        const finalVal = finalDice[diceIdx].val;
+        const staggerDelay = staggerPos * 35;
+
+        // 同步預先亂跳一幀，讓瀏覽器首次繪製就顯示亂數狀態
+        img.src = getDiceImageUrl(Math.ceil(Math.random() * 8));
+
+        const startTimeout = setTimeout(() => {
+            dieEl.classList.add('dice-rerolling-jump');
+
+            const swayTimeout = setTimeout(() => {
+                dieEl.classList.remove('dice-rerolling-jump');
+                dieEl.classList.add('dice-rerolling-sway');
+            }, 150);
+            _rerollAnimTimers.push({ interval: null, timeout: swayTimeout });
+
+            const scrambleInterval = setInterval(() => {
+                img.src = getDiceImageUrl(Math.ceil(Math.random() * 8));
+            }, 40);
+            _rerollAnimTimers.push({ interval: scrambleInterval, timeout: null });
+
+            const stopTimeout = setTimeout(() => {
+                clearInterval(scrambleInterval);
+                img.src = getDiceImageUrl(finalVal);
+                dieEl.classList.remove('dice-rerolling-jump', 'dice-rerolling-sway');
+            }, 280);
+            _rerollAnimTimers.push({ interval: null, timeout: stopTimeout });
+        }, staggerDelay);
+
+        _rerollAnimTimers.push({ interval: null, timeout: startTimeout });
+    });
+}
+
 // --- 控制器渲染 ---
 export function renderControls(battle, maxRolls) {
     if (battle.state === 'IDLE') { el.controlsContainer.innerHTML = ''; return; }
@@ -752,6 +800,105 @@ function playDiceSumFly(baseValue, onDone) {
             onDone();
         }, 150);
     }, 350);
+}
+
+function showHandNameFloat(rawName) {
+    if (!rawName || rawName === '無') return;
+
+    const groups = [
+        { letter: 'a', rules: RULE_DB.groupA },
+        { letter: 'b', rules: RULE_DB.groupB },
+        { letter: 'c', rules: RULE_DB.groupC },
+        { letter: 'd', rules: RULE_DB.groupD },
+    ];
+
+    let foundGroup = null, foundIndex = -1, foundRule = null;
+    for (const g of groups) {
+        const idx = g.rules.findIndex(r => rawName === r.name || rawName.startsWith(r.name));
+        if (idx !== -1) { foundGroup = g.letter; foundIndex = idx; foundRule = g.rules[idx]; break; }
+    }
+
+    const rarity = foundRule ? (foundRule.rarity || 1) : 1;
+    const i18nKey = foundGroup !== null ? `rules.rule_${foundGroup}${foundIndex}.name` : null;
+    const displayName = i18nKey ? (i18n.t(i18nKey) || rawName) : rawName;
+
+    const rarityClasses = ['', 'hand-float-common', 'hand-float-rare', 'hand-float-epic', 'hand-float-legendary', 'hand-float-mythic'];
+    const rarityClass = rarityClasses[rarity] || 'hand-float-common';
+    const durations = [0, 700, 800, 900, 1000, 1100];
+    const duration = durations[rarity] || 700;
+
+    const div = document.createElement('div');
+    div.className = `hand-float-base ${rarityClass}`;
+    div.textContent = displayName;
+    document.body.appendChild(div);
+    setTimeout(() => { if (div.parentNode) div.parentNode.removeChild(div); }, duration);
+}
+
+export function showHandNamesPreview(scoreResult) {
+    if (!scoreResult) return;
+    const zones = [];
+    const tags = [
+        { tag: scoreResult.tagA, zone: 'A' },
+        { tag: scoreResult.tagB, zone: 'B' },
+        { tag: scoreResult.tagC, zone: 'C' },
+        { tag: scoreResult.tagD, zone: 'D' },
+    ];
+    tags.forEach(({ tag, zone }) => {
+        if (tag && tag.name && tag.name !== '無' && tag.multi > 1.0) {
+            zones.push({ name: tag.name, zone });
+        }
+    });
+    if (zones.length === 0) return;
+
+    const diceContainer = document.getElementById('dice-container');
+    const rect = diceContainer
+        ? diceContainer.getBoundingClientRect()
+        : { left: window.innerWidth / 2, top: window.innerHeight / 2, width: 0, height: 0 };
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+
+    const allRules = [
+        ...(RULE_DB.groupA || []),
+        ...(RULE_DB.groupB || []),
+        ...(RULE_DB.groupC || []),
+        ...(RULE_DB.groupD || []),
+    ];
+
+    zones.forEach(({ name }, idx) => {
+        const rule = allRules.find(r => r.name === name || name.startsWith(r.name));
+        const rarity = rule ? (rule.rarity || 1) : 1;
+
+        let displayName = name;
+        ['groupA', 'groupB', 'groupC', 'groupD'].forEach(gKey => {
+            const letter = gKey.replace('group', '').toLowerCase();
+            (RULE_DB[gKey] || []).forEach((r, rIdx) => {
+                if (r.name === name || name.startsWith(r.name)) {
+                    const translated = i18n.t(`rules.rule_${letter}${rIdx}.name`);
+                    if (translated && translated !== `rules.rule_${letter}${rIdx}.name`) {
+                        displayName = translated;
+                    }
+                }
+            });
+        });
+
+        setTimeout(() => {
+            const floatEl = document.createElement('div');
+            floatEl.className = `hand-float-base hand-float-${getRarityClass(rarity)}`;
+            floatEl.textContent = displayName;
+            floatEl.style.left = `${centerX}px`;
+            floatEl.style.top = `${centerY}px`;
+            document.body.appendChild(floatEl);
+            setTimeout(() => floatEl.remove(), 1050);
+        }, idx * 380);
+    });
+}
+
+function getRarityClass(rarity) {
+    if (rarity >= 5) return 'mythic';
+    if (rarity >= 4) return 'legendary';
+    if (rarity >= 3) return 'epic';
+    if (rarity >= 2) return 'rare';
+    return 'common';
 }
 
 export function playDamageStepsAnimation(steps, callback) {
@@ -1512,6 +1659,9 @@ window.resetSouls = function() {
     window.saveMetaData();
 
     renderSoulsModal(meta);
+    if (window.clearSave) window.clearSave();
+    const btnContinue = document.getElementById('btn-continue');
+    if (btnContinue) btnContinue.classList.add('hidden');
 };
 
 // ===== Tutorial UI =====
