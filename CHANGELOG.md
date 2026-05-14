@@ -1,5 +1,22 @@
 
 
+### Fix：切換分頁或最小化時自動暫停／恢復 BGM [2026/05/14]
+* **問題**：使用者切換分頁或最小化瀏覽器（尤其行動裝置）時，BGM 持續播放，造成背景音效干擾。
+* **修復**：於 `js/audio.js` 的 `initAudio()` 函式中，在 `audioCtx = new AudioContext()` 建立後（第 90 行）新增 `visibilitychange` 事件監聽器：頁面隱藏時呼叫現有的 `pauseBGM()`，頁面重新顯示時呼叫現有的 `playBGM()`。監聽器僅在 `audioCtx` 首次建立時註冊一次，不會重複綁定。未新增任何新函式，亦未更動其他邏輯。
+
+### Feat：商店消耗品卡片視覺區分 [2026/05/14]
+* **目標**：讓消耗品在商店中一眼可辨，避免與遺物卡片混淆。
+* **`js/ui.js`**（`renderShopItems`，第 914–935 行）：
+  - 新增 `isConsumable`、`cardBg`、`consumableBadgeHtml`、`selectBtnText` 四個變數。
+  - 消耗品卡片背景改為暖琥珀深色漸層（`#1c1a14 → #19160e`）；稀有度邊框顏色不受影響。
+  - 稀有度徽章下方新增 `🧪 消耗品` 標籤（`bg-amber-900/60 text-amber-300`）。
+  - 選擇按鈕文字消耗品改為 `messages.shop_select_consumable`，遺物維持 `messages.shop_select`。
+* **四個 locale 檔案**（`zh-tw.js` 第 413–414 行、`zh-cn.js` 第 367–368 行、`en.js` 第 367–368 行、`ja.js` 第 367–368 行）：在 `shop_select` 後新增 `shop_select_consumable` 與 `consumable_tag` 鍵值。
+
+### Fix：隱藏「幻覺」枷鎖下未鎖定骰子的分數貢獻數字 [2026/05/14]
+* **問題**：當枷鎖 `illusion` 啟用時，每顆未鎖定骰子左上角的分數貢獻徽章仍顯示真實數值，洩漏骰子點數，破壞幻覺效果。
+* **修復**：於 `js/ui.js` 的 `renderDice` 函式中，新增 `isIllusioned` 判斷（第 491 行）——當 `shackleId === 'illusion'` 且骰子未鎖定且狀態非 IDLE/ROLLING 時，隱藏該骰子的分數貢獻徽章。鎖定骰子不受影響，計算邏輯完全未更動。
+
 ### Fix：歷史紀錄、結算統計與關卡標籤全面動態多語系化，解決牌型與敵人名稱卡在中文的問題 [2026/05/11]
 * **問題**：`renderHistoryModal` 中所有靜態標籤（「關卡類型」、「最佳牌型」、「遺物」、「枷鎖」）硬編碼繁中；`stageTypeLabel` 固定輸出中文字串（如「精英」、「無限塔」）；歷史紀錄的 `r.combo` 以儲存時的語系顯示，不跟隨當前語系；結算畫面的 `highestDamageCombo` 同樣卡中文。
 * **locale 新增**（4 個語系）：在 `ui` 區塊補齊 `stage_type_boss/elite/infinite/normal`、`history_stage_type`、`history_best_hand`、`history_relics`、`history_shackles` 共 8 個鍵值。
@@ -373,3 +390,9 @@
 
 ### 修復
 - 修復了商店購買「幸運草」系列消耗品時不會生效的 Bug，現在購買後會正確存入遺物背包，並在下一次戰鬥的初始擲骰時強制鎖定指定點數，同時消耗該道具。
+
+## [2.1.2] - 2024-05-14
+### 修復 (Fixes)
+- **無限塔文字**: 修正無限塔模式中擊敗 Boss/Elite 掉落遺物時，提示文字無法正確顯示在地化怪物名稱，而會顯示原始語系檔 Key 的問題。
+- **枷鎖幻象**: 修復「幻象」枷鎖發動時，骰子圖片依然顯示真實數字的視覺問題。
+- **音樂系統**: 解決背景音樂在載入淡入期間若被玩家手動靜音，仍會持續播放的錯誤。

@@ -364,6 +364,8 @@ ui: {
     'rarity_4': 'レジェンダリー',
     'rarity_5': 'ミシック',
     'shop_select': '✅ 選択',
+    'shop_select_consumable': '選択してすぐ使う',
+    'consumable_tag': '消耗アイテム',
     'shop_rerolled': '🚫 更新済み',
     'shop_leave': '店を出て次のステージへ 👉',
     'confirm_back_title': 'タイトルに戻りますか？'

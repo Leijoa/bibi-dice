@@ -410,6 +410,8 @@ ui: {
     'rarity_4': '傳說',
     'rarity_5': '神話',
     'shop_select': '✅ 選擇',
+    'shop_select_consumable': '選擇並馬上使用',
+    'consumable_tag': '消耗品',
     'shop_rerolled': '🚫 已刷新過',
     'shop_leave': '離開商店前往下一關 👉',
     'confirm_back_title': '確定要回到標題嗎？'

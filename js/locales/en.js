@@ -364,6 +364,8 @@ ui: {
     'rarity_4': 'Legendary',
     'rarity_5': 'Mythic',
     'shop_select': '✅ Select',
+    'shop_select_consumable': 'Select & Use Now',
+    'consumable_tag': 'Consumable',
     'shop_rerolled': '🚫 Already Rerolled',
     'shop_leave': 'Leave Shop & Next Stage 👉',
     'confirm_back_title': 'Are you sure you want to return to the title?'

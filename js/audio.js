@@ -45,6 +45,8 @@ function playSFXBuffer(name, vol = 1.0, cooldownSec = 0, onended = null) {
 export function setBGMMute(muted) {
     bgmMuted = muted;
     if (currentBGMGain && audioCtx) {
+        currentBGMGain.gain.cancelScheduledValues(audioCtx.currentTime);
+        currentBGMGain.gain.setValueAtTime(currentBGMGain.gain.value, audioCtx.currentTime);
         const targetVol = bgmMuted ? 0 : (currentBGMTrackId === '02' ? bgmVolume * 0.8 : bgmVolume);
         currentBGMGain.gain.linearRampToValueAtTime(targetVol, audioCtx.currentTime + 0.1);
     }
@@ -61,6 +63,8 @@ export function setSFXVolume(vol) {
 export function setBGMVolume(vol) {
     bgmVolume = Math.max(0, Math.min(1, vol));
     if (currentBGMGain && audioCtx && !bgmMuted) {
+        currentBGMGain.gain.cancelScheduledValues(audioCtx.currentTime);
+        currentBGMGain.gain.setValueAtTime(currentBGMGain.gain.value, audioCtx.currentTime);
         const targetVol = currentBGMTrackId === '02' ? bgmVolume * 0.8 : bgmVolume;
         currentBGMGain.gain.linearRampToValueAtTime(targetVol, audioCtx.currentTime + 0.1);
     }
@@ -83,6 +87,13 @@ export function initAudio() {
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         if (AudioContext) {
             audioCtx = new AudioContext();
+            document.addEventListener('visibilitychange', () => {
+                if (document.hidden) {
+                    pauseBGM();
+                } else {
+                    playBGM();
+                }
+            });
             loadBGM('01', 'bgm/bibbidiba_BGM_01.mp3');
             loadBGM('02', 'bgm/bibbidiba_BGM_02.mp3');
             loadBGM('title', 'bgm/bibi_title_bgm.mp3');

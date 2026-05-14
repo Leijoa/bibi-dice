@@ -487,7 +487,8 @@ export function renderDice(battle, activeHighlight, player) {
 
         let baseBadgeHtml = '';
         const isBlinded = shackleId === 'blind' && battle.state === 'WAIT_ACTION' && shackleMeta && shackleMeta.blindIndices && shackleMeta.blindIndices.includes(idx);
-        if (battle.state !== 'IDLE' && battle.state !== 'ROLLING' && !isBlinded) {
+        const isIllusioned = shackleId === 'illusion' && !d.locked && battle.state !== 'IDLE' && battle.state !== 'ROLLING';
+        if (battle.state !== 'IDLE' && battle.state !== 'ROLLING' && !isBlinded && !isIllusioned) {
              let badgeClass = isEnhanced ? "bg-amber-500 text-amber-950 shadow-[0_0_8px_rgba(245,158,11,0.8)]" : "bg-slate-700 text-slate-300 border border-slate-500";
              baseBadgeHtml = `<div class="absolute -top-2 -left-2 ${badgeClass} text-[8px] md:text-[10px] font-black px-1.5 py-0.5 rounded-full z-20">${Math.floor(baseVal)}</div>`;
         }
@@ -506,7 +507,7 @@ export function renderDice(battle, activeHighlight, player) {
         if (battle.state === 'IDLE') valDisplay = '-';
         if (battle.state === 'ROLLING' && !d.locked) valDisplay = '?';
 
-        const imgVal = (valDisplay === '-' || valDisplay === '?') ? 0 : d.val;
+        const imgVal = (valDisplay === '-' || valDisplay === '?') ? 0 : valDisplay;
 
         let lockIconHtml = '';
         if (d.locked && !activeHighlight) {
@@ -634,7 +635,7 @@ export function renderScore(battle, activeHighlight) {
             <span class="text-[9px] md:text-[10px] font-semibold tracking-widest uppercase text-slate-200">${i18n.t('ui.score_total_base')}</span>
             <span id="score-total-base-value" class="text-base md:text-lg font-black text-white">${res.totalBase.toFixed(1)}</span>
         </div>
-        <div class="flex overflow-x-auto gap-1 pb-0.5 scroll-smooth hide-scrollbar scrollable-row">${notesHtml}</div>
+        <div class="flex overflow-x-auto gap-1 pb-0.5 scroll-smooth hide-scrollbar">${notesHtml}</div>
     </div>
 
     <div class="grid grid-cols-4 gap-1 mb-1">
@@ -910,11 +911,15 @@ export function renderShopItems(shopItems, player) {
             }
         }
 
-        let rName = r.id.startsWith('cons_') ? i18n.t(`consumables.${r.id}.name`) : (i18n.t(`relics.${r.id}.name`) || r.name);
-        let rDesc = r.id.startsWith('cons_') ? i18n.t(`consumables.${r.id}.desc`) : (i18n.t(`relics.${r.id}.desc`) || r.desc);
+        let isConsumable = r.id.startsWith('cons_');
+        let rName = isConsumable ? i18n.t(`consumables.${r.id}.name`) : (i18n.t(`relics.${r.id}.name`) || r.name);
+        let rDesc = isConsumable ? i18n.t(`consumables.${r.id}.desc`) : (i18n.t(`relics.${r.id}.desc`) || r.desc);
+        let cardBg = isConsumable ? 'linear-gradient(160deg,#1c1a14 0%,#19160e 100%)' : 'linear-gradient(160deg,#1c1b1d 0%,#161519 100%)';
+        let consumableBadgeHtml = isConsumable ? `<span class="text-[9px] md:text-[10px] px-2 py-0.5 rounded-full bg-amber-900/60 text-amber-300 border border-amber-600/60 font-bold">🧪 ${i18n.t('messages.consumable_tag')}</span>` : '';
+        let selectBtnText = isConsumable ? i18n.t('messages.shop_select_consumable') : i18n.t('messages.shop_select');
 
         return `
-        <div class="p-3 rounded-xl flex flex-col justify-between relative overflow-hidden" style="background:linear-gradient(160deg,#1c1b1d 0%,#161519 100%); border:1px solid rgba(74,68,85,0.3); border-top:2px solid ${RARITY_TOP_COLOR[r.rarity]}; border-left:3px solid ${RARITY_LEFT_COLOR[r.rarity]};">
+        <div class="p-3 rounded-xl flex flex-col justify-between relative overflow-hidden" style="background:${cardBg}; border:1px solid rgba(74,68,85,0.3); border-top:2px solid ${RARITY_TOP_COLOR[r.rarity]}; border-left:3px solid ${RARITY_LEFT_COLOR[r.rarity]};">
             <div class="absolute top-0 right-0 w-24 h-24 ${style.bg} blur-3xl rounded-full transform translate-x-1/2 -translate-y-1/2 opacity-60"></div>
             <div class="relative z-10">
                 <div class="flex flex-col gap-1 mb-2">
@@ -922,6 +927,7 @@ export function renderShopItems(shopItems, player) {
                         <h3 class="text-base md:text-xl font-black leading-tight ${style.color}">${rName}</h3>
                         <div class="flex flex-col items-end gap-1 shrink-0">
                             <span class="text-[9px] md:text-[10px] px-2 py-0.5 rounded-full ${style.bg} ${style.color} border ${style.border} font-bold tracking-wide">${i18n.t(`messages.rarity_${r.rarity}`) || style.label}</span>
+                            ${consumableBadgeHtml}
                             ${isFusionMaterial ? `<span onclick="window.showFusionInfo('${fusionResultId}')" class="text-xs cursor-pointer px-1.5 py-0.5 rounded bg-cyan-900/60 text-cyan-300 border border-cyan-500 font-black shadow-[0_0_8px_rgba(34,211,238,0.4)] animate-pulse hover:bg-cyan-800 hover:scale-105 active:scale-95 transition-all">✨ ${i18n.t('ui.shop_fusion_hint') || '可融合'}</span>` : ''}
                         </div>
                     </div>
@@ -929,7 +935,7 @@ export function renderShopItems(shopItems, player) {
                 <p class="text-xs md:text-sm text-slate-400 mb-3 min-h-[2.5rem] leading-relaxed">${rDesc}</p>
             </div>
             <button onclick="window.buyItem(${idx})" class="w-full btn-primary font-black py-2.5 rounded-lg relative z-10 text-sm md:text-base">
-                ${i18n.t('messages.shop_select')}
+                ${selectBtnText}
             </button>
         </div>`;
     }).join('');
@@ -975,8 +981,8 @@ export function showFusionReplaceModal(currentFusions, newFusionId, callback) {
 
         // 修正右上角文字看不清楚的問題：將原本的 right-8 改為 right-6，並稍微增加 padding
         html += `
-        <div class="bg-slate-900/80 border-2 ${isNew ? 'border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.3)]' : 'border-slate-600'} rounded-xl p-3 md:p-4 flex flex-col justify-between h-full relative overflow-visible">
-            ${isNew ? `<div style="position:absolute; top:-10px; right:-10px; background:#f59e0b; color:#000; font-size:11px; font-weight:900; padding:3px 8px; border-radius:4px; letter-spacing:1px; z-index:10; box-shadow:0 2px 6px rgba(0,0,0,0.4);">${newFusionText}</div>` : ''}
+        <div class="bg-slate-900/80 border-2 ${isNew ? 'border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.3)]' : 'border-slate-600'} rounded-xl p-3 md:p-4 flex flex-col justify-between h-full relative overflow-hidden">
+            ${isNew ? `<div class="absolute -top-1 -right-6 bg-amber-500 text-slate-900 text-[10px] font-black px-10 py-1 rotate-45 text-center">${newFusionText}</div>` : ''}
             <div>
                 <div class="flex justify-between items-start mb-2 mt-2">
                     <h3 class="text-base md:text-lg font-black ${style.color}">${rName}</h3>

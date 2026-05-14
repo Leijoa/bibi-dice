@@ -364,6 +364,8 @@ ui: {
     'rarity_4': '传说',
     'rarity_5': '神话',
     'shop_select': '✅ 选择',
+    'shop_select_consumable': '选择并立刻使用',
+    'consumable_tag': '消耗品',
     'shop_rerolled': '🚫 已刷新过',
     'shop_leave': '离开商店前往下一关 👉',
     'confirm_back_title': '确定要回到标题吗？'
