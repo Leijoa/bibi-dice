@@ -506,7 +506,7 @@ export function renderDice(battle, activeHighlight, player) {
         if (battle.state === 'IDLE') valDisplay = '-';
         if (battle.state === 'ROLLING' && !d.locked) valDisplay = '?';
 
-        const imgVal = (valDisplay === '-' || valDisplay === '?') ? 0 : d.val;
+        const imgVal = (valDisplay === '-' || valDisplay === '?') ? 0 : valDisplay;
 
         let lockIconHtml = '';
         if (d.locked && !activeHighlight) {
