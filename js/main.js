@@ -1680,7 +1680,12 @@ function enemyDefeated() {
 
         // Handle Souls
         let enemyName = getEnemyWithMeta(stage.level).name;
-        let enemyNameI18n = i18n.t(`enemies.enemy_${stage.level}`) || enemyName;
+        let enemyNameI18n = enemyName;
+        if (stage.level < ENEMY_DB.length) {
+            enemyNameI18n = i18n.t(`enemies.enemy_${stage.level}`) || enemyName;
+        } else {
+            enemyNameI18n = i18n.t(`monsters.monster_${stage.infiniteMonsterId}`);
+        }
         let earnedSouls = isBoss(stage.level) && !player.isInfiniteMode ? 2 : 1;
         if (player.isInfiniteMode || stage.level >= ENEMY_DB.length) earnedSouls = 1;
 
