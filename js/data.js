@@ -233,11 +233,11 @@ export const RULE_DB = {
         { name: '三龍會', desc: '分成三組完全相連的順子', multi: 'x12.0' , rarity: 3 },
         { name: '經典四對子', desc: '嚴格的4組對子(無3同或4同)', multi: 'x10.0' , rarity: 2 },
         { name: '雙四連順', desc: '兩組4連順', multi: 'x10.0' , rarity: 2 },
-        { name: '白馬', desc: '4同 + 3同', multi: 'x8.0' , rarity: 2 },
-        { name: '平胡', desc: '兩組3連順 + 一組對子', multi: 'x6.0' , rarity: 2 },
+        { name: '白馬', desc: '4同 + 3同', multi: 'x8.0' , rarity: 3 },
+        { name: '平胡', desc: '兩組3連順 + 一組對子', multi: 'x6.0' , rarity: 3 },
         { name: '碰碰胡', desc: '兩組3同 + 一組對子', multi: 'x5.0' , rarity: 2 },
-        { name: '順碰交響曲', desc: '1組3連順 + 1組3同', multi: 'x4.0' , rarity: 1 },
-        { name: '雙三連順', desc: '兩組3連順', multi: 'x4.0' , rarity: 1 },
+        { name: '順碰交響曲', desc: '1組3連順 + 1組3同', multi: 'x4.0' , rarity: 2 },
+        { name: '雙三連順', desc: '兩組3連順', multi: 'x4.0' , rarity: 2 },
         { name: '雙三同', desc: '兩組3同', multi: 'x3.5' , rarity: 1 },
         { name: '南瓜', desc: '3同 + 一組對子', multi: 'x3.5' , rarity: 1 },
         { name: '三對子', desc: '任意3組對子', multi: 'x3.0' , rarity: 1 },
@@ -246,14 +246,14 @@ export const RULE_DB = {
     groupD: [
         { name: '兩極', desc: '盤面只有 1 和 8', multi: 'x30.0' , rarity: 4 },
         { name: '絕對秩序', desc: '7顆以上數字為全奇數或全偶數', multi: 'x8.0' , rarity: 3 },
-        { name: '全異', desc: '8顆數字皆不相同', multi: 'x10.0' , rarity: 2 },
+        { name: '全異', desc: '8顆數字皆不相同', multi: 'x10.0' , rarity: 3 },
         { name: '中庸之道', desc: '盤面完全沒有 1 和 8', multi: 'x2.0' , rarity: 1 },
         { name: '斐波那契數列', desc: '大自然隱藏的黃金螺旋公式 (112358)', multi: 'x8.0' , rarity: 3 },
         { name: '圓周率', desc: '精準四捨五入，理科生的基本浪漫 (3.1416)', multi: 'x6.0' , rarity: 3 },
         { name: '自然對數', desc: '刻在宇宙與工程師 DNA 裡的常數 (271828)', multi: 'x8.0', rarity: 3 },
         { name: '二進位', desc: '世界上只有 10 種人懂得這組密碼 (1248)', multi: 'x4.0', rarity: 2 },
-        { name: '絕對二進位', desc: '雙通道記憶體插滿的極致愉悅 (11224488)', multi: 'x30.0', rarity: 3 },
+        { name: '絕對二進位', desc: '雙通道記憶體插滿的極致愉悅 (11224488)', multi: 'x30.0', rarity: 4 },
         { name: '質數', desc: '神父說緊張的時候就要數質數 (2357)', multi: 'x4.0', rarity: 2 },
-        { name: '絕對質數', desc: '神父狂喜！雙倍的孤獨，雙倍的安心感 (22335577)', multi: 'x30.0', rarity: 3 }
+        { name: '絕對質數', desc: '神父狂喜！雙倍的孤獨，雙倍的安心感 (22335577)', multi: 'x30.0', rarity: 4 }
     ]
 };
