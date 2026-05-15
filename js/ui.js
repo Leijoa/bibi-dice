@@ -912,7 +912,7 @@ export function showHandNamesPreview(scoreResult) {
             if (isFinal) {
                 floatEl.className = `hand-float-base hand-float-${getRarityClass(rarity)}`;
             } else {
-                floatEl.className = 'hand-float-base hand-float-away';
+                floatEl.className = `hand-float-base hand-float-${getRarityClass(rarity)} hand-float-away`;
                 const offsetX = (Math.random() - 0.5) * 60;
                 floatEl.style.setProperty('--float-x', offsetX + 'px');
             }

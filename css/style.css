@@ -1014,7 +1014,8 @@ button[id^="btn-close"]:hover {
   font-family: inherit;
   text-align: center;
   white-space: nowrap;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
   /* left and top are set dynamically via JS to center over dice-container */
 }
 
@@ -1022,7 +1023,7 @@ button[id^="btn-close"]:hover {
 .hand-float-common {
   max-width: 90vw;
   white-space: nowrap;
-  font-size: clamp(1.0rem, 4vw, 2.0rem);
+  font-size: clamp(1.4rem, 8vw, 2.0rem);
   color: #e2e8f0;
   text-shadow:
     -2px -2px 0 rgba(0,0,0,0.9),
@@ -1043,7 +1044,7 @@ button[id^="btn-close"]:hover {
 .hand-float-rare {
   max-width: 90vw;
   white-space: nowrap;
-  font-size: clamp(1.2rem, 5vw, 2.6rem);
+  font-size: clamp(1.6rem, 10vw, 2.6rem);
   color: #93c5fd;
   text-shadow:
     -2px -2px 0 rgba(0,0,0,0.9),
@@ -1066,7 +1067,7 @@ button[id^="btn-close"]:hover {
 .hand-float-epic {
   max-width: 90vw;
   white-space: nowrap;
-  font-size: clamp(1.4rem, 6vw, 3.2rem);
+  font-size: clamp(1.8rem, 12vw, 3.2rem);
   color: #d8b4fe;
   text-shadow:
     -2px -2px 0 rgba(0,0,0,0.9),
@@ -1089,7 +1090,7 @@ button[id^="btn-close"]:hover {
 .hand-float-legendary {
   max-width: 90vw;
   white-space: nowrap;
-  font-size: clamp(1.6rem, 7vw, 3.8rem);
+  font-size: clamp(2.0rem, 14vw, 3.8rem);
   color: #fde68a;
   text-shadow:
     -2px -2px 0 rgba(0,0,0,0.9),
@@ -1114,7 +1115,7 @@ button[id^="btn-close"]:hover {
 .hand-float-mythic {
   max-width: 90vw;
   white-space: nowrap;
-  font-size: clamp(1.8rem, 8vw, 4.5rem);
+  font-size: clamp(2.2rem, 16vw, 4.5rem);
   color: #67e8f9;
   text-shadow:
     -2px -2px 0 rgba(0,0,0,0.9),
