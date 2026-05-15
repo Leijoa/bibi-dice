@@ -334,6 +334,23 @@ header {
     transition: color 0.3s, fill 0.3s, text-shadow 0.3s;
 }
 
+#final-score-value {
+    max-width: 100%;
+    white-space: nowrap;
+}
+
+#final-score-value.damage-digits-long {
+    font-size: clamp(32px, 8.2vw, 56px) !important;
+}
+
+#final-score-value.damage-digits-xl {
+    font-size: clamp(26px, 6.4vw, 46px) !important;
+}
+
+#final-score-value.damage-digits-xxl {
+    font-size: clamp(20px, 5.2vw, 36px) !important;
+}
+
 /* Modal panels */
 #rules-modal > div,
 #history-modal > div,

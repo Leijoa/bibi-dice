@@ -620,6 +620,31 @@ function updateDamagePreviewBar(damage) {
     if (el.enemyHpBar) el.enemyHpBar.classList.toggle('hp-bar-killshot', isKillShot);
 }
 
+function setFinalScoreText(text) {
+    if (!el.finalScoreValue) return;
+
+    const displayText = String(text);
+    const digitCount = displayText.replace(/[^0-9]/g, '').length;
+    el.finalScoreValue.textContent = displayText;
+    el.finalScoreValue.classList.remove('damage-digits-long', 'damage-digits-xl', 'damage-digits-xxl');
+
+    if (digitCount >= 14) {
+        el.finalScoreValue.classList.add('damage-digits-xxl');
+    } else if (digitCount >= 12) {
+        el.finalScoreValue.classList.add('damage-digits-xl');
+    } else if (digitCount >= 10) {
+        el.finalScoreValue.classList.add('damage-digits-long');
+    }
+}
+
+function setScoreText(targetEl, text) {
+    if (targetEl === el.finalScoreValue) {
+        setFinalScoreText(text);
+        return;
+    }
+    targetEl.textContent = text;
+}
+
 export function renderScore(battle, activeHighlight) {
     if (!battle.scoreResult || battle.state === 'ROLLING') {
         el.scoreDisplay.innerHTML = `
@@ -644,7 +669,7 @@ export function renderScore(battle, activeHighlight) {
             <div class="text-base font-black text-slate-600">x-</div>
           </div>
         </div>`;
-        if (el.finalScoreValue) el.finalScoreValue.textContent = '0';
+        setFinalScoreText('0');
         if (el.damagePreviewBar) el.damagePreviewBar.classList.add('hidden');
         if (el.enemyHpBar) el.enemyHpBar.classList.remove('hp-bar-killshot');
         return;
@@ -726,7 +751,7 @@ export function renderScore(battle, activeHighlight) {
         const isDrunk = window.getStageActiveShackle && window.getStageActiveShackle() === 'shackle_drunk';
 
         if (!damageVisible) {
-            el.finalScoreValue.textContent = '???';
+            setFinalScoreText('???');
             el.finalScoreValue.classList.add('score-normal');
             el.finalScoreValue.classList.remove('score-hot');
             el.finalScoreValue.classList.remove('damage-drunk');
@@ -736,7 +761,7 @@ export function renderScore(battle, activeHighlight) {
             const displayScore = window.getDisplayedEstimatedDamage
                 ? window.getDisplayedEstimatedDamage(res.finalScore)
                 : res.finalScore;
-            el.finalScoreValue.textContent = Math.floor(displayScore).toLocaleString();
+            setFinalScoreText(Math.floor(displayScore).toLocaleString());
             let enemyHp = window.getStageEnemyHp ? window.getStageEnemyHp() : Infinity;
             if (displayScore >= enemyHp * 0.5) {
                 el.finalScoreValue.classList.add('score-hot');
@@ -777,9 +802,9 @@ function countUpTo(targetEl, targetValue, duration, onDone) {
     const startTime = performance.now();
     const animate = (now) => {
         const progress = Math.min((now - startTime) / duration, 1);
-        targetEl.textContent = Math.floor(startValue + diff * progress).toLocaleString();
+        setScoreText(targetEl, Math.floor(startValue + diff * progress).toLocaleString());
         if (progress < 1) requestAnimationFrame(animate);
-        else { targetEl.textContent = targetValue.toLocaleString(); if (onDone) onDone(); }
+        else { setScoreText(targetEl, targetValue.toLocaleString()); if (onDone) onDone(); }
     };
     requestAnimationFrame(animate);
 }
@@ -992,7 +1017,7 @@ export function playDamageStepsAnimation(steps, callback) {
         }
 
         if (step.zero) {
-            el.finalScoreValue.textContent = '0';
+            setFinalScoreText('0');
             setTimeout(playNext, currentDelay);
             return;
         }
