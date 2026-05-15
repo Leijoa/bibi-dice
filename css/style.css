@@ -939,12 +939,14 @@ button[id^="btn-close"]:hover {
   background: radial-gradient(ellipse at center, rgba(40,20,70,0.4) 0%, rgba(10,10,15,0.2) 100%);
   border-radius: 8px;
   padding: 6px 4px;
+  will-change: transform;
+  contain: layout;
 }
 
 /* ===== Board Panel 石板紋理系統 ===== */
 /* 用 CSS custom property 讓 JS 能動態切換，同時以 !important 覆蓋 .card-board 的 !important gradient */
 #board-panel {
-  overflow-x: hidden;
+  overflow: hidden;
   position: relative;
   --board-texture-url: url('../img/board_stone_blue.webp');
   background-image: var(--board-texture-url) !important;
