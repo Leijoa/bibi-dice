@@ -1,5 +1,10 @@
 
 
+### Feat：攻擊按鈕音效改版，加入依稀有度分層的牌型揭示音效 [2026/05/15]
+* **`js/audio.js`**（`playAttackSound`，第 222–228 行）：移除原本按下攻擊按鈕的雙段衝擊音（150Hz sawtooth + 100Hz square），改為單一輕量蓄力聲（120Hz sawtooth）。視覺衝擊感移至後續牌型揭示階段播放，避免音效在按鈕按下時就過早高潮。
+* **`js/audio.js`**（新增 `playHandRevealSound`，`playAttackSound` 之後，約第 230 行）：依 `rarity` 參數播放不同層次的合成音效：Common（單一 sine）、Rare（雙音上行）、Epic（三音三角波和弦）、Legendary/Mythic（四音金屬閃光和弦），最終牌型（`isFinal=true`）額外提升音量與延音，並對 Legendary 增加第五個高頻閃光泛音。
+* **`js/ui.js`**（`showHandNamesPreview`，第 902–918 行）：在每個牌型浮現元素建立前呼叫 `Audio.playHandRevealSound(rarity, isFinal)`，`isFinal` 以 `idx === zones.length - 1` 判斷；同時將原本直接引用 `idx === zones.length - 1` 的條件式改為使用 `isFinal` 變數，保持程式碼一致性。
+
 ### 修復：固定 score-display 最小高度防止 board-panel 拉伸 [2026/05/15]
 * **`css/style.css`**（新增 `#score-display` 規則，`#board-panel` 之前，約第 945 行）：新增 `min-height: 140px`。ROLLING 狀態下 scoreDisplay 內容僅剩結算提示文字，高度塌縮後 flex 父容器會將空間分配給 `#board-panel` 造成拉伸；固定最小高度可確保分數區在任何內容狀態下都不會低於 140px，從根本上阻止高度變化傳播至上層容器。
 

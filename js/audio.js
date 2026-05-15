@@ -221,10 +221,40 @@ export function playRollSound() {
 
 export function playAttackSound() {
     if (sfxMuted || sfxVolume <= 0) return;
-    // 按鈕即時回饋：只播合成衝擊音
-    // MP3 劍擊聲由 playAttackImpactSound() 在分數動畫結尾觸發
-    playTone(150, 'sawtooth', 0.2, 0.2);
-    setTimeout(() => playTone(100, 'square', 0.3, 0.3), 50);
+    // Light charge sound only — impact moved to hand reveal phase
+    playTone(120, 'sawtooth', 0.12, 0.12);
+}
+
+export function playHandRevealSound(rarity, isFinal = false) {
+    if (sfxMuted || sfxVolume <= 0 || !audioCtx) return;
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+
+    const vol = isFinal ? 0.18 : 0.10;
+    const finalMult = isFinal ? 1.4 : 1.0;
+
+    if (rarity === 1) {
+        // Common: single soft tone
+        playTone(420, 'sine', isFinal ? 0.25 : 0.15, vol);
+    } else if (rarity === 2) {
+        // Rare: two ascending tones
+        playTone(520, 'sine', 0.12, vol);
+        setTimeout(() => playTone(680, 'sine', isFinal ? 0.3 : 0.18, vol), 80);
+    } else if (rarity === 3) {
+        // Epic: three-note chord with thickness
+        playTone(440, 'triangle', 0.15, vol * finalMult);
+        setTimeout(() => playTone(550, 'triangle', 0.15, vol * finalMult), 60);
+        setTimeout(() => playTone(660, 'triangle', isFinal ? 0.4 : 0.22, vol * finalMult), 120);
+    } else if (rarity >= 4) {
+        // Legendary: metallic shimmer chord
+        playTone(880, 'square', 0.08, vol * finalMult);
+        setTimeout(() => playTone(660, 'sine', 0.15, vol * finalMult), 40);
+        setTimeout(() => playTone(1100, 'sine', 0.12, vol * finalMult), 80);
+        setTimeout(() => playTone(1320, 'sine', isFinal ? 0.5 : 0.28, vol * finalMult * 1.2), 150);
+        if (isFinal) {
+            // Extra shimmer for final legendary
+            setTimeout(() => playTone(1760, 'sine', 0.3, 0.12), 250);
+        }
+    }
 }
 
 // 分數動畫最後一步完成後落地的劍擊聲（MP3）

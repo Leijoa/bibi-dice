@@ -139,7 +139,7 @@ export const en_data = {
     'groupB_desc': 'Group B: Sequential Numbers',
     'groupC_desc': 'Group C: Combined Sets (Pairs, Trips, Quads + Straights)',
     'groupD_desc': 'Group D: Special Hands',
-    'rule_a0': { name: 'BIBBIDIBA', desc: '8 of a kind' },
+    'rule_a0': { name: 'BIBI-DICE', desc: '8 of a kind' },
     'rule_a1': { name: 'Sevenfold', desc: '7 of a kind' },
     'rule_a2': { name: 'Sixfold', desc: '6 of a kind' },
     'rule_a3': { name: 'Fivefold', desc: '5 of a kind' },

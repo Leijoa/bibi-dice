@@ -900,9 +900,11 @@ export function showHandNamesPreview(scoreResult) {
         });
 
         setTimeout(() => {
+            const isFinal = (idx === zones.length - 1);
+            Audio.playHandRevealSound(rarity, isFinal);
             const floatEl = document.createElement('div');
 
-            if (idx === zones.length - 1) {
+            if (isFinal) {
                 floatEl.className = `hand-float-base hand-float-${getRarityClass(rarity)}`;
             } else {
                 floatEl.className = 'hand-float-base hand-float-away';
