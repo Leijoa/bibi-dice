@@ -1,5 +1,9 @@
 
 
+### 優化與修復：修復重骰時的版面短暫拉伸跑版問題 [2026/05/15]
+* **`css/style.css`**：新增 `#dice-container` 的 `overflow: hidden` 限制，並且將原本的兩個互相衝突的 class（`.dice-rerolling-jump` 和 `.dice-rerolling-sway`）整合成為一個共用的單一動畫類別 `.dice-rerolling` 與 `@keyframes diceRerollCombined`。
+* **`js/ui.js`**：更新 `startDiceRerollAnimation`，移除舊版的交替 timeout 邏輯並只套用新的單一 `.dice-rerolling` class。
+
 ### Fix：牌型浮現文字可見度與錯開間距修正 [2026/05/15]
 * **`css/style.css`**（各 `.hand-float-*` class，第 1017–1102 行）：所有稀有度加入四角黑色描邊（`-2px/-2px` 各方向 `rgba(0,0,0,0.9)`），使文字在任意背景下均清晰可讀；各稀有度調亮顏色（Common `#cbd5e1`→`#e2e8f0`、Rare `#60a5fa`→`#93c5fd`、Epic `#c084fc`→`#d8b4fe`、Legendary `#fbbf24`→`#fde68a`、Mythic `#22d3ee`→`#67e8f9`）；光暈強度同步提升。
 * **`js/ui.js`**（`showHandNamesPreview`，第 892 行）：stagger 間隔由 280ms 延長至 **380ms**，避免多牌型同時重疊；元素自動移除 timeout 由 1000ms 調整為 **1050ms** 配合間隔。

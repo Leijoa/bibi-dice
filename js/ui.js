@@ -556,13 +556,7 @@ export function startRerollAnimation(unlockedIndices, finalDice) {
         img.src = getDiceImageUrl(Math.ceil(Math.random() * 8));
 
         const startTimeout = setTimeout(() => {
-            dieEl.classList.add('dice-rerolling-jump');
-
-            const swayTimeout = setTimeout(() => {
-                dieEl.classList.remove('dice-rerolling-jump');
-                dieEl.classList.add('dice-rerolling-sway');
-            }, 150);
-            _rerollAnimTimers.push({ interval: null, timeout: swayTimeout });
+            dieEl.classList.add('dice-rerolling');
 
             const scrambleInterval = setInterval(() => {
                 img.src = getDiceImageUrl(Math.ceil(Math.random() * 8));
@@ -572,7 +566,7 @@ export function startRerollAnimation(unlockedIndices, finalDice) {
             const stopTimeout = setTimeout(() => {
                 clearInterval(scrambleInterval);
                 img.src = getDiceImageUrl(finalVal);
-                dieEl.classList.remove('dice-rerolling-jump', 'dice-rerolling-sway');
+                dieEl.classList.remove('dice-rerolling');
             }, 280);
             _rerollAnimTimers.push({ interval: null, timeout: stopTimeout });
         }, staggerDelay);
