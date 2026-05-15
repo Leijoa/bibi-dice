@@ -552,9 +552,6 @@ export function startRerollAnimation(unlockedIndices, finalDice) {
         const finalVal = finalDice[diceIdx].val;
         const staggerDelay = staggerPos * 35;
 
-        // 同步預先亂跳一幀，讓瀏覽器首次繪製就顯示亂數狀態
-        img.src = getDiceImageUrl(Math.ceil(Math.random() * 8));
-
         const startTimeout = setTimeout(() => {
             dieEl.classList.add('dice-rerolling');
 
@@ -625,7 +622,28 @@ function updateDamagePreviewBar(damage) {
 
 export function renderScore(battle, activeHighlight) {
     if (!battle.scoreResult || battle.state === 'ROLLING') {
-        el.scoreDisplay.innerHTML = `<div class="text-slate-500 text-center mt-2 mb-2 font-bold animate-pulse text-xs">盤面結算中...</div>`;
+        el.scoreDisplay.innerHTML = `
+        <div class="text-slate-500 text-center font-bold animate-pulse text-xs mb-1">
+          ${typeof window !== 'undefined' && window.i18n ? window.i18n.t('ui.score_calculating') : '盤面結算中...'}
+        </div>
+        <div class="grid grid-cols-4 gap-1.5 mt-1">
+          <div class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden border-slate-700 bg-slate-800/40 opacity-30">
+            <div class="text-[9px] text-slate-500">-</div>
+            <div class="text-base font-black text-slate-600">x-</div>
+          </div>
+          <div class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden border-slate-700 bg-slate-800/40 opacity-30">
+            <div class="text-[9px] text-slate-500">-</div>
+            <div class="text-base font-black text-slate-600">x-</div>
+          </div>
+          <div class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden border-slate-700 bg-slate-800/40 opacity-30">
+            <div class="text-[9px] text-slate-500">-</div>
+            <div class="text-base font-black text-slate-600">x-</div>
+          </div>
+          <div class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden border-slate-700 bg-slate-800/40 opacity-30">
+            <div class="text-[9px] text-slate-500">-</div>
+            <div class="text-base font-black text-slate-600">x-</div>
+          </div>
+        </div>`;
         if (el.finalScoreValue) el.finalScoreValue.textContent = '0';
         if (el.damagePreviewBar) el.damagePreviewBar.classList.add('hidden');
         if (el.enemyHpBar) el.enemyHpBar.classList.remove('hp-bar-killshot');

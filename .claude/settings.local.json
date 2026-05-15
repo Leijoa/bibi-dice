@@ -54,7 +54,8 @@
       "Bash(Get-Content d:/unity/bibi-dice/js/locales/en.js)",
       "Bash(Get-Content d:/unity/bibi-dice/js/locales/ja.js)",
       "PowerShell(\"---\")",
-      "Bash(git stash *)"
+      "Bash(git stash *)",
+      "Bash(git checkout *)"
     ]
   }
 }

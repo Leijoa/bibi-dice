@@ -660,7 +660,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     if (playerRelics.includes('extremist') && tagD.name !== '無') {
         let amt = isExploited ? 1.25 : 1.5;
         tagD.multi *= amt;
-        globalNotes.push({ text: `${getRelicName('extremist', '【極端份子】')} D區 x${amt.toFixed(2)}`, type: 'relic' });
+        globalNotes.push({ text: _t('messages.extremist_zone_note', getRelicName('extremist', '【極端份子】'), amt.toFixed(2)), type: 'relic' });
         // tagD.multi modification: captured in zone D step below (using final tagD.multi)
     }
 
@@ -669,7 +669,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         if (tagD.name === '絕對秩序') {
             let scaleAmt = playerHp === 1 ? 2.0 : (playerHp === 2 ? 1.75 : 1.5);
             tagD.multi *= scaleAmt;
-            globalNotes.push({ text: `${getRelicName('fusion_scale_apex', '【天秤之極】')} 絕對秩序倍率 x${scaleAmt.toFixed(2)}`, type: 'relic' });
+            globalNotes.push({ text: _t('messages.scale_apex_order_note', getRelicName('fusion_scale_apex', '【天秤之極】'), scaleAmt.toFixed(2)), type: 'relic' });
             // tagD.multi modification: captured in zone D step below (using final tagD.multi)
         }
     }

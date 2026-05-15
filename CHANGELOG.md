@@ -1,5 +1,32 @@
 
 
+### 修復：固定 score-display 最小高度防止 board-panel 拉伸 [2026/05/15]
+* **`css/style.css`**（新增 `#score-display` 規則，`#board-panel` 之前，約第 945 行）：新增 `min-height: 140px`。ROLLING 狀態下 scoreDisplay 內容僅剩結算提示文字，高度塌縮後 flex 父容器會將空間分配給 `#board-panel` 造成拉伸；固定最小高度可確保分數區在任何內容狀態下都不會低於 140px，從根本上阻止高度變化傳播至上層容器。
+
+### 修復：ROLLING 狀態期間保留 ABCD 區佔位高度並國際化結算提示文字 [2026/05/15]
+* **`js/ui.js`**（`renderScore`，第 624–630 行）：將 ROLLING 狀態下的 scoreDisplay 由單行文字替換為「結算提示文字 + 4 欄暗色佔位格子」的複合版面。原本只有一行文字時 scoreDisplay 高度極小，骰子動畫結束後格子出現造成版面跳動；佔位格子與真實 ABCD 區高度相同，確保版面在整個 ROLLING 期間維持固定高度。
+* **`js/ui.js`**（同上）：結算提示文字改由 `window.i18n.t('ui.score_calculating')` 取得，保留硬編碼繁中作為 fallback。
+* **`js/locales/zh-tw.js`**（第 251 行）：`ui` 區段新增 `score_calculating: '盤面結算中...'`。
+* **`js/locales/zh-cn.js`**（第 251 行）：新增 `score_calculating: '盘面结算中...'`。
+* **`js/locales/en.js`**（第 251 行）：新增 `score_calculating: 'Calculating...'`。
+* **`js/locales/ja.js`**（第 251 行）：新增 `score_calculating: '計算中...'`。
+
+### 修復：移除重骰動畫的 translateY，徹底消除版面回流 [2026/05/15]
+* **`css/style.css`**（`@keyframes diceRerollCombined`，第 48–59 行）：移除所有影格的 `translateY()` 函數，僅保留 `rotate()`。`translateY` 會造成元素幾何位置改變，即使父容器有 `overflow: hidden` 與 `contain: layout paint`，部分瀏覽器仍可能觸發 layout reflow 導致 board-panel 高度瞬間拉伸；純 `rotate()` 只改變視覺旋轉，不影響佔位幾何，完全杜絕此問題。同時將影格從 10 格精簡為 8 格，保留左右搖擺的節奏感。
+
+### 修復：極端份子與天秤之極遺物說明文字國際化 [2026/05/15]
+* **`js/engine.js`**（第 663 行）：將 `extremist` 遺物 D 區倍率的 globalNote 由硬編碼中文模板字串改為 `_t('messages.extremist_zone_note', ...)` 呼叫。
+* **`js/engine.js`**（第 672 行）：將 `fusion_scale_apex` 遺物絕對秩序倍率的 globalNote 由硬編碼中文模板字串改為 `_t('messages.scale_apex_order_note', ...)` 呼叫。
+* **`js/locales/zh-tw.js`**（第 429 行）：新增 `extremist_zone_note`（`'{0} D區 x{1}'`）與 `scale_apex_order_note`（`'{0} 絕對秩序倍率 x{1}'`）。
+* **`js/locales/zh-cn.js`**（第 383 行）：新增對應簡體中文翻譯（D区、绝对秩序倍率）。
+* **`js/locales/en.js`**（第 383 行）：新增對應英文翻譯（Group D、Absolute Order）。
+* **`js/locales/ja.js`**（第 383 行）：新增對應日文翻譯（Dグループ、絶対秩序）。
+
+### 修復：重骰動畫造成 board-panel 垂直拉伸跑版 [2026/05/15]
+* **`js/ui.js`**（`startRerollAnimation`，第 556 行）：刪除在 setTimeout 之前同步執行的 `img.src = getDiceImageUrl(Math.ceil(Math.random() * 8))` 這一行。該行對全部 8 顆骰子同步觸發圖片重載，導致瀏覽器在動畫開始前就進行大量 layout 重算，造成版面瞬間拉伸；scramble interval 已能正確處理亂數圖片切換，無需此行。
+* **`css/style.css`**（`@keyframes diceRerollCombined`，第 48–59 行）：移除所有影格中的 `scale()` 函數。`scale(1.08)` 與 `rotate()` 同時作用時會擴大元素的 axis-aligned bounding box，即使有 `overflow: hidden` 仍會觸發 layout 重算並擠壓父容器；改為純 `translateY` + `rotate` 組合，保留搖擺跳躍效果的同時完全消除尺寸變化。
+* **`css/style.css`**（`#board-panel`，第 947 行）：新增 `contain: layout paint`，建立獨立的 layout containment context，使 board-panel 內部的動畫不再影響外部 DOM 樹的 layout 計算，徹底防止骰子動畫期間面板高度被重新計算。
+
 ### 優化與修復：修復重骰時的版面短暫拉伸跑版問題 [2026/05/15]
 * **`css/style.css`**：新增 `#dice-container` 的 `overflow: hidden` 限制，並且將原本的兩個互相衝突的 class（`.dice-rerolling-jump` 和 `.dice-rerolling-sway`）整合成為一個共用的單一動畫類別 `.dice-rerolling` 與 `@keyframes diceRerollCombined`。
 * **`js/ui.js`**：更新 `startDiceRerollAnimation`，移除舊版的交替 timeout 邏輯並只套用新的單一 `.dice-rerolling` class。

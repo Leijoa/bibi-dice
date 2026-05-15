@@ -247,7 +247,8 @@ ui: {
     history_stage_type: '關卡類型',
     history_best_hand: '最佳牌型',
     history_relics: '遺物',
-    history_shackles: '枷鎖'
+    history_shackles: '枷鎖',
+    score_calculating: '盤面結算中...'
   },
   tutorial: {
     btn_start: '🎓 新手教學',
@@ -425,7 +426,9 @@ ui: {
     'consumable_tag': '消耗品',
     'shop_rerolled': '🚫 已刷新過',
     'shop_leave': '離開商店前往下一關 👉',
-    'confirm_back_title': '確定要回到標題嗎？'
+    'confirm_back_title': '確定要回到標題嗎？',
+    'extremist_zone_note': '{0} D區 x{1}',
+    'scale_apex_order_note': '{0} 絕對秩序倍率 x{1}'
   },
   enemy_lines: {
     arrogant: {
