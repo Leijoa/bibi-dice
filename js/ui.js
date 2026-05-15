@@ -864,15 +864,20 @@ export function showHandNamesPreview(scoreResult) {
         ...(RULE_DB.groupD || []),
     ];
 
-    zones.forEach(({ name }, idx) => {
-        const rule = allRules.find(r => r.name === name || name.startsWith(r.name));
-        const rarity = rule ? (rule.rarity || 1) : 1;
+    zones.forEach(z => {
+        const rule = allRules.find(r => r.name === z.name || z.name.startsWith(r.name));
+        z.handRarity = rule ? (rule.rarity || 1) : 1;
+    });
 
-        let displayName = name;
+    zones.sort((a, b) => a.handRarity - b.handRarity);
+
+    zones.forEach((z, idx) => {
+        const rarity = z.handRarity;
+        let displayName = z.name;
         ['groupA', 'groupB', 'groupC', 'groupD'].forEach(gKey => {
             const letter = gKey.replace('group', '').toLowerCase();
             (RULE_DB[gKey] || []).forEach((r, rIdx) => {
-                if (r.name === name || name.startsWith(r.name)) {
+                if (r.name === z.name || z.name.startsWith(r.name)) {
                     const translated = i18n.t(`rules.rule_${letter}${rIdx}.name`);
                     if (translated && translated !== `rules.rule_${letter}${rIdx}.name`) {
                         displayName = translated;
@@ -883,7 +888,15 @@ export function showHandNamesPreview(scoreResult) {
 
         setTimeout(() => {
             const floatEl = document.createElement('div');
-            floatEl.className = `hand-float-base hand-float-${getRarityClass(rarity)}`;
+
+            if (idx === zones.length - 1) {
+                floatEl.className = `hand-float-base hand-float-${getRarityClass(rarity)}`;
+            } else {
+                floatEl.className = 'hand-float-base hand-float-away';
+                const offsetX = (Math.random() - 0.5) * 60;
+                floatEl.style.setProperty('--float-x', offsetX + 'px');
+            }
+
             floatEl.textContent = displayName;
             floatEl.style.left = `${centerX}px`;
             floatEl.style.top = `${centerY}px`;
