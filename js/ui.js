@@ -130,11 +130,12 @@ export function renderRulesDB() {
     groups.forEach(g => {
         html += `<h3 class="text-base md:text-lg font-black text-slate-300 mt-4 mb-2 border-b border-slate-700 pb-1">${i18n.t(g.titleKey)}</h3>`;
         html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">`;
-        RULE_DB[g.key].forEach((rule, rIdx) => {
+        RULE_DB[g.key].slice().sort((a, b) => b.rarity - a.rarity).forEach((rule, rIdx) => {
+            const origIdx = RULE_DB[g.key].indexOf(rule);
             let rStyle = RARITY[rule.rarity] || RARITY[1];
             let letter = g.key.replace('group', '').toLowerCase();
-            let ruleName = i18n.t(`rules.rule_${letter}${rIdx}.name`) || rule.name;
-            let ruleDesc = i18n.t(`rules.rule_${letter}${rIdx}.desc`) || rule.desc;
+            let ruleName = i18n.t(`rules.rule_${letter}${origIdx}.name`) || rule.name;
+            let ruleDesc = i18n.t(`rules.rule_${letter}${origIdx}.desc`) || rule.desc;
 
             html += `
             <div class="flex justify-between items-center bg-slate-900/50 p-2.5 rounded-lg border border-slate-700">
@@ -1387,11 +1388,9 @@ export function renderCollectionModal(tab) {
             html += `<h3 class="text-base md:text-lg font-black text-slate-300 mt-2 mb-1 border-b border-slate-700 pb-1">${i18n.t(g.titleKey)}</h3>`;
             html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">`;
             let letter = g.key.replace('group', '').toLowerCase();
-            let renderArr = g.key === 'groupD'
-                ? RULE_DB[g.key].slice().sort((a, b) => b.rarity - a.rarity)
-                : RULE_DB[g.key];
+            let renderArr = RULE_DB[g.key].slice().sort((a, b) => b.rarity - a.rarity);
             renderArr.forEach((rule, rIdx) => {
-                const origIdx = g.key === 'groupD' ? RULE_DB[g.key].indexOf(rule) : rIdx;
+                const origIdx = RULE_DB[g.key].indexOf(rule);
                 const unlocked = coll.hands.includes(rule.name);
                 let ruleName = i18n.t(`rules.rule_${letter}${origIdx}.name`) || rule.name;
                 let ruleDesc = i18n.t(`rules.rule_${letter}${origIdx}.desc`) || rule.desc;
@@ -1857,11 +1856,12 @@ export function renderHowToPlayTab(tabKey) {
             groups.forEach(g => {
                 html += `<h3 class="text-base font-black text-slate-300 mt-4 mb-2 border-b border-slate-700 pb-1">${i18n.t(g.titleKey)}</h3>`;
                 html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">`;
-                RULE_DB[g.key].forEach((rule, rIdx) => {
+                RULE_DB[g.key].slice().sort((a, b) => b.rarity - a.rarity).forEach((rule, rIdx) => {
+                    const origIdx = RULE_DB[g.key].indexOf(rule);
                     let rStyle = RARITY[rule.rarity] || RARITY[1];
                     let letter = g.key.replace('group', '').toLowerCase();
-                    let ruleName = i18n.t(`rules.rule_${letter}${rIdx}.name`) || rule.name;
-                    let ruleDesc = i18n.t(`rules.rule_${letter}${rIdx}.desc`) || rule.desc;
+                    let ruleName = i18n.t(`rules.rule_${letter}${origIdx}.name`) || rule.name;
+                    let ruleDesc = i18n.t(`rules.rule_${letter}${origIdx}.desc`) || rule.desc;
                     html += `<div class="flex justify-between items-center bg-slate-900/50 p-2.5 rounded-lg border border-slate-700"><div><div class="text-sm font-bold ${rStyle.color}">${ruleName}</div><div class="text-[10px] text-slate-400">${ruleDesc}</div></div><div class="text-base font-black text-violet-300">${rule.multi}</div></div>`;
                 });
                 html += `</div>`;
