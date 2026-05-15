@@ -696,7 +696,7 @@ export function renderScore(battle, activeHighlight) {
             <span class="text-[9px] md:text-[10px] font-semibold tracking-widest uppercase text-slate-200">${i18n.t('ui.score_total_base')}</span>
             <span id="score-total-base-value" class="text-base md:text-lg font-black text-white">${res.totalBase.toFixed(1)}</span>
         </div>
-        <div class="flex overflow-x-auto gap-1 pb-0.5 scroll-smooth hide-scrollbar">${notesHtml}</div>
+        <div id="score-notes-row" class="scrollable-row flex overflow-x-auto gap-1 pb-0.5 scroll-smooth hide-scrollbar">${notesHtml}</div>
     </div>
 
     <div class="grid grid-cols-4 gap-1 mb-1">
@@ -718,6 +718,8 @@ export function renderScore(battle, activeHighlight) {
         </div>
     </div>
     `;
+    const notesRow = document.getElementById('score-notes-row');
+    if (notesRow) enableDragScroll(notesRow);
     if (el.finalScoreValue) {
         const damageVisible = window.isDamageVisible ? window.isDamageVisible() : true;
         const previewVisible = window.isEnemyHpBarPreviewVisible ? window.isEnemyHpBarPreviewVisible() : true;
@@ -858,7 +860,7 @@ export function showHandNamesPreview(scoreResult) {
     ];
     tags.forEach(({ tag, zone }) => {
         if (tag && tag.name && tag.name !== '無' && tag.multi > 1.0) {
-            zones.push({ name: tag.name, zone });
+            zones.push({ name: tag.name, zone, multi: tag.multi });
         }
     });
     if (zones.length === 0) return;
@@ -882,7 +884,10 @@ export function showHandNamesPreview(scoreResult) {
         z.handRarity = rule ? (rule.rarity || 1) : 1;
     });
 
-    zones.sort((a, b) => a.handRarity - b.handRarity);
+    zones.sort((a, b) => {
+        if (a.handRarity !== b.handRarity) return a.handRarity - b.handRarity;
+        return (a.multi || 0) - (b.multi || 0);
+    });
 
     zones.forEach((z, idx) => {
         const rarity = z.handRarity;
@@ -916,7 +921,7 @@ export function showHandNamesPreview(scoreResult) {
             floatEl.style.left = `${centerX}px`;
             floatEl.style.top = `${centerY}px`;
             document.body.appendChild(floatEl);
-            setTimeout(() => floatEl.remove(), 1050);
+            setTimeout(() => floatEl.remove(), 1300);
         }, idx * 380);
     });
 }
@@ -1935,19 +1940,25 @@ if (el.settingsTitle) {
 
 // --- 滑鼠拖曳橫向滾動 ---
 function enableDragScroll(el) {
-    let isDown = false, startX, scrollLeft;
-    el.addEventListener('mousedown', e => {
+    let isDown = false, startX = 0, scrollLeft = 0;
+    el.style.touchAction = 'pan-x';
+
+    el.addEventListener('pointerdown', e => {
         isDown = true;
-        startX = e.pageX - el.offsetLeft;
+        startX = e.clientX;
         scrollLeft = el.scrollLeft;
+        el.setPointerCapture?.(e.pointerId);
     });
-    el.addEventListener('mouseleave', () => { isDown = false; });
-    el.addEventListener('mouseup', () => { isDown = false; });
-    el.addEventListener('mousemove', e => {
+    el.addEventListener('pointercancel', () => { isDown = false; });
+    el.addEventListener('pointerup', e => {
+        isDown = false;
+        el.releasePointerCapture?.(e.pointerId);
+    });
+    el.addEventListener('pointerleave', () => { isDown = false; });
+    el.addEventListener('pointermove', e => {
         if (!isDown) return;
         e.preventDefault();
-        const x = e.pageX - el.offsetLeft;
-        el.scrollLeft = scrollLeft - (x - startX);
+        el.scrollLeft = scrollLeft - (e.clientX - startX);
     });
 }
 

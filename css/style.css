@@ -1020,7 +1020,9 @@ button[id^="btn-close"]:hover {
 
 /* Rarity 1 Common */
 .hand-float-common {
-  font-size: 2.0rem;
+  max-width: 90vw;
+  white-space: nowrap;
+  font-size: clamp(1.0rem, 4vw, 2.0rem);
   color: #e2e8f0;
   text-shadow:
     -2px -2px 0 rgba(0,0,0,0.9),
@@ -1039,7 +1041,9 @@ button[id^="btn-close"]:hover {
 
 /* Rarity 2 Rare */
 .hand-float-rare {
-  font-size: 2.6rem;
+  max-width: 90vw;
+  white-space: nowrap;
+  font-size: clamp(1.2rem, 5vw, 2.6rem);
   color: #93c5fd;
   text-shadow:
     -2px -2px 0 rgba(0,0,0,0.9),
@@ -1060,7 +1064,9 @@ button[id^="btn-close"]:hover {
 
 /* Rarity 3 Epic */
 .hand-float-epic {
-  font-size: 3.2rem;
+  max-width: 90vw;
+  white-space: nowrap;
+  font-size: clamp(1.4rem, 6vw, 3.2rem);
   color: #d8b4fe;
   text-shadow:
     -2px -2px 0 rgba(0,0,0,0.9),
@@ -1081,7 +1087,9 @@ button[id^="btn-close"]:hover {
 
 /* Rarity 4 Legendary */
 .hand-float-legendary {
-  font-size: 3.8rem;
+  max-width: 90vw;
+  white-space: nowrap;
+  font-size: clamp(1.6rem, 7vw, 3.8rem);
   color: #fde68a;
   text-shadow:
     -2px -2px 0 rgba(0,0,0,0.9),
@@ -1104,7 +1112,9 @@ button[id^="btn-close"]:hover {
 
 /* Rarity 5 Mythic */
 .hand-float-mythic {
-  font-size: 4.5rem;
+  max-width: 90vw;
+  white-space: nowrap;
+  font-size: clamp(1.8rem, 8vw, 4.5rem);
   color: #67e8f9;
   text-shadow:
     -2px -2px 0 rgba(0,0,0,0.9),
@@ -1127,10 +1137,11 @@ button[id^="btn-close"]:hover {
 
 @keyframes handFloatAway {
   0%   { opacity: 0;   transform: translate(calc(-50% + 0px), -50%) scale(0.8); }
-  15%  { opacity: 1;   transform: translate(calc(-50% + 0px), -50%) scale(1.05); }
+  12%  { opacity: 1;   transform: translate(calc(-50% + 0px), -50%) scale(1.05); }
+  75%  { opacity: 1;   transform: translate(calc(-50% + var(--float-x, 0px)), -90%) scale(0.95); }
   100% { opacity: 0;   transform: translate(calc(-50% + var(--float-x, 0px)), -120%) scale(0.9); }
 }
 
 .hand-float-away {
-  animation: handFloatAway 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  animation: handFloatAway 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
 }
