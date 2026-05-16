@@ -1926,12 +1926,18 @@ export function renderHowToPlayTab(tabKey) {
 
 export function initResponsiveScaling() {
     const container = document.getElementById('game-container');
-    if (!container) return;
+    const scaler = document.getElementById('game-scaler');
+    if (!container || !scaler) return;
     function resize() {
-        const scale = Math.min(window.innerWidth / 450, window.innerHeight / 800);
+        const w = scaler.clientWidth || window.innerWidth;
+        const h = scaler.clientHeight || window.innerHeight;
+        const scale = Math.min(w / 450, h / 800);
         container.style.transform = `scale(${scale})`;
     }
     window.addEventListener('resize', resize);
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener('resize', resize);
+    }
     resize();
 }
 

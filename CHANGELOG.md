@@ -1,3 +1,6 @@
+### 修復：手機視窗縮放高度不一致 [2026/05/16]
+* **`js/ui.js`**：調整 `initResponsiveScaling()`，改用 `#game-scaler` 的實際渲染寬高計算 450x800 固定畫布縮放比例，並新增 `visualViewport.resize` 監聽，修復 Android 手機與 Galaxy Z Fold 7 外螢幕上骰子區域被裁切或需要捲動的問題。
+
 ### 修復：非最終牌型浮字字級過小 [2026/05/16]
 * **`js/ui.js`**：非最終牌型浮字現在同時套用對應稀有度 class 與 `hand-float-away`，避免只套用 away 動畫時失去稀有度字級、顏色與陰影。
 * **`css/style.css`**：提高牌型浮字的 `clamp()` viewport 偏好值，讓各稀有度在手機寬度下更接近原本的大字級表現。
