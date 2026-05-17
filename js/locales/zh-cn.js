@@ -197,7 +197,7 @@ ui: {
     btn_collection: '📖 收集册',
     btn_history: '牌局记录',
     btn_souls: '👻 灵魂奉献',
-    version: '[2.0版]',
+    version: '[免费测试版]',
     author_info: '作者:雷爪狮 | Youtube:雷爪狮游戏频道 | threads:@leijoalan',
     stage: '关卡 {0}',
     next_stage: '下一关：{0}',

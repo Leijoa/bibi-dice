@@ -197,7 +197,7 @@ ui: {
     btn_collection: '📖 Collection',
     btn_history: 'History',
     btn_souls: '👻 Soul Offering',
-    version: '[Version 2.0]',
+    version: '[Free Demo]',
     author_info: 'Author: Leijoalan | Youtube: 雷爪獅遊戲頻道 | threads:@leijoalan',
     stage: 'Stage {0}',
     next_stage: 'Next Stage: {0}',

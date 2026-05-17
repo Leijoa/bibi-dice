@@ -197,7 +197,7 @@ ui: {
     btn_collection: '📖 コレクション',
     btn_history: '戦闘履歴',
     btn_souls: '👻 魂の捧げ物',
-    version: '[バージョン 2.0]',
+    version: '[無料テスト版]',
     author_info: '作者: Leijoalan | Youtube: 雷爪獅遊戲頻道 | threads:@leijoalan',
     stage: 'ステージ {0}',
     next_stage: '次のステージ：{0}',

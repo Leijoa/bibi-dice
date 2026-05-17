@@ -197,7 +197,7 @@ ui: {
     btn_collection: '📖 收集冊',
     btn_history: '歷史牌局',
     btn_souls: '👻 靈魂奉獻',
-    version: '[2.0版]',
+    version: '[免費測試版]',
     author_info: '作者:雷爪獅 | Youtube:雷爪獅遊戲頻道 | threads:@leijoalan',
     stage: '關卡 {0}',
     next_stage: '下一關：{0}',
