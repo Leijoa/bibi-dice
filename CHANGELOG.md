@@ -1,3 +1,56 @@
+### 調整：統一放大過小 UI 字級至 12px [2026/05/17]
+* **`js/ui.js` / `index.html` / `css/style.css`**：將先前盤點到低於 12px 的介面文字統一調整為 12px，包含牌型說明、分數區標籤、骰子基礎點數、遺物與商店徽章、歷史紀錄與教學步驟提示等小字，提升手機與桌機閱讀性。
+
+### 調整：正式套用新版牌型倍率與稀有度，重產傷害表 [2026/05/17]
+* **`js/data.js` / `js/engine.js`**：正式套用新版整數倍率曲線，常見牌型最低以 x2 起跳，並依出現率重新分配普通、稀有、史詩、傳說、神話五階稀有度。
+* **`js/engine.js`**：同步更新 A/B/C/D 四區實際結算倍率，包含比比丟八 x100、兩極 x60、二進位/質數 x3、三龍會/平胡 x10、雙三同 x11、五同/經典四對子 x12 等最終定稿數值。
+* **`js/locales/*`**：更新豪華四對子與三龍會的四語系描述，使說明符合新判定：豪華四對子需至少包含一組 4 同，三龍會為兩組 3 連順加一組 2 連號。
+* **`alldamege.csv`**：刪除舊版傷害表後重新產生正式版，列出 6435 種非遞減骰面組合（11111111 至 88888888）的基礎點數、發動牌型、總倍率與最終傷害。
+* **`alldamege2.csv`**：移除臨時討論用傷害表，避免後續誤用未定稿資料。
+
+### 調整：修正 C 區豪華四對子與三龍會判定 [2026/05/17]
+* **`js/engine.js`**：新增 `getLuxuryFourPairsVals()`，豪華四對子現在必須至少包含一個四同，並且能組出四組對子；因此 `[4,2,2]`、`[4,4]`、`[6,2]`、`[8]` 會成立，嚴格 `[2,2,2,2]` 會保留給經典四對子。
+* **`js/engine.js`**：三龍會判定由任意三組長度至少 2 的連號，改為固定 `[3,3,2]`：兩組三連順加上一組二連號，避免 `[4,4]` 類雙四連順被三龍會完全吃掉。
+* **`js/engine.js`**：同倍率候選排序中將經典四對子排在雙四連順之前，確保 `11223344` 這類嚴格四對子優先顯示為經典四對子。
+
+### 修復：商店刷新後按鈕顯示裸 key [2026/05/16]
+* **`js/ui.js`**：修正 `updateShopRerollBtn()` 中刷新後 disabled 狀態誤用 `i18n.t('shop_rerolled')` 的問題，改為讀取正確的 `messages.shop_rerolled`，避免按鈕顯示 `shop_rerolled` 原始 key。
+
+### 修復：終極封鎖中間四顆判定位置 [2026/05/16]
+* **`js/main.js`**：將 `ultimatelock` 禁止鎖定的骰子索引由 `[2, 3, 4, 5]` 改為 `[1, 2, 5, 6]`，符合 4x2 盤面中玩家直覺的中間兩欄配置（`OXXO / OXXO`），不再使用原本斜向交錯的 `OOXX / XXOO` 判定。
+
+### 修復：背包遺物加入元素自身直接事件 [2026/05/16]
+* **`js/ui.js`**：背包遺物元素重新加入自身層級的 `onpointerdown`、`onpointermove`、`onpointerup` 與 `onclick`，不再完全依賴父層 `enableDragScroll()` 的 delegated listener；即使 itch.io 桌機環境只保留原生 overflow 拖曳、父層 listener 未成功處理，也能由遺物元素自身開啟說明。
+* **`js/ui.js`**：新增 `_relicPressStart/_relicPressMove/_relicPressEnd/_relicPressClick` 直接事件處理器，短點擊會開啟遺物說明，拖曳位移超過 5px 則視為橫向捲動並避免誤觸。
+
+### 工具：新增免調整執行原則的 itch.io 發佈入口 [2026/05/16]
+* **`publish-itch.cmd`**：新增 Windows 批次檔包裝入口，會以 `powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts\publish-itch.ps1` 執行既有發佈腳本，避免 PowerShell 預設 Execution Policy 阻擋 `.ps1` 造成無法一鍵上傳。
+* **`scripts/publish-itch.ps1` / `publish-itch.cmd`**：執行時會直接把 `%LOCALAPPDATA%\Programs\butler` 加入當前 PATH，避免新終端機或受限 shell 找不到 `butler`。
+
+### 工具：新增 itch.io 一鍵同步上傳腳本 [2026/05/16]
+* **`scripts/publish-itch.ps1`**：新增 PowerShell 發佈腳本，會將 `D:\unity\bibi-dice` 透過 `robocopy /MIR` 同步到 `D:\unity\bibi-dice_UP`，排除 `.git`、`.claude`、`node_modules`、`scripts` 與企劃／紀錄檔，再自動執行 `butler push` 上傳到 `leijoa/bibi-dice:html`。
+* **使用方式**：在專案根目錄執行 `.\scripts\publish-itch.ps1` 即可完成同步與上傳；腳本會自動把 `C:\Users\Leijoa\AppData\Local\Programs\butler` 暫時加入當前 PowerShell PATH。
+
+### 診斷：支援 itch.io 外層網址啟動遺物偵錯 [2026/05/16]
+* **`js/ui.js`**：`debugRelic=1` 診斷模式現在除了讀取 iframe 內的 `window.location.search`，也會讀取 `document.referrer` 的查詢參數，讓 `https://leijoa.itch.io/bibi-dice?debugRelic=1` 能啟動遊戲 iframe 內的遺物事件診斷面板。
+* **`js/ui.js`**：診斷面板初始會顯示 `debugRelic active`、iframe 實際網址與 referrer，方便確認 itch.io 上傳版本與診斷模式是否確實生效。
+
+### 診斷：加入 itch.io 遺物點擊事件偵錯面板 [2026/05/16]
+* **`js/ui.js`**：撤回 `pointerdown` 延遲觸發策略，恢復本機可用的 pointerup/click 開啟遺物說明流程，避免破壞本機瀏覽器行為。
+* **`js/ui.js`**：新增 `?debugRelic=1` 診斷模式；啟用後會在畫面左下角顯示遺物列的 pointer/click 事件、事件目標與 relic id，用於判斷 itch.io 桌機 iframe 中短點擊到底是事件未觸發、目標遺失，或顯示層被遮蔽。一般網址不會顯示診斷面板。
+
+### 修復：桌機滑鼠點擊遺物補強 [2026/05/16]
+* **`js/ui.js`**：在既有 Pointer Events 遺物點擊判定外，額外加入桌機 `mousedown` / `mouseup` fallback；按下時記錄遺物與座標，放開時若位移未超過 5px 即開啟遺物說明，避免 itch.io 桌機 iframe 中 Pointer Events 點擊路徑未成功觸發。
+* **`js/ui.js`**：滑鼠 fallback 會檢查與既有 pointer 開啟時間的間隔，避免同一次點擊重複跳出說明；水平或垂直位移超過門檻時維持拖曳捲動，不誤觸發說明。
+
+### 修復：itch.io 桌機 iframe 遺物點擊目標遺失 [2026/05/16]
+* **`js/ui.js`**：背包遺物元素新增 `role="button"` 與 `tabindex="0"`，並支援 Enter／Space 鍵開啟遺物說明，強化桌機瀏覽器可操作性。
+* **`js/ui.js`**：`enableDragScroll()` 現在會在 `pointerdown` 記錄原始遺物目標，`pointerup` 時先查事件目標，再用 `document.elementFromPoint()` 依座標反查，最後回退至按下時目標，避免 itch.io iframe 或 pointer capture 導致 `pointerup.target` 變成父層後無法顯示遺物說明。
+
+### 修復：桌機平台點擊遺物無法顯示說明 [2026/05/16]
+* **`js/ui.js`**：移除背包遺物項目的 inline `onclick`，改由 `enableDragScroll()` 統一處理 `data-relic-id` 的 pointer/click 事件，避免 itco.io 桌機瀏覽器 iframe 環境中橫向拖曳容器攔截點擊後無法開啟遺物說明。
+* **`js/ui.js`**：替橫向拖曳加入 5px 位移門檻，短距離按放會視為點擊並顯示說明，超過門檻才啟動拖曳捲動，同時阻止拖曳結束後誤觸發點擊。
+
 ### 修復：手機視窗縮放高度不一致 [2026/05/16]
 * **`js/ui.js`**：調整 `initResponsiveScaling()`，改用 `#game-scaler` 的實際渲染寬高計算 450x800 固定畫布縮放比例，並新增 `visualViewport.resize` 監聽，修復 Android 手機與 Galaxy Z Fold 7 外螢幕上骰子區域被裁切或需要捲動的問題。
 

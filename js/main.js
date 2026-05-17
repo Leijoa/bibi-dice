@@ -1052,7 +1052,7 @@ window.toggleLock = function(idx) {
             return UI.showToast(i18n.t('messages.toast_cursedlock'));
         }
 
-        if (stage.activeShackle === 'ultimatelock' && [2, 3, 4, 5].includes(idx)) {
+        if (stage.activeShackle === 'ultimatelock' && [1, 2, 5, 6].includes(idx)) {
             const diceEl = document.getElementById(`dice-element-${idx}`);
             if(diceEl) {
                 diceEl.classList.remove('shake-hard');

@@ -143,7 +143,7 @@ export function renderRulesDB() {
                     <div class="flex items-center gap-2">
                         <div class="text-sm md:text-base font-bold ${rStyle.color}">${ruleName}</div>
                     </div>
-                    <div class="text-[10px] md:text-sm text-slate-400">${ruleDesc}</div>
+                    <div class="text-[12px] md:text-sm text-slate-400">${ruleDesc}</div>
                 </div>
                 <div class="text-base md:text-lg font-black text-violet-300">${rule.multi}</div>
             </div>`;
@@ -202,7 +202,7 @@ export function updateEnemyUI(stage) {
     let shackleHtml = '';
     // legacy support if stage.shackles array exists
     if (stage.shackles && stage.shackles.length > 0) {
-        shackleHtml += stage.shackles.map(sh => `<span onclick="window.showShackleInfo('${sh.id}')" class="ml-2 bg-red-900/80 hover:bg-red-800 text-[10px] md:text-xs text-red-300 px-1.5 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0">⛓️ 當前枷鎖</span>`).join('');
+        shackleHtml += stage.shackles.map(sh => `<span onclick="window.showShackleInfo('${sh.id}')" class="ml-2 bg-red-900/80 hover:bg-red-800 text-[12px] md:text-xs text-red-300 px-1.5 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0">⛓️ 當前枷鎖</span>`).join('');
     }
 
     // new logic using activeShackle
@@ -211,7 +211,7 @@ export function updateEnemyUI(stage) {
         const _shackleDef = SHACKLE_DB.find(s => s.id === activeShackleId);
         const _shackleName = _shackleDef ? (i18n.t(`shackles.${activeShackleId}.name`) || _shackleDef.name) : '';
         const _shackleLabel = _shackleName.replace(/[【】\[\]]/g, '').trim();
-        shackleHtml += `<span onclick="window.showShackleInfo('${activeShackleId}')" class="ml-1.5 bg-red-900/80 hover:bg-red-800 text-[9px] md:text-[10px] text-red-300 px-1 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0 max-w-[72px] md:max-w-none truncate" title="${_shackleLabel}">⛓️ ${_shackleLabel}</span>`;
+        shackleHtml += `<span onclick="window.showShackleInfo('${activeShackleId}')" class="ml-1.5 bg-red-900/80 hover:bg-red-800 text-[12px] md:text-[12px] text-red-300 px-1 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0 max-w-[72px] md:max-w-none truncate" title="${_shackleLabel}">⛓️ ${_shackleLabel}</span>`;
     }
 
     let localizedEnemyName = enemy.name;
@@ -307,7 +307,7 @@ window.showShackleInfo = function(id) {
 export function renderInventory(player, battle) {
     el.inventoryGrid.className = "flex overflow-x-auto gap-1.5 pb-2 scroll-smooth items-center hide-scrollbar scrollable-row";
     if (player.relics.length === 0) {
-        el.inventoryGrid.innerHTML = `<div class="text-[10px] text-slate-500 font-bold p-1">${i18n.t("ui.empty_inventory")}</div>`;
+        el.inventoryGrid.innerHTML = `<div class="text-[12px] text-slate-500 font-bold p-1">${i18n.t("ui.empty_inventory")}</div>`;
         return;
     }
     const itemMap = new Map([
@@ -328,7 +328,7 @@ export function renderInventory(player, battle) {
         if (isNoise) {
             return `
             <div onclick="window.showToast(i18n.t('messages.toast_noise_interfere'))" class="bg-slate-700/50 px-2 py-1 rounded-full border border-slate-500 shadow-sm flex items-center gap-1 cursor-pointer hover:scale-105 transition-transform active:scale-95">
-                <span class="text-[10px] md:text-xs font-black text-slate-400 whitespace-nowrap">????</span>
+                <span class="text-[12px] md:text-xs font-black text-slate-400 whitespace-nowrap">????</span>
             </div>`;
         }
 
@@ -347,8 +347,8 @@ export function renderInventory(player, battle) {
 
         let rName = id.startsWith('cons_') ? i18n.t(`consumables.${id}.name`) : (i18n.t(`relics.${id}.name`) || r.name);
         return `
-        <div data-relic-id="${r.id}" onclick="window.showRelicInfo('${r.id}')" class="${style.bg} px-2 py-1 rounded-full border ${style.border} shadow-sm flex items-center gap-1 cursor-pointer hover:scale-105 transition-transform active:scale-95">
-            <span class="text-[10px] md:text-xs font-black ${style.color} whitespace-nowrap">${rName}</span>
+        <div data-relic-id="${r.id}" role="button" tabindex="0" onpointerdown="window._relicPressStart(event, '${r.id}')" onpointermove="window._relicPressMove(event)" onpointerup="window._relicPressEnd(event, '${r.id}')" onclick="window._relicPressClick(event, '${r.id}')" class="${style.bg} px-2 py-1 rounded-full border ${style.border} shadow-sm flex items-center gap-1 cursor-pointer hover:scale-105 transition-transform active:scale-95">
+            <span class="text-[12px] md:text-xs font-black ${style.color} whitespace-nowrap">${rName}</span>
         </div>`;
     }).join('');
 }
@@ -389,6 +389,52 @@ window.showRelicInfo = function(id) {
 };
 
 // --- 巨型八邊形骰子渲染 ---
+let relicDirectPress = null;
+let relicDirectLastOpen = { id: null, at: 0 };
+
+window._relicPressStart = function(e, id) {
+    relicDirectPress = {
+        id,
+        x: e.clientX || 0,
+        y: e.clientY || 0,
+        moved: false
+    };
+};
+
+window._relicPressMove = function(e) {
+    if (!relicDirectPress) return;
+    const dx = Math.abs((e.clientX || 0) - relicDirectPress.x);
+    const dy = Math.abs((e.clientY || 0) - relicDirectPress.y);
+    if (dx > 5 || dy > 5) relicDirectPress.moved = true;
+};
+
+window._relicPressEnd = function(e, id) {
+    if (!relicDirectPress || relicDirectPress.id !== id) return;
+    if (!relicDirectPress.moved) {
+        e.preventDefault();
+        e.stopPropagation();
+        relicDirectLastOpen = { id, at: Date.now() };
+        window.showRelicInfo(id);
+    }
+    relicDirectPress = null;
+};
+
+window._relicPressClick = function(e, id) {
+    if (relicDirectLastOpen.id === id && Date.now() - relicDirectLastOpen.at < 500) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+    }
+    if (relicDirectPress && relicDirectPress.id === id && relicDirectPress.moved) {
+        relicDirectPress = null;
+        return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    relicDirectLastOpen = { id, at: Date.now() };
+    window.showRelicInfo(id);
+};
+
 export function renderDice(battle, activeHighlight, player) {
     let shackleId = window.getStageActiveShackle ? window.getStageActiveShackle() : null;
     let shackleMeta = window.getShackleMeta ? window.getShackleMeta() : null;
@@ -491,7 +537,7 @@ export function renderDice(battle, activeHighlight, player) {
         const isIllusioned = shackleId === 'illusion' && !d.locked && battle.state !== 'IDLE' && battle.state !== 'ROLLING';
         if (battle.state !== 'IDLE' && battle.state !== 'ROLLING' && !isBlinded && !isIllusioned) {
              let badgeClass = isEnhanced ? "bg-amber-500 text-amber-950 shadow-[0_0_8px_rgba(245,158,11,0.8)]" : "bg-slate-700 text-slate-300 border border-slate-500";
-             baseBadgeHtml = `<div class="absolute -top-2 -left-2 ${badgeClass} text-[8px] md:text-[10px] font-black px-1.5 py-0.5 rounded-full z-20">${Math.floor(baseVal)}</div>`;
+             baseBadgeHtml = `<div class="absolute -top-2 -left-2 ${badgeClass} text-[12px] md:text-[12px] font-black px-1.5 py-0.5 rounded-full z-20">${Math.floor(baseVal)}</div>`;
         }
 
 
@@ -530,7 +576,7 @@ export function renderDice(battle, activeHighlight, player) {
     }).join('');
 
     el.rollsBadge.innerText = i18n.t('ui.rolls_left', battle.rollsLeft);
-    el.rollsBadge.className = battle.rollsLeft === 0 ? "bg-slate-800 px-2 py-0.5 rounded-full text-[10px] md:text-sm font-bold text-slate-500 transition-colors" : "bg-slate-800 px-2 py-0.5 rounded-full text-[10px] md:text-sm font-bold text-violet-300 transition-colors";
+    el.rollsBadge.className = battle.rollsLeft === 0 ? "bg-slate-800 px-2 py-0.5 rounded-full text-[12px] md:text-sm font-bold text-slate-500 transition-colors" : "bg-slate-800 px-2 py-0.5 rounded-full text-[12px] md:text-sm font-bold text-violet-300 transition-colors";
 }
 
 // --- 重骰波浪動畫 ---
@@ -589,7 +635,7 @@ export function renderControls(battle, maxRolls) {
     <button onclick="window.executeRoll(false)" ${isRollDisabled ? 'disabled="disabled"' : ''} class="w-full flex-1 bg-violet-700 text-violet-100 font-black rounded-lg md:rounded-xl transition-all flex flex-col items-center justify-center border-b-4 border-violet-900 btn-roll ${rollClass}">
         <span class="btn-roll-icon text-base md:text-xl mb-0.5">🎲</span>
         <span class="text-xs md:text-base leading-tight">${i18n.t('ui.btn_roll')}</span>
-        <span class="text-[8px] md:text-[10px] opacity-60 mt-0.5 font-semibold">${battle.rollsLeft} / ${maxRolls}</span>
+        <span class="text-[12px] md:text-[12px] opacity-60 mt-0.5 font-semibold">${battle.rollsLeft} / ${maxRolls}</span>
     </button>
     <button onclick="window.fireAttack()" ${isScoreDisabled ? 'disabled="disabled"' : ''} class="w-full flex-[1.5] bg-red-700 text-red-100 font-black rounded-lg md:rounded-xl transition-all flex flex-col items-center justify-center border-b-4 border-red-900 ${isScoreDisabled ? '' : 'btn-attack-ready'} ${scoreClass}">
         <span class="text-xl md:text-3xl mb-0.5">🗡️</span>
@@ -653,19 +699,19 @@ export function renderScore(battle, activeHighlight) {
         </div>
         <div class="grid grid-cols-4 gap-1.5 mt-1">
           <div class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden border-slate-700 bg-slate-800/40 opacity-30">
-            <div class="text-[9px] text-slate-500">-</div>
+            <div class="text-[12px] text-slate-500">-</div>
             <div class="text-base font-black text-slate-600">x-</div>
           </div>
           <div class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden border-slate-700 bg-slate-800/40 opacity-30">
-            <div class="text-[9px] text-slate-500">-</div>
+            <div class="text-[12px] text-slate-500">-</div>
             <div class="text-base font-black text-slate-600">x-</div>
           </div>
           <div class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden border-slate-700 bg-slate-800/40 opacity-30">
-            <div class="text-[9px] text-slate-500">-</div>
+            <div class="text-[12px] text-slate-500">-</div>
             <div class="text-base font-black text-slate-600">x-</div>
           </div>
           <div class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden border-slate-700 bg-slate-800/40 opacity-30">
-            <div class="text-[9px] text-slate-500">-</div>
+            <div class="text-[12px] text-slate-500">-</div>
             <div class="text-base font-black text-slate-600">x-</div>
           </div>
         </div>`;
@@ -688,7 +734,7 @@ export function renderScore(battle, activeHighlight) {
             ? 'text-red-300 bg-red-950/50 border-red-800/50'
             : 'text-violet-300 bg-violet-950/50 border-violet-800/50';
         const displayText = isAmnesia ? '???' : n.text;
-        return `<span id="note-${i}" class="text-[9px] ${colorClass} px-1.5 py-0.5 rounded border font-bold whitespace-nowrap transition-all duration-300 ease-in-out">${displayText}</span>`;
+        return `<span id="note-${i}" class="text-[12px] ${colorClass} px-1.5 py-0.5 rounded border font-bold whitespace-nowrap transition-all duration-300 ease-in-out">${displayText}</span>`;
     }).join('');
 
 
@@ -718,7 +764,7 @@ export function renderScore(battle, activeHighlight) {
     el.scoreDisplay.innerHTML = `
     <div class="flex flex-col gap-1 px-2 py-1.5 rounded-lg border mb-1.5" style="background:#0e0e10;border-color:#2a2a2c;">
         <div class="flex items-baseline gap-2 whitespace-nowrap">
-            <span class="text-[9px] md:text-[10px] font-semibold tracking-widest uppercase text-slate-200">${i18n.t('ui.score_total_base')}</span>
+            <span class="text-[12px] md:text-[12px] font-semibold tracking-widest uppercase text-slate-200">${i18n.t('ui.score_total_base')}</span>
             <span id="score-total-base-value" class="text-base md:text-lg font-black text-white">${res.totalBase.toFixed(1)}</span>
         </div>
         <div id="score-notes-row" class="scrollable-row flex overflow-x-auto gap-1 pb-0.5 scroll-smooth hide-scrollbar">${notesHtml}</div>
@@ -726,19 +772,19 @@ export function renderScore(battle, activeHighlight) {
 
     <div class="grid grid-cols-4 gap-1 mb-1">
         <div id="zone-box-A" onclick="window.setHighlight('A')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('A', res.tagA)}">
-            <div class="text-[7px] md:text-[9px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagA.name)}</div>
+            <div class="text-[12px] md:text-[12px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagA.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagA.multi.toFixed(1)}</div>
         </div>
         <div id="zone-box-B" onclick="window.setHighlight('B')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('B', res.tagB)}">
-            <div class="text-[7px] md:text-[9px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagB.name)}</div>
+            <div class="text-[12px] md:text-[12px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagB.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagB.multi.toFixed(1)}</div>
         </div>
         <div id="zone-box-C" onclick="window.setHighlight('C')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('C', res.tagC)}">
-            <div class="text-[7px] md:text-[9px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagC.name)}</div>
+            <div class="text-[12px] md:text-[12px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagC.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagC.multi.toFixed(1)}</div>
         </div>
         <div id="zone-box-D" onclick="window.setHighlight('D')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('D', res.tagD)}">
-            <div class="text-[7px] md:text-[9px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagD.name)}</div>
+            <div class="text-[12px] md:text-[12px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagD.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagD.multi.toFixed(1)}</div>
         </div>
     </div>
@@ -1120,7 +1166,7 @@ export function renderShopItems(shopItems, player) {
         let rName = isConsumable ? i18n.t(`consumables.${r.id}.name`) : (i18n.t(`relics.${r.id}.name`) || r.name);
         let rDesc = isConsumable ? i18n.t(`consumables.${r.id}.desc`) : (i18n.t(`relics.${r.id}.desc`) || r.desc);
         let cardBg = isConsumable ? 'linear-gradient(160deg,#1c1a14 0%,#19160e 100%)' : 'linear-gradient(160deg,#1c1b1d 0%,#161519 100%)';
-        let consumableBadgeHtml = isConsumable ? `<span class="text-[9px] md:text-[10px] px-2 py-0.5 rounded-full bg-amber-900/60 text-amber-300 border border-amber-600/60 font-bold">🧪 ${i18n.t('messages.consumable_tag')}</span>` : '';
+        let consumableBadgeHtml = isConsumable ? `<span class="text-[12px] md:text-[12px] px-2 py-0.5 rounded-full bg-amber-900/60 text-amber-300 border border-amber-600/60 font-bold">🧪 ${i18n.t('messages.consumable_tag')}</span>` : '';
         let selectBtnText = isConsumable ? i18n.t('messages.shop_select_consumable') : i18n.t('messages.shop_select');
 
         return `
@@ -1131,7 +1177,7 @@ export function renderShopItems(shopItems, player) {
                     <div class="flex justify-between items-start gap-2">
                         <h3 class="text-base md:text-xl font-black leading-tight ${style.color}">${rName}</h3>
                         <div class="flex flex-col items-end gap-1 shrink-0">
-                            <span class="text-[9px] md:text-[10px] px-2 py-0.5 rounded-full ${style.bg} ${style.color} border ${style.border} font-bold tracking-wide">${i18n.t(`messages.rarity_${r.rarity}`) || style.label}</span>
+                            <span class="text-[12px] md:text-[12px] px-2 py-0.5 rounded-full ${style.bg} ${style.color} border ${style.border} font-bold tracking-wide">${i18n.t(`messages.rarity_${r.rarity}`) || style.label}</span>
                             ${consumableBadgeHtml}
                             ${isFusionMaterial ? `<span onclick="window.showFusionInfo('${fusionResultId}')" class="text-xs cursor-pointer px-1.5 py-0.5 rounded bg-cyan-900/60 text-cyan-300 border border-cyan-500 font-black shadow-[0_0_8px_rgba(34,211,238,0.4)] animate-pulse hover:bg-cyan-800 hover:scale-105 active:scale-95 transition-all">✨ ${i18n.t('ui.shop_fusion_hint') || '可融合'}</span>` : ''}
                         </div>
@@ -1175,7 +1221,7 @@ export function showFusionReplaceModal(currentFusions, newFusionId, callback) {
             
             // 使用語系檔中的 ui.fusion_materials (需要去語系檔補上這個 key)
             let returnMatText = i18n.t('ui.fusion_materials') || '退回素材：';
-            materialsHtml = `<div class="text-[10px] md:text-xs text-amber-300/80 mt-2 border-t border-amber-900/50 pt-2">
+            materialsHtml = `<div class="text-[12px] md:text-xs text-amber-300/80 mt-2 border-t border-amber-900/50 pt-2">
                 ${returnMatText}<br/>• ${mat1Name}<br/>• ${mat2Name}
             </div>`;
         }
@@ -1187,11 +1233,11 @@ export function showFusionReplaceModal(currentFusions, newFusionId, callback) {
         // 修正右上角文字看不清楚的問題：將原本的 right-8 改為 right-6，並稍微增加 padding
         html += `
         <div class="bg-slate-900/80 border-2 ${isNew ? 'border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.3)]' : 'border-slate-600'} rounded-xl p-3 md:p-4 flex flex-col justify-between h-full relative overflow-hidden">
-            ${isNew ? `<div class="absolute -top-1 -right-6 bg-amber-500 text-slate-900 text-[10px] font-black px-10 py-1 rotate-45 text-center">${newFusionText}</div>` : ''}
+            ${isNew ? `<div class="absolute -top-1 -right-6 bg-amber-500 text-slate-900 text-[12px] font-black px-10 py-1 rotate-45 text-center">${newFusionText}</div>` : ''}
             <div>
                 <div class="flex justify-between items-start mb-2 mt-2">
                     <h3 class="text-base md:text-lg font-black ${style.color}">${rName}</h3>
-                    <span class="text-[10px] md:text-xs px-2 py-0.5 rounded ${style.bg} ${style.color} border ${style.border} font-bold z-10 relative">${i18n.t(`messages.rarity_${relic.rarity}`) || style.label}</span>
+                    <span class="text-[12px] md:text-xs px-2 py-0.5 rounded ${style.bg} ${style.color} border ${style.border} font-bold z-10 relative">${i18n.t(`messages.rarity_${relic.rarity}`) || style.label}</span>
                 </div>
                 <p class="text-xs md:text-sm text-slate-300 font-bold mb-3">${rDesc}</p>
                 ${materialsHtml}
@@ -1229,7 +1275,7 @@ export function updateShopRerollBtn(shopRerollsUsed, hasScavenger = false, hasFu
         el.shopRerollBtn.className = "w-full sm:w-auto flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl transition-colors active:scale-95 text-base md:text-lg border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1 shadow-lg shadow-emerald-900/50";
         el.shopRerollBtn.disabled = false;
     } else {
-        el.shopRerollBtn.innerHTML = i18n.t('shop_rerolled');
+        el.shopRerollBtn.innerHTML = i18n.t('messages.shop_rerolled') || '🚫 已刷新過';
         el.shopRerollBtn.className = "w-full sm:w-auto flex-1 bg-slate-700 text-slate-400 font-black py-3 rounded-xl cursor-not-allowed text-base md:text-lg border-b-4 border-slate-900";
         el.shopRerollBtn.disabled = true;
     }
@@ -1267,7 +1313,7 @@ export function renderHistoryModal(records, metaData) {
                     <div>
                         <div class="text-xs text-amber-200/70 font-bold">${i18n.t('ui.pb_highest_dmg') || '最高傷害'}</div>
                         <div class="text-xl font-black text-amber-300 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]">${Math.floor(metaData.stats.highestDamage).toLocaleString()}</div>
-                        <div class="text-[10px] text-amber-400/80 mt-0.5">${highestDamageComboTranslated}</div>
+                        <div class="text-[12px] text-amber-400/80 mt-0.5">${highestDamageComboTranslated}</div>
                     </div>
                     <div>
                         <div class="text-xs text-amber-200/70 font-bold">${i18n.t('ui.pb_highest_multi') || '最高倍率'}</div>
@@ -1283,7 +1329,7 @@ export function renderHistoryModal(records, metaData) {
                         let relicDef = RELIC_DB.find(x => x.id === r) || CONSUMABLES_DB.find(x => x.id === r);
                         if (!relicDef) return null;
                         let rName = r.startsWith('cons_') ? i18n.t(`consumables.${r}.name`) : (i18n.t(`relics.${r}.name`) || relicDef.name);
-                        return `<span class="bg-slate-700 px-1.5 py-0.5 rounded text-[10px] text-slate-300 inline-block">${rName}</span>`;
+                        return `<span class="bg-slate-700 px-1.5 py-0.5 rounded text-[12px] text-slate-300 inline-block">${rName}</span>`;
                     }).filter(Boolean).join('')}
                 </div>
             </div>
@@ -1342,43 +1388,43 @@ export function renderHistoryModal(records, metaData) {
             let relicDef = RELIC_DB.find(x => x.id === id) || CONSUMABLES_DB.find(x => x.id === id);
             if (!relicDef) return null;
             let rName = id.startsWith('cons_') ? i18n.t(`consumables.${id}.name`) : (i18n.t(`relics.${id}.name`) || relicDef.name);
-            return `<span class="bg-slate-700 px-1.5 py-0.5 rounded text-[10px] text-slate-300 mr-1 mb-1 inline-block">${rName}</span>`;
-        }).filter(Boolean).join('') : '<span class="text-slate-500 text-[10px]">' + i18n.t('messages.none') + '</span>';
+            return `<span class="bg-slate-700 px-1.5 py-0.5 rounded text-[12px] text-slate-300 mr-1 mb-1 inline-block">${rName}</span>`;
+        }).filter(Boolean).join('') : '<span class="text-slate-500 text-[12px]">' + i18n.t('messages.none') + '</span>';
 
         return `
         <div class="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
             <div class="flex justify-between items-center px-3 py-2 cursor-pointer hover:bg-slate-700/50 transition-colors select-none" onclick="window._toggleHistoryEntry(${i})">
                 <span class="font-black ${resultColor} text-sm md:text-base">${resultText}</span>
                 <div class="flex items-center gap-2">
-                    <span class="text-[10px] md:text-xs text-slate-400">${dateStr}</span>
+                    <span class="text-[12px] md:text-xs text-slate-400">${dateStr}</span>
                     <span id="hist-ico-${i}" class="text-slate-500 text-xs">▶</span>
                 </div>
             </div>
             <div id="hist-det-${i}" class="relative hidden px-3 pb-3 pt-2 border-t border-slate-700/50">
                 <div class="grid grid-cols-2 gap-x-3 gap-y-1.5 mb-2">
                     <div class="text-xs text-slate-300">
-                        <div class="text-[10px] text-slate-500">${i18n.t('ui.history_stage_type')}</div>
+                        <div class="text-[12px] text-slate-500">${i18n.t('ui.history_stage_type')}</div>
                         <div class="font-bold">${stageTypeLabel}</div>
                     </div>
                     <div class="text-xs text-slate-300">
-                        <div class="text-[10px] text-slate-500">${i18n.t('ui.pb_highest_dmg') || '最終傷害'}</div>
+                        <div class="text-[12px] text-slate-500">${i18n.t('ui.pb_highest_dmg') || '最終傷害'}</div>
                         <div class="font-black text-white">${Number(r.highestDamage || 0).toLocaleString()}</div>
                     </div>
                     <div class="text-xs text-slate-300">
-                        <div class="text-[10px] text-slate-500">${i18n.t('ui.pb_highest_multi') || '最高倍率'}</div>
+                        <div class="text-[12px] text-slate-500">${i18n.t('ui.pb_highest_multi') || '最高倍率'}</div>
                         <div class="font-bold text-emerald-400">${highestMultiStr}</div>
                     </div>
                     <div class="text-xs text-slate-300">
-                        <div class="text-[10px] text-slate-500">${i18n.t('ui.history_best_hand')}</div>
+                        <div class="text-[12px] text-slate-500">${i18n.t('ui.history_best_hand')}</div>
                         <div class="font-bold text-blue-300">${getLocalizedCombo(r.combo)}</div>
                     </div>
                     <div class="col-span-2 text-xs text-slate-300">
-                        <div class="text-[10px] text-slate-500">${i18n.t('ui.history_shackles')}</div>
+                        <div class="text-[12px] text-slate-500">${i18n.t('ui.history_shackles')}</div>
                         <div class="font-bold text-red-300">${shackleStr}</div>
                     </div>
                 </div>
                 <div>
-                    <div class="text-[10px] text-slate-500 mb-0.5">${i18n.t('ui.history_relics')}</div>
+                    <div class="text-[12px] text-slate-500 mb-0.5">${i18n.t('ui.history_relics')}</div>
                     <div class="flex flex-wrap">${relicHtml}</div>
                 </div>
             </div>
@@ -1450,7 +1496,7 @@ export function renderCollectionModal(tab) {
                         <div class="flex items-center gap-2">
                             <div class="text-sm md:text-base font-bold ${nameColor}">${nameStr}</div>
                         </div>
-                        <div class="text-[10px] md:text-sm text-slate-400">${descStr}</div>
+                        <div class="text-[12px] md:text-sm text-slate-400">${descStr}</div>
                     </div>
                 </div>`;
             });
@@ -1479,7 +1525,7 @@ export function renderCollectionModal(tab) {
                 <div class="bg-slate-800 p-2 rounded-xl border border-slate-600 flex flex-col justify-between relative overflow-hidden">
                     <div class="flex justify-between items-start mb-1">
                         <h3 class="text-sm md:text-base font-black ${style.color}">${rName} <span class="text-emerald-400 text-xs ml-1">✅</span></h3>
-                        <span class="text-[9px] md:text-xs px-1.5 py-0.5 rounded ${style.bg} ${style.color} border ${style.border} font-bold">${i18n.t(`messages.rarity_${r.rarity}`) || style.label}</span>
+                        <span class="text-[12px] md:text-xs px-1.5 py-0.5 rounded ${style.bg} ${style.color} border ${style.border} font-bold">${i18n.t(`messages.rarity_${r.rarity}`) || style.label}</span>
                     </div>
                     <p class="text-xs md:text-sm text-slate-300 font-bold">${rDesc}</p>
                     ${fusionText}
@@ -1508,7 +1554,7 @@ export function renderCollectionModal(tab) {
                 <div class="bg-slate-800 p-2 rounded-xl border border-slate-600 flex flex-col justify-between relative overflow-hidden">
                     <div class="flex justify-between items-start mb-1">
                         <h3 class="text-sm md:text-base font-black ${colorClass}">${sName} <span class="text-emerald-400 text-xs ml-1">✅</span></h3>
-                        <span class="text-[9px] md:text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-300 border border-slate-500 font-bold">${typeLabel}</span>
+                        <span class="text-[12px] md:text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-300 border border-slate-500 font-bold">${typeLabel}</span>
                     </div>
                     <p class="text-xs md:text-sm text-slate-300 font-bold">${sDesc}</p>
                 </div>`;
@@ -1906,7 +1952,7 @@ export function renderHowToPlayTab(tabKey) {
                     let letter = g.key.replace('group', '').toLowerCase();
                     let ruleName = i18n.t(`rules.rule_${letter}${origIdx}.name`) || rule.name;
                     let ruleDesc = i18n.t(`rules.rule_${letter}${origIdx}.desc`) || rule.desc;
-                    html += `<div class="flex justify-between items-center bg-slate-900/50 p-2.5 rounded-lg border border-slate-700"><div><div class="text-sm font-bold ${rStyle.color}">${ruleName}</div><div class="text-[10px] text-slate-400">${ruleDesc}</div></div><div class="text-base font-black text-violet-300">${rule.multi}</div></div>`;
+                    html += `<div class="flex justify-between items-center bg-slate-900/50 p-2.5 rounded-lg border border-slate-700"><div><div class="text-sm font-bold ${rStyle.color}">${ruleName}</div><div class="text-[12px] text-slate-400">${ruleDesc}</div></div><div class="text-base font-black text-violet-300">${rule.multi}</div></div>`;
                 });
                 html += `</div>`;
             });
@@ -1971,25 +2017,114 @@ if (el.settingsTitle) {
 
 // --- 滑鼠拖曳橫向滾動 ---
 function enableDragScroll(el) {
-    let isDown = false, startX = 0, scrollLeft = 0;
+    if (el.dataset.dragScrollBound === '1') return;
+    el.dataset.dragScrollBound = '1';
+
+    const DRAG_THRESHOLD = 5;
+    let isDown = false, startX = 0, scrollLeft = 0, hasDragged = false, suppressClick = false, lastRelicOpenAt = 0, pointerDownRelic = null;
     el.style.touchAction = 'pan-x';
+    const debugRelicEvents = (() => {
+        if (new URLSearchParams(window.location.search).get('debugRelic') === '1') return true;
+        try {
+            return new URL(document.referrer).searchParams.get('debugRelic') === '1';
+        } catch (err) {
+            return false;
+        }
+    })();
+
+    const logRelicEvent = (label, e, relicTarget) => {
+        if (!debugRelicEvents) return;
+        let panel = document.getElementById('relic-debug-panel');
+        if (!panel) {
+            panel = document.createElement('div');
+            panel.id = 'relic-debug-panel';
+            panel.style.cssText = 'position:fixed;left:8px;bottom:8px;z-index:99999;max-width:420px;max-height:180px;overflow:auto;background:rgba(0,0,0,.86);color:#fff;font:12px monospace;padding:8px;border:1px solid #a78bfa;border-radius:6px;white-space:pre-wrap;pointer-events:none;';
+            panel.textContent = `debugRelic active href=${window.location.href}\nref=${document.referrer || 'none'}`;
+            document.body.appendChild(panel);
+        }
+        const targetInfo = e.target?.id || e.target?.dataset?.relicId || e.target?.tagName || 'none';
+        const relicInfo = relicTarget?.dataset?.relicId || 'none';
+        const line = `${label} target=${targetInfo} relic=${relicInfo} x=${Math.round(e.clientX || 0)} drag=${hasDragged}`;
+        panel.textContent = `${line}\n${panel.textContent}`.slice(0, 1800);
+    };
+
+    const findRelicTarget = e => {
+        const directTarget = e.target.closest?.('[data-relic-id]');
+        if (directTarget && el.contains(directTarget)) return directTarget;
+
+        const pointTarget = document.elementFromPoint(e.clientX, e.clientY)?.closest?.('[data-relic-id]');
+        if (pointTarget && el.contains(pointTarget)) return pointTarget;
+
+        if (pointerDownRelic && el.contains(pointerDownRelic)) return pointerDownRelic;
+        return null;
+    };
+
+    const openRelicFromEvent = e => {
+        const relicTarget = findRelicTarget(e);
+        if (!relicTarget) return false;
+        e.preventDefault();
+        e.stopPropagation();
+        lastRelicOpenAt = Date.now();
+        window.showRelicInfo(relicTarget.dataset.relicId);
+        return true;
+    };
 
     el.addEventListener('pointerdown', e => {
         isDown = true;
         startX = e.clientX;
         scrollLeft = el.scrollLeft;
+        hasDragged = false;
+        suppressClick = false;
+        pointerDownRelic = findRelicTarget(e);
+        logRelicEvent('pointerdown', e, pointerDownRelic);
         el.setPointerCapture?.(e.pointerId);
     });
-    el.addEventListener('pointercancel', () => { isDown = false; });
+    el.addEventListener('pointercancel', e => { logRelicEvent('pointercancel', e, pointerDownRelic); isDown = false; pointerDownRelic = null; });
     el.addEventListener('pointerup', e => {
+        logRelicEvent('pointerup', e, findRelicTarget(e));
+        if (!hasDragged) {
+            openRelicFromEvent(e);
+        }
+
+        if (hasDragged) {
+            suppressClick = true;
+            setTimeout(() => { suppressClick = false; }, 0);
+        }
+
         isDown = false;
+        pointerDownRelic = null;
         el.releasePointerCapture?.(e.pointerId);
     });
-    el.addEventListener('pointerleave', () => { isDown = false; });
+    el.addEventListener('pointerleave', e => { logRelicEvent('pointerleave', e, pointerDownRelic); isDown = false; pointerDownRelic = null; });
     el.addEventListener('pointermove', e => {
         if (!isDown) return;
+        const deltaX = e.clientX - startX;
+        if (!hasDragged && Math.abs(deltaX) < DRAG_THRESHOLD) return;
+        hasDragged = true;
+        logRelicEvent('pointermove-drag', e, pointerDownRelic);
         e.preventDefault();
-        el.scrollLeft = scrollLeft - (e.clientX - startX);
+        el.scrollLeft = scrollLeft - deltaX;
+    });
+    el.addEventListener('click', e => {
+        const relicTarget = e.target.closest?.('[data-relic-id]');
+        logRelicEvent('click', e, relicTarget);
+        if (suppressClick || (relicTarget && Date.now() - lastRelicOpenAt < 500)) {
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
+        if (relicTarget && el.contains(relicTarget)) {
+            e.preventDefault();
+            e.stopPropagation();
+            window.showRelicInfo(relicTarget.dataset.relicId);
+        }
+    });
+    el.addEventListener('keydown', e => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        const relicTarget = e.target.closest?.('[data-relic-id]');
+        if (!relicTarget || !el.contains(relicTarget)) return;
+        e.preventDefault();
+        window.showRelicInfo(relicTarget.dataset.relicId);
     });
 }
 
