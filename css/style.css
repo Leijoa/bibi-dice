@@ -679,6 +679,215 @@ header {
   50%     { box-shadow: inset 0 0 100px rgba(200,0,0,0.7); }
 }
 
+/* ===== Shackle Stage Intro ===== */
+.shackle-seal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 98;
+  pointer-events: auto;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at center, rgba(127, 29, 29, 0.22) 0%, rgba(2, 6, 23, 0.78) 48%, rgba(0, 0, 0, 0.92) 100%);
+  animation: shackleOverlayIn 1.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.shackle-seal-vignette {
+  position: absolute;
+  inset: -12%;
+  background:
+    radial-gradient(circle at center, transparent 0 30%, rgba(88, 28, 135, 0.22) 48%, rgba(0, 0, 0, 0.88) 76%),
+    repeating-linear-gradient(90deg, rgba(248, 113, 113, 0.05) 0 2px, transparent 2px 9px);
+  animation: shackleVignettePulse 1.45s ease-out forwards;
+}
+
+.shackle-chain {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: min(205vw, 1520px);
+  height: clamp(122px, 25vw, 224px);
+  transform-origin: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 0 18px rgba(239, 68, 68, 0.72)) drop-shadow(0 12px 22px rgba(0, 0, 0, 0.9));
+}
+
+.shackle-chain::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 90%;
+  height: 30%;
+  border-radius: 999px;
+  border: 2px solid rgba(248, 113, 113, 0.75);
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  animation: shackleChainShock 1.45s ease-out forwards;
+}
+
+.shackle-link {
+  position: relative;
+  flex: 0 0 clamp(106px, 19vw, 190px);
+  width: clamp(106px, 19vw, 190px);
+  height: clamp(62px, 11.5vw, 116px);
+  border-radius: 999px;
+  border: clamp(9px, 1.8vw, 18px) solid rgba(226, 232, 240, 0.94);
+  background:
+    linear-gradient(135deg, #f8fafc 0%, #94a3b8 18%, #111827 36%, #e5e7eb 54%, #475569 76%, #f8fafc 100%) border-box;
+  box-shadow:
+    inset 0 3px 7px rgba(255, 255, 255, 0.9),
+    inset 0 -8px 12px rgba(0, 0, 0, 0.62),
+    0 4px 8px rgba(255, 255, 255, 0.22),
+    0 10px 18px rgba(0, 0, 0, 0.9);
+  margin-left: clamp(-68px, -7.4vw, -34px);
+}
+
+.shackle-link:first-child {
+  margin-left: 0;
+}
+
+.shackle-link::before {
+  content: "";
+  position: absolute;
+  inset: clamp(3px, 0.8vw, 8px) clamp(6px, 1vw, 12px) auto;
+  height: 28%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.75), transparent);
+  filter: blur(1px);
+}
+
+.shackle-link::after {
+  content: "";
+  position: absolute;
+  inset: clamp(12px, 2vw, 22px) clamp(22px, 4vw, 40px);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 35% 25%, rgba(255, 255, 255, 0.2), transparent 34%),
+    linear-gradient(135deg, rgba(15, 23, 42, 0.98), rgba(2, 6, 23, 0.92));
+  box-shadow:
+    inset 0 5px 9px rgba(0, 0, 0, 0.92),
+    inset 0 -2px 5px rgba(255, 255, 255, 0.16);
+}
+
+.shackle-link-long {
+  transform: rotate(-8deg);
+  z-index: 2;
+}
+
+.shackle-link-cross {
+  transform: rotate(82deg) scale(0.92);
+  z-index: 3;
+}
+
+.shackle-chain-a {
+  transform: translate(-50%, -50%) rotate(39deg) translateX(-160vw);
+  animation: shackleChainA 1.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.shackle-chain-b {
+  transform: translate(-50%, -50%) rotate(-39deg) translateX(160vw);
+  animation: shackleChainB 1.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.shackle-seal-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: clamp(104px, 24vw, 178px);
+  aspect-ratio: 1;
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.25);
+  border: 5px solid rgba(248, 113, 113, 0.92);
+  background:
+    radial-gradient(circle, rgba(254, 202, 202, 0.98) 0 10%, rgba(220, 38, 38, 0.9) 12% 25%, rgba(30, 41, 59, 0.88) 26% 100%);
+  box-shadow:
+    0 0 32px rgba(239, 68, 68, 0.86),
+    0 0 90px rgba(127, 29, 29, 0.75),
+    inset 0 0 22px rgba(0, 0, 0, 0.85);
+  opacity: 0;
+  animation: shackleSealCore 1.45s ease-out forwards;
+}
+
+.shackle-seal-core::before,
+.shackle-seal-core::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 62%;
+  height: 10%;
+  border-radius: 999px;
+  background: #fee2e2;
+  box-shadow: 0 0 18px rgba(254, 226, 226, 0.85);
+}
+
+.shackle-seal-core::before { transform: translate(-50%, -50%) rotate(45deg); }
+.shackle-seal-core::after { transform: translate(-50%, -50%) rotate(-45deg); }
+
+.shackle-seal-flash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(254, 202, 202, 0.75) 0%, rgba(239, 68, 68, 0.24) 18%, transparent 42%);
+  opacity: 0;
+  animation: shackleSealFlash 1.45s ease-out forwards;
+}
+
+.shackle-seal-exit {
+  animation: shackleOverlayOut 0.26s ease-in forwards;
+}
+
+@keyframes shackleOverlayIn {
+  0% { opacity: 0; }
+  12%, 88% { opacity: 1; }
+  100% { opacity: 1; }
+}
+
+@keyframes shackleOverlayOut {
+  to { opacity: 0; }
+}
+
+@keyframes shackleVignettePulse {
+  0% { transform: scale(1.1); opacity: 0; }
+  22% { opacity: 1; }
+  56% { transform: scale(0.96); opacity: 1; }
+  100% { transform: scale(1); opacity: 0.82; }
+}
+
+@keyframes shackleChainA {
+  0% { transform: translate(-50%, -50%) rotate(39deg) translateX(-160vw); }
+  48% { transform: translate(-50%, -50%) rotate(39deg) translateX(0); }
+  56% { transform: translate(-50%, -50%) rotate(39deg) translateX(-12px); }
+  64%, 100% { transform: translate(-50%, -50%) rotate(39deg) translateX(0); }
+}
+
+@keyframes shackleChainB {
+  0% { transform: translate(-50%, -50%) rotate(-39deg) translateX(160vw); }
+  48% { transform: translate(-50%, -50%) rotate(-39deg) translateX(0); }
+  56% { transform: translate(-50%, -50%) rotate(-39deg) translateX(12px); }
+  64%, 100% { transform: translate(-50%, -50%) rotate(-39deg) translateX(0); }
+}
+
+@keyframes shackleChainShock {
+  0%, 44% { opacity: 0; transform: translate(-50%, -50%) scaleX(1); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scaleX(1.02); }
+  68%, 100% { opacity: 0; transform: translate(-50%, -50%) scaleX(1); }
+}
+
+@keyframes shackleSealCore {
+  0%, 42% { opacity: 0; transform: translate(-50%, -50%) scale(0.25) rotate(-22deg); }
+  54% { opacity: 1; transform: translate(-50%, -50%) scale(1.16) rotate(5deg); }
+  66% { transform: translate(-50%, -50%) scale(0.92) rotate(-2deg); }
+  84%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(0); }
+}
+
+@keyframes shackleSealFlash {
+  0%, 44% { opacity: 0; transform: scale(0.6); }
+  50% { opacity: 1; transform: scale(1); }
+  72%, 100% { opacity: 0; transform: scale(1.45); }
+}
+
 /* 新增：乘數標籤的彈出閃爍動畫 */
 .multiplier-pop {
   animation: popScale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);

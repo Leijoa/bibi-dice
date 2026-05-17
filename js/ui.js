@@ -117,6 +117,37 @@ export function showToast(msg, callback) {
     }, 2200);
 }
 
+export function playShackleSealAnimation(callback) {
+    const oldOverlay = document.querySelector('.shackle-seal-overlay');
+    if (oldOverlay) oldOverlay.remove();
+
+    Audio.playShackleSealSound();
+
+    const overlay = document.createElement('div');
+    overlay.className = 'shackle-seal-overlay';
+    overlay.setAttribute('aria-hidden', 'true');
+    const chainLinks = Array.from({ length: 9 }, (_, idx) =>
+        `<span class="shackle-link ${idx % 2 === 0 ? 'shackle-link-long' : 'shackle-link-cross'}"></span>`
+    ).join('');
+    overlay.innerHTML = `
+        <div class="shackle-seal-vignette"></div>
+        <div class="shackle-chain shackle-chain-a">${chainLinks}</div>
+        <div class="shackle-chain shackle-chain-b">${chainLinks}</div>
+        <div class="shackle-seal-core"></div>
+        <div class="shackle-seal-flash"></div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    setTimeout(() => {
+        overlay.classList.add('shackle-seal-exit');
+        setTimeout(() => {
+            overlay.remove();
+            if (callback) callback();
+        }, 260);
+    }, 1450);
+}
+
 // --- 動態生成牌型表 ---
 export function renderRulesDB() {
     let html = '';
@@ -306,7 +337,8 @@ window.showShackleInfo = function(id) {
 // --- ★ 任務4：遺物點擊顯示說明 ---
 export function renderInventory(player, battle) {
     el.inventoryGrid.className = "flex overflow-x-auto gap-1.5 pb-2 scroll-smooth items-center hide-scrollbar scrollable-row";
-    if (player.relics.length === 0) {
+    const visibleRelics = (player.relics || []).filter(id => !id.startsWith('cons_'));
+    if (visibleRelics.length === 0) {
         el.inventoryGrid.innerHTML = `<div class="text-[12px] text-slate-500 font-bold p-1">${i18n.t("ui.empty_inventory")}</div>`;
         return;
     }
@@ -314,7 +346,7 @@ export function renderInventory(player, battle) {
         ...RELIC_DB.map(x => [x.id, x]),
         ...CONSUMABLES_DB.map(x => [x.id, x])
     ]);
-    let sortedRelics = [...player.relics].sort((a, b) => {
+    let sortedRelics = [...visibleRelics].sort((a, b) => {
         const rarityA = (itemMap.get(a) || {rarity: 1}).rarity;
         const rarityB = (itemMap.get(b) || {rarity: 1}).rarity;
         return rarityB - rarityA;

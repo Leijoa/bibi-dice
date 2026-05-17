@@ -1,3 +1,25 @@
+### 資產：新增 itch.io 橫式 Banner 主視覺 [2026/05/18]
+* **`img/itch_banner.webp`**：新增橫式宣傳 Banner，將比比與白獅夥伴重新構圖進寬版主視覺，保留紫黑高塔、發光骰子與奇幻鎖鏈氛圍，供 itch.io 頁面橫幅使用。
+
+### 調整：放大枷鎖封鎖動畫鏈條尺寸 [2026/05/18]
+* **`css/style.css`**：放大枷鎖進場動畫的交叉鏈條與單節鏈環尺寸，增加鏈環重疊距離與中央封印大小，讓封鎖畫面更有壓迫感與魄力。
+
+### 調整：枷鎖封鎖動畫改為鏈環式鎖鏈 [2026/05/18]
+* **`js/ui.js`**：`playShackleSealAnimation()` 的兩條鎖鏈改由 9 個 `.shackle-link` 鏈環組成，替代原本單一金屬條狀 span。
+* **`css/style.css`**：重寫 `.shackle-chain` 視覺，使用橢圓金屬鏈環、交錯旋轉、重疊扣合、內孔陰影與高光，讓封鎖動畫更接近實際鎖鏈。
+
+### Feat：枷鎖關卡進場封鎖動畫 [2026/05/17]
+* **`js/main.js`**：調整 `loadStage()` 的枷鎖關卡進場時序；新進入枷鎖關卡時先播放封鎖動畫，再顯示枷鎖效果 toast，toast 結束後才呼叫 `startTurn()` 開始第一擲，避免枷鎖提示與擲骰同時發生。
+* **`js/ui.js`**：新增 `playShackleSealAnimation(callback)`，以一次性全畫面 overlay 呈現兩條鎖鏈交叉封鎖與中央封印衝擊，動畫結束後自動移除並銜接 callback。
+* **`js/audio.js`**：新增 `playShackleSealSound()`，使用既有合成音系統播放低頻金屬封鎖音效，不新增音訊檔。
+* **`css/style.css`**：新增 `.shackle-seal-overlay`、交叉鎖鏈、封印核心、暗紅閃光與對應 keyframes；動畫期間 overlay 會暫時阻擋底層點擊，避免玩家在演出中誤操作。
+
+### Fix：精簡消耗品購買與發動 toast 訊息 [2026/05/17]
+* **`js/main.js`**：重整 `window.buyItem` 的消耗品 toast 流程，消耗品選擇後統一顯示「使用成功」訊息，不再落回通用「獲得：」訊息。
+* **`js/main.js`**：移除 `cons_pliers` 與幸運草類消耗品在進入戰鬥後的第二則發動 toast，避免選擇消耗品後短時間連跳兩則提示。
+* **`js/ui.js`**：背包列渲染時過濾 `cons_` 內部旗標，避免下場戰鬥生效的消耗品被顯示成保留道具。
+* **`js/locales/*`**：四語系新增 `messages.toast_cons_bomb` 與 `messages.toast_cons_clover`，移除不再使用的發動 toast key，並保留商店按鈕「選擇並馬上使用」語氣，符合消耗品選後立即使用的設計。
+
 ### 調整：版本標籤改為免費測試版 [2026/05/17]
 * **`index.html` / `js/i18n.js` / `js/locales/*`**：將主畫面版本顯示由 2.0 版本字樣改為各語系對應的免費測試版標籤。
 * **`GDD.md` / `CHANGELOG.md`**：同步更新文件中的版本標籤，避免對外顯示仍停留在 2.0 版。

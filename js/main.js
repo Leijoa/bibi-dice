@@ -877,6 +877,7 @@ function loadStage(levelIndex, isLoad = false, parsedData = null) {
     let enemy = getEnemyWithMeta(levelIndex);
     stage.enemyMaxHp = enemy.hp;
             stage.enemyName = enemy.name;
+    let shackleIntroMessage = null;
 
     if (isLoad && parsedData && parsedData.stage) {
         stage.enemyHp = parsedData.stage.enemyHp ?? enemy.hp;
@@ -931,7 +932,6 @@ function loadStage(levelIndex, isLoad = false, parsedData = null) {
             stage.activeShackle = null;
             stage.shackleMeta = null;
             player.relics.splice(player.relics.indexOf('cons_pliers'), 1);
-            UI.showToast(i18n.t('messages.toast_cons_pliers_activate'));
         }
 
         if (stage.activeShackle) {
@@ -944,10 +944,7 @@ function loadStage(levelIndex, isLoad = false, parsedData = null) {
                 } else if (stage.activeShackle === 'numberplunder') {
                     extraMsg = `\n(本局目標數字：${stage.shackleMeta.targetNumber})`;
                 }
-                
-                setTimeout(() => {
-                    UI.showToast(i18n.t('messages.toast_shackle_found', (i18n.t(`shackles.${sDef.id}.name`) || sDef.name), (i18n.t(`shackles.${sDef.id}.desc`) || sDef.desc), extraMsg));
-                }, 500);
+                shackleIntroMessage = i18n.t('messages.toast_shackle_found', (i18n.t(`shackles.${sDef.id}.name`) || sDef.name), (i18n.t(`shackles.${sDef.id}.desc`) || sDef.desc), extraMsg);
             }
         }
     }
@@ -985,7 +982,13 @@ function loadStage(levelIndex, isLoad = false, parsedData = null) {
     renderAll();
 
     if (!isLoad || !parsedData || !parsedData.battle || battle.state === 'IDLE') {
-        startTurn();
+        if (shackleIntroMessage) {
+            UI.playShackleSealAnimation(() => {
+                UI.showToast(shackleIntroMessage, startTurn);
+            });
+        } else {
+            startTurn();
+        }
     }
 }
 
@@ -1193,7 +1196,6 @@ window.executeRoll = function(isInitial = false) {
                         for (let i = 0; i < Math.min(3, unlocked.length); i++) {
                             unlocked[i].val = num;
                         }
-                        UI.showToast(i18n.t('messages.toast_cons_clover_activate', num));
                         // Consume the item
                         player.relics = player.relics.filter(r => r !== cloverId);
                     }
@@ -1883,16 +1885,22 @@ window.buyItem = function(idx) {
             player.hp = Math.min(window.getMaxHp(), player.hp + 1);
             UI.showToast(i18n.t('messages.toast_cons_hp'));
         } else {
-            if (r.id === 'cons_pliers') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_pliers')); }
-            else if (r.id === 'cons_doll') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_doll')); }
-            else if (r.id === 'cons_fruit') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_fruit')); }
-            else if (r.id === 'cons_loaded_dice') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_loaded_dice')); }
-            else if (r.id === 'cons_guide') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_guide')); }
-            else if (r.id === 'cons_strike_a') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_combo_a')); }
-            else if (r.id === 'cons_fever_b') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_fever_b')); }
-            else if (r.id === 'cons_combo_c') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_combo_c')); }
-            else if (r.id === 'cons_science_d') { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_cons_science_d')); }
-            else { player.relics.push(r.id); UI.showToast(i18n.t('messages.toast_obtained') + (i18n.t(`consumables.${r.id}.name`) || r.name)); }
+            const toastKeys = {
+                cons_bomb: 'messages.toast_cons_bomb',
+                cons_pliers: 'messages.toast_cons_pliers',
+                cons_doll: 'messages.toast_cons_doll',
+                cons_fruit: 'messages.toast_cons_fruit',
+                cons_loaded_dice: 'messages.toast_cons_loaded_dice',
+                cons_guide: 'messages.toast_cons_guide',
+                cons_strike_a: 'messages.toast_cons_combo_a',
+                cons_fever_b: 'messages.toast_cons_fever_b',
+                cons_combo_c: 'messages.toast_cons_combo_c',
+                cons_science_d: 'messages.toast_cons_science_d'
+            };
+
+            player.relics.push(r.id);
+            const toastKey = r.id.startsWith('cons_clover_') ? 'messages.toast_cons_clover' : toastKeys[r.id];
+            UI.showToast(toastKey ? i18n.t(toastKey, r.id.replace('cons_clover_', '')) : i18n.t('messages.toast_obtained') + (i18n.t(`consumables.${r.id}.name`) || r.name));
         }
     } else {
         // Relic logic

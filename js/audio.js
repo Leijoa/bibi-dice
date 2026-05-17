@@ -263,6 +263,14 @@ export function playAttackImpactSound() {
     playSFXBuffer('attack', 0.85);
 }
 
+export function playShackleSealSound() {
+    if (sfxMuted || sfxVolume <= 0) return;
+    playTone(90, 'sawtooth', 0.22, 0.16);
+    setTimeout(() => playTone(120, 'square', 0.16, 0.12), 170);
+    setTimeout(() => playTone(70, 'sawtooth', 0.32, 0.18), 360);
+    setTimeout(() => playTone(260, 'triangle', 0.12, 0.10), 720);
+}
+
 export function playBuySound() {
     if (sfxMuted || sfxVolume <= 0) return;
     // Chime
