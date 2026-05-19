@@ -1,0 +1,16 @@
+{
+  "scripts": {
+    "steam:build": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/publish-steam-demo.ps1",
+    "steam:app": "npm run steam:build -- --OutputDir dist/steam-demo && electron steam-app/main.js",
+    "steam:app:dev": "electron steam-app/main.js",
+    "steam:capture": "npm run steam:build -- --OutputDir dist/steam-demo && node scripts/capture-steam-portrait-screenshots.js",
+    "steam:capsules": "node scripts/generate-steam-capsules.js",
+    "steam:library": "node scripts/generate-steam-library-assets.js"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.0",
+    "electron": "^42.1.0",
+    "playwright": "^1.60.0",
+    "tailwindcss": "^4.3.0"
+  }
+}

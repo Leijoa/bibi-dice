@@ -1,3 +1,110 @@
+### 文件：新增 AI 協作同步入口 [2026/05/20]
+* **`SYNC.md`**：新增專案根目錄 AI 協作同步入口，規定所有 AI Agent 開工前需先讀 `SYNC.md`、`AGENTS.md`、`CHANGELOG.md`，並在工作後更新同步進度。
+* **`SYNC.md`**：整理目前 Steam 桌面直式小遊戲方向、已完成素材與工具、下一步上架檢查表工作、禁止誤用素材與踩雷紀錄。
+
+### 修正：Library Logo 改用主視覺美術字 [2026/05/20]
+* **`scripts/generate-steam-library-assets.js`**：`library_logo_1280x720.png` 改為從 `img/home_bg.webp` 擷取既有美術 Logo，取代普通系統字產生的 Logo 草稿。
+* **`promo/steam/ASSET_CHECKLIST.md`**：更新 Library Logo 來源說明，標記為主視覺美術字擷取版。
+
+### 修正：停止產出錯誤 Steam Library Hero 並修正 Logo 字樣 [2026/05/20]
+* **`scripts/generate-steam-library-assets.js`**：移除 `library_hero_3840x1240.png` 產出，避免重跑素材腳本時重新生成與遊戲關聯不足的 Hero 圖。
+* **`scripts/generate-steam-library-assets.js`**：修正 `library_logo_1280x720.png` 中文字樣，由錯誤的「比比丟人」改為正確的「比比丟八」。
+* **`promo/steam/ASSET_CHECKLIST.md`**：將 Library Hero 狀態改為暫不產出，並移除已產出清單中的錯誤 Hero 項目。
+
+### 修正：移除 Steam Library 素材英文字遮擋中文主視覺 [2026/05/20]
+* **`scripts/generate-steam-library-assets.js`**：Library Capsule 與 Library Header 改為保留原中文主視覺，不再額外疊上英文 `BIBI DICE`。
+* **`scripts/generate-steam-library-assets.js`**：Library Logo 改為透明中文 Logo 草稿，避免在 Steam Library Details 中以英文標題遮住中文視覺。
+* **`scripts/generate-steam-library-assets.js`**：Shortcut Icon 與 App Icon 改為直接由 `favicon.png` 轉尺寸，不再加額外裝飾。
+* **`promo/steam/assets/`**：重產 Library 與 icon 六張素材。
+
+### 素材：產出 Steam Library 與 App Icon 第一版 [2026/05/20]
+* **`scripts/generate-steam-library-assets.js`**：新增 Steam Library 與 icon 產圖腳本，使用 Playwright 產出 Library Capsule、Library Header、Library Hero、透明 Library Logo、Shortcut Icon 與 App Icon。
+* **`package.json`**：新增 `steam:library` 指令，可重跑 Steam Library 與 icon 產圖流程。
+* **`promo/steam/assets/`**：新增 `library_capsule_600x900.png`、`library_header_capsule_920x430.png`、`library_hero_3840x1240.png`、`library_logo_1280x720.png`、`shortcut_icon_256x256.png`、`app_icon_184x184.jpg`。
+* **`promo/steam/ASSET_CHECKLIST.md`**：更新 Library Assets 與 Icon 狀態，並補充 Library Hero 不含 Logo 或額外文字的注意事項。
+
+### 素材：產出 Steam Store Capsule 第一版 [2026/05/19]
+* **`scripts/generate-steam-capsules.js`**：新增 Steam capsule 產圖腳本，使用 Playwright 依現有主視覺產出 Header、Small、Main、Vertical 四種 store capsule。
+* **`package.json`**：新增 `steam:capsules` 指令，可重跑 Steam capsule 產圖流程。
+* **`promo/steam/assets/`**：新增 `store_header_capsule_920x430.png`、`store_small_capsule_462x174.png`、`store_main_capsule_1232x706.png`、`store_vertical_capsule_748x896.png`。
+* **`promo/steam/ASSET_CHECKLIST.md`**：更新 Store Capsule 狀態與已產出檔案清單。
+
+### 素材：重做 Steam 桌面直式商店截圖 [2026/05/19]
+* **`scripts/capture-steam-portrait-screenshots.js`**：新增 Playwright 截圖腳本，會從實際 Steam Demo 流程擷取直式遊戲畫面，並輸出成 1920x1080 的 Steam 商店截圖展示版。
+* **`scripts/capture-steam-portrait-screenshots.js`**：截圖前會清除舊橫版截圖檔名，避免 `promo/steam/assets/` 同時混入過期素材。
+* **`package.json`**：新增 `steam:capture` 指令，會先重建 `dist/steam-demo`，再產出 6 張桌面直式展示截圖。
+* **`promo/steam/assets/`**：更新 6 張 `store_screenshot_*_1920x1080.png`，內容改為直式桌面視窗置於 16:9 商店截圖畫布。
+* **`promo/steam/ASSET_CHECKLIST.md`**：更新 screenshot 狀態與清單，標記橫版截圖已由桌面直式展示版取代。
+
+### 工具：新增 Steam 桌面直式 App 外殼 [2026/05/19]
+* **`package.json` / `package-lock.json`**：新增 `electron` 開發依賴與 `steam:build`、`steam:app`、`steam:app:dev` 指令，讓 Steam 版可用桌面視窗啟動。
+* **`steam-app/main.js`**：新增 Electron 主程序，預設開啟 `540 x 960` 直式視窗，保留 `450 x 800`、`540 x 960`、`675 x 1200` 三種解析度選單，並固定 9:16 視窗比例。
+* **`steam-app/preload.js`**：新增 Steam portrait 尺寸 class 橋接，讓大視窗模式可切換 `steam-portrait-large` 並觸發遊戲縮放重算。
+* **`css/style.css`**：補上 Steam portrait 專用 modal 高度限制，讓牌型表等彈窗在 540x960 桌面殼中不會超出視窗。
+
+### 方向：Steam 版改為桌面直式小遊戲 [2026/05/19]
+* **`promo/steam/STEAM_DESKTOP_PORTRAIT_STRATEGY.md`**：新增 Steam 桌面直式小遊戲策略，將產品定位改為固定直式視窗、可切換直式解析度、不承諾 Steam Deck、建議售價 US$2.99 的輕量桌面小品。
+* **`scripts/publish-steam-demo.ps1`**：Steam Demo 輸出改注入 `steam-portrait` class，並移除可能殘留的 `steam-layout` class，避免繼續套用橫版三欄 UI。
+* **`css/style.css`**：新增 `body.steam-portrait` 桌面直式外框樣式，維持原本 450x800 遊戲容器與直式比例。
+* **`js/ui.js`**：Steam portrait 模式下依 CSS 變數限制最大縮放倍率，預設對應 `540 x 960`，避免大螢幕預覽時把手機 UI 過度放大。
+* **`promo/steam/STEAM_LANDSCAPE_UI_V2_LAYOUT.md`**：標記橫版 V2 草案為探索紀錄，不再作為主要實作路線。
+
+### 文件：新增 Steam 橫版 UI V2 配置草案 [2026/05/19]
+* **`promo/steam/STEAM_LANDSCAPE_UI_V2_LAYOUT.md`**：新增 V2 配置草案，整理首頁按鈕偏右、戰鬥畫面空乏、敵人血量位置不自然，以及 toast、傷害數字、牌型浮現、碎紙花等彈出物定位問題。
+* **`promo/steam/STEAM_LANDSCAPE_UI_V2_LAYOUT.md`**：提出首頁下方中央操作列、上方 Enemy Stage、中央 Dice Board、右側 Battle Readout 的推薦方向，並規劃 Phase 2A 到 Phase 2D 的實作順序。
+
+### 修復：Steam 橫版首頁與牌型表層級 [2026/05/19]
+* **`index.html`**：修復 HTML 被 UTF-8 讀寫破壞後造成的標籤斷裂與首頁結構錯亂，並保留 Steam Demo 所需的本地 `css/tailwind.min.css` 與 `js/vendor/confetti-lite.js`。
+* **`css/style.css`**：調整 `body.steam-layout` 首頁排版，讓標題畫面在 Steam 橫版中使用右側操作面板，並在首頁狀態隱藏戰鬥 header 與 main，避免互相覆蓋。
+* **`css/style.css`**：提高牌型表 modal 層級並固定關閉按鈕尺寸，避免 Steam 橫版畫面中關閉按鈕被遮住或擠出視窗。
+* **`css/style.css`**：精修 Steam 戰鬥畫面的敵人欄、骰盤、分數欄比例，讓骰子維持穩定正方形尺寸並提高右側資訊欄可讀性。
+
+### UI：建立 Steam 橫版版型第一階段骨架 [2026/05/18]
+* **`promo/steam/STEAM_LANDSCAPE_UI_SPEC.md`**：補充參考稿採用與不採用項目，明確採用 Top Bar、三欄戰鬥、中央骰盤、商店商品 grid 與底部行動列，並排除大型 SideNav、外部 CDN icon/font、AI 商品大圖與硬編碼文字。
+* **`css/style.css`**：新增 `body.steam-layout` 橫版骨架，讓 Steam 版戰鬥畫面形成左側敵人資訊、中間骰盤操作、右側分數與遺物資訊的三欄布局，並加入 Steam Deck 尺寸下的緊湊版欄寬。
+* **`css/style.css`**：新增 Steam 版商店橫版 overlay，顯示商品 grid 與底部操作列，並在 Steam 版重新顯示「前往下一關」按鈕。
+* **`scripts/publish-steam-demo.ps1`**：Steam Demo 輸出後自動替 `index.html` 的 `<body>` 注入 `steam-layout` class，避免影響原始手機版與 itch.io 版。
+* **`js/main.js`**：規則彈窗按鈕綁定新增節點存在檢查，避免 Steam 橫版驗證時因缺少關閉按鈕節點而拋出 page error。
+
+### 文件：新增 Steam 橫版 UI 規格草案 [2026/05/18]
+* **`promo/steam/STEAM_LANDSCAPE_UI_SPEC.md`**：新增 Steam 橫版 UI 規格草案，定義 PC、Steam Deck 目標解析度、戰鬥三欄布局、商店橫版化、Modal 規格、截圖重抓需求與分階段實作建議。
+
+### 素材：產出 Steam 商店頁實機截圖 [2026/05/18]
+* **`promo/steam/assets/`**：使用 Playwright 以 `1920x1080` 視窗實際載入 Steam Demo，產出 6 張 Steam 商店頁截圖，涵蓋標題畫面、戰鬥開局、牌型傷害預覽、商店遺物、Boss 枷鎖與靈魂奉獻。
+* **`promo/steam/ASSET_CHECKLIST.md`**：更新 Steam screenshot 狀態與已產出檔案清單，確認 6 張截圖皆為 `1920x1080`。
+
+### 文件：整理 Steam Demo 商店頁素材與正式版承諾範圍 [2026/05/18]
+* **`promo/steam/STEAM_STORE_BRIEF.md`**：新增 Steam 商店頁文案 brief，整理產品定位、短描述、長版介紹骨架、Demo 頁面可寫內容與正式版文案邊界。
+* **`promo/steam/ASSET_CHECKLIST.md`**：新增 Steam 素材檢查表，列出 store capsule、截圖、icon、library assets 的官方尺寸、目前素材來源與缺口。
+* **`promo/steam/FULL_VERSION_SCOPE.md`**：新增 Demo / 正式版承諾範圍文件，明確切分 Demo 已包含內容、正式版可承諾方向與暫不承諾項目。
+
+### 工具：新增 Playwright 瀏覽器驗證環境 [2026/05/18]
+* **`.gitignore`**：解除 `package.json` 與 `package-lock.json` 的忽略規則，讓瀏覽器驗證與 Tailwind 建置工具可以被版本控管；`node_modules/` 仍維持忽略。
+* **`package.json` / `package-lock.json`**：新增 `playwright`、`tailwindcss` 與 `@tailwindcss/cli` 開發工具依賴，讓 Steam Demo 可用本地瀏覽器自動化驗證，並保留 Tailwind 本地建置流程。
+* **`scripts/publish-itch.ps1` / `scripts/publish-steam-demo.ps1`**：將 `package.json` 與 `package-lock.json` 排除於發佈輸出外，避免開發工具 manifest 混入玩家下載包。
+* **驗證流程**：安裝 Chromium 測試核心後，已用 Playwright 載入 `dist/steam-demo/index.html`，確認標題畫面、新遊戲按鈕與語言選單正常顯示，且沒有 console error、page error 或 failed request。
+
+### 工具：Steam Demo 離線化第一階段 [2026/05/18]
+* **`index.html`**：移除 Tailwind CDN 與 canvas-confetti CDN，改載入本地 `css/tailwind.min.css` 與 `js/vendor/confetti-lite.js`，讓 Steam Demo 不依賴外部腳本。
+* **`css/style.css`**：移除 Google Fonts `@import`，改用系統字型 fallback，避免離線環境發生字型請求。
+* **`css/tailwind-input.css` / `css/tailwind.min.css`**：改用 Tailwind v4 本地建置流程，將 `index.html` 與 `js/**/*.js` 中使用的 utility class 編入本地 CSS。
+* **`scripts/publish-steam-demo.ps1`**：新增輸出後的外部 runtime 依賴檢查，若偵測到 CDN、外部 script/link、Google Fonts 或 CSS 外部 url 會顯示警告。
+
+### 工具：建立 itch.io 與 Steam Demo 發佈輸出結構 [2026/05/18]
+* **`.gitignore`**：新增 `dist/` 忽略規則，避免發佈輸出資料夾被誤提交。
+* **`scripts/publish-itch.ps1`**：將預設輸出資料夾改為 `dist/itch`，並排除 `promo/`、`dist/` 與發佈入口檔，讓 itch.io 上傳內容維持乾淨。
+* **`scripts/publish-steam-demo.ps1` / `publish-steam-demo.cmd`**：新增 Steam Demo 輸出腳本，會產生 `dist/steam-demo`，保留遊戲執行必要檔案並排除開發、宣傳工程與文件檔案。
+
+### Feat：新增中文版宣傳影片工程 [2026/05/18]
+* **`promo/bibi-dice-cn-promo/index.html`**：新增 25 秒中文版宣傳影片工程，包含開場、骰子構築、遺物融合、Boss 枷鎖與 CTA 收束五段式節奏。
+* **`promo/bibi-dice-cn-promo/assets/`**：新增自製宣傳素材圖與程式合成音軌，供影片工程引用。
+* **`promo/bibi-dice-cn-promo/generate-audio.js`**：新增 25 秒宣傳片音軌生成腳本，可重新產出 `promo-score.wav`。
+* **`promo/bibi-dice-cn-promo/README.md`**：新增影片工程說明與 HyperFrames 預覽/輸出指令。
+* **`promo/bibi-dice-cn-promo/renders/bibi-dice-cn-promo.mp4`**：輸出 25 秒高品質 MP4 宣傳影片成品。
+
+### 修復：轉換 itch.io Banner 為合法 PNG [2026/05/18]
+* **`img/itch_banner.png`**：將原本僅改副檔名的 WebP 檔重新輸出為真正 PNG 格式，避免 itch.io 後台上傳時因檔案格式與副檔名不一致而拒收。
+
 ### 資產：新增 itch.io 橫式 Banner 主視覺 [2026/05/18]
 * **`img/itch_banner.webp`**：新增橫式宣傳 Banner，將比比與白獅夥伴重新構圖進寬版主視覺，保留紫黑高塔、發光骰子與奇幻鎖鏈氛圍，供 itch.io 頁面橫幅使用。
 

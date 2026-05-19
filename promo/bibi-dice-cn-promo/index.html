@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BIBI DICE 中文宣傳影片</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #110f0d;
+      color: #fff8e7;
+      font-family: "Noto Sans Japanese", sans-serif;
+    }
+
+    #bibi-dice-promo-root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: #110f0d;
+    }
+
+    .clip {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background-color: #110f0d;
+    }
+
+    .scene {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      padding: 78px 96px;
+      isolation: isolate;
+    }
+
+    .scene-bg, .scene-bg img, .veil, .grain, .glow, .ghost, .ring, .grid {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .scene-bg { z-index: -4; }
+    .scene-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      filter: saturate(1.08) contrast(1.05);
+      transform: scale(1.02);
+    }
+
+    .veil {
+      z-index: -3;
+      background:
+        radial-gradient(circle at 78% 38%, rgba(214, 48, 30, 0.34), rgba(214, 48, 30, 0) 36%),
+        radial-gradient(circle at 18% 16%, rgba(215, 166, 72, 0.25), rgba(215, 166, 72, 0) 34%),
+        linear-gradient(90deg, rgba(17, 15, 13, 0.92), rgba(17, 15, 13, 0.48) 48%, rgba(17, 15, 13, 0.82));
+    }
+
+    .grain {
+      z-index: -1;
+      opacity: 0.24;
+      background-image:
+        repeating-linear-gradient(0deg, rgba(255, 248, 231, 0.05) 0 1px, rgba(255, 248, 231, 0) 1px 4px),
+        radial-gradient(circle at 30% 60%, rgba(255, 255, 255, 0.08), rgba(255,255,255,0) 1px);
+      mix-blend-mode: overlay;
+    }
+
+    .glow {
+      z-index: -2;
+      background: radial-gradient(circle, rgba(225, 175, 67, 0.34), rgba(225, 175, 67, 0) 58%);
+      width: 760px;
+      height: 760px;
+      left: auto;
+      top: 200px;
+      right: 110px;
+      border-radius: 50%;
+      opacity: 0.78;
+    }
+
+    .ghost {
+      inset: auto auto 12px -18px;
+      width: 1100px;
+      color: rgba(255, 248, 231, 0.08);
+      font-size: 180px;
+      line-height: 0.86;
+      font-weight: 900;
+      letter-spacing: 0.01em;
+      z-index: -2;
+    }
+
+    .ghost::before {
+      white-space: pre;
+    }
+    .ghost-dice::before { content: "DICE\a BUILD"; }
+    .ghost-combo::before { content: "x100\a COMBO"; }
+    .ghost-fusion::before { content: "RELIC\a FUSION"; }
+    .ghost-boss::before { content: "BOSS\a SHACKLE"; }
+    .ghost-brand::before { content: "BIBI\a DICE"; }
+
+    .grid {
+      z-index: -2;
+      opacity: 0.32;
+      background-image:
+        linear-gradient(rgba(255, 248, 231, 0.1) 2px, rgba(255, 248, 231, 0) 2px),
+        linear-gradient(90deg, rgba(255, 248, 231, 0.1) 2px, rgba(255, 248, 231, 0) 2px);
+      background-size: 96px 96px;
+      mask-image: linear-gradient(90deg, rgba(0,0,0,0.75), rgba(0,0,0,0));
+    }
+
+    .topline {
+      position: absolute;
+      top: 64px;
+      left: 96px;
+      right: 96px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #d7a648;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      z-index: 3;
+    }
+
+    .topline::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -18px;
+      height: 2px;
+      background: linear-gradient(90deg, #d7a648, rgba(215, 166, 72, 0));
+    }
+
+    .copy {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      width: 880px;
+      height: 100%;
+      gap: 30px;
+      padding-top: 40px;
+    }
+
+    .eyebrow {
+      width: fit-content;
+      color: #fff8e7;
+      background: rgba(17, 15, 13, 0.88);
+      border: 3px solid #d7a648;
+      padding: 12px 22px;
+      border-radius: 4px;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+    }
+
+    h1, h2, p { margin: 0; }
+
+    .title-main {
+      font-size: 154px;
+      line-height: 0.88;
+      font-weight: 900;
+      letter-spacing: 0.01em;
+      text-shadow: 0 16px 42px rgba(0,0,0,0.62);
+    }
+
+    .title-main .cn {
+      display: block;
+      color: #fff8e7;
+      font-size: 110px;
+    }
+
+    .headline {
+      max-width: 980px;
+      font-size: 108px;
+      line-height: 0.94;
+      font-weight: 900;
+      letter-spacing: 0.01em;
+      text-shadow: 0 16px 38px rgba(0,0,0,0.62);
+    }
+
+    .sub {
+      max-width: 790px;
+      color: #e7d5aa;
+      font-size: 38px;
+      line-height: 1.34;
+      font-weight: 700;
+      text-shadow: 0 8px 26px rgba(0,0,0,0.62);
+    }
+
+    .accent { color: #d7a648; }
+    .danger { color: #f05a38; }
+    .teal { color: #52c7b8; }
+
+    .dice-orbit {
+      position: absolute;
+      right: 110px;
+      bottom: 94px;
+      width: 720px;
+      height: 520px;
+      z-index: 2;
+      transform-style: preserve-3d;
+    }
+
+    .die {
+      position: absolute;
+      width: 112px;
+      height: 112px;
+      border: 4px solid rgba(255, 248, 231, 0.78);
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      color: #ffe9a6;
+      background:
+        radial-gradient(circle at 30% 25%, #5c2a18, #22110d 58%, #0f0c0a);
+      box-shadow: 0 24px 48px rgba(0,0,0,0.52), 0 0 36px rgba(215, 166, 72, 0.42);
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 54px;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .d1 { left: 36px; top: 76px; transform: rotate(-12deg); }
+    .d2 { left: 188px; top: 22px; transform: rotate(8deg); }
+    .d3 { left: 352px; top: 64px; transform: rotate(-4deg); }
+    .d4 { left: 506px; top: 128px; transform: rotate(15deg); }
+    .d5 { left: 92px; top: 260px; transform: rotate(11deg); }
+    .d6 { left: 266px; top: 242px; transform: rotate(-17deg); }
+    .d7 { left: 430px; top: 300px; transform: rotate(6deg); }
+    .d8 { left: 568px; top: 358px; transform: rotate(-9deg); }
+
+    .score-card {
+      position: absolute;
+      right: 112px;
+      top: 178px;
+      z-index: 3;
+      width: 520px;
+      padding: 34px 38px;
+      border: 3px solid rgba(215, 166, 72, 0.72);
+      border-radius: 8px;
+      background: rgba(19, 18, 15, 0.76);
+      box-shadow: 0 34px 84px rgba(0,0,0,0.44);
+      backdrop-filter: blur(10px);
+    }
+
+    .score-label {
+      color: #52c7b8;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+    }
+
+    .score-value {
+      margin-top: 12px;
+      color: #fff8e7;
+      font-family: "Cascadia Mono", "Consolas", monospace;
+      font-size: 76px;
+      font-weight: 900;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .combo-row {
+      display: flex;
+      gap: 18px;
+      margin-top: 24px;
+    }
+
+    .tag {
+      padding: 12px 16px;
+      border-radius: 5px;
+      background: rgba(82, 199, 184, 0.17);
+      border: 2px solid rgba(82, 199, 184, 0.42);
+      color: #bdf5ed;
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    .relic-row {
+      display: flex;
+      gap: 24px;
+      margin-top: 22px;
+      flex-wrap: wrap;
+    }
+
+    .relic {
+      min-width: 178px;
+      padding: 22px 24px;
+      border-radius: 8px;
+      border: 3px solid rgba(255, 248, 231, 0.18);
+      background: rgba(255, 248, 231, 0.08);
+      box-shadow: inset 0 0 30px rgba(215, 166, 72, 0.08), 0 22px 48px rgba(0,0,0,0.28);
+    }
+
+    .relic b {
+      display: block;
+      color: #d7a648;
+      font-size: 30px;
+      line-height: 1.1;
+    }
+
+    .relic span {
+      display: block;
+      margin-top: 10px;
+      color: #e7d5aa;
+      font-size: 22px;
+      line-height: 1.22;
+      font-weight: 700;
+    }
+
+    .boss-panel {
+      position: absolute;
+      right: 96px;
+      bottom: 82px;
+      z-index: 3;
+      width: 760px;
+      padding: 32px;
+      border-radius: 8px;
+      border: 3px solid rgba(240, 90, 56, 0.62);
+      background: rgba(26, 12, 10, 0.74);
+      box-shadow: 0 0 62px rgba(240, 90, 56, 0.24), 0 30px 78px rgba(0,0,0,0.46);
+    }
+
+    .hp {
+      width: 100%;
+      height: 30px;
+      border-radius: 99px;
+      background: rgba(255, 248, 231, 0.14);
+      overflow: hidden;
+      border: 2px solid rgba(255, 248, 231, 0.2);
+    }
+
+    .hp-fill {
+      width: 86%;
+      height: 100%;
+      background: linear-gradient(90deg, #f05a38, #d7a648);
+    }
+
+    .boss-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 20px;
+      color: #fff8e7;
+      font-size: 32px;
+      font-weight: 900;
+    }
+
+    .chain {
+      position: absolute;
+      z-index: 4;
+      width: 1200px;
+      height: 28px;
+      background: repeating-linear-gradient(90deg, #6b1e18 0 42px, #d7a648 42px 50px, #2a1712 50px 88px);
+      box-shadow: 0 8px 22px rgba(0,0,0,0.55);
+      opacity: 0.84;
+      transform-origin: center;
+    }
+
+    .chain-a { right: -200px; top: 218px; transform: rotate(-18deg); }
+    .chain-b { right: -190px; top: 520px; transform: rotate(17deg); }
+
+    .cta {
+      width: 100%;
+      height: 100%;
+      display: grid;
+      place-items: center;
+      text-align: center;
+      padding: 110px 150px;
+    }
+
+    .cta-box {
+      position: relative;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 26px;
+    }
+
+    .cta-title {
+      font-size: 152px;
+      line-height: 0.9;
+      font-weight: 900;
+      color: #fff8e7;
+      text-shadow: 0 0 40px rgba(215, 166, 72, 0.24), 0 18px 44px rgba(0,0,0,0.58);
+    }
+
+    .cta-sub {
+      color: #e7d5aa;
+      font-size: 42px;
+      font-weight: 800;
+    }
+
+    .cta-button {
+      margin-top: 10px;
+      padding: 22px 42px;
+      border-radius: 7px;
+      background: #d7a648;
+      color: #110f0d;
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      box-shadow: 0 20px 64px rgba(215, 166, 72, 0.34);
+    }
+
+    .transition {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      pointer-events: none;
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      background: rgba(17, 15, 13, 0);
+    }
+
+    .transition span {
+      display: block;
+      height: 100%;
+      transform: scaleY(0);
+      transform-origin: bottom;
+      background: #d7a648;
+      box-shadow: 0 0 40px rgba(215, 166, 72, 0.42);
+    }
+
+    .final-dip {
+      position: absolute;
+      inset: 0;
+      z-index: 40;
+      background: #110f0d;
+      opacity: 0;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="bibi-dice-promo-root" data-composition-id="bibi-dice-promo" data-start="0" data-duration="25" data-width="1920" data-height="1080">
+    <audio id="score-audio" data-start="0" data-duration="25" data-track-index="10" data-volume="0.82" src="assets/promo-score.wav"></audio>
+
+    <section id="scene-1" class="clip scene" data-start="0" data-duration="5.5" data-track-index="1">
+      <div class="scene-bg"><img src="assets/hero-dice-1080.png" alt=""></div>
+      <div class="veil"></div><div class="grain"></div><div class="glow"></div><div class="ghost ghost-dice" aria-hidden="true" data-layout-ignore></div>
+      <div class="topline"><span>ROGUELITE DICE BUILDING</span><span>25 SEC PROMO</span></div>
+      <div class="copy">
+        <div id="s1-eyebrow" class="eyebrow">中文版宣傳短片</div>
+        <h1 id="s1-title" class="title-main">BIBI DICE<span class="cn">比比丟八</span></h1>
+        <p id="s1-sub" class="sub">八顆骰子，不只是運氣。湊牌型、疊倍率，把一局小小的擲骰變成爆發傷害。</p>
+      </div>
+    </section>
+
+    <section id="scene-2" class="clip scene" data-start="5.5" data-duration="5.5" data-track-index="1">
+      <div class="scene-bg"><img src="assets/hero-dice-scene2-1080.png" alt=""></div>
+      <div class="veil"></div><div class="grain"></div><div class="grid"></div><div class="ghost ghost-combo" aria-hidden="true" data-layout-ignore></div>
+      <div class="topline"><span>ROLL / LOCK / REROLL</span><span>8 DICE</span></div>
+      <div class="copy">
+        <div id="s2-eyebrow" class="eyebrow">核心戰鬥</div>
+        <h2 id="s2-title" class="headline">鎖定關鍵骰，<span class="accent">重骰到牌型成形</span></h2>
+        <p id="s2-sub" class="sub">同數、順子、複合、特殊數列，每一次選擇都在推高下一擊。</p>
+      </div>
+      <div class="dice-orbit" id="dice-orbit">
+        <div class="die d1">1</div><div class="die d2">2</div><div class="die d3">3</div><div class="die d4">4</div>
+        <div class="die d5">5</div><div class="die d6">6</div><div class="die d7">7</div><div class="die d8">8</div>
+      </div>
+      <div id="score-card" class="score-card">
+        <div class="score-label">預估造成傷害</div>
+        <div class="score-value">1,280,000</div>
+        <div class="combo-row"><div class="tag">比比丟八</div><div class="tag">x100</div></div>
+      </div>
+    </section>
+
+    <section id="scene-3" class="clip scene" data-start="11" data-duration="5.5" data-track-index="1">
+      <div class="scene-bg"><img src="assets/relic-fusion-1080.png" alt=""></div>
+      <div class="veil"></div><div class="grain"></div><div class="glow"></div><div class="ghost ghost-fusion" aria-hidden="true" data-layout-ignore></div>
+      <div class="topline"><span>SHOP / RELICS / FUSION</span><span>BUILD YOUR RUN</span></div>
+      <div class="copy">
+        <div id="s3-eyebrow" class="eyebrow">流派構築</div>
+        <h2 id="s3-title" class="headline">拿遺物、組流派，<span class="teal">把平凡骰面養成神話</span></h2>
+        <p id="s3-sub" class="sub">大一、大二、五福臨門、血色聖戰。每次勝利，都是下一局的引線。</p>
+        <div class="relic-row">
+          <div class="relic" id="relic-1"><b>萬物之源</b><span>低點數也能成長</span></div>
+          <div class="relic" id="relic-2"><b>天秤之極</b><span>特殊牌型再突破</span></div>
+          <div class="relic" id="relic-3"><b>六道輪迴</b><span>散牌也有價值</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="scene-4" class="clip scene" data-start="16.5" data-duration="5" data-track-index="1">
+      <div class="scene-bg"><img src="assets/boss-shackle-1080.png" alt=""></div>
+      <div class="veil"></div><div class="grain"></div><div class="ghost ghost-boss" aria-hidden="true" data-layout-ignore></div>
+      <div class="chain chain-a"></div><div class="chain chain-b"></div>
+      <div class="topline"><span>SHACKLE SYSTEM</span><span>BOSS ALERT</span></div>
+      <div class="copy">
+        <div id="s4-eyebrow" class="eyebrow">高壓挑戰</div>
+        <h2 id="s4-title" class="headline">Boss 不是只加血，<span class="danger">還會給你枷鎖</span></h2>
+        <p id="s4-sub" class="sub">盲眼、黑洞、終極封鎖、絕對屏障。看似完美的牌局，下一秒就被規則扭曲。</p>
+      </div>
+      <div id="boss-panel" class="boss-panel">
+        <div class="hp"><div class="hp-fill"></div></div>
+        <div class="boss-meta"><span>創世神</span><span>枷鎖：終極封鎖</span></div>
+      </div>
+    </section>
+
+    <section id="scene-5" class="clip scene" data-start="21.5" data-duration="3.5" data-track-index="1">
+      <div class="scene-bg"><img src="assets/hero-dice-cta-1080.png" alt=""></div>
+      <div class="veil"></div><div class="grain"></div><div class="glow"></div><div class="ghost ghost-brand" aria-hidden="true" data-layout-ignore></div>
+      <div class="cta">
+        <div class="cta-box">
+          <div id="s5-eyebrow" class="eyebrow">免費測試版</div>
+          <h2 id="s5-title" class="cta-title">BIBI DICE<br>比比丟八</h2>
+          <p id="s5-sub" class="cta-sub">用八顆骰子，打出自己的流派。</p>
+          <div id="s5-button" class="cta-button">立即開始挑戰</div>
+        </div>
+      </div>
+      <div class="final-dip" id="final-dip"></div>
+    </section>
+
+    <div id="tr-1" class="clip transition" data-start="5.16" data-duration="0.42" data-track-index="2"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div id="tr-2" class="clip transition" data-start="10.66" data-duration="0.42" data-track-index="2"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div id="tr-3" class="clip transition" data-start="16.16" data-duration="0.42" data-track-index="2"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    <div id="tr-4" class="clip transition" data-start="21.16" data-duration="0.42" data-track-index="2"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.14.2/dist/gsap.min.js"></script>
+  <script>
+    window.__timelines = window.__timelines || {};
+    const tl = gsap.timeline({ paused: true });
+    const q = (selector) => gsap.utils.toArray(selector);
+    const fromToIf = (selector, fromVars, toVars, position) => {
+      const nodes = q(selector);
+      if (nodes.length) tl.fromTo(nodes, fromVars, toVars, position);
+    };
+    const toIf = (selector, vars, position) => {
+      const nodes = q(selector);
+      if (nodes.length) tl.to(nodes, vars, position);
+    };
+    const setIf = (selector, vars, position) => {
+      const nodes = q(selector);
+      if (nodes.length) tl.set(nodes, vars, position);
+    };
+
+    function enterScene(scene, t) {
+      fromToIf(`${scene} .scene-bg img`, { scale: 1.08 }, { scale: 1.02, duration: 5.4, ease: "none" }, t);
+      fromToIf(`${scene} .topline`, { opacity: 0, y: -22 }, { opacity: 1, y: 0, duration: 0.48, ease: "power3.out" }, t + 0.16);
+      fromToIf(`${scene} .eyebrow`, { opacity: 0, x: -80 }, { opacity: 1, x: 0, duration: 0.42, ease: "expo.out" }, t + 0.24);
+      fromToIf(`${scene} .headline, ${scene} .title-main, ${scene} .cta-title`, { opacity: 0, y: 58, scale: 0.96 }, { opacity: 1, y: 0, scale: 1, duration: 0.68, ease: "back.out(1.2)" }, t + 0.42);
+      fromToIf(`${scene} .sub, ${scene} .cta-sub`, { opacity: 0, x: -44 }, { opacity: 1, x: 0, duration: 0.56, ease: "power2.out" }, t + 0.76);
+      fromToIf(`${scene} .ghost`, { opacity: 0, x: -60 }, { opacity: 1, x: 0, duration: 0.9, ease: "sine.out" }, t + 0.28);
+      toIf(`${scene} .glow`, { scale: 1.08, opacity: 0.96, duration: 2.2, yoyo: true, repeat: 1, ease: "sine.inOut" }, t + 0.3);
+    }
+
+    enterScene("#scene-1", 0);
+    enterScene("#scene-2", 5.5);
+    enterScene("#scene-3", 11);
+    enterScene("#scene-4", 16.5);
+    enterScene("#scene-5", 21.5);
+
+    tl.fromTo("#dice-orbit .die", { opacity: 0, y: 90, rotation: -28, scale: 0.7 }, { opacity: 1, y: 0, rotation: 0, scale: 1, duration: 0.62, stagger: 0.045, ease: "elastic.out(1, 0.55)" }, 6.05);
+    tl.fromTo("#score-card", { opacity: 0, x: 90, rotationY: -12 }, { opacity: 1, x: 0, rotationY: 0, duration: 0.62, ease: "power4.out" }, 6.6);
+    tl.to("#dice-orbit", { y: -18, duration: 1.2, yoyo: true, repeat: 3, ease: "sine.inOut" }, 6.9);
+    tl.fromTo("#score-card .score-value", { textShadow: "0 0 0 rgba(215,166,72,0)" }, { textShadow: "0 0 34px rgba(215,166,72,0.72)", duration: 0.32, yoyo: true, repeat: 5, ease: "power1.inOut" }, 7.1);
+
+    tl.fromTo(".relic", { opacity: 0, y: 64, rotateX: -18 }, { opacity: 1, y: 0, rotateX: 0, duration: 0.55, stagger: 0.11, ease: "back.out(1.5)" }, 12.0);
+    tl.to("#relic-2", { scale: 1.06, boxShadow: "0 0 62px rgba(82,199,184,0.38)", duration: 0.7, yoyo: true, repeat: 2, ease: "sine.inOut" }, 13.2);
+
+    tl.fromTo(".chain-a", { opacity: 0, x: 260, y: -90 }, { opacity: 0.84, x: 0, y: 0, duration: 0.46, ease: "power4.out" }, 17.25);
+    tl.fromTo(".chain-b", { opacity: 0, x: 260, y: 90 }, { opacity: 0.84, x: 0, y: 0, duration: 0.46, ease: "expo.out" }, 17.38);
+    tl.fromTo("#boss-panel", { opacity: 0, y: 82, scale: 0.94 }, { opacity: 1, y: 0, scale: 1, duration: 0.52, ease: "back.out(1.1)" }, 17.75);
+    tl.fromTo(".hp-fill", { width: "100%" }, { width: "28%", duration: 1.35, ease: "power3.inOut" }, 18.15);
+    tl.to(".chain", { filter: "brightness(1.7)", duration: 0.18, yoyo: true, repeat: 5, ease: "steps(1)" }, 18.55);
+
+    tl.fromTo("#s5-button", { opacity: 0, y: 38, scale: 0.92 }, { opacity: 1, y: 0, scale: 1, duration: 0.5, ease: "back.out(1.4)" }, 22.5);
+    tl.to("#s5-button", { scale: 1.045, duration: 0.45, yoyo: true, repeat: 2, ease: "sine.inOut" }, 23.0);
+    tl.to("#scene-5 .cta-box", { opacity: 0, y: -24, duration: 0.42, ease: "power2.in" }, 24.48);
+    tl.to("#final-dip", { opacity: 1, duration: 0.5, ease: "sine.inOut" }, 24.5);
+
+    function transition(id, t) {
+      fromToIf(`${id} span`, { scaleY: 0, transformOrigin: "bottom" }, { scaleY: 1, duration: 0.17, stagger: 0.018, ease: "power4.in" }, t);
+      setIf(`${id} span`, { transformOrigin: "top" }, t + 0.2);
+      toIf(`${id} span`, { scaleY: 0, duration: 0.18, stagger: 0.016, ease: "power4.out" }, t + 0.2);
+    }
+    transition("#tr-1", 5.16);
+    transition("#tr-2", 10.66);
+    transition("#tr-3", 16.16);
+    transition("#tr-4", 21.16);
+
+    window.__timelines["bibi-dice-promo"] = tl;
+  </script>
+</body>
+</html>

@@ -2009,7 +2009,10 @@ export function initResponsiveScaling() {
     function resize() {
         const w = scaler.clientWidth || window.innerWidth;
         const h = scaler.clientHeight || window.innerHeight;
-        const scale = Math.min(w / 450, h / 800);
+        const rawScale = Math.min(w / 450, h / 800);
+        const portraitScale = parseFloat(getComputedStyle(document.body).getPropertyValue('--steam-portrait-max-scale'));
+        const maxScale = document.body.classList.contains('steam-portrait') && Number.isFinite(portraitScale) ? portraitScale : rawScale;
+        const scale = Math.min(rawScale, maxScale);
         container.style.transform = `scale(${scale})`;
     }
     window.addEventListener('resize', resize);

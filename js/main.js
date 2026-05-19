@@ -469,8 +469,14 @@ function initTitleScreen() {
         loadGame();
     };
 
-    document.getElementById('btn-rules').onclick = () => UI.el.rulesModal.classList.remove('hidden');
-    document.getElementById('btn-close-rules').onclick = () => UI.el.rulesModal.classList.add('hidden');
+    const btnRules = document.getElementById('btn-rules');
+    const btnCloseRules = document.getElementById('btn-close-rules');
+    if (btnRules && UI.el.rulesModal) {
+        btnRules.onclick = () => UI.el.rulesModal.classList.remove('hidden');
+    }
+    if (btnCloseRules && UI.el.rulesModal) {
+        btnCloseRules.onclick = () => UI.el.rulesModal.classList.add('hidden');
+    }
     if (document.getElementById('btn-back-to-title')) {
         document.getElementById('btn-back-to-title').onclick = () => {
             if (window.confirm(i18n.t('ui.confirm_back_title'))) {
