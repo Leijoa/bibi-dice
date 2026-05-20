@@ -21,6 +21,8 @@
 - 新增任何遊戲內顯示文字時，必須同步更新 `js/locales/en.js`、`js/locales/ja.js`、`js/locales/zh-cn.js`、`js/locales/zh-tw.js`。
 - 修改後必須記錄到 `CHANGELOG.md`。
 - 本檔必須跟著重要進度更新，並在提交或 PR 中同步到 GitHub。
+- 工作中發現的 bug、風險、缺漏、待確認事項，即使尚未修正，也必須寫入本檔的「待處理問題」或當次工作紀錄。
+- 已完成的問題不得只從待處理清單刪除，必須移到「已處理問題」並註明完成日期與處理方式。
 
 ## 協作稱呼
 
@@ -69,6 +71,20 @@ Steam 版方向已從橫版大螢幕改為「桌面直式小遊戲」。
 - Steam screenshot 必須使用實機遊戲畫面；宣傳合成圖不能混進 screenshot 欄位。
 - Steam 版不承諾掌機與橫版 UI。
 
+## 待處理問題
+
+| 狀態 | 發現日期 | 發現者 | 問題 | 影響 | 預計處理 |
+| --- | --- | --- | --- | --- | --- |
+| ~~已完成~~ | 2026-05-20 | 阿扣 → 阿扣 | `package.json` 缺少 `name`、`productName`、`version` 欄位。 | Electron 可能把 app 名稱視為 `Electron`，導致 `userData` 存檔路徑落到 `%APPDATA%\Electron\`，未來與其他 Electron app 或 debug 存檔混淆。 | 已修正，見「已處理問題」。 |
+
+## 已處理問題
+
+| 完成日期 | 處理者 | 問題 | 處理方式 | 驗證 |
+| --- | --- | --- | --- | --- |
+| 2026-05-20 | 阿扣 | `package.json` 缺少 `name`、`productName`、`version`，Electron userData 路徑為 `%APPDATA%\Electron\`。 | 加入 `"name": "bibi-dice"`、`"productName": "BIBI DICE 比比丟八"`、`"version": "0.1.0"`。 | 靜態確認欄位已寫入；執行期 userData 路徑須製作人實際啟動 Electron 後以 `app.getPath('userData')` 確認。 |
+| 2026-05-20 | 鑀韻東 | `library_logo_1280x720.png` 使用普通系統字，風格不符合主視覺。 | 改為從 `img/home_bg.webp` 擷取主視覺美術 Logo，輸出透明 PNG。 | 已重跑 `npm.cmd run steam:library` 並確認尺寸為 `1280x720`。 |
+| 2026-05-20 | 鑀韻東 | `library_hero_3840x1240.png` 與遊戲本體關聯不足，可能被誤用。 | 從產圖腳本移除 Library Hero 產出，檔案由製作人刪除後不再重生。 | 已確認重跑 `npm.cmd run steam:library` 不會產出 `library_hero_3840x1240.png`。 |
+
 ## 目前可用指令
 
 ```powershell
@@ -86,18 +102,71 @@ npm.cmd run steam:library
 
 狀態：待做
 
-1. 新增 `promo/steam/STEAM_RELEASE_CHECKLIST.md`
-2. 把上架前工作分成：
-   - 現在就能補
-   - 需要製作人決定
-   - Steamworks 後台才能做
-3. 接著做「Steam 可上傳 Build / depot 檢查」
-4. 檢查 Electron build 是否能離線啟動、是否使用正確視窗尺寸、是否有穩定存檔路徑
-5. 整理 Steamworks 後台要填的商店文字、標籤、支援語言、價格、年齡分級、AI 生成素材揭露
+1. ~~新增 `promo/steam/STEAM_RELEASE_CHECKLIST.md`~~（已完成 2026-05-20）
+2. 依 `STEAM_RELEASE_CHECKLIST.md` 第一區，逐項驗證：
+   - Electron build 能否離線啟動
+   - 視窗尺寸預設正確（540×960）
+   - 存檔路徑穩定（Electron userData）
+   - 重開後存檔可正確讀取
+3. 確認 6 張截圖排序與全年齡可顯示
+4. 製作人依第二區決定定價、標籤、年齡分級、AI 素材揭露
+5. Steamworks 後台第三區，製作人登入後依序操作
 
 ## 工作後更新格式
 
 每次 AI 工作完成後，請在本區最上方新增一筆。
+
+請固定使用以下欄位。若沒有內容，請寫「無」，不要省略欄位。
+
+```md
+### YYYY-MM-DD 名稱
+
+- 狀態：
+- 本次做了什麼：
+- 發現的問題：
+- 預計但尚未執行的修改：
+- 已完成問題：
+- 改了哪些檔案：
+- 驗證結果：
+- 下一步：
+- 注意事項：
+```
+
+### 2026-05-20 鑀韻東
+
+- 狀態：已完成
+- 本次做了什麼：補強 `SYNC.md` 的問題追蹤規則，新增「待處理問題」與「已處理問題」區塊。
+- 發現的問題：阿扣發現 `package.json` 缺少 `name`、`productName`、`version` 欄位，但尚未寫入文件。
+- 預計但尚未執行的修改：後續需修改 `package.json`，讓 Electron 正確使用 `bibi-dice` / `BIBI DICE 比比丟八` 作為 app 名稱與 `userData` 路徑基準。
+- 已完成問題：已把 `package.json` app 命名問題補進「待處理問題」；已把 Library Logo 與 Library Hero 兩個已修事項補進「已處理問題」。
+- 改了哪些檔案：`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：已確認 `SYNC.md` 包含待處理與已處理問題清單。
+- 下一步：修正 `package.json` app 命名欄位，並驗證 Electron `userData` 路徑。
+- 注意事項：`.claude/settings.local.json` 是本機設定變更，不應納入專案提交。
+
+### 2026-05-20 阿扣（第二次）
+
+- 狀態：已完成
+- 本次做了什麼：靜態驗證 Electron build 架構（離線、視窗尺寸、存檔機制），發現並修正 `package.json` 缺少 app 命名欄位問題。
+- 發現的問題：`package.json` 無 `name` / `productName` / `version`，Electron 預設以 `"Electron"` 為 app 名稱，userData 路徑不正確。
+- 預計但尚未執行的修改：無。
+- 已完成問題：`package.json` app 命名欄位已補齊，問題移至「已處理問題」。
+- 改了哪些檔案：`package.json`、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：靜態確認 `dist/steam-demo` 存在、index.html 無外部 CDN、存檔全用 localStorage、視窗預設 540×960、9:16 比例鎖定。執行期 userData 路徑需製作人啟動 Electron 後目視確認。
+- 下一步：製作人可執行 `npm.cmd run steam:app:dev` 實際啟動 Electron，確認 userData 路徑與三段解析度切換正常。
+- 注意事項：無。
+
+### 2026-05-20 阿扣
+
+- 狀態：已完成
+- 本次做了什麼：建立 `promo/steam/STEAM_RELEASE_CHECKLIST.md`，分三區（現在就能補、需製作人決定、Steamworks 後台才能做），涵蓋素材確認、Build 驗證、後台填寫、送審流程。
+- 發現的問題：無（本次為新增文件，未修改既有邏輯）。
+- 預計但尚未執行的修改：無。
+- 已完成問題：無。
+- 改了哪些檔案：`promo/steam/STEAM_RELEASE_CHECKLIST.md`（新增）、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：文件結構與 `STEAM_STORE_BRIEF.md`、`FULL_VERSION_SCOPE.md`、`ASSET_CHECKLIST.md` 交叉核對，無遺漏。
+- 下一步：依第一區逐項驗證 Electron build（離線、視窗尺寸、存檔路徑）。
+- 注意事項：AI 生成素材揭露、Library Hero、Page Background、Trailer 需製作人決定後再填入。
 
 ### 2026-05-20 鑀韻東
 

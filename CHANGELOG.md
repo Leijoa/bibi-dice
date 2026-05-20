@@ -1,3 +1,15 @@
+### 修正：補齊 package.json Electron app 命名欄位 [2026/05/20]
+* **`package.json`**：新增 `"name": "bibi-dice"`、`"productName": "BIBI DICE 比比丟八"`、`"version": "0.1.0"`，讓 Electron 以正確名稱建立 `userData` 存檔路徑，避免預設落到 `%APPDATA%\Electron\` 導致存檔路徑混淆。
+
+### 文件：補強 AI 協作問題追蹤規則 [2026/05/20]
+* **`SYNC.md`**：新增「待處理問題」與「已處理問題」區塊，要求 AI 發現問題時即使尚未修正也必須記錄，已修正問題則需註明完成日期與處理方式。
+* **`SYNC.md`**：補入阿扣發現的 `package.json` 缺少 `name`、`productName`、`version` 欄位問題，標記為待處理。
+* **`SYNC.md`**：更新工作後紀錄格式，新增「發現的問題」、「預計但尚未執行的修改」、「已完成問題」欄位。
+
+### 文件：新增 Steam 上架前檢查表 [2026/05/20]
+* **`promo/steam/STEAM_RELEASE_CHECKLIST.md`**：新增 Steam 上架前完整檢查表，分三區：一、現在就能補（素材確認、Build 驗證、i18n）；二、需製作人決定（定價、標籤、年齡分級、AI 素材揭露、Library Hero、Page Background、Trailer、Coming Soon 時機、開發商名稱）；三、Steamworks 後台才能做（建立 App、填寫商店頁、素材上傳、Build 上傳與送審流程）。
+* **`SYNC.md`**：更新下一步建議，標記 STEAM_RELEASE_CHECKLIST.md 已完成，列出後續優先驗證項目。
+
 ### 文件：新增 AI 協作同步入口 [2026/05/20]
 * **`SYNC.md`**：新增專案根目錄 AI 協作同步入口，規定所有 AI Agent 開工前需先讀 `SYNC.md`、`AGENTS.md`、`CHANGELOG.md`，並在工作後更新同步進度。
 * **`SYNC.md`**：整理目前 Steam 桌面直式小遊戲方向、已完成素材與工具、下一步上架檢查表工作、禁止誤用素材與踩雷紀錄。

@@ -1,4 +1,7 @@
 {
+  "name": "bibi-dice",
+  "productName": "BIBI DICE 比比丟八",
+  "version": "0.1.0",
   "scripts": {
     "steam:build": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/publish-steam-demo.ps1",
     "steam:app": "npm run steam:build -- --OutputDir dist/steam-demo && electron steam-app/main.js",
