@@ -54,12 +54,23 @@ Steam 版方向已從橫版大螢幕改為「桌面直式小遊戲」。
 | Steam Demo 輸出 | 已完成第一版 | `scripts/publish-steam-demo.ps1` 會注入 `steam-portrait` |
 | Electron 桌面殼 | 已完成第一版 | `steam-app/main.js`、`steam-app/preload.js` |
 | 直式桌面截圖 | 已完成第一版 | `npm.cmd run steam:capture` 可重產 |
-| Store Capsule | 已完成第一版 | `npm.cmd run steam:capsules` 可重產 |
-| Library Capsule / Header / Logo / Icon | 已完成第一版 | `npm.cmd run steam:library` 可重產 |
+| Store Capsule | 已完成 D8 修正版，製作人已確認通過 | `npm.cmd run steam:capsules` 可重產；不得額外疊英文遮住中文 Logo |
+| Library Capsule / Header / Logo / Icon | 已完成 D8 修正版，製作人已確認通過 | `npm.cmd run steam:library` 可重產；Library Logo 維持主視覺美術字擷取版 |
 | Library Hero | 暫停 / 不做 | 已刪除，不要重產 `library_hero_3840x1240.png` |
-| Steam Release Checklist | 待做 | 下一步建議先做 |
-| Steam 可上傳 Build / depot 檢查 | 待做 | Release checklist 後進行 |
-| Steamworks 後台資料填寫 | 待做 | 需要製作人決定欄位內容 |
+| Steam Release Checklist | 已完成第一版 | 見 `promo/steam/STEAM_RELEASE_CHECKLIST.md` |
+| Steam 可上傳 Build / depot 檢查 | 進行中 | 已通過 Electron 基礎驗證、解析度切換與存檔重開驗證；仍需 SteamPipe / depot |
+| Steamworks 後台資料填寫 | 進行中 | 已確定 Coming Soon / Demo 目標排程；仍需製作人完成 AI 揭露、IARC、素材目視確認 |
+
+## Steam 目標排程
+
+| 日期 | 目標 |
+| --- | --- |
+| 2026-06-01 前 | 商店頁素材、文案、Demo Build 準備完成 |
+| 2026-06-03 | 送 Steam 商店頁審核 |
+| 2026-06-10 | 目標公開 Coming Soon 頁 |
+| 2026-07-01 | 目標發布 Demo |
+
+`2026-06-10` 到 `2026-07-01` 間隔 21 天，符合 Steam Coming Soon 頁至少公開 2 週的要求。
 
 ## 重要踩雷紀錄
 
@@ -68,6 +79,7 @@ Steam 版方向已從橫版大螢幕改為「桌面直式小遊戲」。
 - `library_logo_1280x720.png` 必須使用主視覺美術字風格，不可用普通系統字。
 - 正確遊戲名是「比比丟八」，不是「比比丟人」。
 - Store / Library 圖不要讓英文 `BIBI DICE` 遮住中文主視覺 Logo。
+- `npm.cmd run steam:capsules` 產出的 Store Capsule 不可再額外疊 `BIBI DICE` 或 `bibi-dice` 文字層；只能保留原主視覺中的 Logo。
 - Steam screenshot 必須使用實機遊戲畫面；宣傳合成圖不能混進 screenshot 欄位。
 - Steam 版不承諾掌機與橫版 UI。
 
@@ -76,12 +88,32 @@ Steam 版方向已從橫版大螢幕改為「桌面直式小遊戲」。
 | 狀態 | 發現日期 | 發現者 | 問題 | 影響 | 預計處理 |
 | --- | --- | --- | --- | --- | --- |
 | ~~已完成~~ | 2026-05-20 | 阿扣 → 阿扣 | `package.json` 缺少 `name`、`productName`、`version` 欄位。 | Electron 可能把 app 名稱視為 `Electron`，導致 `userData` 存檔路徑落到 `%APPDATA%\Electron\`，未來與其他 Electron app 或 debug 存檔混淆。 | 已修正，見「已處理問題」。 |
+| ~~已完成~~ | 2026-05-20 | 鑀韻東 | 僅補 `package.json` metadata 後，Electron 執行期仍顯示 appName 為 `Electron`，`userData` 仍落在 `%APPDATA%\Electron\`。 | 實際 Steam build 存檔路徑仍可能混淆，阿扣前次靜態修正不足以覆蓋 Electron dev 啟動情境。 | 已在 `steam-app/main.js` 呼叫 `app.setName()`，見「已處理問題」。 |
+| ~~已完成~~ | 2026-05-20 | 阿扣 → 鑀韻東 | `store_header_capsule_920x430.png`、`store_small_capsule_462x174.png`、`store_main_capsule_1232x706.png`、`store_vertical_capsule_748x896.png` 四張 Store Capsule 檔案**實際不在 `promo/steam/assets/` 目錄中**，ASSET_CHECKLIST.md 標記為「已產出」但盤點時缺失。 | 上架前缺少必要商店圖片，需重產後才能上傳 Steamworks。 | 已執行 `npm.cmd run steam:capsules` 重產，見「已處理問題」。 |
+| ~~已完成~~ | 2026-05-21 | 製作人 → 鑀韻東 | 四張 Store Capsule 修補後仍額外疊上英文 `BIBI DICE` 與 `bibi-dice` 膠囊副標，遮住中文主視覺 Logo，重犯先前已刪除素材的問題。 | 素材尺寸正確但視覺不合格，若上傳會違反製作人已定下的中文 Logo 優先規則。 | 已修正 `scripts/generate-steam-capsules.js` 移除額外文字層並重產，見「已處理問題」。 |
+| ~~已完成~~ | 2026-05-21 | 製作人 → 阿扣 | Library Capsule / Header 與四張 Store Capsule（共 6 張）色澤跑掉、整體偏暗（F-01/02/04~07）。 | 6 張關鍵商店圖視覺不合格，目前無法上傳。 | 已改用 D8 修正版 Steam 專用主視覺源圖、降低暗化層並重產，見「已處理問題」。 |
+| ~~已完成~~ | 2026-05-21 | 製作人 → 阿扣 | Shortcut Icon `256x256` 與 App Icon `184x184` 由 favicon 縮放產生，品質不足（F-08/F-09）。 | Icon 在 Steam Library 與桌面顯示效果差。 | 已由鑀韻東重生 `favicon.png` 並重產 256×256 PNG 與 184×184 JPG，見「已處理問題」。 |
+| ~~已完成~~ | 2026-05-21 | 製作人 → 阿扣 | 開發商 / 發行商名稱（A-01/A-02）列三候選未選定。 | Steamworks 建立 App 後不可改。 | 製作人選定「雷爪獅」，見「已處理問題」。 |
+| ~~已完成~~ | 2026-05-21 | 製作人 → 阿扣 | A-07 未提供 itch.io URL。 | Steam 後台 Homepage URL 無法填寫。 | 製作人提供 `https://leijoa.itch.io/bibi-dice`，見「已處理問題」。 |
+| ~~已完成~~ | 2026-05-21 | 製作人 → 阿扣 | C-03/04/05 未填。 | Demo 上傳流程細節未定。 | 製作人決定：C-03 先進 internal branch、C-04 製作人 SetLive、C-05 `steam-build/` 加入 .gitignore，見「已處理問題」。 |
+| ~~已完成~~ | 2026-05-21 | 製作人 → 阿扣 | D-04 favicon AI 揭露答覆不明確。 | AI 揭露文字無法定稿。 | 製作人確認「是」（含 AI），同時指派鑀韻東重新生成 favicon，見「已處理問題」與新待處理項。 |
+| ~~已完成~~ | 2026-05-21 | 製作人 → 鑀韻東 | 製作人不滿意現有 `favicon.png`，已指派鑀韻東重新生成。 | F-08/F-09 Shortcut Icon 與 App Icon 需以新 favicon 為來源重產；AI 揭露文字需依新 favicon 是否含 AI 而定。 | 已由鑀韻東重生暗紫霓虹骰子 `favicon.png`，並同步更新 AI 揭露文字，見「已處理問題」。 |
+| 待做 | 2026-05-21 | 製作人 → 阿扣 | E-10 答「是」（將收集玩家遊玩數據評估更新方向），觸發 Steam 隱私政策審查需求。 | 上架前需提供隱私政策連結，否則 Steam 商店審核可能退回。 | 製作人準備一份隱私政策頁面（itch.io 或獨立網址），說明收集範圍、用途、保存期限與聯絡方式。 |
 
 ## 已處理問題
 
 | 完成日期 | 處理者 | 問題 | 處理方式 | 驗證 |
 | --- | --- | --- | --- | --- |
+| 2026-05-21 | 製作人 → 阿扣 | A-01/A-02 開發商與發行商名稱三選一未定。 | 製作人選定「雷爪獅」，A-02 同 A-01。 | 已同步至 `STEAMWORKS_FIELDS_DRAFT.md` 第 1 / 第 10 區與 `STEAM_RELEASE_CHECKLIST.md` 第二區。 |
+| 2026-05-21 | 製作人 → 阿扣 | A-07 itch.io URL 未提供。 | 製作人提供 `https://leijoa.itch.io/bibi-dice`。 | 已同步至 `STEAMWORKS_FIELDS_DRAFT.md` 第 1 / 第 10 區。 |
+| 2026-05-21 | 製作人 → 阿扣 | C-03/C-04/C-05 SteamPipe 流程細節未定。 | 製作人決定：先進 internal branch 自測、製作人本人 SetLive、`steam-build/` 加入 `.gitignore`。 | 已同步至 `STEAMPIPE_DEPOT_DRAFT.md` 第 3 / 4 / 6 區；`.gitignore` 已加入 `steam-build/`。 |
+| 2026-05-21 | 製作人 → 阿扣 | D-04 favicon AI 揭露答覆不明確。 | 製作人確認「是」（含 AI），並指派鑀韻東重新生成 favicon。 | 已同步至 `STEAMWORKS_FIELDS_DRAFT.md` 第 8 / 第 10 區；favicon 重生任務已由鑀韻東於 2026-05-21 完成。 |
+| 2026-05-21 | 鑀韻東 | `favicon.png` 舊版風格不符合目前 Steam 主視覺，且 Shortcut / App Icon 品質不足。 | 使用 AI 生成暗紫霓虹骰子新版 `favicon.png`，並重產 `shortcut_icon_256x256.png` 與 `app_icon_184x184.jpg`。 | `npm.cmd run steam:assets:verify` 通過，確認 15 個必要素材尺寸正確且 `library_hero_3840x1240.png` 維持不存在。 |
+| 2026-05-21 | 鑀韻東 | Store / Library Capsule 色澤偏暗，且角色手上骰子不是遊戲內八面骰。 | 參考原主視覺、遊戲內 `dice_8.webp` / `dice_1.webp` 與真實 D8 形體，使用 AI 生成 `promo/steam/source/key_art_d8_banner.png` 與 `promo/steam/source/key_art_d8_portrait.png`；修改 Store / Library 產圖腳本改用新源圖並降低暗化層，重產 F-01/02/04~07 共 6 張 Capsule。 | `node --check scripts/generate-steam-capsules.js`、`node --check scripts/generate-steam-library-assets.js`、`npm.cmd run steam:capsules`、`npm.cmd run steam:library`、`npm.cmd run steam:assets:verify` 全部通過；15 個必要素材尺寸正確，`library_hero_3840x1240.png` 維持不存在。 |
 | 2026-05-20 | 阿扣 | `package.json` 缺少 `name`、`productName`、`version`，Electron userData 路徑為 `%APPDATA%\Electron\`。 | 加入 `"name": "bibi-dice"`、`"productName": "BIBI DICE 比比丟八"`、`"version": "0.1.0"`。 | 靜態確認欄位已寫入；執行期 userData 路徑須製作人實際啟動 Electron 後以 `app.getPath('userData')` 確認。 |
+| 2026-05-20 | 鑀韻東 | Electron dev / Playwright 啟動時仍使用預設 appName `Electron`，導致 `userData` 路徑仍為 `%APPDATA%\Electron\`。 | `steam-app/main.js` 讀取 `package.json`，並在 app ready 前呼叫 `app.setName(productName || name || 'bibi-dice')`。 | `npm.cmd run steam:verify` 通過，輸出 appName 為 `BIBI DICE 比比丟八`，userData 為 `%APPDATA%\BIBI DICE 比比丟八\`。 |
+| 2026-05-21 | 鑀韻東 | 阿扣盤點發現四張 Store Capsule 檔案缺失。 | 執行 `npm.cmd run steam:capsules` 重產 `store_header_capsule_920x430.png`、`store_small_capsule_462x174.png`、`store_main_capsule_1232x706.png`、`store_vertical_capsule_748x896.png`。 | 以 `System.Drawing` 驗證尺寸分別為 `920x430`、`462x174`、`1232x706`、`748x896`；並目視確認小膠囊標題可讀。 |
+| 2026-05-21 | 鑀韻東 | Store Capsule 腳本額外疊英文，遮住中文主視覺 Logo。 | 修改 `scripts/generate-steam-capsules.js`，移除 `.title`、`.subtitle` 與對應 DOM，讓四張 Store Capsule 只使用原主視覺，不再額外疊英文標題。 | 已重跑 `npm.cmd run steam:capsules`、`npm.cmd run steam:assets:verify`，並目視確認四張修正版沒有額外英文遮住中文 Logo。 |
 | 2026-05-20 | 鑀韻東 | `library_logo_1280x720.png` 使用普通系統字，風格不符合主視覺。 | 改為從 `img/home_bg.webp` 擷取主視覺美術 Logo，輸出透明 PNG。 | 已重跑 `npm.cmd run steam:library` 並確認尺寸為 `1280x720`。 |
 | 2026-05-20 | 鑀韻東 | `library_hero_3840x1240.png` 與遊戲本體關聯不足，可能被誤用。 | 從產圖腳本移除 Library Hero 產出，檔案由製作人刪除後不再重生。 | 已確認重跑 `npm.cmd run steam:library` 不會產出 `library_hero_3840x1240.png`。 |
 
@@ -91,8 +123,10 @@ Steam 版方向已從橫版大螢幕改為「桌面直式小遊戲」。
 npm.cmd run steam:build
 npm.cmd run steam:app
 npm.cmd run steam:app:dev
+npm.cmd run steam:verify
 npm.cmd run steam:capture
 npm.cmd run steam:capsules
+npm.cmd run steam:assets:verify
 npm.cmd run steam:library
 ```
 
@@ -103,14 +137,11 @@ npm.cmd run steam:library
 狀態：待做
 
 1. ~~新增 `promo/steam/STEAM_RELEASE_CHECKLIST.md`~~（已完成 2026-05-20）
-2. 依 `STEAM_RELEASE_CHECKLIST.md` 第一區，逐項驗證：
-   - Electron build 能否離線啟動
-   - 視窗尺寸預設正確（540×960）
-   - 存檔路徑穩定（Electron userData）
-   - 重開後存檔可正確讀取
-3. 確認 6 張截圖排序與全年齡可顯示
-4. 製作人依第二區決定定價、標籤、年齡分級、AI 素材揭露
-5. Steamworks 後台第三區，製作人登入後依序操作
+2. ~~驗證 Electron build、預設視窗尺寸與 userData 路徑~~（已完成 2026-05-20）
+3. ~~驗證三段解析度切換與重開後存檔可正確讀取~~（已完成 2026-05-20）
+4. ~~確認 6 張截圖排序與全年齡可顯示~~（阿扣已完成 2026-05-20，見 `promo/steam/STEAM_ASSET_FINAL_AUDIT.md`）
+5. 製作人依第二區完成剩餘決策：年齡分級、AI 素材揭露、素材目視確認
+6. Steamworks 後台第三區，製作人登入後依序操作
 
 ## 工作後更新格式
 
@@ -131,6 +162,186 @@ npm.cmd run steam:library
 - 下一步：
 - 注意事項：
 ```
+
+### 2026-05-21 鑀韻東
+
+- 狀態：已完成
+- 本次做了什麼：依製作人回覆，將 Store / Library Capsule D8 修正版 6 張素材標記為「製作人已確認通過」，並準備提交同步至 GitHub。
+- 發現的問題：無。
+- 預計但尚未執行的修改：E-10 隱私政策頁面仍待製作人準備；Page Background 與 Trailer 仍為選擇性待做。
+- 已完成問題：F-01/02/04~07 六張 Capsule 已從「待製作人最終目視」更新為「製作人確認通過」。
+- 改了哪些檔案：`SYNC.md`、`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`CHANGELOG.md`
+- 驗證結果：文件狀態已同步；提交前會再次執行 `npm.cmd run steam:assets:verify`。
+- 下一步：提交並推送目前 Steam 上架素材與同步文件；接著處理 E-10 隱私政策草稿。
+- 注意事項：`.claude/settings.local.json` 是本機設定，不納入提交。
+
+### 2026-05-21 鑀韻東
+
+- 狀態：已完成
+- 本次做了什麼：依製作人提供的原主視覺、遊戲內藍色八面骰與真實 D8 參考，重生 Steam 專用 D8 主視覺源圖 `key_art_d8_banner.png` / `key_art_d8_portrait.png`；修改 Store / Library 產圖腳本改用新源圖並降低暗化層，重產 F-01/02/04~07 共 6 張 Capsule。
+- 發現的問題：舊 Capsule 不只是偏暗，角色手上的骰子也偏六面黑金骰，與遊戲實際八面骰美術不一致。
+- 預計但尚未執行的修改：E-10 隱私政策頁面仍待製作人準備；Page Background 與 Trailer 仍為選擇性待做。
+- 已完成問題：Store / Library Capsule 色澤偏暗與角色手上骰子不真實問題已移到「已處理問題」。
+- 改了哪些檔案：`promo/steam/source/key_art_d8_banner.png`、`promo/steam/source/key_art_d8_portrait.png`、`promo/steam/assets/store_header_capsule_920x430.png`、`promo/steam/assets/store_small_capsule_462x174.png`、`promo/steam/assets/store_main_capsule_1232x706.png`、`promo/steam/assets/store_vertical_capsule_748x896.png`、`promo/steam/assets/library_capsule_600x900.png`、`promo/steam/assets/library_header_capsule_920x430.png`、`scripts/generate-steam-capsules.js`、`scripts/generate-steam-library-assets.js`、`promo/steam/ASSET_CHECKLIST.md`、`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：`node --check scripts/generate-steam-capsules.js` 通過；`node --check scripts/generate-steam-library-assets.js` 通過；`npm.cmd run steam:capsules` 通過；`npm.cmd run steam:library` 通過；`npm.cmd run steam:assets:verify` 通過，15 個必要素材尺寸正確且 `library_hero_3840x1240.png` 維持不存在。
+- 下一步：請製作人目視確認 D8 修正版 6 張 Capsule 是否可上傳；若通過，下一步可處理 E-10 隱私政策頁面或選擇性 Page Background。
+- 注意事項：D8 修正版主視覺源圖含 AI 生成 / 編修，Steamworks AI 揭露草稿已同步補入 revised Steam Capsule key art。
+
+### 2026-05-21 鑀韻東
+
+- 狀態：已完成
+- 本次做了什麼：重生 `favicon.png`，將舊版藍色花體 B icon 替換為暗紫霓虹水晶骰子 icon；以新版 favicon 重產 `shortcut_icon_256x256.png` 與 `app_icon_184x184.jpg`，並同步更新素材盤點、Release checklist 與 Steamworks AI 揭露草稿。
+- 發現的問題：無新增問題；本次處理的是既有 F-08/F-09 Icon 品質不足與 favicon 重生任務。
+- 預計但尚未執行的修改：F-01/02/04~07 Capsule 色澤偏暗後續已由鑀韻東於 2026-05-21 修正；E-10 隱私政策頁面仍待製作人準備。
+- 已完成問題：Shortcut Icon / App Icon 品質不足、`favicon.png` 重生任務共 2 項，已移到「已處理問題」。
+- 改了哪些檔案：`favicon.png`、`promo/steam/assets/shortcut_icon_256x256.png`、`promo/steam/assets/app_icon_184x184.jpg`、`promo/steam/ASSET_CHECKLIST.md`、`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：已確認 `favicon.png` 為 512×512、`shortcut_icon_256x256.png` 為 256×256、`app_icon_184x184.jpg` 為 184×184；`npm.cmd run steam:assets:verify` 通過，15 個必要 Steam 素材尺寸皆正確，`library_hero_3840x1240.png` 維持不存在。
+- 下一步：修正 Store / Library Capsule 色澤偏暗問題，或由製作人先準備 E-10 隱私政策頁面。
+- 注意事項：新版 favicon / Shortcut Icon / App Icon 含 AI 生成，Steamworks AI 揭露草稿已同步加入 application icon 說明。
+
+### 2026-05-21 阿扣（第四次）
+
+- 狀態：已完成
+- 本次做了什麼：依製作人補填的 5 項決定（A-01/02 雷爪獅、A-07 itch.io URL、C-03/04/05 SteamPipe 流程、D-04 favicon 是 AI 含並指派鑀韻東重生）同步 5 份文件，並修改 `.gitignore` 加入 `steam-build/`。
+- 發現的問題：D-04 衍生新任務 — 製作人指派鑀韻東重新生成 `favicon.png`，需追蹤 F-08/F-09 Icon 與 AI 揭露文字後續更新；E-10 隱私政策仍待製作人撰寫。
+- 預計但尚未執行的修改：F-01/02/04~07 Capsule 色澤偏暗後續已由鑀韻東於 2026-05-21 修正；F-08/F-09 Icon 後續已由鑀韻東於 2026-05-21 完成；隱私政策頁面未建立。
+- 已完成問題：A-01/02 開發商選定、A-07 URL 提供、C-03/04/05 流程定案、D-04 揭露答案明確化共 4 項，全部移到「已處理問題」。
+- 改了哪些檔案：`.gitignore`、`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`promo/steam/STEAMPIPE_DEPOT_DRAFT.md`、`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：5 份文件交叉核對，A-01「雷爪獅」、A-07 URL、C-03~05、D-04 在所有對應位置均一致；`.gitignore` 新增 `steam-build/` 一行。
+- 下一步：(1) 鑀韻東執行 favicon 重生任務；(2) 鑀韻東或阿揪修產圖腳本解決 Capsule 色澤偏暗；(3) 製作人撰寫隱私政策頁面。
+- 注意事項：A-04 商店繁中名仍為純「比比丟八」；E-08 IARC 答案 Demo 與正式版不同（送審需分別處理）。
+
+### 2026-05-21 阿扣（第三次）
+
+- 狀態：已完成
+- 本次做了什麼：依製作人於 `STEAM_OWNER_DECISIONS.md` 填寫的決策，批量同步 4 份相關文件 — 更新 `STEAMWORKS_FIELDS_DRAFT.md` 第 1/5/8/9/10 區、`STEAM_RELEASE_CHECKLIST.md` 第二區勾選、`STEAM_ASSET_FINAL_AUDIT.md` 第二區改為製作人目視結果。
+- 發現的問題：本次同步發現 7 項待釐清項目，全部寫入「待處理問題」：(1) Capsule/Library 6 張色澤偏暗 (2) Icon 兩張需重新設計 (3) A-01/A-02 開發商三選一未定 (4) A-07 itch.io URL 未填 (5) C-03/04/05 未填 (6) D-04 favicon 揭露答案不明確 (7) E-10 需準備隱私政策。
+- 預計但尚未執行的修改：色澤偏暗需修改產圖腳本（屬下次任務）；Icon 重新設計屬美術工作（製作人決定）；隱私政策頁面需製作人撰寫。
+- 已完成問題：B-01 售價、B-02/B-03 標籤、B-04~B-09 商店頁送審項目、C-01/C-02 排程、D-01/02/03/05/06/07 AI 揭露、E-01~E-09 IARC 大部分項目皆已同步至 STEAMWORKS_FIELDS_DRAFT.md 與 STEAM_RELEASE_CHECKLIST.md。
+- 改了哪些檔案：`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：四份文件交叉核對，已決定欄位均同步且彼此一致；7 項待釐清問題均寫入 SYNC.md 待處理區。
+- 下一步：(1) 製作人選定 A-01 開發商名稱、提供 itch.io URL、補填 C-03/04/05、釐清 D-04；(2) 製作人撰寫隱私政策頁面；(3) 由其他 AI 處理產圖腳本色澤問題；(4) 製作人安排 Icon 重新設計。
+- 注意事項：A-04 商店繁中名改為純「比比丟八」（捨棄中英並列），已同步至 STEAMWORKS_FIELDS_DRAFT.md 第 1 區；E-08 IARC 答案 Demo 與正式版不同，Demo 送審時答「否」，正式版送審前需重新評估。
+
+### 2026-05-21 鑀韻東
+
+- 狀態：已完成
+- 本次做了什麼：將製作人確認的 Steam 目標排程寫入同步文件、決策清單、上架檢查表、Steamworks 欄位草稿與 SteamPipe 草案。
+- 發現的問題：無新增問題。
+- 預計但尚未執行的修改：尚未依剩餘決策更新 AI 生成素材揭露、IARC 問卷與素材目視確認結果。
+- 已完成問題：Coming Soon / Demo 目標排程已定案。
+- 改了哪些檔案：`SYNC.md`、`CHANGELOG.md`、`promo/steam/STEAM_OWNER_DECISIONS.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`、`promo/steam/STEAMPIPE_DEPOT_DRAFT.md`
+- 驗證結果：確認 `2026-06-10` 到 `2026-07-01` 間隔 21 天，符合 Steam Coming Soon 至少公開 2 週要求。
+- 下一步：製作人需補完 `STEAM_OWNER_DECISIONS.md` 的 D 區 AI 生成素材揭露、E 區 IARC 問卷、F 區素材目視確認。
+- 注意事項：2026-06-01 前需完成商店頁素材、文案與 Demo Build，留出 2026-06-03 送審緩衝。
+
+### 2026-05-21 鑀韻東
+
+- 狀態：已完成
+- 本次做了什麼：修正 Store Capsule 產圖腳本，移除額外疊上的英文 `BIBI DICE` 與 `bibi-dice` 膠囊副標，重產四張 Store Capsule 修正版。
+- 發現的問題：先前只用 `steam:assets:verify` 驗證尺寸，沒有驗證「英文不可遮住中文 Logo」這條視覺規則，導致尺寸正確但視覺不合格。
+- 預計但尚未執行的修改：仍建議製作人於 Steamworks 後台預覽四張 Store Capsule 實際顯示效果。
+- 已完成問題：四張 Store Capsule 英文遮擋中文 Logo 問題已修正。
+- 改了哪些檔案：`scripts/generate-steam-capsules.js`、`promo/steam/assets/store_header_capsule_920x430.png`、`promo/steam/assets/store_small_capsule_462x174.png`、`promo/steam/assets/store_main_capsule_1232x706.png`、`promo/steam/assets/store_vertical_capsule_748x896.png`、`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：`node --check scripts/generate-steam-capsules.js` 通過；`npm.cmd run steam:capsules` 通過；`npm.cmd run steam:assets:verify` 通過；已目視檢查四張修正版，確認沒有額外英文標題遮住中文主視覺 Logo。
+- 下一步：製作人可再次目視確認四張 Store Capsule；若通過，後續再處理 Steam Owner Decisions 內的決策欄位。
+- 注意事項：素材驗證腳本只能檢查尺寸與檔案存在，不能替代視覺遮擋檢查。
+
+### 2026-05-21 阿扣（第二次）
+
+- 狀態：已完成
+- 本次做了什麼：依 `CLAUDE_STEAM_DECISIONS_TASK.md` 建立 `promo/steam/STEAM_OWNER_DECISIONS.md`，集中整理製作人必須親自決定的所有 Steam 上架欄位，分八區：建立 App 前（8 項）、商店頁送審前（9 項）、Demo 發布前（5 項）、AI 揭露（7 項）、IARC 問卷（10 項）、素材目視確認（10 項）、可延後到正式版（10 項）、決策回覆格式範例。
+- 發現的問題：無新增問題。本次任務僅整理選項與待確認欄位，未替製作人決定任何答案，符合任務禁止事項。
+- 預計但尚未執行的修改：無。
+- 已完成問題：無。
+- 改了哪些檔案：`promo/steam/STEAM_OWNER_DECISIONS.md`（新增）、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：交叉核對 `STEAM_RELEASE_CHECKLIST.md`、`STEAMWORKS_FIELDS_DRAFT.md`、`STEAM_ASSET_FINAL_AUDIT.md`、`STEAMPIPE_DEPOT_DRAFT.md`、`FULL_VERSION_SCOPE.md`、`STEAM_DESKTOP_PORTRAIT_STRATEGY.md`，所有需製作人決定欄位均已涵蓋並建立同步對應表。
+- 下一步：製作人依 `STEAM_OWNER_DECISIONS.md` 第 8 區建議格式回覆，AI 即可依「決定後需同步到」欄位逐一更新對應文件。
+- 注意事項：本檔不提供任何決策建議，僅整理選項；製作人決定後請填入「決定」欄位再交給 AI 同步。
+
+### 2026-05-21 鑀韻東
+
+- 狀態：已完成
+- 本次做了什麼：新增 Steam 素材完整性自動驗證腳本，將阿扣人工盤點抓到的素材缺漏風險轉成可重複執行的檢查；另建立給阿扣的製作人 Steam 決策清單任務檔。
+- 發現的問題：無新增問題。
+- 預計但尚未執行的修改：尚未整理製作人決策清單，已交由阿扣依 `promo/steam/CLAUDE_STEAM_DECISIONS_TASK.md` 處理。
+- 已完成問題：素材存在性、尺寸與禁止誤用 Library Hero 的自動檢查已完成。
+- 改了哪些檔案：`scripts/verify-steam-assets.js`、`package.json`、`promo/steam/CLAUDE_STEAM_DECISIONS_TASK.md`、`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：`node --check scripts/verify-steam-assets.js` 通過；`npm.cmd run steam:assets:verify` 通過，確認 15 個必要 Steam 素材存在且尺寸正確，`library_hero_3840x1240.png` 維持不存在。
+- 下一步：請阿扣依 `promo/steam/CLAUDE_STEAM_DECISIONS_TASK.md` 產出 `promo/steam/STEAM_OWNER_DECISIONS.md`；我方下一步可整合 `steam:verify` 與 `steam:assets:verify` 成上架前總驗證流程。
+- 注意事項：`.claude/settings.local.json` 是本機設定變更，不應納入提交。
+
+### 2026-05-21 阿扣
+
+- 狀態：已完成
+- 本次做了什麼：依 `CLAUDE_STEAMPIPE_DRAFT_TASK.md` 建立 `promo/steam/STEAMPIPE_DEPOT_DRAFT.md`，整理 SteamPipe / Depot 上傳操作草案，分八區涵蓋前提條件、Build 來源與重建指令、Depot/Branch 命名建議、Windows 上傳流程、後台檢查項目、製作人專屬事項、可能失敗點排查、正式執行前檢查清單。
+- 發現的問題：`steam-build/` 目錄目前不存在，需製作人決定建立位置與是否納入 git；VDF 中的 AppID / DepotID 屬公開資訊，但帳號密碼絕不可寫入。
+- 預計但尚未執行的修改：無（任務僅限產出草案文件，不執行 steamcmd、不新增憑證假資料）。
+- 已完成問題：無。
+- 改了哪些檔案：`promo/steam/STEAMPIPE_DEPOT_DRAFT.md`（新增）、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：草案交叉核對 `publish-steam-demo.ps1` 排除清單、`STEAM_ASSET_FINAL_AUDIT.md`、`STEAMWORKS_FIELDS_DRAFT.md`、`FULL_VERSION_SCOPE.md`，無衝突。所有 AppID / DepotID / 帳號密碼均以 `<待製作人於後台建立後填入>` 占位，無假資料。
+- 下一步：製作人完成 Steamworks 後台 App 建立、取得 AppID / DepotID 後，依本草案建立 `steam-build/` 與 VDF 設定檔，即可執行 steamcmd 上傳。
+- 注意事項：VDF 設定檔內 AppID / DepotID 可提交 git，但 steamcmd 帳號密碼絕不可寫進任何腳本或文件。
+
+### 2026-05-21 鑀韻東
+
+- 狀態：已完成
+- 本次做了什麼：依阿扣的素材盤點結果重產四張缺失的 Store Capsule，驗證尺寸，更新素材盤點與上架檢查表；另建立給阿扣的 SteamPipe / Depot 上傳草案任務檔。
+- 發現的問題：無新增問題；阿扣先前指出的 Store Capsule 缺口已確認並修正。
+- 預計但尚未執行的修改：尚未建立 SteamPipe / Depot 上傳流程文件，已交由阿扣依 `promo/steam/CLAUDE_STEAMPIPE_DRAFT_TASK.md` 處理。
+- 已完成問題：四張 Store Capsule 缺失已修正。
+- 改了哪些檔案：`promo/steam/assets/store_header_capsule_920x430.png`、`promo/steam/assets/store_small_capsule_462x174.png`、`promo/steam/assets/store_main_capsule_1232x706.png`、`promo/steam/assets/store_vertical_capsule_748x896.png`、`promo/steam/CLAUDE_STEAMPIPE_DRAFT_TASK.md`、`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：`npm.cmd run steam:capsules` 通過；`System.Drawing` 驗證四張圖片尺寸皆符合官方規格；已目視檢查小膠囊 `store_small_capsule_462x174.png` 標題可讀。
+- 下一步：請阿扣依 `promo/steam/CLAUDE_STEAMPIPE_DRAFT_TASK.md` 產出 `promo/steam/STEAMPIPE_DEPOT_DRAFT.md`；製作人仍需目視確認所有素材品質與 AI 生成素材揭露。
+- 注意事項：`.claude/settings.local.json` 是本機設定變更，不應納入提交。
+
+### 2026-05-20 阿扣（第四次）
+
+- 狀態：已完成
+- 本次做了什麼：依 `CLAUDE_ASSET_AUDIT_TASK.md` 對 `promo/steam/assets/` 進行實際檔案盤點，建立 `promo/steam/STEAM_ASSET_FINAL_AUDIT.md`，分七區整理可上傳素材、待目視確認素材、暫不製作素材、缺口素材、截圖排序建議、全年齡風險與 AI 素材揭露提醒。
+- 發現的問題：**Store Capsule 四張檔案（920×430、462×174、1232×706、748×896）實際不在 `promo/steam/assets/` 目錄中**，ASSET_CHECKLIST.md 標記為「已產出」但盤點時缺失，為嚴重缺口，已寫入「待處理問題」。
+- 預計但尚未執行的修改：不需修改任何程式碼，Store Capsule 需執行 `npm.cmd run steam:capsules` 重產，但此動作超出本次任務範圍（不重產圖片），留待製作人確認後執行。
+- 已完成問題：無。
+- 改了哪些檔案：`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`（新增）、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：以 `ls -la promo/steam/assets/` 盤點實際存在檔案 11 個，與 ASSET_CHECKLIST.md 對照後確認 Store Capsule 四張缺失、Library Hero 正確不存在。
+- 下一步：製作人執行 `npm.cmd run steam:capsules` 重產 Store Capsule，並目視確認所有素材品質（見 STEAM_ASSET_FINAL_AUDIT.md 第二區）。
+- 注意事項：截圖第 4 張（牌型倍率表彈窗）建議製作人評估是否替換為更具張力的 Boss 枷鎖截圖。
+
+### 2026-05-20 鑀韻東
+
+- 狀態：已完成
+- 本次做了什麼：擴充 `steam:verify`，加入三段直式解析度切換驗證與 Electron 重開後 localStorage 持久化驗證；另建立給阿扣的素材盤點並行任務檔。
+- 發現的問題：Playwright Electron 的 `app.evaluate()` 環境不能直接使用 `require('electron')`，因此驗證腳本改用 Playwright 的 BrowserWindow handle 操作視窗尺寸與 IPC。
+- 預計但尚未執行的修改：尚未確認 6 張 Steam 截圖排序與全年齡顯示；可交由阿扣依 `promo/steam/CLAUDE_ASSET_AUDIT_TASK.md` 做文件盤點。
+- 已完成問題：三段解析度切換與重開後存檔讀取已通過自動驗證。
+- 改了哪些檔案：`scripts/verify-steam-electron.js`、`promo/steam/CLAUDE_ASSET_AUDIT_TASK.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：`node --check scripts/verify-steam-electron.js` 通過；`npm.cmd run steam:verify` 通過，確認 small `450x800`、medium `540x960`、large `675x1200`、`steam-portrait-large`、離線本機 protocol 與 localStorage 重開保留。
+- 下一步：請阿扣依 `promo/steam/CLAUDE_ASSET_AUDIT_TASK.md` 產出素材最終盤點；我方下一步可依盤點結果修正缺口或準備 SteamPipe build 上傳草案。
+- 注意事項：`.claude/settings.local.json` 是本機設定變更，不應納入提交。
+
+### 2026-05-20 阿扣（第三次）
+
+- 狀態：已完成
+- 本次做了什麼：依 `CLAUDE_STEAMWORKS_FIELDS_TASK.md` 建立 `promo/steam/STEAMWORKS_FIELDS_DRAFT.md`，整理 Steamworks 後台十個欄位區塊的填寫草稿，供製作人登入後台時對照使用。
+- 發現的問題：AI 生成素材揭露無法由 AI 代判，原始美術來源（`img/home_bg.webp`、`img/itch_banner.png`）是否含 AI 生成需製作人確認。
+- 預計但尚未執行的修改：無。
+- 已完成問題：無。
+- 改了哪些檔案：`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`（新增）、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：草稿內容與 `STEAM_STORE_BRIEF.md`、`FULL_VERSION_SCOPE.md`、`ASSET_CHECKLIST.md`、`STEAM_DESKTOP_PORTRAIT_STRATEGY.md` 交叉核對，無衝突或超出承諾範圍之文案。
+- 下一步：製作人確認第十區各欄位（開發商名稱、售價、AI 素材揭露、Coming Soon 時機），即可準備登入 Steamworks 後台操作。
+- 注意事項：年齡分級問卷須製作人依實際遊戲畫面與功能作答，草稿僅為建議參考方向。
+
+### 2026-05-20 鑀韻東
+
+- 狀態：已完成
+- 本次做了什麼：建立給阿扣的並行任務檔，要求他只整理 Steamworks 後台欄位草稿；我方則新增 Electron 自動驗證腳本，並修正 Electron 執行期 app 名稱與 userData 路徑。
+- 發現的問題：僅補 `package.json` 的 `name` / `productName` 不足以讓 Playwright Electron dev 啟動時套用正確 appName，實測仍會落到 `Electron`。
+- 預計但尚未執行的修改：尚未驗證三段解析度選單切換、重開後存檔讀取、6 張截圖排序與全年齡顯示。
+- 已完成問題：Electron 執行期 appName / userData 路徑已修正並通過 `steam:verify`。
+- 改了哪些檔案：`package.json`、`steam-app/main.js`、`scripts/verify-steam-electron.js`、`promo/steam/CLAUDE_STEAMWORKS_FIELDS_TASK.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：`node --check scripts/verify-steam-electron.js` 通過；`node --check steam-app/main.js` 通過；`npm.cmd run steam:verify` 通過，確認 `dist/steam-demo`、`bibi://app/index.html`、`540x960`、`steam-portrait`、appName 與 userData 路徑皆正確。
+- 下一步：請阿扣依 `promo/steam/CLAUDE_STEAMWORKS_FIELDS_TASK.md` 產出 `promo/steam/STEAMWORKS_FIELDS_DRAFT.md`；我方下一步可做解析度切換與存檔重開驗證。
+- 注意事項：`.claude/settings.local.json` 是本機設定變更，不應納入提交。
 
 ### 2026-05-20 鑀韻東
 

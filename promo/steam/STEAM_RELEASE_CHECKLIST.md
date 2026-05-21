@@ -1,6 +1,6 @@
 # Steam 上架前檢查表
 
-最後更新：2026-05-20
+最後更新：2026-05-21
 
 本檔分三區，按工作性質分類。每完成一項請在 `[ ]` 改為 `[x]`，並在備註欄補充結果或決定內容。
 
@@ -14,31 +14,35 @@
   - 備註：
 - [ ] 6 張截圖確認適合全年齡顯示（無血腥、無成人內容）
   - 備註：
-- [ ] 小膠囊 `store_small_capsule_462x174.png` Logo 在縮圖尺寸下仍清楚可讀
-  - 備註：
-- [ ] 確認 Library Logo `library_logo_1280x720.png` 在 Steam Library 深色背景下可讀
-  - 備註：
-- [ ] 確認 Shortcut Icon `shortcut_icon_256x256.png` 在桌面環境清晰
-  - 備註：
+- [x] 小膠囊 `store_small_capsule_462x174.png` Logo 在縮圖尺寸下仍清楚可讀
+  - 備註：2026-05-21 已重產 Store Capsule D8 修正版，尺寸為 `462x174`；已移除額外英文 `BIBI DICE` 疊字，中文主視覺 Logo 未被遮擋。
+- [x] 6 張 Store / Library Capsule D8 修正版已由製作人目視確認通過
+  - 備註：2026-05-21 製作人確認 `store_header`、`store_small`、`store_main`、`store_vertical`、`library_capsule`、`library_header_capsule` 六張圖沒有問題。
+- [x] Steam 素材檔案完整性與尺寸自動驗證通過
+  - 備註：2026-05-21 已新增並執行 `npm.cmd run steam:assets:verify`；D8 修正版重產後再次通過，確認 15 個必要素材尺寸正確，且 `library_hero_3840x1240.png` 不存在。
+- [x] 確認 Library Logo `library_logo_1280x720.png` 在 Steam Library 深色背景下可讀
+  - 備註：2026-05-21 Library Logo 維持主視覺美術字擷取版；D8 修正版 Library Capsule / Header 重產時未覆蓋 Logo 風格。
+- [x] 確認 Shortcut Icon `shortcut_icon_256x256.png` 在桌面環境清晰
+  - 備註：2026-05-21 已以 AI 重生 favicon 重產，尺寸驗證通過；仍建議製作人最後目視確認。
 
 ### Build 確認
 
-- [ ] `npm.cmd run steam:build` 可正常產出 `dist/steam-demo`（無錯誤）
-  - 備註：
-- [ ] `dist/steam-demo` 目錄下有完整遊戲檔案，能在瀏覽器本地開啟
-  - 備註：
-- [ ] `npm.cmd run steam:app` 可正常啟動 Electron 桌面視窗
-  - 備註：
-- [ ] Electron 視窗預設尺寸為 540×960，比例正確（9:16 直式）
-  - 備註：
-- [ ] Electron 視窗可切換三種解析度（450×800、540×960、675×1200），切換後畫面縮放正確
-  - 備註：
-- [ ] Electron build 可在**沒有網路連線**的環境下正常啟動並遊玩
-  - 備註：
-- [ ] 存檔路徑確認使用 Electron `userData` 資料夾，不依賴外部伺服器
-  - 備註：（預期路徑：`%APPDATA%\bibi-dice\` 或類似位置）
-- [ ] 重開 Electron 後存檔資料（靈魂奉獻、收集冊）可正確讀取
-  - 備註：
+- [x] `npm.cmd run steam:build` 可正常產出 `dist/steam-demo`（無錯誤）
+  - 備註：2026-05-20 以 `npm.cmd run steam:verify` 自動重建並通過。
+- [x] `dist/steam-demo` 目錄下有完整遊戲檔案，能在瀏覽器本地開啟
+  - 備註：已確認包含 `bgm`、`css`、`img`、`js`、`sfx`，Electron 以 `bibi://app/index.html` 載入。
+- [x] `npm.cmd run steam:app` 可正常啟動 Electron 桌面視窗
+  - 備註：已用 Playwright Electron 啟動 `steam-app/main.js` 驗證。
+- [x] Electron 視窗預設尺寸為 540×960，比例正確（9:16 直式）
+  - 備註：自動驗證 viewport 為 `540x960`，body 包含 `steam-portrait`。
+- [x] Electron 視窗可切換三種解析度（450×800、540×960、675×1200），切換後畫面縮放正確
+  - 備註：`npm.cmd run steam:verify` 已驗證 small `450x800`、medium `540x960`、large `675x1200`；large 模式會套用 `steam-portrait-large`。
+- [x] Electron build 可在**沒有網路連線**的環境下正常啟動並遊玩
+  - 備註：`steam:build` 的離線 runtime 檢查通過，Electron 以本機 `bibi://` protocol 載入，未偵測到外部 runtime 參照。
+- [x] 存檔路徑確認使用 Electron `userData` 資料夾，不依賴外部伺服器
+  - 備註：已修正 Electron 執行期 app 名稱，驗證結果為 `%APPDATA%\BIBI DICE 比比丟八\`。
+- [x] 重開 Electron 後存檔資料（靈魂奉獻、收集冊）可正確讀取
+  - 備註：`steam:verify` 寫入臨時 localStorage sentinel，關閉並重開 Electron 後成功讀回，最後已清除測試 key。
 
 ### i18n 確認
 
@@ -49,27 +53,26 @@
 
 ## 二、需製作人決定
 
-- [ ] **遊戲定價**：建議 Demo 免費、正式版 US$2.99，確認後填入 Steamworks 定價頁
-  - 決定：
-- [ ] **商店標籤**：確認核心標籤與備用標籤（草案見 `STEAM_STORE_BRIEF.md`）
-  - 核心標籤草案：Roguelite、Dice、Deckbuilding、Strategy、Turn-Based、Score Attack、Replay Value、Singleplayer、Casual、Indie
-  - 決定：
-- [ ] **支援語言**：繁體中文、簡體中文、英文、日文（介面文字已完成）；音效與字幕語言待確認
-  - 決定：
-- [ ] **年齡分級**：需完成 IARC 自評問卷（Steam 後台內建），決定遊戲是否含暴力、賭博、恐怖等元素描述
-  - 決定：
-- [ ] **AI 生成素材揭露**：確認素材（截圖、Capsule、Library 圖）是否有 AI 生成圖，Steam 後台要求勾選揭露
-  - 決定（是 / 否）：
-- [ ] **Library Hero 處置**：目前暫不產出；確認正式上架前是否補做，或維持不提交
-  - 決定：
-- [ ] **Page Background（1438×810）**：目前缺；確認是否要在上架前補做
-  - 決定：
-- [ ] **Steam Trailer**：目前有 25 秒宣傳影片草稿（`bibi-dice-cn-promo.mp4`），確認是否剪出 Steam trailer 版本
-  - 決定：
-- [ ] **Coming Soon 頁公開時機**：Steam 規定 Coming Soon 需公開至少 2 週才能發布；確認目標發布日與倒推上線日
-  - 決定：
-- [ ] **Developer / Publisher 名稱**：Steamworks 後台顯示名稱，確認中英文呈現方式
-  - 決定：
+- [x] **遊戲定價**：建議 Demo 免費、正式版 US$2.99，確認後填入 Steamworks 定價頁
+  - 決定：B-01 US$2.99（Demo 免費）
+- [x] **商店標籤**：確認核心標籤與備用標籤
+  - 決定：B-02/B-03 全採用核心 10 + 製作人新增「小遊戲」「僅滑鼠」+ 備用 7 個，合計 19 個
+- [x] **支援語言**：繁體中文、簡體中文、英文、日文（介面文字已完成）；音效與字幕語言待確認
+  - 決定：四語介面，音效與字幕欄位維持不勾選（遊戲無語音對白）
+- [~] **年齡分級**：需完成 IARC 自評問卷（Steam 後台內建）
+  - 決定：E-01~E-07/E-09 否；E-08 Demo 否、正式版 是；E-10 是（需準備隱私政策）。Demo 送審時依 Demo 內容作答；正式版需重新評估 E-08
+- [x] **AI 生成素材揭露**：確認素材是否有 AI 生成
+  - 決定：D-01/02/03/04 是、D-05/06 部分、D-07 否。後台需勾選「使用 AI 生成內容」並貼上揭露文字（見 `STEAMWORKS_FIELDS_DRAFT.md` 第 8 區）
+- [x] **Library Hero 處置**：維持不提交
+  - 決定：已刪除，不重產
+- [~] **Page Background（1438×810）**：先補做，看效果再決定使用
+  - 決定：B-05 補做但保留是否上傳的決定權
+- [~] **Steam Trailer**：先剪，看效果再決定使用
+  - 決定：B-06 剪輯後製作人自行評估
+- [x] **Coming Soon 頁公開時機**：Steam 規定 Coming Soon 需公開至少 2 週才能發布
+  - 決定：2026-06-01 前完成素材文案 Build；2026-06-03 送商店頁審核；2026-06-10 公開 Coming Soon；2026-07-01 發布 Demo。間隔 21 天符合要求。
+- [x] **Developer / Publisher 名稱**：Steamworks 後台顯示名稱
+  - 決定：A-01 雷爪獅；A-02 雷爪獅（同 A-01）
 
 ---
 
@@ -121,10 +124,10 @@
 - [ ] 安裝 SteamPipe CLI（`steamcmd`）並設定 depot
 - [ ] 上傳 `dist/steam-demo` 作為 Demo Build
 - [ ] 在後台確認 Build 出現在 Builds 頁面
-- [ ] 送出 Base Game Store Presence 審核
-- [ ] Coming Soon 頁公開（目標時間：待定）
+- [ ] 2026-06-03 送出 Base Game Store Presence 審核
+- [ ] 2026-06-10 目標公開 Coming Soon 頁
 - [ ] 等待至少 2 週後，送出 Demo Build 與 Demo Store Presence 審核
-- [ ] Demo 審核通過後發布
+- [ ] 2026-07-01 目標發布 Demo
 
 ---
 

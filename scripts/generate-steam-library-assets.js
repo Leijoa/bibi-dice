@@ -6,8 +6,9 @@ const ROOT = path.resolve(__dirname, '..');
 const ASSETS = path.join(ROOT, 'promo', 'steam', 'assets');
 
 const SOURCES = {
-  banner: path.join(ROOT, 'img', 'itch_banner.png'),
-  home: path.join(ROOT, 'img', 'home_bg.webp'),
+  banner: path.join(ROOT, 'promo', 'steam', 'source', 'key_art_d8_banner.png'),
+  home: path.join(ROOT, 'promo', 'steam', 'source', 'key_art_d8_portrait.png'),
+  logoHome: path.join(ROOT, 'img', 'home_bg.webp'),
   favicon: path.join(ROOT, 'favicon.png')
 };
 
@@ -19,7 +20,7 @@ const LIBRARY_ASSETS = [
     source: 'home',
     kind: 'artOnly',
     bgPosition: 'center top',
-    overlay: 'linear-gradient(180deg, rgba(3,2,8,.62), rgba(7,3,14,.1) 42%, rgba(3,2,8,.76))'
+    overlay: 'linear-gradient(180deg, rgba(3,2,8,.12), rgba(7,3,14,0) 42%, rgba(3,2,8,.24))'
   },
   {
     file: 'library_header_capsule_920x430.png',
@@ -28,7 +29,7 @@ const LIBRARY_ASSETS = [
     source: 'banner',
     kind: 'artOnly',
     bgPosition: 'center 48%',
-    overlay: 'linear-gradient(90deg, rgba(3,2,8,.82), rgba(12,5,25,.42), rgba(3,2,8,.84))'
+    overlay: 'linear-gradient(90deg, rgba(3,2,8,.16), rgba(12,5,25,.03), rgba(3,2,8,.18))'
   }
 ];
 
@@ -89,7 +90,7 @@ function buildLibraryHtml(asset, imageUrl) {
       background:
         radial-gradient(circle at 50% 35%, rgba(190, 120, 255, .2), transparent 30%),
         radial-gradient(circle at 28% 28%, rgba(255, 197, 85, .13), transparent 28%),
-        linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.28));
+        linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.08));
       pointer-events: none;
     }
     .title {
@@ -106,8 +107,8 @@ function buildLibraryHtml(asset, imageUrl) {
       position: absolute;
       inset: 0;
       background:
-        radial-gradient(ellipse at center, transparent 0%, transparent 42%, rgba(0,0,0,.5) 100%),
-        linear-gradient(180deg, rgba(0,0,0,.05), rgba(0,0,0,.38));
+        radial-gradient(ellipse at center, transparent 0%, transparent 52%, rgba(0,0,0,.18) 100%),
+        linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.1));
       pointer-events: none;
     }
   </style>
@@ -218,7 +219,7 @@ async function extractLibraryLogo(browser) {
     ctx.putImageData(data, 0, 0);
 
     return canvas.toDataURL('image/png');
-  }, { sourceUrl: toDataUrl(SOURCES.home) });
+  }, { sourceUrl: toDataUrl(SOURCES.logoHome) });
 
   const base64 = result.replace(/^data:image\/png;base64,/, '');
   const output = path.join(ASSETS, 'library_logo_1280x720.png');

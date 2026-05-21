@@ -26,17 +26,17 @@ store_screenshot_05_1920x1080.png
 
 | 類型 | 尺寸 | 狀態 | 建議來源 |
 | --- | --- | --- | --- |
-| Header Capsule | 920 x 430 | 已產出第一版 | `img/itch_banner.png` 裁切重排 |
-| Small Capsule | 462 x 174 | 已產出第一版 | 使用簡化背景與清楚 Logo |
-| Main Capsule | 1232 x 706 | 已產出第一版 | `img/itch_banner.png` |
-| Vertical Capsule | 748 x 896 | 已產出第一版 | `img/home_bg.webp` 直式構圖 |
+| Header Capsule | 920 x 430 | 已重產 D8 修正版 | `promo/steam/source/key_art_d8_banner.png` 裁切重排 |
+| Small Capsule | 462 x 174 | 已重產 D8 修正版 | 使用主視覺原 Logo，不額外疊英文 |
+| Main Capsule | 1232 x 706 | 已重產 D8 修正版 | `promo/steam/source/key_art_d8_banner.png` |
+| Vertical Capsule | 748 x 896 | 已重產 D8 修正版 | `promo/steam/source/key_art_d8_portrait.png` 直式構圖 |
 | Screenshots | 至少 5 張，1920 x 1080，16:9 | 已改為桌面直式展示版 6 張 | Playwright 實際遊戲流程 + 直式桌面視窗展示 |
-| Shortcut Icon | 256 x 256 `.ico` 或 `.png` | 已產出第一版 | `favicon.png` |
-| App Icon | 184 x 184 `.jpg` | 已產出第一版 | `favicon.png` |
-| Library Capsule | 600 x 900 | 已產出第一版 | `img/home_bg.webp` 直式構圖，保留中文主視覺 |
+| Shortcut Icon | 256 x 256 `.ico` 或 `.png` | 已重產修正版 | AI 重生 `favicon.png` |
+| App Icon | 184 x 184 `.jpg` | 已重產修正版 | AI 重生 `favicon.png` |
+| Library Capsule | 600 x 900 | 已重產 D8 修正版 | `promo/steam/source/key_art_d8_portrait.png` 直式構圖，保留中文主視覺 |
 | Library Hero | 3840 x 1240 `.png` | 暫不產出 | 先不使用與遊戲關聯不足的素材 |
 | Library Logo | 1280 寬或 720 高，透明 `.png` | 已產出第一版 | 從主視覺美術 Logo 擷取 |
-| Library Header Capsule | 920 x 430 | 已產出第一版 | `img/itch_banner.png` 裁切重排，保留中文主視覺 |
+| Library Header Capsule | 920 x 430 | 已重產 D8 修正版 | `promo/steam/source/key_art_d8_banner.png` 裁切重排，保留中文主視覺 |
 
 ## 可選素材
 
@@ -52,11 +52,13 @@ store_screenshot_05_1920x1080.png
 | --- | --- | --- |
 | `img/itch_banner.png` | 1672 x 941 | 主視覺來源，可裁 Header / Main |
 | `img/itch_banner.webp` | 1672 x 941 | 網頁用壓縮版，不建議當 Steam 原始輸出 |
+| `promo/steam/source/key_art_d8_banner.png` | 1672 x 941 | Steam Capsule 專用橫式主視覺，已將角色手上骰子修為藍色八面骰 |
+| `promo/steam/source/key_art_d8_portrait.png` | 941 x 1672 | Steam Capsule 專用直式主視覺，已將角色手上骰子修為藍色八面骰 |
 | `promo/bibi-dice-cn-promo/assets/hero-dice-1080.png` | 1920 x 1080 | 可做商店截圖風格素材或頁面背景來源 |
 | `promo/bibi-dice-cn-promo/assets/relic-fusion-1080.png` | 1920 x 1080 | 可做影片素材，不建議放入 Steam screenshot 欄位，因為不是實機截圖 |
 | `promo/bibi-dice-cn-promo/assets/boss-shackle-1080.png` | 1920 x 1080 | 可做影片素材，不建議放入 Steam screenshot 欄位，因為不是實機截圖 |
 | `promo/bibi-dice-cn-promo/renders/bibi-dice-cn-promo.mp4` | 25 秒影片 | 可改剪為 Steam trailer 草稿 |
-| `favicon.png` | 待確認 | 可作 icon 來源 |
+| `favicon.png` | 已重生修正版 | 作為 Steam Shortcut / App Icon 來源 |
 
 ## Steam 截圖建議清單
 
@@ -84,24 +86,25 @@ Steam screenshot 欄位應使用實際遊戲畫面，建議捕捉：
 
 | 檔案 | 尺寸 | 內容 |
 | --- | --- | --- |
-| `promo/steam/assets/store_header_capsule_920x430.png` | 920 x 430 | Header Capsule 第一版 |
-| `promo/steam/assets/store_small_capsule_462x174.png` | 462 x 174 | Small Capsule 第一版 |
-| `promo/steam/assets/store_main_capsule_1232x706.png` | 1232 x 706 | Main Capsule 第一版 |
-| `promo/steam/assets/store_vertical_capsule_748x896.png` | 748 x 896 | Vertical Capsule 第一版 |
+| `promo/steam/assets/store_header_capsule_920x430.png` | 920 x 430 | Header Capsule 修正版，不額外疊英文 |
+| `promo/steam/assets/store_small_capsule_462x174.png` | 462 x 174 | Small Capsule 修正版，不額外疊英文 |
+| `promo/steam/assets/store_main_capsule_1232x706.png` | 1232 x 706 | Main Capsule 修正版，不額外疊英文 |
+| `promo/steam/assets/store_vertical_capsule_748x896.png` | 748 x 896 | Vertical Capsule 修正版，不額外疊英文 |
 
 ## 已產出 Library 與 Icon 草稿
 
 | 檔案 | 尺寸 | 內容 |
 | --- | --- | --- |
-| `promo/steam/assets/library_capsule_600x900.png` | 600 x 900 | Library Capsule 第一版，未疊英文 Logo |
-| `promo/steam/assets/library_header_capsule_920x430.png` | 920 x 430 | Library Header 第一版，未疊英文 Logo |
+| `promo/steam/assets/library_capsule_600x900.png` | 600 x 900 | Library Capsule D8 修正版，未疊英文 Logo |
+| `promo/steam/assets/library_header_capsule_920x430.png` | 920 x 430 | Library Header D8 修正版，未疊英文 Logo |
 | `promo/steam/assets/library_logo_1280x720.png` | 1280 x 720 | 從主視覺美術字擷取的透明 Library Logo 第一版 |
-| `promo/steam/assets/shortcut_icon_256x256.png` | 256 x 256 | Shortcut Icon 第一版，直接轉出 favicon |
-| `promo/steam/assets/app_icon_184x184.jpg` | 184 x 184 | App Icon 第一版，直接轉出 favicon |
+| `promo/steam/assets/shortcut_icon_256x256.png` | 256 x 256 | Shortcut Icon 修正版，來自 AI 重生 favicon |
+| `promo/steam/assets/app_icon_184x184.jpg` | 184 x 184 | App Icon 修正版，來自 AI 重生 favicon |
 
 ## 素材製作注意
 
 - Store capsule 基礎圖只能放遊戲美術、遊戲名稱與官方副標題。
+- Store capsule 不可額外疊英文 `BIBI DICE` 或 `bibi-dice` 文字層遮住中文主視覺 Logo。
 - Library Hero 暫不產出，避免誤用與遊戲本體關聯不足的宣傳圖。
 - 不要在 capsule 上寫「免費 Demo」、「Wishlist Now」、「新內容」等行銷字，除非使用 Steam Artwork Override。
 - Screenshot 欄位不要放宣傳合成圖、概念圖、文案圖或影片劇照。

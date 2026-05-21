@@ -1,5 +1,9 @@
 const { app, BrowserWindow, Menu, net, protocol } = require('electron');
 const path = require('path');
+const packageJson = require('../package.json');
+
+const APP_NAME = packageJson.productName || packageJson.name || 'bibi-dice';
+app.setName(APP_NAME);
 
 protocol.registerSchemesAsPrivileged([
   {

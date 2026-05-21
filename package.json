@@ -6,8 +6,10 @@
     "steam:build": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/publish-steam-demo.ps1",
     "steam:app": "npm run steam:build -- --OutputDir dist/steam-demo && electron steam-app/main.js",
     "steam:app:dev": "electron steam-app/main.js",
+    "steam:verify": "npm run steam:build -- --OutputDir dist/steam-demo && node scripts/verify-steam-electron.js",
     "steam:capture": "npm run steam:build -- --OutputDir dist/steam-demo && node scripts/capture-steam-portrait-screenshots.js",
     "steam:capsules": "node scripts/generate-steam-capsules.js",
+    "steam:assets:verify": "node scripts/verify-steam-assets.js",
     "steam:library": "node scripts/generate-steam-library-assets.js"
   },
   "devDependencies": {

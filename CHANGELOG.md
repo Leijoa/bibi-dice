@@ -1,3 +1,82 @@
+### 素材：重產 Store / Library Capsule D8 修正版 [2026/05/21]
+* **`promo/steam/source/key_art_d8_banner.png` / `key_art_d8_portrait.png`**：依製作人提供的原主視覺、遊戲內藍色八面骰與真實 D8 參考，生成 Steam 專用 D8 主視覺源圖，修正角色手上骰子不真實的問題。
+* **`scripts/generate-steam-capsules.js` / `scripts/generate-steam-library-assets.js`**：Store / Library Capsule 改用 D8 修正版源圖，並降低過重暗化層與 Library 暗角；Library Logo 擷取仍保留原主視覺美術字來源。
+* **`promo/steam/assets/`**：重產 `store_header_capsule_920x430.png`、`store_small_capsule_462x174.png`、`store_main_capsule_1232x706.png`、`store_vertical_capsule_748x896.png`、`library_capsule_600x900.png`、`library_header_capsule_920x430.png` 六張 D8 修正版素材。
+* **文件同步**：更新 `SYNC.md`、`ASSET_CHECKLIST.md`、`STEAM_ASSET_FINAL_AUDIT.md`、`STEAM_RELEASE_CHECKLIST.md`、`STEAMWORKS_FIELDS_DRAFT.md`，將 F-01/02/04~07 色澤偏暗問題標記為已重產修正版，並補入 AI 揭露文字中的 Steam Capsule 修正版說明。
+* **製作人確認**：2026-05-21 製作人已確認六張 D8 修正版 Store / Library Capsule 沒有問題，可作為上傳 Steamworks 的版本。
+* **驗證**：`node --check scripts/generate-steam-capsules.js`、`node --check scripts/generate-steam-library-assets.js`、`npm.cmd run steam:capsules`、`npm.cmd run steam:library`、`npm.cmd run steam:assets:verify` 全部通過。
+
+### 素材：重生 favicon 與 Steam Icon 修正版 [2026/05/21]
+* **`favicon.png`**：將舊版藍色花體 B icon 替換為暗紫霓虹水晶骰子 icon，中央保留清楚的 8 字樣，更貼近 `BIBI DICE 比比丟八` 目前 Steam 主視覺。
+* **`promo/steam/assets/shortcut_icon_256x256.png` / `app_icon_184x184.jpg`**：由新版 favicon 重產 256×256 Shortcut Icon 與 184×184 App Icon，修正 F-08/F-09「由舊 favicon 縮放導致品質不足」問題。
+* **`promo/steam/STEAM_ASSET_FINAL_AUDIT.md` / `ASSET_CHECKLIST.md` / `STEAM_RELEASE_CHECKLIST.md` / `STEAMWORKS_FIELDS_DRAFT.md`**：同步更新 Icon 狀態與 AI 生成素材揭露文字，明確標示新版 favicon / App icon 含 AI 生成。
+* **驗證**：`npm.cmd run steam:assets:verify` 通過，15 個必要 Steam 素材尺寸皆正確，`library_hero_3840x1240.png` 維持不存在。
+
+### 文件：補填 Steam 上架第二輪製作人決策 [2026/05/21]
+* **`.gitignore`**：依 C-05 加入 `steam-build/`，避免內含真實 AppID / DepotID 的 VDF 與密碼意外提交。
+* **`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`**：第 1 區填入 A-01/A-02 開發商「雷爪獅」與 A-07 URL `https://leijoa.itch.io/bibi-dice`；第 8 區 D-04 確認 favicon 為 AI 生成（製作人指派鑀韻東重生）；第 10 區清理已決定欄位、加入 C-03/04/05 與 D-04 結論。
+* **`promo/steam/STEAM_RELEASE_CHECKLIST.md`**：Developer / Publisher 名稱勾選為已決定（雷爪獅）。
+* **`promo/steam/STEAMPIPE_DEPOT_DRAFT.md`**：第 3 區加註 C-03 先進 internal branch；Step 2 加註 C-05 `steam-build/` 已加入 .gitignore；Step 4 加註 C-04 製作人本人 SetLive；第 6 區更新規範說明。
+* **`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`**：F-08/F-09 原先標註 favicon 重生由鑀韻東處理；後續已於同日完成重生與 Icon 重產。
+* **`SYNC.md`**：4 個製作人決定項移到「已處理問題」；新增 1 項待處理（鑀韻東 favicon 重生任務）。
+
+### 文件：依製作人決策同步 Steam 上架四份文件 [2026/05/21]
+* **`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`**：依 `STEAM_OWNER_DECISIONS.md` 製作人填寫的決策，更新第 1 區（A-03/04/05/06/08 已定，A-01/02/07 標待釐清；商店繁中名改為純「比比丟八」）、第 5 區（核心 10 個 + 製作人新增「小遊戲」「僅滑鼠」+ 備用 7 個 = 19 個）、第 8 區（D-01/02/03 主視覺類為 AI 生成、D-05/06 部分、D-07 商店截圖否，附中英文揭露文字草稿）、第 9 區（IARC 答案，E-10 觸發隱私政策需求）、第 10 區（重整為已決定 / 待釐清兩段）。
+* **`promo/steam/STEAM_RELEASE_CHECKLIST.md`**：第二區依製作人決定勾選 9 項（定價、標籤、語言、IARC 部分、AI 揭露、Library Hero、Page Background、Trailer、Coming Soon 時程）；Developer/Publisher 仍待最終選定。
+* **`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`**：第二區改為製作人目視結果 — F-03 Library Logo 與 F-10 截圖通過；F-01/02/04~07 共 6 張 Capsule 色澤偏暗退回；F-08/09 Icon 需重新設計。新增待處理動作說明。
+* **`SYNC.md`**：新增 7 項待處理問題（色澤、Icon、A-01 三選一、itch.io URL、C-03~05、D-04 揭露、E-10 隱私政策），記錄本次同步工作。
+
+### 文件：定案 Steam Coming Soon 與 Demo 發布排程 [2026/05/21]
+* **`SYNC.md`**：新增 Steam 目標排程，明確記錄 2026-06-01 前完成素材 / 文案 / Build、2026-06-03 送審、2026-06-10 目標公開 Coming Soon、2026-07-01 目標發布 Demo。
+* **`promo/steam/STEAM_OWNER_DECISIONS.md`**：填入 C-01 Coming Soon 公開日期 `2026-06-10` 與 C-02 Demo 預定發布日期 `2026-07-01`。
+* **`promo/steam/STEAM_RELEASE_CHECKLIST.md`**：標記 Coming Soon 頁公開時機已決定，並更新 Build / 審核 / 發布節點。
+* **`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`**、**`promo/steam/STEAMPIPE_DEPOT_DRAFT.md`**：同步寫入目標排程，並註明 Coming Soon 公開至 Demo 發布間隔 21 天，符合至少 2 週要求。
+
+### 修正：Store Capsule 移除遮擋中文 Logo 的英文疊字 [2026/05/21]
+* **`scripts/generate-steam-capsules.js`**：移除額外產生的英文 `BIBI DICE` 標題與 `bibi-dice` 膠囊副標，避免重新遮住主視覺中的中文 Logo。
+* **`promo/steam/assets/`**：重產 `store_header_capsule_920x430.png`、`store_small_capsule_462x174.png`、`store_main_capsule_1232x706.png`、`store_vertical_capsule_748x896.png` 四張 Store Capsule 修正版。
+* **`SYNC.md` / `promo/steam/STEAM_ASSET_FINAL_AUDIT.md`**：補記此踩雷規則，明確標示 `steam:capsules` 不可再額外疊英文文字層，且素材尺寸驗證不能取代目視遮擋檢查。
+
+### 文件：新增製作人 Steam 上架決策清單 [2026/05/21]
+* **`promo/steam/STEAM_OWNER_DECISIONS.md`**：新增製作人專屬決策清單，分八區集中整理所有需製作人親自決定的 Steam 上架欄位：建立 App 前（開發商、發行商、顯示名稱、官網、App Fee）、商店頁送審前（售價、標籤、截圖第 4 張、Page Background、Trailer、系統需求、文案）、Demo 發布前（Coming Soon 日期、Demo 日期、branch 流程）、AI 生成素材揭露 7 項待確認、IARC 年齡分級問卷 10 題、素材目視確認 10 項、可延後到正式版 10 項、第 8 區提供決策回覆格式範例。每項標註「決定後需同步到」對應文件位置，避免決策後在多份文件遺漏更新。
+
+### 工具：新增 Steam 素材完整性自動驗證 [2026/05/21]
+* **`scripts/verify-steam-assets.js`**：新增 Steam 素材驗證腳本，檢查 Store Capsule、Store Screenshot、Library Asset、Shortcut Icon、App Icon 共 15 個必要素材是否存在且尺寸符合文件規格。
+* **`scripts/verify-steam-assets.js`**：加入禁止素材檢查，確認 `library_hero_3840x1240.png` 不存在，避免重新混入已決定停用的 Library Hero。
+* **`package.json`**：新增 `steam:assets:verify` 指令，可一鍵執行素材完整性與尺寸檢查。
+* **`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`**：補充素材自動驗證指令與使用時機。
+* **`promo/steam/STEAM_RELEASE_CHECKLIST.md`**：標記 Steam 素材檔案完整性與尺寸自動驗證已通過。
+* **`promo/steam/CLAUDE_STEAM_DECISIONS_TASK.md`**：新增阿扣並行任務指令，要求整理製作人必須親自決定的 Steam 上架欄位清單。
+
+### 文件：新增 SteamPipe / Depot 上傳草案 [2026/05/21]
+* **`promo/steam/STEAMPIPE_DEPOT_DRAFT.md`**：新增 SteamPipe / Depot 上傳操作草案，分八區：上傳前提條件、Demo Build 來源與重建指令、Depot/Branch 命名建議、Windows 上傳流程（含 `app_build_demo.vdf` 與 `depot_build_demo.vdf` 範本）、上傳後 Steamworks 後台檢查項目、製作人專屬事項（含後台與本機）、可能失敗點與排查建議（A 登入、B 上傳、C ContentRoot、D 啟動、E 審核退回）、正式執行前檢查清單。所有 AppID / DepotID / 帳號密碼均以占位符標示，無假資料。
+
+### 素材：補齊缺失的 Steam Store Capsule [2026/05/21]
+* **`promo/steam/assets/`**：執行 `npm.cmd run steam:capsules` 重產 `store_header_capsule_920x430.png`、`store_small_capsule_462x174.png`、`store_main_capsule_1232x706.png`、`store_vertical_capsule_748x896.png`，補齊阿扣素材盤點時發現的必要商店圖片缺口。
+* **`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`**：更新素材盤點，將 Store Capsule 四張移入可上傳素材清單，並標記缺口已修正。
+* **`promo/steam/STEAM_RELEASE_CHECKLIST.md`**：標記小膠囊 Logo 可讀性檢查已通過。
+* **`promo/steam/CLAUDE_STEAMPIPE_DRAFT_TASK.md`**：新增阿扣並行任務指令，要求只整理 SteamPipe / Depot 上傳草案，不執行 steamcmd、不修改程式與素材。
+
+### 文件：新增 Steam 素材最終盤點 [2026/05/20]
+* **`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`**：新增素材最終盤點文件，分七區整理：可直接上傳素材（截圖 6 張、icon 2 個）、需目視確認素材（Library 三張、截圖第 4 張、icon 品質）、暫不製作素材（Library Hero、宣傳合成圖）、缺口素材（Store Capsule 四張實際缺失、建議重產）、截圖排序建議（第 4 張可評估替換為 Boss 枷鎖）、全年齡顯示風險檢查（無風險）、AI 生成素材揭露提醒（原始美術來源需製作人確認）。
+* **重要發現：** `store_header_capsule_920x430.png`、`store_small_capsule_462x174.png`、`store_main_capsule_1232x706.png`、`store_vertical_capsule_748x896.png` 四張 Store Capsule 實際不在 `promo/steam/assets/` 目錄中，需執行 `npm.cmd run steam:capsules` 重產。
+
+### 工具：擴充 Electron 解析度與存檔重開驗證 [2026/05/20]
+* **`scripts/verify-steam-electron.js`**：擴充 `steam:verify`，新增 small `450x800`、medium `540x960`、large `675x1200` 三段直式解析度切換驗證，並確認 large 模式會套用 `steam-portrait-large`。
+* **`scripts/verify-steam-electron.js`**：新增 Electron 重開後 localStorage 持久化驗證，使用臨時 sentinel key 寫入、關閉、重開、讀回並清除，確認 Steam 桌面殼存檔路徑可保留資料。
+* **`promo/steam/STEAM_RELEASE_CHECKLIST.md`**：標記三段解析度切換、離線本機 protocol、重開後存檔讀取已通過。
+* **`promo/steam/CLAUDE_ASSET_AUDIT_TASK.md`**：新增阿扣並行任務指令，要求只做 Steam 素材最終檢查與缺口文件盤點，不修改程式與圖片素材。
+
+### 文件：新增 Steamworks 後台欄位草稿 [2026/05/20]
+* **`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`**：新增 Steamworks 後台欄位草稿，涵蓋：App 名稱與基本資訊、短描述（四語）、長描述（繁中與英文 BBCode）、Demo 頁面描述、推薦 Steam 標籤（核心 10 個與備用 7 個）、支援語言建議、系統需求（Windows 最低與建議規格）、AI 生成素材揭露待確認清單、IARC 年齡分級問卷待確認事項、仍需製作人決定欄位一覽，以及後台填寫順序建議。
+
+### 修正：Electron 執行期 app 名稱與 userData 路徑 [2026/05/20]
+* **`steam-app/main.js`**：新增 `app.setName()`，從 `package.json` 讀取 `productName` / `name`，確保 Electron 執行期 appName 與 userData 路徑不再落到預設 `Electron`。
+* **`scripts/verify-steam-electron.js`**：新增 Electron 自動驗證腳本，檢查 `dist/steam-demo`、`bibi://` 協定、`540x960` 視窗、`steam-portrait` class、appName 與 userData 路徑。
+* **`package.json`**：新增 `steam:verify` 指令，可一鍵重建 Steam Demo 並執行 Electron 基礎驗證。
+* **`promo/steam/STEAM_RELEASE_CHECKLIST.md`**：新增 Electron 驗證紀錄，標記 build、離線協定、視窗尺寸、appName 與 userData 路徑已通過。
+* **`promo/steam/CLAUDE_STEAMWORKS_FIELDS_TASK.md`**：新增阿扣並行任務指令，要求只整理 Steamworks 欄位草稿，避免與 Electron 驗證工作衝突。
+
 ### 修正：補齊 package.json Electron app 命名欄位 [2026/05/20]
 * **`package.json`**：新增 `"name": "bibi-dice"`、`"productName": "BIBI DICE 比比丟八"`、`"version": "0.1.0"`，讓 Electron 以正確名稱建立 `userData` 存檔路徑，避免預設落到 `%APPDATA%\Electron\` 導致存檔路徑混淆。
 
