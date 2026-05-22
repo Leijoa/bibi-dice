@@ -57,6 +57,7 @@ Steam 版方向已從橫版大螢幕改為「桌面直式小遊戲」。
 | Store Capsule | 已完成 D8 修正版，製作人已確認通過 | `npm.cmd run steam:capsules` 可重產；不得額外疊英文遮住中文 Logo |
 | Library Capsule / Header / Logo / Icon | 已完成 D8 修正版，製作人已確認通過 | `npm.cmd run steam:library` 可重產；Library Logo 維持主視覺美術字擷取版 |
 | Library Hero | 暫停 / 不做 | 已刪除，不要重產 `library_hero_3840x1240.png` |
+| 隱私政策 | 已完成，待填入 Steamworks / itch.io | 見 `promo/steam/PRIVACY_POLICY.md`；GitHub 公開 URL：`https://github.com/Leijoa/bibi-dice/blob/main/promo/steam/PRIVACY_POLICY.md`；itch.io 頁面需登入後台手動加入此連結 |
 | Steam Release Checklist | 已完成第一版 | 見 `promo/steam/STEAM_RELEASE_CHECKLIST.md` |
 | Steam 可上傳 Build / depot 檢查 | 進行中 | 已通過 Electron 基礎驗證、解析度切換與存檔重開驗證；仍需 SteamPipe / depot |
 | Steamworks 後台資料填寫 | 進行中 | 已確定 Coming Soon / Demo 目標排程；仍需製作人完成 AI 揭露、IARC、素材目視確認 |
@@ -98,12 +99,13 @@ Steam 版方向已從橫版大螢幕改為「桌面直式小遊戲」。
 | ~~已完成~~ | 2026-05-21 | 製作人 → 阿扣 | C-03/04/05 未填。 | Demo 上傳流程細節未定。 | 製作人決定：C-03 先進 internal branch、C-04 製作人 SetLive、C-05 `steam-build/` 加入 .gitignore，見「已處理問題」。 |
 | ~~已完成~~ | 2026-05-21 | 製作人 → 阿扣 | D-04 favicon AI 揭露答覆不明確。 | AI 揭露文字無法定稿。 | 製作人確認「是」（含 AI），同時指派鑀韻東重新生成 favicon，見「已處理問題」與新待處理項。 |
 | ~~已完成~~ | 2026-05-21 | 製作人 → 鑀韻東 | 製作人不滿意現有 `favicon.png`，已指派鑀韻東重新生成。 | F-08/F-09 Shortcut Icon 與 App Icon 需以新 favicon 為來源重產；AI 揭露文字需依新 favicon 是否含 AI 而定。 | 已由鑀韻東重生暗紫霓虹骰子 `favicon.png`，並同步更新 AI 揭露文字，見「已處理問題」。 |
-| 待做 | 2026-05-21 | 製作人 → 阿扣 | E-10 答「是」（將收集玩家遊玩數據評估更新方向），觸發 Steam 隱私政策審查需求。 | 上架前需提供隱私政策連結，否則 Steam 商店審核可能退回。 | 製作人準備一份隱私政策頁面（itch.io 或獨立網址），說明收集範圍、用途、保存期限與聯絡方式。 |
+| 待填後台 | 2026-05-21 | 製作人 → 阿扣 → 鑀韻東 | E-10 答「是」（將收集玩家遊玩數據評估更新方向），觸發 Steam 隱私政策審查需求。 | 上架前需提供隱私政策連結，否則 Steam 商店審核可能退回。 | 2026-05-23 已轉為正式政策 `promo/steam/PRIVACY_POLICY.md` 並補入公開聯絡信箱；GitHub 公開 URL：`https://github.com/Leijoa/bibi-dice/blob/main/promo/steam/PRIVACY_POLICY.md`。Steamworks 可填此 URL；itch.io 頁面需登入後台手動加入此連結。 |
 
 ## 已處理問題
 
 | 完成日期 | 處理者 | 問題 | 處理方式 | 驗證 |
 | --- | --- | --- | --- | --- |
+| 2026-05-21 | 阿扣 | 日文 locale 缺少 2 個 key（`messages.extremist_zone_note`、`messages.scale_apex_order_note`）。 | 補入日文翻譯「{0} Dゾーン x{1}」與「{0} 絶対秩序倍率 x{1}」。 | `npm.cmd run steam:i18n:verify` 通過，四語系共 601 個 key 完全對齊。 |
 | 2026-05-21 | 製作人 → 阿扣 | A-01/A-02 開發商與發行商名稱三選一未定。 | 製作人選定「雷爪獅」，A-02 同 A-01。 | 已同步至 `STEAMWORKS_FIELDS_DRAFT.md` 第 1 / 第 10 區與 `STEAM_RELEASE_CHECKLIST.md` 第二區。 |
 | 2026-05-21 | 製作人 → 阿扣 | A-07 itch.io URL 未提供。 | 製作人提供 `https://leijoa.itch.io/bibi-dice`。 | 已同步至 `STEAMWORKS_FIELDS_DRAFT.md` 第 1 / 第 10 區。 |
 | 2026-05-21 | 製作人 → 阿扣 | C-03/C-04/C-05 SteamPipe 流程細節未定。 | 製作人決定：先進 internal branch 自測、製作人本人 SetLive、`steam-build/` 加入 `.gitignore`。 | 已同步至 `STEAMPIPE_DEPOT_DRAFT.md` 第 3 / 4 / 6 區；`.gitignore` 已加入 `steam-build/`。 |
@@ -127,6 +129,7 @@ npm.cmd run steam:verify
 npm.cmd run steam:capture
 npm.cmd run steam:capsules
 npm.cmd run steam:assets:verify
+npm.cmd run steam:i18n:verify
 npm.cmd run steam:library
 ```
 
@@ -162,6 +165,42 @@ npm.cmd run steam:library
 - 下一步：
 - 注意事項：
 ```
+
+### 2026-05-23 鑀韻東
+
+- 狀態：已完成
+- 本次做了什麼：將隱私政策草稿轉為正式公開文件 `promo/steam/PRIVACY_POLICY.md`，補入公開聯絡信箱 `leijoalion@gmail.com`，並把 Steamworks 文件中的 Privacy Policy URL 統一指向 GitHub 公開頁面。
+- 發現的問題：`scripts/publish-itch.ps1` 只能透過 butler 上傳遊戲檔案，不能修改 itch.io 專案頁描述、外部連結或新增隱私政策欄位；itch.io 頁面仍需製作人登入後台手動加入 GitHub 隱私政策 URL。
+- 預計但尚未執行的修改：若製作人要求，我方可再整理 itch.io 頁面要貼的短文案。
+- 已完成問題：E-10 隱私政策文件與 GitHub 公開 URL 已準備完成；Steamworks 後台仍待填 URL。
+- 改了哪些檔案：`promo/steam/PRIVACY_POLICY.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`、`promo/steam/STEAMWORKS_ONBOARDING_FLOW.md`、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：`npm.cmd run steam:i18n:verify` 通過，四語系各 601 keys 完全對齊；`rg` 已確認正式隱私政策文件含繁中 / 英文聯絡信箱，主要 Steam 文件均指向 `PRIVACY_POLICY.md`。
+- 下一步：提交並推送至 GitHub；製作人登入 itch.io 編輯頁，加入隱私政策 URL。
+- 注意事項：不要把 `.claude/settings.local.json` 或 `promo/steam/assets - 複製/` 納入提交。
+
+### 2026-05-22 鑀韻東
+
+- 狀態：已完成
+- 本次做了什麼：新增 `promo/steam/PRIVACY_POLICY_DRAFT.md`，整理繁中與英文隱私政策草稿，說明目前 Demo 本機存檔、未來可能收集匿名 / 彙整遊玩數據、Steam 平台資料分工、資料用途、保存與刪除、第三方服務、兒童隱私與政策更新；同步更新 Steam 上架檢查表、Steamworks 欄位草稿與 Steamworks 後台流程表。
+- 發現的問題：隱私政策草稿仍缺製作人的公開聯絡信箱；Steamworks 後台仍需要一個公開 URL，草稿檔本身不能直接填入後台。
+- 預計但尚未執行的修改：不替製作人發布公開頁面；待製作人決定發布位置並補上聯絡信箱後，再回填 Steamworks 文件。
+- 已完成問題：E-10 隱私政策「撰寫草稿」已完成；但「公開 URL」仍為待發布狀態。
+- 改了哪些檔案：`promo/steam/PRIVACY_POLICY_DRAFT.md`（新增）、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`、`promo/steam/STEAMWORKS_ONBOARDING_FLOW.md`、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：文件交叉搜尋 `E-10`、`隱私政策`、`Privacy`，確認主要狀態已從「缺草稿」更新為「草稿完成，待發布 URL」。
+- 下一步：製作人補公開聯絡信箱並選擇隱私政策發布位置；完成後把 URL 填入 Steamworks Privacy Policy URL 欄位。
+- 注意事項：本草稿不是法律意見；若正式版加入第三方分析、雲端、成就、排行榜或當機回報，發布前需再次更新隱私政策。
+
+### 2026-05-21 阿扣（第五次）
+
+- 狀態：已完成
+- 本次做了什麼：(1) 建立 `promo/steam/STEAMWORKS_ONBOARDING_FLOW.md`，整理 9 階段 Steamworks 後台流程含甘特圖、阻塞依賴、必死注意事項；(2) 建立 `scripts/verify-i18n.js` 自動比對四語系 key 並加入 `npm.cmd run steam:i18n:verify`；(3) 修補日文 locale 缺漏的 2 個 key。
+- 發現的問題：日文 `ja.js` 缺少 `messages.extremist_zone_note` 與 `messages.scale_apex_order_note`，已即時補上。
+- 預計但尚未執行的修改：無。
+- 已完成問題：i18n 四語系切換驗證（檢查表第一區唯一未勾項）；日文 2 個缺失 key。
+- 改了哪些檔案：`promo/steam/STEAMWORKS_ONBOARDING_FLOW.md`（新增）、`scripts/verify-i18n.js`（新增）、`js/locales/ja.js`、`package.json`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：`npm.cmd run steam:i18n:verify` 通過，zh-tw/zh-cn/en/ja 四語系各 601 個 key 完全對齊。
+- 下一步：(1) 製作人最高優先：撰寫隱私政策頁面（E-10）+ 登入 Steamworks 走階段 1~2；(2) 選擇性：Page Background 1438×810 補做、Steam Trailer 剪輯。
+- 注意事項：Steamworks 流程表中標註的「30 天 App 冷卻期」是隱性阻塞，5/23 前建立 App 才能保證 6/22 前解除冷卻、7/1 順利發布 Demo。
 
 ### 2026-05-21 鑀韻東
 

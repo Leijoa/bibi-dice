@@ -380,7 +380,9 @@ ui: {
     'consumable_tag': '消耗アイテム',
     'shop_rerolled': '🚫 更新済み',
     'shop_leave': '店を出て次のステージへ 👉',
-    'confirm_back_title': 'タイトルに戻りますか？'
+    'confirm_back_title': 'タイトルに戻りますか？',
+    'extremist_zone_note': '{0} Dゾーン x{1}',
+    'scale_apex_order_note': '{0} 絶対秩序倍率 x{1}'
   },
   enemy_lines: {
     arrogant:{t0:[],t1:[],t2:[],t3:[],t4:[]},

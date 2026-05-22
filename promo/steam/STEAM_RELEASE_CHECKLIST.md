@@ -1,6 +1,6 @@
 # Steam 上架前檢查表
 
-最後更新：2026-05-21
+最後更新：2026-05-23
 
 本檔分三區，按工作性質分類。每完成一項請在 `[ ]` 改為 `[x]`，並在備註欄補充結果或決定內容。
 
@@ -46,8 +46,8 @@
 
 ### i18n 確認
 
-- [ ] 確認四個語系（繁中、簡中、英文、日文）切換正常
-  - 備註：
+- [x] 確認四個語系（繁中、簡中、英文、日文）切換正常
+  - 備註：2026-05-21 新增 `npm.cmd run steam:i18n:verify` 自動驗證，四語系共 601 個 key 完全對齊。修補日文缺漏 2 個 key（`messages.extremist_zone_note`、`messages.scale_apex_order_note`）。
 
 ---
 
@@ -60,7 +60,7 @@
 - [x] **支援語言**：繁體中文、簡體中文、英文、日文（介面文字已完成）；音效與字幕語言待確認
   - 決定：四語介面，音效與字幕欄位維持不勾選（遊戲無語音對白）
 - [~] **年齡分級**：需完成 IARC 自評問卷（Steam 後台內建）
-  - 決定：E-01~E-07/E-09 否；E-08 Demo 否、正式版 是；E-10 是（需準備隱私政策）。Demo 送審時依 Demo 內容作答；正式版需重新評估 E-08
+  - 決定：E-01~E-07/E-09 否；E-08 Demo 否、正式版 是；E-10 是。隱私政策已完成，見 `PRIVACY_POLICY.md`；GitHub 公開 URL 為 `https://github.com/Leijoa/bibi-dice/blob/main/promo/steam/PRIVACY_POLICY.md`。Demo 送審時依 Demo 內容作答；正式版需重新評估 E-08
 - [x] **AI 生成素材揭露**：確認素材是否有 AI 生成
   - 決定：D-01/02/03/04 是、D-05/06 部分、D-07 否。後台需勾選「使用 AI 生成內容」並貼上揭露文字（見 `STEAMWORKS_FIELDS_DRAFT.md` 第 8 區）
 - [x] **Library Hero 處置**：維持不提交
@@ -114,6 +114,7 @@
 
 - [ ] 完成 IARC 年齡分級問卷（後台內建流程）
 - [ ] 填寫 AI 生成素材揭露（若有使用 AI 圖）
+- [ ] 填寫 Privacy Policy URL：`https://github.com/Leijoa/bibi-dice/blob/main/promo/steam/PRIVACY_POLICY.md`
 - [ ] 設定支援語言（介面：繁中、簡中、英、日）
 - [ ] 設定遊戲分類標籤（Roguelite、Dice 等）
 - [ ] 設定定價（正式版 US$2.99，Demo 免費）

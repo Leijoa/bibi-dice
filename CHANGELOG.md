@@ -1,3 +1,23 @@
+### 文件：發布 Steam 隱私政策正式檔 [2026/05/23]
+* **`promo/steam/PRIVACY_POLICY.md`**：將隱私政策草稿轉為正式公開文件，補入公開聯絡信箱 `leijoalion@gmail.com`，並移除草稿狀態與發布前待填項。
+* **`promo/steam/STEAM_RELEASE_CHECKLIST.md` / `promo/steam/STEAMWORKS_FIELDS_DRAFT.md` / `promo/steam/STEAMWORKS_ONBOARDING_FLOW.md`**：統一將 Steamworks Privacy Policy URL 指向 GitHub 公開頁面 `https://github.com/Leijoa/bibi-dice/blob/main/promo/steam/PRIVACY_POLICY.md`。
+* **`SYNC.md`**：更新 E-10 狀態為隱私政策已完成、待填入 Steamworks 後台；補記 itch.io 頁面仍需登入後台手動加入連結。
+
+### 文件：新增 Steam 隱私政策草稿 [2026/05/22]
+* **`promo/steam/PRIVACY_POLICY_DRAFT.md`**：新增繁中 / 英文雙語隱私政策草稿，涵蓋目前 Demo 本機存檔、未來可能收集匿名或彙整遊玩數據、Steam 平台資料分工、資料用途、保存與刪除、第三方服務、兒童隱私與政策更新。
+* **`promo/steam/STEAM_RELEASE_CHECKLIST.md` / `promo/steam/STEAMWORKS_FIELDS_DRAFT.md` / `promo/steam/STEAMWORKS_ONBOARDING_FLOW.md`**：將 E-10 隱私政策狀態從缺頁面更新為草稿完成、待製作人發布公開 URL。
+* **`SYNC.md`**：同步更新 E-10 待處理狀態，標記「撰寫草稿」已完成，但仍需製作人補公開聯絡信箱、發布公開頁面並回填 Steamworks Privacy Policy URL。
+
+### 工具：新增 i18n 四語系自動驗證並修補日文缺漏 [2026/05/21]
+* **`scripts/verify-i18n.js`**：新增 i18n 驗證腳本，遞迴展平四語系所有 key 並以 `zh-tw` 為基準比對，回報缺失 key、空值 key、多餘 key 與總數。
+* **`package.json`**：新增 `steam:i18n:verify` 指令。
+* **`js/locales/ja.js`**：補入缺漏的 2 個 key — `messages.extremist_zone_note` =「{0} Dゾーン x{1}」、`messages.scale_apex_order_note` =「{0} 絶対秩序倍率 x{1}」。
+* **驗證結果**：zh-tw / zh-cn / en / ja 四語系各 601 個 key 完全對齊。
+* **`promo/steam/STEAM_RELEASE_CHECKLIST.md`**：第一區 i18n 確認項勾選通過。
+
+### 文件：新增 Steamworks 後台 9 階段流程表 [2026/05/21]
+* **`promo/steam/STEAMWORKS_ONBOARDING_FLOW.md`**：新增 Steamworks 後台流程表，分 9 階段（登入前準備、帳號 / 稅務 / 銀行、付 App Fee 建立 App、填寫商店頁、上傳素材、IARC / AI 揭露 / 隱私政策、建立 Demo App、本機 SteamPipe、送審與發布），含預計耗時、阻塞點、整體甘特圖、阻塞依賴清單、必死注意事項（30 天 App 冷卻期、隱私政策、截圖實機限制等）。
+
 ### 素材：重產 Store / Library Capsule D8 修正版 [2026/05/21]
 * **`promo/steam/source/key_art_d8_banner.png` / `key_art_d8_portrait.png`**：依製作人提供的原主視覺、遊戲內藍色八面骰與真實 D8 參考，生成 Steam 專用 D8 主視覺源圖，修正角色手上骰子不真實的問題。
 * **`scripts/generate-steam-capsules.js` / `scripts/generate-steam-library-assets.js`**：Store / Library Capsule 改用 D8 修正版源圖，並降低過重暗化層與 Library 暗角；Library Logo 擷取仍保留原主視覺美術字來源。

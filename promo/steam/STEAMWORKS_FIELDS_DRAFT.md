@@ -1,6 +1,6 @@
 # Steamworks 後台欄位草稿
 
-最後更新：2026-05-21（依 `STEAM_OWNER_DECISIONS.md` 製作人決策同步）
+最後更新：2026-05-23（補入 E-10 隱私政策公開 URL）
 
 本檔供製作人登入 Steamworks Partner 後台時對照填寫，分十區整理。  
 仍需製作人決定的欄位請見第十區。
@@ -271,10 +271,10 @@ Steam 後台語言欄位分為三類：介面、完整音效、字幕。
 | E-07 | 是否含藥物或毒品描述？ | 否 | |
 | E-08 | Demo / 正式版是否含購買遊戲內貨幣或道具？ | **Demo：否；正式版：是** | 正式版規劃含購買機制，IARC 問卷依「目前審核版本」回答；Demo 送審時填「否」，正式版送審前需重新評估問卷 |
 | E-09 | 是否含玩家間互動（聊天、PvP 等）？ | 否 | |
-| E-10 | 是否會收集玩家個人資料 / 上傳分析數據？ | **是** | 製作人標註：之後將新增收集玩家遊玩數據評估更新方向。**Steam 後台須補上隱私政策連結**並於商店頁說明收集範圍 |
+| E-10 | 是否會收集玩家個人資料 / 上傳分析數據？ | **是** | 製作人標註：之後將新增收集玩家遊玩數據評估更新方向。隱私政策已完成，見 `PRIVACY_POLICY.md`；Steam 後台 Privacy Policy URL 建議填 GitHub 公開頁面 |
 
 > 完成 IARC 問卷後，Steam 會自動給出 PEGI、ESRB、USK 等多國分級結果，無需分別申請。
-> ⚠️ E-10 為「是」會觸發 Steam 隱私政策審查項目：上架前需準備一份隱私政策頁面（可放在 itch.io 或獨立網址），說明收集哪些遊玩數據、用途與保存期限。
+> ⚠️ E-10 為「是」會觸發 Steam 隱私政策審查項目：政策已建立於 `PRIVACY_POLICY.md`。Steamworks Privacy Policy URL 建議填：`https://github.com/Leijoa/bibi-dice/blob/main/promo/steam/PRIVACY_POLICY.md`
 
 ---
 
@@ -284,7 +284,7 @@ Steam 後台語言欄位分為三類：介面、完整音效、字幕。
 | --- | --- | --- |
 | Trailer 影片（B-06） | 製作人決定先剪、看效果再決定使用 | 剪輯後製作人會自行評估 |
 | Page Background（B-05） | 製作人決定先補做、看效果再決定使用 | 補做後製作人會自行評估 |
-| 隱私政策頁面（E-10 連帶要求） | **缺** | E-10 為「是」會觸發 Steam 隱私政策審查；需製作人準備頁面 |
+| 隱私政策頁面（E-10 連帶要求） | **已完成，待填入後台** | 文件見 `PRIVACY_POLICY.md`；公開 URL：`https://github.com/Leijoa/bibi-dice/blob/main/promo/steam/PRIVACY_POLICY.md`。itch.io 頁面需登入後台手動加入此連結 |
 | Steam Deck 相容性 | 建議留空 | 已決定不承諾，見 `STEAM_DESKTOP_PORTRAIT_STRATEGY.md` |
 
 ### 已決定欄位（本檔已同步）

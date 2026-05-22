@@ -10,6 +10,7 @@
     "steam:capture": "npm run steam:build -- --OutputDir dist/steam-demo && node scripts/capture-steam-portrait-screenshots.js",
     "steam:capsules": "node scripts/generate-steam-capsules.js",
     "steam:assets:verify": "node scripts/verify-steam-assets.js",
+    "steam:i18n:verify": "node scripts/verify-i18n.js",
     "steam:library": "node scripts/generate-steam-library-assets.js"
   },
   "devDependencies": {
