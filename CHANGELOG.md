@@ -1,3 +1,10 @@
+### 工具：新增 Steam Windows portable 打包流程 [2026/05/23]
+* **`scripts/package-steam-windows.ps1`**：新增 Windows Steam Build 打包腳本，會先使用既有 Electron runtime 建立 `dist/steam-windows`，再放入 `resources/app/package.json`、`steam-app/` 與 `dist/steam-demo/`，並輸出 `BIBI-DICE.exe`。
+* **`scripts/verify-steam-windows-build.js`**：新增封裝後 build 驗證腳本，檢查 `BIBI-DICE.exe`、`resources/app`、Steam Demo 內容與 Electron runtime，並啟動 exe 做煙霧測試。
+* **`package.json`**：新增 `steam:package` 與 `steam:package:verify` 指令，可一鍵重建 Demo、打包 Windows build 並驗證。
+* **`promo/steam/STEAMPIPE_DEPOT_DRAFT.md` / `promo/steam/STEAM_RELEASE_CHECKLIST.md`**：更新 SteamPipe ContentRoot 為 `dist/steam-windows`，Launch Option 為 `BIBI-DICE.exe`，避免誤把純 web 輸出 `dist/steam-demo` 上傳到 Steam。
+* **驗證**：`npm.cmd run steam:package:verify` 通過，確認 `dist/steam-windows/BIBI-DICE.exe` 可啟動且不會立即崩潰。
+
 ### 文件：發布 Steam 隱私政策正式檔 [2026/05/23]
 * **`promo/steam/PRIVACY_POLICY.md`**：將隱私政策草稿轉為正式公開文件，補入公開聯絡信箱 `leijoalion@gmail.com`，並移除草稿狀態與發布前待填項。
 * **`promo/steam/STEAM_RELEASE_CHECKLIST.md` / `promo/steam/STEAMWORKS_FIELDS_DRAFT.md` / `promo/steam/STEAMWORKS_ONBOARDING_FLOW.md`**：統一將 Steamworks Privacy Policy URL 指向 GitHub 公開頁面 `https://github.com/Leijoa/bibi-dice/blob/main/promo/steam/PRIVACY_POLICY.md`。

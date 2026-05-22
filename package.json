@@ -4,6 +4,8 @@
   "version": "0.1.0",
   "scripts": {
     "steam:build": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/publish-steam-demo.ps1",
+    "steam:package": "npm run steam:build -- --OutputDir dist/steam-demo && powershell.exe -NoProfile -ExecutionPolicy Bypass -File scripts/package-steam-windows.ps1",
+    "steam:package:verify": "npm run steam:package && node scripts/verify-steam-windows-build.js",
     "steam:app": "npm run steam:build -- --OutputDir dist/steam-demo && electron steam-app/main.js",
     "steam:app:dev": "electron steam-app/main.js",
     "steam:verify": "npm run steam:build -- --OutputDir dist/steam-demo && node scripts/verify-steam-electron.js",

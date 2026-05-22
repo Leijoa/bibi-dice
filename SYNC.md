@@ -53,13 +53,14 @@ Steam 版方向已從橫版大螢幕改為「桌面直式小遊戲」。
 | Steam 桌面直式策略 | 已完成 | 見 `promo/steam/STEAM_DESKTOP_PORTRAIT_STRATEGY.md` |
 | Steam Demo 輸出 | 已完成第一版 | `scripts/publish-steam-demo.ps1` 會注入 `steam-portrait` |
 | Electron 桌面殼 | 已完成第一版 | `steam-app/main.js`、`steam-app/preload.js` |
+| Windows Steam Build 打包 | 已完成第一版 | `npm.cmd run steam:package:verify` 會產出並驗證 `dist/steam-windows/BIBI-DICE.exe` |
 | 直式桌面截圖 | 已完成第一版 | `npm.cmd run steam:capture` 可重產 |
 | Store Capsule | 已完成 D8 修正版，製作人已確認通過 | `npm.cmd run steam:capsules` 可重產；不得額外疊英文遮住中文 Logo |
 | Library Capsule / Header / Logo / Icon | 已完成 D8 修正版，製作人已確認通過 | `npm.cmd run steam:library` 可重產；Library Logo 維持主視覺美術字擷取版 |
 | Library Hero | 暫停 / 不做 | 已刪除，不要重產 `library_hero_3840x1240.png` |
 | 隱私政策 | 已完成，待填入 Steamworks / itch.io | 見 `promo/steam/PRIVACY_POLICY.md`；GitHub 公開 URL：`https://github.com/Leijoa/bibi-dice/blob/main/promo/steam/PRIVACY_POLICY.md`；itch.io 頁面需登入後台手動加入此連結 |
 | Steam Release Checklist | 已完成第一版 | 見 `promo/steam/STEAM_RELEASE_CHECKLIST.md` |
-| Steam 可上傳 Build / depot 檢查 | 進行中 | 已通過 Electron 基礎驗證、解析度切換與存檔重開驗證；仍需 SteamPipe / depot |
+| Steam 可上傳 Build / depot 檢查 | Build 已可打包，SteamPipe 待後台 ID | 已通過 Electron 基礎驗證、解析度切換、存檔重開驗證與 Windows exe 煙霧測試；仍需製作人取得 Demo AppID / DepotID 後執行 SteamPipe |
 | Steamworks 後台資料填寫 | 進行中 | 已確定 Coming Soon / Demo 目標排程；仍需製作人完成 AI 揭露、IARC、素材目視確認 |
 
 ## Steam 目標排程
@@ -123,6 +124,8 @@ Steam 版方向已從橫版大螢幕改為「桌面直式小遊戲」。
 
 ```powershell
 npm.cmd run steam:build
+npm.cmd run steam:package
+npm.cmd run steam:package:verify
 npm.cmd run steam:app
 npm.cmd run steam:app:dev
 npm.cmd run steam:verify
@@ -165,6 +168,18 @@ npm.cmd run steam:library
 - 下一步：
 - 注意事項：
 ```
+
+### 2026-05-23 鑀韻東（Windows 打包）
+
+- 狀態：已完成
+- 本次做了什麼：新增 Steam Windows portable 打包流程，使用既有 Electron runtime 產出 `dist/steam-windows/BIBI-DICE.exe`；新增封裝後 build 驗證腳本；更新 `package.json` 指令 `steam:package` 與 `steam:package:verify`；同步修正 SteamPipe 文件與上架檢查表，明確 SteamPipe ContentRoot 應使用 `dist/steam-windows`。
+- 發現的問題：Windows PowerShell 5 對無 BOM 腳本中的中文預設 exe 檔名解碼不穩，會造成非法路徑錯誤；已改用 ASCII 檔名 `BIBI-DICE.exe`，遊戲顯示名稱仍由 Electron app name 顯示為 `BIBI DICE 比比丟八`。Playwright `_electron.launch` 不適合直接連封裝後 exe，驗證改為檔案結構檢查 + exe 啟動煙霧測試。
+- 預計但尚未執行的修改：等待製作人取得 Demo AppID / DepotID 後，建立實際 `steam-build/*.vdf` 並執行 steamcmd 上傳。
+- 已完成問題：Steam Build 已從純 web / dev Electron 驗證推進到可供 SteamPipe 上傳的 Windows portable build 資料夾。
+- 改了哪些檔案：`scripts/package-steam-windows.ps1`（新增）、`scripts/verify-steam-windows-build.js`（新增）、`package.json`、`promo/steam/STEAMPIPE_DEPOT_DRAFT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：`npm.cmd run steam:package:verify` 通過，確認 `dist/steam-windows/BIBI-DICE.exe`、`resources/app`、`resources/app/dist/steam-demo/index.html` 與 Electron runtime 存在，且 exe 啟動煙霧測試通過。
+- 下一步：製作人等待 Steamworks / TaxIdentity 審核；通過後建立 Demo App / Depot，取得真實 AppID / DepotID，依 `STEAMPIPE_DEPOT_DRAFT.md` 上傳 `dist/steam-windows`。
+- 注意事項：`dist/steam-windows` 是產物，不提交 Git；Steamworks Launch Option 請填 `BIBI-DICE.exe`。
 
 ### 2026-05-23 鑀韻東
 

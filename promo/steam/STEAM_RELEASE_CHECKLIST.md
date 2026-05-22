@@ -31,6 +31,10 @@
   - 備註：2026-05-20 以 `npm.cmd run steam:verify` 自動重建並通過。
 - [x] `dist/steam-demo` 目錄下有完整遊戲檔案，能在瀏覽器本地開啟
   - 備註：已確認包含 `bgm`、`css`、`img`、`js`、`sfx`，Electron 以 `bibi://app/index.html` 載入。
+- [x] `npm.cmd run steam:package` 可正常產出 Windows Steam Build
+  - 備註：2026-05-23 產出 `dist/steam-windows/BIBI-DICE.exe`，並包含 Electron runtime 與 `resources/app/dist/steam-demo`。
+- [x] `npm.cmd run steam:package:verify` 可驗證封裝後 exe
+  - 備註：2026-05-23 通過，確認 `BIBI-DICE.exe`、`resources/app`、Steam Demo 內容與 Electron runtime 存在，且 exe 啟動煙霧測試通過。
 - [x] `npm.cmd run steam:app` 可正常啟動 Electron 桌面視窗
   - 備註：已用 Playwright Electron 啟動 `steam-app/main.js` 驗證。
 - [x] Electron 視窗預設尺寸為 540×960，比例正確（9:16 直式）
@@ -123,8 +127,9 @@
 ### Build 上傳與審核
 
 - [ ] 安裝 SteamPipe CLI（`steamcmd`）並設定 depot
-- [ ] 上傳 `dist/steam-demo` 作為 Demo Build
+- [ ] 上傳 `dist/steam-windows` 作為 Demo Build（ContentRoot 必須是 Windows 打包輸出，不能只上傳 `dist/steam-demo`）
 - [ ] 在後台確認 Build 出現在 Builds 頁面
+- [ ] 設定 Launch Option：`BIBI-DICE.exe`
 - [ ] 2026-06-03 送出 Base Game Store Presence 審核
 - [ ] 2026-06-10 目標公開 Coming Soon 頁
 - [ ] 等待至少 2 週後，送出 Demo Build 與 Demo Store Presence 審核
