@@ -47,7 +47,13 @@ $appRoot = Join-Path $outputRoot "resources\app"
 New-Item -ItemType Directory -Force -Path $appRoot | Out-Null
 
 Write-Host "Copy app package files..." -ForegroundColor Cyan
-Copy-Item -LiteralPath (Join-Path $sourceRoot "package.json") -Destination (Join-Path $appRoot "package.json") -Force
+$packageJson = Get-Content -LiteralPath (Join-Path $sourceRoot "package.json") -Raw | ConvertFrom-Json
+$packageJson.name = "bibi-dice"
+$packageJson.productName = "BIBI DICE"
+$packageJson | Add-Member -MemberType NoteProperty -Name "main" -Value "steam-app/main.js" -Force
+$packageJsonText = $packageJson | ConvertTo-Json -Depth 10
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+[System.IO.File]::WriteAllText((Join-Path $appRoot "package.json"), $packageJsonText, $utf8NoBom)
 Copy-Item -LiteralPath $steamApp -Destination (Join-Path $appRoot "steam-app") -Recurse -Force
 
 $appDist = Join-Path $appRoot "dist"

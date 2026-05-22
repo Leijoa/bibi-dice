@@ -1,3 +1,10 @@
+### 修正：Steam Windows 封裝 exe 啟動錯誤 [2026/05/23]
+* **`scripts/package-steam-windows.ps1`**：封裝後 `resources/app/package.json` 現在會寫入 `main: "steam-app/main.js"`，修正雙擊 `BIBI-DICE.exe` 時 Electron 預設尋找 `index.js` 而跳出主程序錯誤的問題。
+* **`scripts/package-steam-windows.ps1`**：封裝用 package metadata 改為 ASCII `productName: "BIBI DICE"`，避免 Electron 42 在 packaged `package.json` 含中文 `productName` 時發生 access violation。
+* **`steam-app/main.js`**：Electron 執行期顯示名稱改由程式明確設定為 `BIBI DICE 比比丟八`，保留中文 app name 與 userData 路徑。
+* **`scripts/verify-steam-windows-build.js`**：新增封裝後 `package.json` 的 `main` 欄位檢查，並容忍 UTF-8 BOM。
+* **驗證**：`npm.cmd run steam:package:verify` 通過，確認 `BIBI-DICE.exe` 可啟動並保持開啟。
+
 ### 工具：新增 Steam Windows portable 打包流程 [2026/05/23]
 * **`scripts/package-steam-windows.ps1`**：新增 Windows Steam Build 打包腳本，會先使用既有 Electron runtime 建立 `dist/steam-windows`，再放入 `resources/app/package.json`、`steam-app/` 與 `dist/steam-demo/`，並輸出 `BIBI-DICE.exe`。
 * **`scripts/verify-steam-windows-build.js`**：新增封裝後 build 驗證腳本，檢查 `BIBI-DICE.exe`、`resources/app`、Steam Demo 內容與 Electron runtime，並啟動 exe 做煙霧測試。

@@ -2,7 +2,7 @@ const { app, BrowserWindow, Menu, net, protocol } = require('electron');
 const path = require('path');
 const packageJson = require('../package.json');
 
-const APP_NAME = packageJson.productName || packageJson.name || 'bibi-dice';
+const APP_NAME = 'BIBI DICE 比比丟八';
 app.setName(APP_NAME);
 
 protocol.registerSchemesAsPrivileged([

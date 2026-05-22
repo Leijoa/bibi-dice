@@ -25,11 +25,15 @@ async function main() {
     if (!fs.existsSync(requiredPath)) throw new Error(`Missing packaged file: ${requiredPath}`);
   }
 
+  const packageText = fs.readFileSync(path.join(APP_ROOT, 'package.json'), 'utf8').replace(/^\uFEFF/, '');
+  const packagedPackage = JSON.parse(packageText);
+
   const result = {
     exe: EXE_PATH,
     checks: {
       exeExists: fs.existsSync(EXE_PATH),
       appRootExists: fs.existsSync(APP_ROOT),
+      packageMain: packagedPackage.main === 'steam-app/main.js',
       steamDemoExists: fs.existsSync(path.join(APP_ROOT, 'dist', 'steam-demo', 'index.html')),
       noDefaultAppAsar: !fs.existsSync(path.join(BUILD_DIR, 'resources', 'default_app.asar'))
     }

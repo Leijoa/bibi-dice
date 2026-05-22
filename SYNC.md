@@ -181,6 +181,18 @@ npm.cmd run steam:library
 - 下一步：製作人等待 Steamworks / TaxIdentity 審核；通過後建立 Demo App / Depot，取得真實 AppID / DepotID，依 `STEAMPIPE_DEPOT_DRAFT.md` 上傳 `dist/steam-windows`。
 - 注意事項：`dist/steam-windows` 是產物，不提交 Git；Steamworks Launch Option 請填 `BIBI-DICE.exe`。
 
+### 2026-05-23 鑀韻東（Windows 打包修正）
+
+- 狀態：已完成
+- 本次做了什麼：修正 `BIBI-DICE.exe` 雙擊時的 Electron 主程序錯誤；封裝後 `resources/app/package.json` 會補入 `main: "steam-app/main.js"`，並將 packaged metadata 的 `productName` 改為 ASCII，以避開 Electron 42 對 packaged `package.json` 中文 `productName` 的 access violation 問題；Electron 顯示名稱改由 `steam-app/main.js` 明確設定為 `BIBI DICE 比比丟八`。
+- 發現的問題：封裝後 package 缺少 `main` 時，Electron 會預設尋找 `resources/app/index.js`；補上 main 後，又發現 packaged `package.json` 含中文 `productName` 會讓此 Electron runtime 直接崩潰。
+- 預計但尚未執行的修改：無。
+- 已完成問題：`BIBI-DICE.exe` 可啟動並保持開啟；不再跳出 `Cannot find module ... index.js`。
+- 改了哪些檔案：`scripts/package-steam-windows.ps1`、`scripts/verify-steam-windows-build.js`、`steam-app/main.js`、`SYNC.md`、`CHANGELOG.md`
+- 驗證結果：`npm.cmd run steam:package:verify` 通過，確認封裝後 `packageMain` 與 `launchSmoke` 均為 true。
+- 下一步：製作人可重新雙擊 `D:\unity\bibi-dice\dist\steam-windows\BIBI-DICE.exe` 測試；通過後等待 Steamworks ID 進行 SteamPipe。
+- 注意事項：封裝用 `package.json` 的 `productName` 是 ASCII，但 app 執行期名稱仍是 `BIBI DICE 比比丟八`。
+
 ### 2026-05-23 鑀韻東
 
 - 狀態：已完成
