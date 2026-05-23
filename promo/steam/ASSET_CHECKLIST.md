@@ -73,12 +73,14 @@ Steam screenshot 欄位應使用實際遊戲畫面，建議捕捉：
 
 ## 已產出截圖
 
+2026-05-24 已重產（涵蓋 emoji 全移除、鎖定骰新視覺、勝利花灑方向修正、新手教學定位修正、商店融合流程修正後的最新 UI）：
+
 | 檔案 | 尺寸 | 內容 |
 | --- | --- | --- |
-| `promo/steam/assets/store_screenshot_01_title_1920x1080.png` | 1920 x 1080 | 桌面直式標題畫面 |
-| `promo/steam/assets/store_screenshot_02_battle_start_1920x1080.png` | 1920 x 1080 | 桌面直式戰鬥開局 |
-| `promo/steam/assets/store_screenshot_03_combo_preview_1920x1080.png` | 1920 x 1080 | 桌面直式牌型與傷害預覽 |
-| `promo/steam/assets/store_screenshot_04_rules_table_1920x1080.png` | 1920 x 1080 | 桌面直式牌型倍率表 |
+| `promo/steam/assets/store_screenshot_01_title_1920x1080.png` | 1920 x 1080 | 桌面直式標題畫面（無 emoji 按鈕版）|
+| `promo/steam/assets/store_screenshot_02_battle_start_1920x1080.png` | 1920 x 1080 | 桌面直式戰鬥開局（顯示預估傷害、新鎖定骰視覺）|
+| `promo/steam/assets/store_screenshot_03_combo_preview_1920x1080.png` | 1920 x 1080 | 桌面直式牌型「比比丟八」與大爆發傷害 |
+| `promo/steam/assets/store_screenshot_04_rules_table_1920x1080.png` | 1920 x 1080 | 桌面直式牌型倍率表（B-04 製作人決定保留）|
 | `promo/steam/assets/store_screenshot_05_relic_shop_1920x1080.png` | 1920 x 1080 | 桌面直式商店與遺物選擇 |
 | `promo/steam/assets/store_screenshot_06_soul_offering_1920x1080.png` | 1920 x 1080 | 桌面直式靈魂奉獻 |
 

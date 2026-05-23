@@ -1,3 +1,10 @@
+### 素材：重產 Steam 商店截圖最終版 [2026/05/24]
+* **`promo/steam/assets/store_screenshot_01~06_*.png`**：執行 `npm.cmd run steam:capture` 重產 6 張 1920×1080 實機截圖，反映 5/23 一系列 UI 更新（全遊戲 emoji 移除、新版鎖定骰紫金發光外框、勝利花灑方向修正、新手教學定位修正、商店融合流程修正、無限塔枷鎖動畫節奏調整）。原版時間戳為 5/19，已不反映最新 UI。
+* **內容對照**：#1 標題畫面（無 emoji 按鈕）、#2 戰鬥開局（含 HP、預估傷害、新鎖定骰視覺）、#3 牌型「比比丟八」八同 4,800,000 大爆發、#4 牌型倍率表彈窗（B-04 製作人決定保留）、#5 商店遺物三選一、#6 靈魂奉獻清單。
+* **驗證**：`npm.cmd run steam:assets:verify` 通過（15 個必要素材尺寸正確、`library_hero_3840x1240.png` 維持不存在）；6 張目視確認無 emoji 殘留、無血腥、無成人內容、無 UI 跑版、無文字截斷、無彈窗出界。
+* **`promo/steam/ASSET_CHECKLIST.md`**：更新已產出截圖區塊註明 5/24 重產與內容變更。
+* **`promo/steam/STEAM_RELEASE_CHECKLIST.md`**：第一區「6 張截圖排序合理」與「全年齡顯示」兩項勾選為已完成，註明 #4 為牌型倍率表（依 B-04 決定保留）而非 Boss 枷鎖。
+
 ### 文件：整理 Steamworks 後台填寫包 [2026/05/23]
 * **`promo/steam/STEAMWORKS_UPLOAD_PACKET.md`**：新增 Steamworks 後台「照表貼上」填寫包，14 區涵蓋 App 基本資訊（名稱 / 開發商 / Privacy Policy URL）、短描述四語、長描述繁中英文 BBCode、關於此遊戲 / 此 Demo、定價（US$2.99 + Demo Free）、支援語言四語、推薦標籤 19 個、AI 生成揭露文字繁中英文、IARC 問卷 10 題答案摘要（含 E-08 Demo / 正式版差異與 E-10 隱私政策連動）、所有 Steam 素材檔案路徑與尺寸（11 張）、SteamPipe Build 上傳（ContentRoot = `dist/steam-windows`、Launch Option = `BIBI-DICE.exe`）、Coming Soon 與 Demo 發布排程、後台填寫順序 22 步。
 * **內容來源**：彙整自 `STEAMWORKS_FIELDS_DRAFT.md`、`STEAMPIPE_DEPOT_DRAFT.md`、`STEAM_ASSET_FINAL_AUDIT.md`、`STEAM_RELEASE_CHECKLIST.md`、`STEAM_OWNER_DECISIONS.md`、`PRIVACY_POLICY.md`，並於每節標示「⚠️ 後台動作」區別本機可備妥 vs 需登入後台手動操作的部分。
