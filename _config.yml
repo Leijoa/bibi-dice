@@ -1,0 +1,13 @@
+# GitHub Pages should publish the game as static files.
+# Project docs contain SteamPipe placeholders like {{DEMO_APPID}},
+# which Jekyll/Liquid would otherwise parse as template syntax.
+exclude:
+  - AGENTS.md
+  - CHANGELOG.md
+  - GDD.md
+  - SYNC.md
+  - promo/
+  - scripts/
+  - steam-app/
+  - dist/
+  - node_modules/

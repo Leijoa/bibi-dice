@@ -1,3 +1,9 @@
+### 2026-05-24 鑀韻東（修正 GitHub Pages Jekyll 解析 SteamPipe 文件失敗）
+- 狀態：完成。
+- 問題：GitHub Pages 內建 Jekyll build 解析 `promo/steam/STEAMPIPE_DEPOT_DRAFT.md` 時，將 `{{DEMO_APPID}}` 等 SteamPipe 占位符誤判為 Liquid 模板語法，造成 `pages build and deployment / build` 失敗。
+- 修改：新增 `.nojekyll`，讓 Pages 以靜態檔方式發布；新增 `_config.yml` 排除專案文件、`promo/`、`scripts/`、`steam-app/`、`dist/`、`node_modules/` 等非網站輸出內容，降低日後文件再次觸發 Jekyll/Liquid 錯誤的風險。
+- 下一步：推送後確認 GitHub Actions 的 `pages build and deployment` 是否恢復成功。
+
 ### 2026-05-24 製作人 → 阿扣（Steam 商店截圖目視通過）
 - 狀態：完成。
 - 任務：製作人對同日重產的 6 張 Steam 商店截圖做最終目視確認。

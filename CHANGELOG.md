@@ -1,3 +1,6 @@
+### 修正：GitHub Pages Jekyll 解析 SteamPipe 文件失敗 [2026/05/24]
+* **`.nojekyll` / `_config.yml`**：GitHub Pages 改以靜態檔方式發布遊戲，並排除專案文件、`promo/`、`scripts/`、`steam-app/`、`dist/` 等非網站輸出目錄，避免 Jekyll/Liquid 將 SteamPipe 文件中的 `{{DEMO_APPID}}` 等占位符誤判為模板語法而導致 Pages build 失敗。
+
 ### 文件：標記 Steam 商店截圖製作人目視通過 [2026/05/24]
 * **`SYNC.md`**：新增 2026-05-24 製作人目視確認紀錄，6 張 Steam 商店截圖全部通過，#4 牌型倍率表已確認保留；移除前一筆工作紀錄中的「未涵蓋 Boss 枷鎖」風險描述。
 * **`promo/steam/STEAM_RELEASE_CHECKLIST.md`**：第一區「6 張桌面直式截圖排序合理」與「6 張截圖適合全年齡顯示」備註更新為製作人目視確認通過，#4 不再標為待替換。
