@@ -70,6 +70,19 @@ export const el = {
     boardPanel: document.getElementById('board-panel')
 };
 
+function getGameViewportRect() {
+    const container = document.getElementById('game-container');
+    if (container) return container.getBoundingClientRect();
+    return {
+        left: 0,
+        top: 0,
+        width: window.innerWidth,
+        height: window.innerHeight,
+        right: window.innerWidth,
+        bottom: window.innerHeight
+    };
+}
+
 if (document.getElementById('btn-rules')) {
     document.getElementById('btn-rules').innerHTML = i18n.t('ui.btn_rules') || "📖 牌型表";
     document.getElementById('btn-rules').className = "btn-secondary text-xs md:text-sm font-black py-2 px-4 rounded-lg active:scale-95 flex items-center";
@@ -77,7 +90,14 @@ if (document.getElementById('btn-rules')) {
 
 // --- 動畫與特效 ---
 export function shootConfetti() {
-    if (typeof confetti === 'function') confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 }, colors: ['#fbbf24', '#f87171', '#60a5fa', '#34d399'] });
+    if (typeof confetti === 'function') {
+        const rect = getGameViewportRect();
+        const origin = {
+            x: (rect.left + rect.width * 0.5) / window.innerWidth,
+            y: (rect.top + rect.height * 0.56) / window.innerHeight
+        };
+        confetti({ particleCount: 100, spread: 70, origin, colors: ['#fbbf24', '#f87171', '#60a5fa', '#34d399'] });
+    }
 }
 
 // ★ 更新：讓 Toast 提示更顯眼，支援多行文字
@@ -85,7 +105,7 @@ let activeToasts = [];
 
 export function showToast(msg, callback) {
     let toast = document.createElement('div');
-    toast.className = 'fixed left-1/2 -translate-x-1/2 bg-slate-900 text-white font-bold py-4 px-6 rounded-2xl shadow-[0_0_50px_rgba(122,59,245,0.4)] border-2 border-violet-500/60 z-[100] text-lg md:text-2xl text-center flex flex-col gap-2 toast-enter whitespace-pre-wrap leading-relaxed transition-all duration-300';
+    toast.className = 'fixed bg-slate-900 text-white font-bold py-4 px-6 rounded-2xl shadow-[0_0_50px_rgba(122,59,245,0.4)] border-2 border-violet-500/60 z-[100] text-lg md:text-2xl text-center flex flex-col gap-2 toast-enter whitespace-pre-wrap leading-relaxed transition-all duration-300';
 
     if (msg instanceof Node) {
         toast.appendChild(msg);
@@ -97,12 +117,15 @@ export function showToast(msg, callback) {
     activeToasts.push(toast);
 
     // Reposition all active toasts
-    const spacing = 10;
-    let currentY = window.innerHeight / 2 - 50; // Start roughly at middle
+    const rect = getGameViewportRect();
+    const spacing = Math.max(8, Math.min(12, rect.height * 0.012));
+    let currentY = rect.top + rect.height * 0.42;
     
     // We position them relative to top or bottom? Let's just stack them downwards from middle
     for (let i = activeToasts.length - 1; i >= 0; i--) {
         let t = activeToasts[i];
+        t.style.left = `${rect.left + rect.width / 2}px`;
+        t.style.maxWidth = `${Math.max(240, rect.width - 32)}px`;
         t.style.top = currentY + 'px';
         currentY += t.offsetHeight + spacing;
     }

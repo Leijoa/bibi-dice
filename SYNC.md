@@ -1,3 +1,11 @@
+### 2026-05-23 阿扣（【混沌法則】枷鎖難度重新分類）
+- 狀態：完成。
+- 任務：依製作人決定，將【混沌法則】枷鎖從重度（heavy）改為輕度（light）。
+- 分析：枷鎖實作（`engine.js:46-53`）只在 postCalc 對調 `tagA` / `tagB` 物件；因最終倍率為乘法（或 `order` 遺物下的加法），交換律使**單獨存在時對傷害數值零影響**。真正威脅來自與其他 A/B 區針對型枷鎖（秩序崩壞 / 孤立無援）或槽位專屬遺物（`cons_strike_a` / `cons_fever_b` / `flicker`）的交互，但目前關卡不會雙枷鎖共存。
+- 修改：`js/data.js:150` `chaoslaw.type` 由 `'heavy'` 改為 `'light'`。
+- 驗證：locale 檔不需異動（描述文字未變）；i18n 結構未受影響。
+- 潛在後續：`flicker` 遺物在混沌法則下永遠無法觸發（檢查 `tagA.name === '對子'`），目前不修但可考慮日後加入收集冊提示。
+
 ### 2026-05-23 鑀韻東（四語系隨機截圖壓測）
 - 狀態：完成。
 - 任務：依製作人要求，對 `zh-tw`、`zh-cn`、`en`、`ja` 各跑 100 場隨機遊玩流程，並隨機產出 100 張截圖。
@@ -474,3 +482,12 @@ npm.cmd run steam:library
 - 改了哪些檔案：`img/title_bg.png`、`css/style.css`、`index.html`、`scripts/capture-steam-portrait-screenshots.js`、`CHANGELOG.md`、`SYNC.md`。
 - 驗證：已執行 `node --check scripts/capture-steam-portrait-screenshots.js`；`npm.cmd run steam:build` 通過，確認 `dist/steam-demo/img/title_bg.png` 已被打包進 Steam Demo；已輸出 `promo/steam/screenshots/current_title_bg_540x960.png` 檢查標題畫面實際載入 `title_bg.png`。
 - 下一步：請製作人重新打開 itch/dev/Steam Demo 首頁，確認主視覺裁切位置符合預期。
+### 2026-05-23 鑀韻東：Steam 直式版特效定位與字體修正
+- 狀態：已完成。
+- 工作內容：修正 Steam 桌面直式視窗中跳出訊息、通關灑花與敵人扣血數字的定位，使其以 `#game-container` 實際畫面為基準，不再以整個 Electron 視窗為中心。
+- 涉及檔案：`js/ui.js`、`js/main.js`、`css/style.css`、`index.html`、`CHANGELOG.md`、`SYNC.md`。
+- 技術重點：`showToast()` 與 `shootConfetti()` 改用遊戲容器矩形計算座標；傷害文字移除 Tailwind translate 與 CSS animation transform 的雙重位移，並依數字長度縮小字級。
+- 字體策略：不使用外部 CDN，改用 Steam 離線可用的 Windows / Electron 系統字體堆疊，繁中 UI 優先 `Microsoft JhengHei UI`，數字優先 `Bahnschrift`。
+- 驗證：`node --check js/ui.js`、`node --check js/main.js`、`npm.cmd run steam:build`、`npm.cmd run steam:package:verify` 通過；Playwright 量測確認 toastInside=true、damageInside=true、toastCenterDelta=0、damageCenterDelta=0。
+- 輸出：`dist/steam-demo` 與 `dist/steam-windows/BIBI-DICE.exe` 已重新產生，package smoke test 通過，沒有殘留 Electron / BIBI 程序。
+- 下一步：請製作人實機開啟 Steam Windows 版快速確認視覺觀感，若 OK 再決定是否同步推 GitHub / itch.io。

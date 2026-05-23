@@ -147,7 +147,7 @@ export const SHACKLE_DB = [
     { id: 'isolated', name: '【孤立無援】', desc: 'A 區（同數頻率）的所有倍率強制減半。', type: 'heavy' },
     { id: 'ordercollapse', name: '【秩序崩壞】', desc: 'B 區（順子連號）的倍率判定完全失效。', type: 'heavy' },
     { id: 'banality', name: '【平庸之惡】', desc: 'D 區（極端盤面）的所有特殊倍率強制失效。', type: 'heavy' },
-    { id: 'chaoslaw', name: '【混沌法則】', desc: 'A 區（同數）與 B 區（順子）的倍率計算表互相對調。', type: 'heavy' },
+    { id: 'chaoslaw', name: '【混沌法則】', desc: 'A 區（同數）與 B 區（順子）的倍率計算表互相對調。', type: 'light' },
     { id: 'sealeddoor', name: '【封印之門】', desc: '盤面必須包含「對子」以上的同數牌型，否則本次攻擊傷害歸零。', type: 'heavy' },
     { id: 'blackhole', name: '【黑洞】', desc: '骰子點數「8」在攻擊結算時會強制被吸走，變成「1」。', type: 'heavy' },
     { id: 'hardcap', name: '【上限鎖死】', desc: '最多只能同時鎖定四顆骰子。', type: 'heavy' },

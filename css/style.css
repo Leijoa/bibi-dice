@@ -1,5 +1,11 @@
+:root {
+  --font-ui: "Microsoft JhengHei UI", "Microsoft JhengHei", "Noto Sans TC", "PingFang TC", "Yu Gothic UI", "Meiryo", "Segoe UI", system-ui, sans-serif;
+  --font-display: "Microsoft JhengHei UI", "Microsoft JhengHei", "Noto Sans TC", "Yu Gothic UI", "Meiryo", "Segoe UI", system-ui, sans-serif;
+  --font-number: "Bahnschrift", "Segoe UI Variable Display", "Segoe UI", "Microsoft JhengHei UI", "Microsoft JhengHei", system-ui, sans-serif;
+}
+
 body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft JhengHei", "PingFang TC", "Hiragino Sans", sans-serif;
+  font-family: var(--font-ui);
   background-color: #131315;
   color: #e5e1e4;
   margin: 0;
@@ -7,6 +13,13 @@ body {
   overflow: hidden;
   touch-action: none;
   overscroll-behavior-y: none;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
 }
 
 #game-scaler {
@@ -112,7 +125,27 @@ body.steam-portrait #how-to-play-modal > div {
   100% { border-color: #cbd5e1; color: #f8fafc; }
 }
 
-.damage-text { animation: floatDamage 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; pointer-events: none; }
+.damage-text {
+  animation: floatDamage 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  box-sizing: border-box;
+  max-width: calc(100% - 20px);
+  padding: 0 10px;
+  pointer-events: none;
+  text-align: center;
+  white-space: nowrap;
+  font-family: var(--font-number);
+  font-size: clamp(2.6rem, 13vw, 4.8rem) !important;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+}
+
+.damage-text--compact {
+  font-size: clamp(2rem, 10vw, 3.6rem) !important;
+}
+
+.damage-text--tiny {
+  font-size: clamp(1.55rem, 8vw, 2.9rem) !important;
+}
 @keyframes floatDamage {
   0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
   20% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
@@ -251,7 +284,7 @@ body.steam-portrait #how-to-play-modal > div {
 }
 
 .game-logo {
-  font-family: Georgia, "Times New Roman", "Microsoft JhengHei", "PingFang TC", serif;
+  font-family: var(--font-display);
 }
 
 .dice-pips-deco {
@@ -382,6 +415,7 @@ header {
 #final-score-value {
     max-width: 100%;
     white-space: nowrap;
+    font-family: var(--font-number);
 }
 
 #final-score-value.damage-digits-long {
@@ -468,7 +502,8 @@ header {
 #rolls-left-badge,
 #turns-left,
 #stage-info {
-  font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", "Microsoft JhengHei", monospace;
+  font-family: var(--font-number);
+  font-variant-numeric: tabular-nums;
 }
 
 #enemy-hp-text {
@@ -504,7 +539,7 @@ header {
   background: radial-gradient(ellipse at 50% 20%, rgba(120, 15, 15, 0.98) 0%, rgba(6, 4, 10, 0.99) 65%);
 }
 .end-logo {
-  font-family: Georgia, "Times New Roman", "Microsoft JhengHei", "PingFang TC", serif;
+  font-family: var(--font-display);
   letter-spacing: 0.02em;
 }
 .shock-enter {
@@ -1250,7 +1285,6 @@ button[id^="btn-close"]:hover {
 
 .damage-float--epic {
   animation-duration: 1.8s !important;
-  font-size: 2.2em !important;
   color: #fbbf24 !important;
   text-shadow: 0 0 20px rgba(251,191,36,0.8), 0 0 40px rgba(251,191,36,0.4) !important;
   filter: drop-shadow(0 0 8px rgba(251,191,36,0.6)) !important;

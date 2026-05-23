@@ -1,3 +1,6 @@
+### 平衡：【混沌法則】枷鎖難度分類由重度改為輕度 [2026/05/23]
+* **`js/data.js`**：`chaoslaw` 的 `type` 由 `'heavy'` 改為 `'light'`。原因：實作上只在 postCalc 對調 `tagA` / `tagB` 物件，因最終倍率為乘法（或 `order` 遺物下的加法），交換律使單獨存在時對傷害數值零影響；目前關卡不會同時掛兩個枷鎖，與其他 A/B 區針對型枷鎖（秩序崩壞、孤立無援）的交互不會發生，威脅程度遠低於其他重度枷鎖。
+
 ### 修正：Steam Windows 封裝 exe 啟動錯誤 [2026/05/23]
 * **`scripts/package-steam-windows.ps1`**：封裝後 `resources/app/package.json` 現在會寫入 `main: "steam-app/main.js"`，修正雙擊 `BIBI-DICE.exe` 時 Electron 預設尋找 `index.js` 而跳出主程序錯誤的問題。
 * **`scripts/package-steam-windows.ps1`**：封裝用 package metadata 改為 ASCII `productName: "BIBI DICE"`，避免 Electron 42 在 packaged `package.json` 含中文 `productName` 時發生 access violation。
@@ -844,3 +847,8 @@
 * **`index.html`**：將 Open Graph / Twitter 預覽圖同步改為 `img/title_bg.png`。
 * **`scripts/capture-steam-portrait-screenshots.js`**：商店截圖合成背景改用 `dist/steam-demo/img/title_bg.png`，避免後續截圖仍吃舊首頁圖。
 * **驗證**：`node --check scripts/capture-steam-portrait-screenshots.js` 通過；`npm.cmd run steam:build` 通過，`dist/steam-demo/img/title_bg.png` 已產生；已輸出標題確認截圖 `promo/steam/screenshots/current_title_bg_540x960.png`。
+### 修正：Steam 直式版特效定位與離線字體堆疊 [2026/05/23]
+* **`js/ui.js`**：新增以 `#game-container` 實際畫面矩形為基準的座標計算，讓跳出訊息與通關灑花在 Steam 桌面直式視窗中對齊遊戲畫面中心，而不是整個 Electron 視窗中心。
+* **`js/main.js`**：移除敵人扣血數字的雙重位移來源，並依傷害文字長度套用較小字級，避免大數字跑出敵人欄。
+* **`css/style.css` / `index.html`**：改用離線可用的繁中 UI 字體堆疊與數字字體堆疊，移除不存在的 `Space Grotesk` inline 字體設定。
+* **驗證**：`node --check js/ui.js`、`node --check js/main.js`、`npm.cmd run steam:build`、`npm.cmd run steam:package:verify` 通過；Playwright 量測確認 toast 與傷害數字均在遊戲容器內且水平置中。

@@ -1455,14 +1455,17 @@ window.fireAttack = function() {
             || finalDamage >= 100_000_000
             || (battle.scoreResult.finalMultiplier || 0) >= 100_000;
         let dmgEl = document.createElement('div');
-        dmgEl.className = 'damage-text text-6xl md:text-8xl font-black text-red-500 drop-shadow-[0_0_20px_rgba(255,0,0,0.9)] z-30 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2'
+        dmgEl.className = 'damage-text text-6xl md:text-8xl font-black text-red-500 drop-shadow-[0_0_20px_rgba(255,0,0,0.9)] z-30 absolute top-1/2 left-1/2'
             + (isEpicHit ? ' damage-float--epic' : '');
         let displayDmg = dmg;
         if (stage.activeShackle === 'illusionary') {
             let fakeMultiplier = Math.floor(Math.random() * 16) + 5;
             displayDmg *= fakeMultiplier;
         }
-        dmgEl.innerText = `-${displayDmg.toLocaleString()}`;
+        const damageText = `-${displayDmg.toLocaleString()}`;
+        if (damageText.length >= 15) dmgEl.classList.add('damage-text--tiny');
+        else if (damageText.length >= 11) dmgEl.classList.add('damage-text--compact');
+        dmgEl.innerText = damageText;
         UI.el.damageContainer.appendChild(dmgEl);
         setTimeout(() => { dmgEl.remove(); UI.el.hitFlash.classList.add('hidden'); }, isEpicHit ? 1800 : 1200);
 
