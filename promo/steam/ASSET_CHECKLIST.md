@@ -73,16 +73,16 @@ Steam screenshot 欄位應使用實際遊戲畫面，建議捕捉：
 
 ## 已產出截圖
 
-2026-05-24 已重產（涵蓋 emoji 全移除、鎖定骰新視覺、勝利花灑方向修正、新手教學定位修正、商店融合流程修正後的最新 UI）：
+2026-05-24 已重產（涵蓋 emoji 全移除、鎖定骰新視覺、勝利花灑方向修正、新手教學定位修正、商店融合流程修正後的最新 UI），**製作人同日目視確認 6 張全部通過、可作為 Steam 商店頁正式素材**：
 
-| 檔案 | 尺寸 | 內容 |
-| --- | --- | --- |
-| `promo/steam/assets/store_screenshot_01_title_1920x1080.png` | 1920 x 1080 | 桌面直式標題畫面（無 emoji 按鈕版）|
-| `promo/steam/assets/store_screenshot_02_battle_start_1920x1080.png` | 1920 x 1080 | 桌面直式戰鬥開局（顯示預估傷害、新鎖定骰視覺）|
-| `promo/steam/assets/store_screenshot_03_combo_preview_1920x1080.png` | 1920 x 1080 | 桌面直式牌型「比比丟八」與大爆發傷害 |
-| `promo/steam/assets/store_screenshot_04_rules_table_1920x1080.png` | 1920 x 1080 | 桌面直式牌型倍率表（B-04 製作人決定保留）|
-| `promo/steam/assets/store_screenshot_05_relic_shop_1920x1080.png` | 1920 x 1080 | 桌面直式商店與遺物選擇 |
-| `promo/steam/assets/store_screenshot_06_soul_offering_1920x1080.png` | 1920 x 1080 | 桌面直式靈魂奉獻 |
+| 檔案 | 尺寸 | 內容 | 製作人確認 |
+| --- | --- | --- | --- |
+| `promo/steam/assets/store_screenshot_01_title_1920x1080.png` | 1920 x 1080 | 桌面直式標題畫面（無 emoji 按鈕版）| ✅ OK |
+| `promo/steam/assets/store_screenshot_02_battle_start_1920x1080.png` | 1920 x 1080 | 桌面直式戰鬥開局（顯示預估傷害、新鎖定骰視覺）| ✅ OK |
+| `promo/steam/assets/store_screenshot_03_combo_preview_1920x1080.png` | 1920 x 1080 | 桌面直式牌型「比比丟八」與大爆發傷害 | ✅ OK |
+| `promo/steam/assets/store_screenshot_04_rules_table_1920x1080.png` | 1920 x 1080 | 桌面直式牌型倍率表（保留，不需替換）| ✅ OK |
+| `promo/steam/assets/store_screenshot_05_relic_shop_1920x1080.png` | 1920 x 1080 | 桌面直式商店與遺物選擇 | ✅ OK |
+| `promo/steam/assets/store_screenshot_06_soul_offering_1920x1080.png` | 1920 x 1080 | 桌面直式靈魂奉獻 | ✅ OK |
 
 ## 已產出 Store Capsule 草稿
 
@@ -115,7 +115,7 @@ Steam screenshot 欄位應使用實際遊戲畫面，建議捕捉：
 
 ## 下一步
 
-1. 檢查 6 張桌面直式展示截圖是否適合 Steam 頁面排序。
-2. 檢查小膠囊 `462 x 174` 的 Logo 可讀性。
+1. ~~檢查 6 張桌面直式展示截圖是否適合 Steam 頁面排序。~~（2026-05-24 製作人已目視確認通過）
+2. ~~檢查小膠囊 `462 x 174` 的 Logo 可讀性。~~（2026-05-21 已通過）
 3. 依 Steamworks 後台預覽調整 Store Capsule 與 Library Capsule 裁切。
 4. 製作 Page Background 與第一篇 Steam 公告用 Event Cover。

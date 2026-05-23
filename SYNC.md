@@ -1,11 +1,24 @@
+### 2026-05-24 製作人 → 阿扣（Steam 商店截圖目視通過）
+- 狀態：完成。
+- 任務：製作人對同日重產的 6 張 Steam 商店截圖做最終目視確認。
+- 結果：6 張全部通過、可作為 Steam 商店頁正式素材：
+  - #1 `store_screenshot_01_title_1920x1080.png` ✅ OK
+  - #2 `store_screenshot_02_battle_start_1920x1080.png` ✅ OK
+  - #3 `store_screenshot_03_combo_preview_1920x1080.png` ✅ OK
+  - #4 `store_screenshot_04_rules_table_1920x1080.png` ✅ OK（製作人特別確認牌型倍率表保留，不需替換成 Boss 枷鎖）
+  - #5 `store_screenshot_05_relic_shop_1920x1080.png` ✅ OK
+  - #6 `store_screenshot_06_soul_offering_1920x1080.png` ✅ OK
+- 更新：`SYNC.md`（移除前一筆的「未涵蓋 Boss 枷鎖風險」描述）、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`promo/steam/ASSET_CHECKLIST.md`、`CHANGELOG.md`。
+- 規則：此後不再把 #4 標為風險或待替換項。
+- 提交：`標記 Steam 商店截圖目視通過`。
+
 ### 2026-05-24 阿扣（Steam 商店截圖最終盤點與重產）
 - 狀態：完成。
 - 任務：確認 Steam store screenshot 是否反映最新版 UI；不是則重產 6 張正式版 1920×1080 實機截圖。
 - 盤點：原 6 張截圖時間戳為 2026-05-19，期間 5/23 有大量 UI 變更（emoji 全移除、鎖定骰新視覺、勝利花灑方向修正、新手教學定位修正、商店融合流程修正、無限塔枷鎖動畫節奏）→ 需重產。
 - 修改：執行 `npm.cmd run steam:capture` 重產 6 張（會先 `steam:build` 再用 Playwright 實機擷圖）。
 - 驗證：(1) 6 張新檔時間戳 2026-05-24；(2) `npm.cmd run steam:assets:verify` 通過，15 個必要素材尺寸正確，`library_hero_3840x1240.png` 維持不存在；(3) 目視檢查 6 張 — 標題畫面（中文 Logo 清楚、按鈕無 emoji）、戰鬥開局（8 骰、HP、預估傷害 13,728）、牌型預覽（八同 4,800,000 倍率爆發）、牌型倍率表彈窗、商店遺物三選一、靈魂奉獻清單，無血腥、無成人、無跑版、無文字截斷。
-- 主題對照：#1 標題、#2 戰鬥、#3 牌型預覽、#4 牌型倍率表（B-04 製作人決定保留，**未涵蓋 Boss 枷鎖**）、#5 商店遺物、#6 靈魂奉獻。
-- 風險紀錄：任務要求第 5 項為「Boss 枷鎖或高壓戰鬥」，但截圖腳本依 B-04 既有設計擷取的是牌型倍率表彈窗。本次未改腳本，依製作人 B-04 決定保留；如希望替換 #4 為 Boss 場景，需修腳本加入 Boss 戰流程截圖步驟。
+- 主題對照：#1 標題、#2 戰鬥、#3 牌型預覽、#4 牌型倍率表（B-04 製作人決定保留，**2026-05-24 製作人已確認保留，不需替換**）、#5 商店遺物、#6 靈魂奉獻。
 - 更新：`promo/steam/ASSET_CHECKLIST.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`SYNC.md`、`CHANGELOG.md`。
 - 提交：`確認 Steam 商店截圖最終版`。
 
