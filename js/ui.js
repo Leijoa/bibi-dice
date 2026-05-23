@@ -5,11 +5,11 @@ import * as Audio from './audio.js';
 window.i18n = i18n;
 
 const SOULS_UPG_DEFS = [
-    { id: 'hp', name: '❤️ 體魄鍛鍊', desc: '最大 HP +1', max: 2, cost: (lv) => 10 },
-    { id: 'rerolls', name: '🎲 骰子掌握', desc: '初始重骰次數 +1', max: 2, cost: (lv) => 15 },
-    { id: 'startRelic', name: '🎁 初始裝備', desc: '開局隨機獲得 1 個普通遺物', max: 1, cost: (lv) => 30 },
-    { id: 'finalDamage', name: '⚔️ 力量覺醒', desc: '最終傷害 +10%', max: 5, cost: (lv) => 20 },
-    { id: 'soulBurst', name: '🔥 靈魂爆發', desc: '敵人血量x(等級+1), 靈魂獲得量+(等級), 在2,5,8,10級時神話遺物上限+1', max: 10, cost: (lv) => 100 }
+    { id: 'hp', name: '體魄鍛鍊', desc: '最大 HP +1', max: 2, cost: (lv) => 10 },
+    { id: 'rerolls', name: '骰子掌握', desc: '初始重骰次數 +1', max: 2, cost: (lv) => 15 },
+    { id: 'startRelic', name: '初始裝備', desc: '開局隨機獲得 1 個普通遺物', max: 1, cost: (lv) => 30 },
+    { id: 'finalDamage', name: '力量覺醒', desc: '最終傷害 +10%', max: 5, cost: (lv) => 20 },
+    { id: 'soulBurst', name: '靈魂爆發', desc: '敵人血量x(等級+1), 靈魂獲得量+(等級), 在2,5,8,10級時神話遺物上限+1', max: 10, cost: (lv) => 100 }
 ];
 
 
@@ -84,7 +84,7 @@ function getGameViewportRect() {
 }
 
 if (document.getElementById('btn-rules')) {
-    document.getElementById('btn-rules').innerHTML = i18n.t('ui.btn_rules') || "📖 牌型表";
+    document.getElementById('btn-rules').innerHTML = i18n.t('ui.btn_rules') || "牌型表";
     document.getElementById('btn-rules').className = "btn-secondary text-xs md:text-sm font-black py-2 px-4 rounded-lg active:scale-95 flex items-center";
 }
 
@@ -96,11 +96,11 @@ export function shootConfetti() {
             x: (rect.left + rect.width * 0.5) / window.innerWidth,
             y: (rect.top + rect.height * 0.56) / window.innerHeight
         };
-        confetti({ particleCount: 100, spread: 70, origin, colors: ['#fbbf24', '#f87171', '#60a5fa', '#34d399'] });
+        confetti({ particleCount: 100, spread: 70, angle: 180, origin, colors: ['#fbbf24', '#f87171', '#60a5fa', '#34d399'] });
     }
 }
 
-// ★ 更新：讓 Toast 提示更顯眼，支援多行文字
+// 更新：讓 Toast 提示更顯眼，支援多行文字
 let activeToasts = [];
 
 export function showToast(msg, callback) {
@@ -256,7 +256,7 @@ export function updateEnemyUI(stage) {
     let shackleHtml = '';
     // legacy support if stage.shackles array exists
     if (stage.shackles && stage.shackles.length > 0) {
-        shackleHtml += stage.shackles.map(sh => `<span onclick="window.showShackleInfo('${sh.id}')" class="ml-2 bg-red-900/80 hover:bg-red-800 text-[12px] md:text-xs text-red-300 px-1.5 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0">⛓️ 當前枷鎖</span>`).join('');
+        shackleHtml += stage.shackles.map(sh => `<span onclick="window.showShackleInfo('${sh.id}')" class="ml-2 bg-red-900/80 hover:bg-red-800 text-[12px] md:text-xs text-red-300 px-1.5 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0">當前枷鎖</span>`).join('');
     }
 
     // new logic using activeShackle
@@ -265,7 +265,7 @@ export function updateEnemyUI(stage) {
         const _shackleDef = SHACKLE_DB.find(s => s.id === activeShackleId);
         const _shackleName = _shackleDef ? (i18n.t(`shackles.${activeShackleId}.name`) || _shackleDef.name) : '';
         const _shackleLabel = _shackleName.replace(/[【】\[\]]/g, '').trim();
-        shackleHtml += `<span onclick="window.showShackleInfo('${activeShackleId}')" class="ml-1.5 bg-red-900/80 hover:bg-red-800 text-[12px] md:text-[12px] text-red-300 px-1 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0 max-w-[72px] md:max-w-none truncate" title="${_shackleLabel}">⛓️ ${_shackleLabel}</span>`;
+        shackleHtml += `<span onclick="window.showShackleInfo('${activeShackleId}')" class="ml-1.5 bg-red-900/80 hover:bg-red-800 text-[12px] md:text-[12px] text-red-300 px-1 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0 max-w-[72px] md:max-w-none truncate" title="${_shackleLabel}">${_shackleLabel}</span>`;
     }
 
     let localizedEnemyName = enemy.name;
@@ -297,7 +297,7 @@ export function updateEnemyUI(stage) {
         if (_stripped) shackleTitleHtml = `<span class="shackle-title-badge">${_stripped}</span>`;
     }
 
-    el.enemyName.innerHTML = `⚔️ <span class="stage-layer-badge">${layerBadgeText}</span><span class="enemy-name-text">${localizedEnemyName}</span>${shackleHtml}`;
+    el.enemyName.innerHTML = `<span class="stage-layer-badge">${layerBadgeText}</span><span class="enemy-name-text">${localizedEnemyName}</span>${shackleHtml}`;
 
     el.enemyName.className = "text-xl font-bold flex-1 flex items-center min-w-0";
     if (stage.level >= ENEMY_DB.length) {
@@ -357,7 +357,7 @@ window.showShackleInfo = function(id) {
     }
 };
 
-// --- ★ 任務4：遺物點擊顯示說明 ---
+// --- 任務4：遺物點擊顯示說明 ---
 export function renderInventory(player, battle) {
     el.inventoryGrid.className = "flex overflow-x-auto gap-1.5 pb-2 scroll-smooth items-center hide-scrollbar scrollable-row";
     const visibleRelics = (player.relics || []).filter(id => !id.startsWith('cons_'));
@@ -614,11 +614,11 @@ export function renderDice(battle, activeHighlight, player) {
         let lockIconHtml = '';
         if (d.locked && !activeHighlight) {
             if (shackleId === 'cursedlock' && shackleMeta && d.id === shackleMeta.cursedId) {
-                // Cursed lock UI: blue overlay + emoji + red SVG corner badge
-                lockIconHtml = `<div style="position:absolute;inset:0;background:rgba(30,80,200,0.4);border-radius:inherit;pointer-events:none;z-index:10;"></div><span style="position:absolute;top:3px;right:5px;font-size:13px;pointer-events:none;z-index:11;">🔒</span><div class="absolute -top-1.5 -right-1.5 bg-red-600 rounded-full p-0.5 shadow border border-red-300 z-20 animate-pulse"><svg class="w-3.5 h-3.5 md:w-4 md:h-4 text-red-950" fill="currentColor" viewBox="0 0 20 20"><path d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" fill-rule="evenodd"></path></svg></div>`;
+                // Cursed lock UI: blue overlay + red SVG corner badge
+                lockIconHtml = `<div style="position:absolute;inset:0;background:rgba(30,80,200,0.4);border-radius:inherit;pointer-events:none;z-index:10;"></div><div class="absolute -top-1.5 -right-1.5 bg-red-600 rounded-full p-0.5 shadow border border-red-300 z-20 animate-pulse"><svg class="w-3.5 h-3.5 md:w-4 md:h-4 text-red-950" fill="currentColor" viewBox="0 0 20 20"><path d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" fill-rule="evenodd"></path></svg></div>`;
             } else {
-                // Standard lock UI: blue overlay + emoji
-                lockIconHtml = `<div style="position:absolute;inset:0;background:rgba(30,80,200,0.4);border-radius:inherit;pointer-events:none;z-index:10;"></div><span style="position:absolute;top:3px;right:5px;font-size:13px;pointer-events:none;z-index:11;">🔒</span>`;
+                // Standard lock UI: blue overlay
+                lockIconHtml = `<div style="position:absolute;inset:0;background:rgba(30,80,200,0.4);border-radius:inherit;pointer-events:none;z-index:10;"></div>`;
             }
         }
 
@@ -688,12 +688,10 @@ export function renderControls(battle, maxRolls) {
 
     el.controlsContainer.innerHTML = `
     <button onclick="window.executeRoll(false)" ${isRollDisabled ? 'disabled="disabled"' : ''} class="w-full flex-1 bg-violet-700 text-violet-100 font-black rounded-lg md:rounded-xl transition-all flex flex-col items-center justify-center border-b-4 border-violet-900 btn-roll ${rollClass}">
-        <span class="btn-roll-icon text-base md:text-xl mb-0.5">🎲</span>
         <span class="text-xs md:text-base leading-tight">${i18n.t('ui.btn_roll')}</span>
         <span class="text-[12px] md:text-[12px] opacity-60 mt-0.5 font-semibold">${battle.rollsLeft} / ${maxRolls}</span>
     </button>
     <button onclick="window.fireAttack()" ${isScoreDisabled ? 'disabled="disabled"' : ''} class="w-full flex-[1.5] bg-red-700 text-red-100 font-black rounded-lg md:rounded-xl transition-all flex flex-col items-center justify-center border-b-4 border-red-900 ${isScoreDisabled ? '' : 'btn-attack-ready'} ${scoreClass}">
-        <span class="text-xl md:text-3xl mb-0.5">🗡️</span>
         <span class="text-xs md:text-base leading-tight">${i18n.t('ui.btn_attack')}</span>
     </button>
     `;
@@ -1074,7 +1072,7 @@ export function playDamageStepsAnimation(steps, callback) {
                 relEl.classList.add('mythic-suppressed');
                 const icon = document.createElement('span');
                 icon.className = 'mythic-suppress-icon';
-                icon.textContent = '🚫';
+                icon.textContent = 'OFF';
                 relEl.appendChild(icon);
             }
         });
@@ -1221,7 +1219,7 @@ export function renderShopItems(shopItems, player) {
         let rName = isConsumable ? i18n.t(`consumables.${r.id}.name`) : (i18n.t(`relics.${r.id}.name`) || r.name);
         let rDesc = isConsumable ? i18n.t(`consumables.${r.id}.desc`) : (i18n.t(`relics.${r.id}.desc`) || r.desc);
         let cardBg = isConsumable ? 'linear-gradient(160deg,#1c1a14 0%,#19160e 100%)' : 'linear-gradient(160deg,#1c1b1d 0%,#161519 100%)';
-        let consumableBadgeHtml = isConsumable ? `<span class="text-[12px] md:text-[12px] px-2 py-0.5 rounded-full bg-amber-900/60 text-amber-300 border border-amber-600/60 font-bold">🧪 ${i18n.t('messages.consumable_tag')}</span>` : '';
+        let consumableBadgeHtml = isConsumable ? `<span class="text-[12px] md:text-[12px] px-2 py-0.5 rounded-full bg-amber-900/60 text-amber-300 border border-amber-600/60 font-bold">${i18n.t('messages.consumable_tag')}</span>` : '';
         let selectBtnText = isConsumable ? i18n.t('messages.shop_select_consumable') : i18n.t('messages.shop_select');
 
         return `
@@ -1234,7 +1232,7 @@ export function renderShopItems(shopItems, player) {
                         <div class="flex flex-col items-end gap-1 shrink-0">
                             <span class="text-[12px] md:text-[12px] px-2 py-0.5 rounded-full ${style.bg} ${style.color} border ${style.border} font-bold tracking-wide">${i18n.t(`messages.rarity_${r.rarity}`) || style.label}</span>
                             ${consumableBadgeHtml}
-                            ${isFusionMaterial ? `<span onclick="window.showFusionInfo('${fusionResultId}')" class="text-xs cursor-pointer px-1.5 py-0.5 rounded bg-cyan-900/60 text-cyan-300 border border-cyan-500 font-black shadow-[0_0_8px_rgba(34,211,238,0.4)] animate-pulse hover:bg-cyan-800 hover:scale-105 active:scale-95 transition-all">✨ ${i18n.t('ui.shop_fusion_hint') || '可融合'}</span>` : ''}
+                            ${isFusionMaterial ? `<span onclick="window.showFusionInfo('${fusionResultId}')" class="text-xs cursor-pointer px-1.5 py-0.5 rounded bg-cyan-900/60 text-cyan-300 border border-cyan-500 font-black shadow-[0_0_8px_rgba(34,211,238,0.4)] animate-pulse hover:bg-cyan-800 hover:scale-105 active:scale-95 transition-all">${i18n.t('ui.shop_fusion_hint') || '可融合'}</span>` : ''}
                         </div>
                     </div>
                 </div>
@@ -1326,11 +1324,11 @@ export function showFusionReplaceModal(currentFusions, newFusionId, callback) {
 export function updateShopRerollBtn(shopRerollsUsed, hasScavenger = false, hasFusionRecycle = false) {
     if (shopRerollsUsed === 0) {
         // 動態抓取 ui.btn_reroll 語系鍵
-        el.shopRerollBtn.innerHTML = i18n.t('ui.btn_reroll') || "🔄 刷新商店 (限1次)";
+        el.shopRerollBtn.innerHTML = i18n.t('ui.btn_reroll') || "刷新商店 (限1次)";
         el.shopRerollBtn.className = "w-full sm:w-auto flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl transition-colors active:scale-95 text-base md:text-lg border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1 shadow-lg shadow-emerald-900/50";
         el.shopRerollBtn.disabled = false;
     } else {
-        el.shopRerollBtn.innerHTML = i18n.t('messages.shop_rerolled') || '🚫 已刷新過';
+        el.shopRerollBtn.innerHTML = i18n.t('messages.shop_rerolled') || '已刷新過';
         el.shopRerollBtn.className = "w-full sm:w-auto flex-1 bg-slate-700 text-slate-400 font-black py-3 rounded-xl cursor-not-allowed text-base md:text-lg border-b-4 border-slate-900";
         el.shopRerollBtn.disabled = true;
     }
@@ -1363,7 +1361,7 @@ export function renderHistoryModal(records, metaData) {
 
         pbHtml = `
             <div class="bg-amber-900/40 border border-amber-600/50 p-4 rounded-xl shadow-inner">
-                <h3 class="text-lg font-black text-amber-400 mb-3 flex items-center gap-2">${i18n.t('ui.pb_title') || '🏆 個人最佳紀錄'}</h3>
+                <h3 class="text-lg font-black text-amber-400 mb-3 flex items-center gap-2">${i18n.t('ui.pb_title') || '個人最佳紀錄'}</h3>
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
                     <div>
                         <div class="text-xs text-amber-200/70 font-bold">${i18n.t('ui.pb_highest_dmg') || '最高傷害'}</div>
@@ -1403,7 +1401,7 @@ export function renderHistoryModal(records, metaData) {
         const ico = document.getElementById('hist-ico-' + idx);
         if (det) {
             det.classList.toggle('hidden');
-            if (ico) ico.textContent = det.classList.contains('hidden') ? '▶' : '▼';
+            if (ico) ico.textContent = det.classList.contains('hidden') ? '+' : '-';
         }
     };
 
@@ -1452,7 +1450,7 @@ export function renderHistoryModal(records, metaData) {
                 <span class="font-black ${resultColor} text-sm md:text-base">${resultText}</span>
                 <div class="flex items-center gap-2">
                     <span class="text-[12px] md:text-xs text-slate-400">${dateStr}</span>
-                    <span id="hist-ico-${i}" class="text-slate-500 text-xs">▶</span>
+                    <span id="hist-ico-${i}" class="text-slate-500 text-xs">+</span>
                 </div>
             </div>
             <div id="hist-det-${i}" class="relative hidden px-3 pb-3 pt-2 border-t border-slate-700/50">
@@ -1540,7 +1538,7 @@ export function renderCollectionModal(tab) {
                 let ruleName = i18n.t(`rules.rule_${letter}${origIdx}.name`) || rule.name;
                 let ruleDesc = i18n.t(`rules.rule_${letter}${origIdx}.desc`) || rule.desc;
 
-                const nameStr = unlocked ? `${ruleName} <span class="text-emerald-400 text-xs ml-1">✅</span>` : `???`;
+                const nameStr = unlocked ? `${ruleName}` : `???`;
                 const descStr = unlocked ? ruleDesc : i18n.t('ui.locked'); // Hardcoded fallback for now
                 const opacity = unlocked ? 'opacity-100' : 'opacity-50 grayscale';
                 let rStyle = RARITY[rule.rarity] || RARITY[1];
@@ -1579,7 +1577,7 @@ export function renderCollectionModal(tab) {
                 html += `
                 <div class="bg-slate-800 p-2 rounded-xl border border-slate-600 flex flex-col justify-between relative overflow-hidden">
                     <div class="flex justify-between items-start mb-1">
-                        <h3 class="text-sm md:text-base font-black ${style.color}">${rName} <span class="text-emerald-400 text-xs ml-1">✅</span></h3>
+                        <h3 class="text-sm md:text-base font-black ${style.color}">${rName}</h3>
                         <span class="text-[12px] md:text-xs px-1.5 py-0.5 rounded ${style.bg} ${style.color} border ${style.border} font-bold">${i18n.t(`messages.rarity_${r.rarity}`) || style.label}</span>
                     </div>
                     <p class="text-xs md:text-sm text-slate-300 font-bold">${rDesc}</p>
@@ -1608,7 +1606,7 @@ export function renderCollectionModal(tab) {
                 html += `
                 <div class="bg-slate-800 p-2 rounded-xl border border-slate-600 flex flex-col justify-between relative overflow-hidden">
                     <div class="flex justify-between items-start mb-1">
-                        <h3 class="text-sm md:text-base font-black ${colorClass}">${sName} <span class="text-emerald-400 text-xs ml-1">✅</span></h3>
+                        <h3 class="text-sm md:text-base font-black ${colorClass}">${sName}</h3>
                         <span class="text-[12px] md:text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-300 border border-slate-500 font-bold">${typeLabel}</span>
                     </div>
                     <p class="text-xs md:text-sm text-slate-300 font-bold">${sDesc}</p>
@@ -1658,7 +1656,7 @@ function renderDevShackleSection(container) {
 
     container.innerHTML = `
         <div class="border-t border-slate-600 pt-3 flex flex-col gap-2">
-            <h3 class="text-base font-black text-violet-300">${i18n.t('ui.dev_shackle_title') || '🔒 枷鎖編輯'}</h3>
+            <h3 class="text-base font-black text-violet-300">${i18n.t('ui.dev_shackle_title') || '枷鎖編輯'}</h3>
             <div class="text-xs text-slate-400 font-bold">${i18n.t('ui.dev_shackle_current') || '當前枷鎖'}:</div>
             ${activeHtml}
             <div id="dev-shackle-conflict" class="hidden text-red-400 text-xs font-bold bg-red-950/40 border border-red-800 rounded p-2"></div>
@@ -1704,7 +1702,7 @@ function renderDevShackleSection(container) {
         const current = window.getStageActiveShackle ? window.getStageActiveShackle() : null;
         const selected = select.value;
         if (selected && current && current !== selected) {
-            conflictDiv.textContent = i18n.t('ui.dev_shackle_conflict') || '⚠️ 已有枷鎖套用中，強制套用將覆蓋現有枷鎖。';
+            conflictDiv.textContent = i18n.t('ui.dev_shackle_conflict') || '已有枷鎖套用中，強制套用將覆蓋現有枷鎖。';
             conflictDiv.classList.remove('hidden');
         } else {
             conflictDiv.classList.add('hidden');
@@ -1759,7 +1757,7 @@ export function renderSoulsModal(metaData) {
         let uName = i18n.t(`souls.${u.id}.name`) || u.name;
         let uDesc = i18n.t(`souls.${u.id}.desc`) || u.desc;
 
-        let dots = Array(u.max).fill().map((_, i) => i < currentLv ? '🟢' : '⚫').join(' ');
+        let dots = Array(u.max).fill().map((_, i) => i < currentLv ? 'I' : '-').join(' ');
         let btnHtml = isMax
             ? `<button disabled class="bg-slate-700 text-slate-500 font-bold py-2 px-4 rounded-lg cursor-not-allowed">${i18n.t('souls.maxed')}</button>`
             : `<button onclick="window.buySoulUpgrade('${u.id}', ${currentCost})" class="${canAfford ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_10px_rgba(79,70,229,0.5)]' : 'bg-slate-700 text-slate-500 cursor-not-allowed'} font-black py-2 px-4 rounded-lg transition-transform active:scale-95" ${canAfford ? '' : 'disabled'}>${i18n.t('souls.cost', currentCost)}</button>`;

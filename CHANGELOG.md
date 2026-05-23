@@ -1,3 +1,9 @@
+### 修正：勝利花灑方向與全遊戲 emoji 移除 [2026/05/23]
+* **`js/ui.js`**：勝利花灑 `shootConfetti()` 改為 `angle: 180`，修正原本往右噴、沒有向上灑出的方向問題。
+* **`index.html` / `js/main.js` / `js/ui.js` / `js/i18n.js` / `js/locales/*.js`**：移除遊戲 UI、教學、提示訊息、四語系文字與備援字串中的 emoji，避免視覺上產生廉價或 AI 感；同步移除空掉的按鈕圖示欄位與收集冊勾選符號。
+* **`js/ui.js`**：鎖定骰子改保留純色遮罩與既有 SVG 角標；靈魂奉獻等級標記改用 ASCII `I` / `-`；歷史紀錄展開符號改用 `+` / `-`。
+* **驗證**：`node --check js/ui.js`、`node --check js/main.js`、`node --check js/locales/zh-tw.js`、`npm.cmd run steam:i18n:verify`、`npm.cmd run steam:package:verify` 通過，已重建 `dist/steam-demo` 與 `dist/steam-windows/BIBI-DICE.exe`。
+
 ### 平衡：【混沌法則】枷鎖難度分類由重度改為輕度 [2026/05/23]
 * **`js/data.js`**：`chaoslaw` 的 `type` 由 `'heavy'` 改為 `'light'`。原因：實作上只在 postCalc 對調 `tagA` / `tagB` 物件，因最終倍率為乘法（或 `order` 遺物下的加法），交換律使單獨存在時對傷害數值零影響；目前關卡不會同時掛兩個枷鎖，與其他 A/B 區針對型枷鎖（秩序崩壞、孤立無援）的交互不會發生，威脅程度遠低於其他重度枷鎖。
 

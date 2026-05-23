@@ -183,37 +183,37 @@ ui: {
     mute: '靜音', btn_confirm: '確認',
     elite_tag: ' [菁英]',
     boss_tag: ' [Boss]',
-    btn_settings: '⚙️ 設定',
-    settings_title: '⚙️ 遊戲設定',
-    bgm_volume: '🎵 音樂音量',
-    sfx_volume: '🔊 音效音量',
-    setting_step_animation_label: '🎬 逐步結算動畫',
+    btn_settings: '設定',
+    settings_title: '遊戲設定',
+    bgm_volume: '音樂音量',
+    sfx_volume: '音效音量',
+    setting_step_animation_label: '逐步結算動畫',
     title_main: 'BIBI DICE',
     title_sub: '比比丟八',
     title_desc: '擲八顆骰子湊牌型疊加倍率！每回合重骰兩次，在限制回合內打倒敵人獲取遺物強化流派，挑戰連過十關！',
     btn_continue: '繼續旅程',
     btn_new_game: '開始新遊戲',
-    btn_back_to_title: '🏠 回標題',
-    btn_collection: '📖 收集冊',
+    btn_back_to_title: '回標題',
+    btn_collection: '收集冊',
     btn_history: '歷史牌局',
-    btn_souls: '👻 靈魂奉獻',
+    btn_souls: '靈魂奉獻',
     version: '[免費測試版]',
     author_info: '作者:雷爪獅 | Youtube:雷爪獅遊戲頻道 | threads:@leijoalan',
     stage: '關卡 {0}',
     next_stage: '下一關：{0}',
     hp: 'HP',
-    sound_on: '🔈 音效: 開',
-    sound_off: '🔈 音效: 關',
+    sound_on: '音效: 開',
+    sound_off: '音效: 關',
     turns_left: '剩餘 {0} 回合',
     rolls_left: '剩餘重骰：{0}',
     board: '盤面',
     damage_preview: '預估造成傷害',
-    owned_relics: '🎒 已持有遺物',
-    rules_title: '📖 全牌型倍率表',
-    shop_title: '💰 芝芝商店',
+    owned_relics: '已持有遺物',
+    rules_title: '全牌型倍率表',
+    shop_title: '芝芝商店',
     shop_desc: '選擇獲取一件遺物來強化流派，或進入下一關。',
     btn_reroll: '刷新商店',
-    btn_next_stage: '離開並前往下一關 ➡️',
+    btn_next_stage: '離開並前往下一關',
     game_over: 'GAME OVER',
     game_over_desc: '你未能擊敗敵人，旅程到此為止。',
     btn_restart: '回到標題畫面',
@@ -224,26 +224,26 @@ ui: {
     fusion_limit_msg: '你必須選擇捨棄並分解其中一件遺物（退回基礎素材），才能容納新的力量！',
     score_total_base: '骰子點數加成後總和',
     bonus_reroll: '剩餘資源加成 (剩 {0} 次)',
-    pb_title: '🏆 個人最佳紀錄',
+    pb_title: '個人最佳紀錄',
     pb_highest_dmg: '最高傷害',
     pb_highest_multi: '最高倍率',
-    fusion_limit_title: '⚠️ 力量超載！再生遺物達上限 (2/2)',
+    fusion_limit_title: '力量超載！再生遺物達上限 (2/2)',
     fusion_materials: '退回素材：',
     fusion_new_item: 'NEW',
     fusion_discard_btn: '捨棄並分解',
     pb_highest_infinite: '最高無限層數',
-    dev_shackle_title: '🔒 枷鎖編輯',
+    dev_shackle_title: '枷鎖編輯',
     dev_shackle_current: '當前枷鎖',
     dev_shackle_none: '（無枷鎖）',
     dev_shackle_remove: '移除',
     dev_shackle_apply: '套用枷鎖',
     dev_shackle_filter: '搜尋枷鎖...',
     dev_shackle_select_ph: '-- 選擇枷鎖 --',
-    dev_shackle_conflict: '⚠️ 已有枷鎖套用中，強制套用將覆蓋現有枷鎖。',
-    stage_type_boss: '👑 Boss',
-    stage_type_elite: '⚡ 精英',
-    stage_type_infinite: '♾️ 無限塔',
-    stage_type_normal: '⚔️ 一般',
+    dev_shackle_conflict: '已有枷鎖套用中，強制套用將覆蓋現有枷鎖。',
+    stage_type_boss: 'Boss',
+    stage_type_elite: '精英',
+    stage_type_infinite: '無限塔',
+    stage_type_normal: '一般',
     history_stage_type: '關卡類型',
     history_best_hand: '最佳牌型',
     history_relics: '遺物',
@@ -251,8 +251,8 @@ ui: {
     score_calculating: '盤面結算中...'
   },
   tutorial: {
-    btn_start: '🎓 新手教學',
-    btn_rules: '📖 玩法說明',
+    btn_start: '新手教學',
+    btn_rules: '玩法說明',
     skip: '跳過教學',
     step_indicator: '{0} / {1}',
     next_btn: '繼續 →',
@@ -264,26 +264,26 @@ ui: {
     step5: '打倒敵人後進入商店，從遺物中選一件。遺物會永久改變你的遊戲規則！',
     step6: '教學完成！挑戰 10 關，最終面對創世神。祝你好運，骰子之神！',
     complete_btn: '開始正式挑戰',
-    htp_title: '📖 玩法說明',
+    htp_title: '玩法說明',
     htp_tab_basics: '基本玩法',
     htp_tab_hands: '牌型表',
     htp_tab_relics: '遺物說明',
     htp_tab_shackles: '枷鎖說明',
     htp_tab_souls: '靈魂奉獻',
     htp_basics: `<div class="flex flex-col gap-3 text-slate-300">
-      <h3 class="text-base font-black text-violet-300">🎲 骰子與盤面</h3>
+      <h3 class="text-base font-black text-violet-300">骰子與盤面</h3>
       <p>每回合你有 <b class="text-white">8 顆骰子</b>（點數 1~8），目標是湊出牌型組合來對敵人造成傷害。</p>
-      <h3 class="text-base font-black text-violet-300">🔒 鎖定</h3>
+      <h3 class="text-base font-black text-violet-300">鎖定</h3>
       <p>點擊骰子可以<b class="text-white">鎖定</b>它。重骰時鎖定的骰子不會改變，讓你保留想要的點數。</p>
-      <h3 class="text-base font-black text-violet-300">🔄 重骰</h3>
+      <h3 class="text-base font-black text-violet-300">重骰</h3>
       <p>每回合有固定的<b class="text-white">重骰次數</b>（通常 2~3 次）。點「重骰」重新投擲未鎖定的骰子，找出更好的牌型。</p>
-      <h3 class="text-base font-black text-violet-300">⚔️ 攻擊</h3>
+      <h3 class="text-base font-black text-violet-300">攻擊</h3>
       <p>點「攻擊」結算目前盤面。系統計算所有牌型的基礎點數與倍率相乘得出<b class="text-white">最終傷害</b>。在限制回合數內打倒敵人！</p>
-      <h3 class="text-base font-black text-violet-300">🏆 勝利條件</h3>
+      <h3 class="text-base font-black text-violet-300">勝利條件</h3>
       <p>連續打倒 10 關的敵人（最終 Boss 是創世神）即可通關！每關打倒敵人後可在商店獲取遺物。</p>
     </div>`,
     htp_relics: `<div class="flex flex-col gap-3 text-slate-300">
-      <h3 class="text-base font-black text-violet-300">🎁 遺物稀有度</h3>
+      <h3 class="text-base font-black text-violet-300">遺物稀有度</h3>
       <div class="grid grid-cols-1 gap-1.5 text-xs">
         <div class="flex items-center gap-2"><span class="text-slate-400 font-black w-12">普通</span><span>基礎增益效果</span></div>
         <div class="flex items-center gap-2"><span class="text-blue-400 font-black w-12">稀有</span><span>強力的點數或倍率加成</span></div>
@@ -291,11 +291,11 @@ ui: {
         <div class="flex items-center gap-2"><span class="text-amber-400 font-black w-12">傳說</span><span>極強的條件觸發效果</span></div>
         <div class="flex items-center gap-2"><span class="text-fuchsia-400 font-black w-12">神話</span><span>融合兩件遺物後才能獲得</span></div>
       </div>
-      <h3 class="text-base font-black text-violet-300 mt-1">✨ 遺物融合</h3>
+      <h3 class="text-base font-black text-violet-300 mt-1">遺物融合</h3>
       <p>持有特定兩件遺物時會自動觸發<b class="text-white">融合</b>，生成一件神話遺物（同時消耗原材料）。每人最多持有 2 件神話遺物。</p>
     </div>`,
     htp_shackles: `<div class="flex flex-col gap-3 text-slate-300">
-      <h3 class="text-base font-black text-violet-300">⛓️ 枷鎖說明</h3>
+      <h3 class="text-base font-black text-violet-300">枷鎖說明</h3>
       <p>某些關卡會附帶<b class="text-white">枷鎖</b>，對玩家施加限制或負面效果。</p>
       <div class="flex flex-col gap-2 mt-1">
         <div class="bg-amber-900/30 border border-amber-700/50 rounded-lg p-2.5">
@@ -310,43 +310,43 @@ ui: {
       <p class="text-xs text-slate-500">持有【反抗軍】遺物時，有枷鎖的關卡最終倍率 ×1.5。</p>
     </div>`,
     htp_souls: `<div class="flex flex-col gap-3 text-slate-300">
-      <h3 class="text-base font-black text-violet-300">👻 靈魂奉獻</h3>
+      <h3 class="text-base font-black text-violet-300">靈魂奉獻</h3>
       <p>每次戰鬥勝利都會獲得<b class="text-white">靈魂</b>，可在標題畫面的「靈魂奉獻」中永久強化能力。</p>
       <div class="flex flex-col gap-1.5 text-xs mt-1">
-        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-red-400">❤️ 體魄鍛鍊</span><span>最大 HP +1（最多 2 級）</span></div>
-        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-violet-400">🎲 骰子掌握</span><span>初始重骰次數 +1（最多 2 級）</span></div>
-        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-amber-400">⚔️ 力量覺醒</span><span>最終傷害 +10%（最多 5 級）</span></div>
-        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-fuchsia-400">🔥 靈魂爆發</span><span>敵人 HP 提升，靈魂獲取增加，神話遺物上限提升</span></div>
+        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-red-400">體魄鍛鍊</span><span>最大 HP +1（最多 2 級）</span></div>
+        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-violet-400">骰子掌握</span><span>初始重骰次數 +1（最多 2 級）</span></div>
+        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-amber-400">力量覺醒</span><span>最終傷害 +10%（最多 5 級）</span></div>
+        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-fuchsia-400">靈魂爆發</span><span>敵人 HP 提升，靈魂獲取增加，神話遺物上限提升</span></div>
       </div>
       <p class="text-xs text-slate-500 mt-1">靈魂強化跨遊戲局永久保留。</p>
     </div>`
   },
   souls: {
-    'hp': { name: '❤️ 體魄鍛鍊', desc: '最大 HP +1' },
-    'rerolls': { name: '🎲 骰子掌握', desc: '初始重骰次數 +1' },
-    'startRelic': { name: '🎁 初始裝備', desc: '開局隨機獲得 1 個普通遺物' },
-    'finalDamage': { name: '⚔️ 力量覺醒', desc: '最終傷害 +10%' },
-    'soulBurst': { name: '🔥 靈魂爆發', desc: '敵人血量 x(等級+1)，靈魂獲得量 +(等級)，在2,5,8,10級時神話遺物上限+1' },
-    'cost': '花費 {0} 👻',
+    'hp': { name: '體魄鍛鍊', desc: '最大 HP +1' },
+    'rerolls': { name: '骰子掌握', desc: '初始重骰次數 +1' },
+    'startRelic': { name: '初始裝備', desc: '開局隨機獲得 1 個普通遺物' },
+    'finalDamage': { name: '力量覺醒', desc: '最終傷害 +10%' },
+    'soulBurst': { name: '靈魂爆發', desc: '敵人血量 x(等級+1)，靈魂獲得量 +(等級)，在2,5,8,10級時神話遺物上限+1' },
+    'cost': '花費 {0}',
     'maxed': '已滿級',
-    'owned': '目前持有靈魂：{0} 👻'
+    'owned': '目前持有靈魂：{0}'
   },
   messages: {
-    'toast_get_relic': '🎁 獲得了 {0}',
-    'toast_fusion_success': '✨ 融合成功！獲得了 {0} ✨',
-    'toast_boss_defeat': '👑 擊敗了 {0}！{1}\n🎁 掉落遺物：{2}',
-    'toast_elite_defeat': '🎉 擊敗了菁英怪！{1}\n🎁 掉落遺物：{2}',
-    'toast_enemy_defeat': '🎉 擊敗了 {0}！{1}',
-    'toast_soul_gain': '\n👻 獲得 {0} 個靈魂！',
+    'toast_get_relic': '獲得了 {0}',
+    'toast_fusion_success': '融合成功！獲得了 {0}',
+    'toast_boss_defeat': '擊敗了 {0}！{1}\n掉落遺物：{2}',
+    'toast_elite_defeat': '擊敗了菁英怪！{1}\n掉落遺物：{2}',
+    'toast_enemy_defeat': '擊敗了 {0}！{1}',
+    'toast_soul_gain': '\n獲得 {0} 個靈魂！',
     'toast_no_money': '金幣不足！',
-    'toast_dev_mode': '🛠️ 【開發者模式】已獲得 {0} 金幣、1000 靈魂，並全開收集冊！',
-    'toast_dev_mode_simple': '🛠️ 【開發者模式】已獲得 {0} 金幣與 1000 靈魂！',
-    'toast_dev_get_relic': '🛠️ 【開發者模式】獲得 {0}',
+    'toast_dev_mode': '【開發者模式】已獲得 {0} 金幣、1000 靈魂，並全開收集冊！',
+    'toast_dev_mode_simple': '【開發者模式】已獲得 {0} 金幣與 1000 靈魂！',
+    'toast_dev_get_relic': '【開發者模式】獲得 {0}',
     'stage_infinite': '無限塔 第 {0} 層',
     'stage_infinite_boss': '無限塔 第 {0} 層 (Boss)',
     'stage_infinite_elite': '無限塔 第 {0} 層 (菁英)',
     'infinite_fail': '無限塔第 {0} 層 挑戰失敗',
-    'game_clear': '🎉 遊戲通關 🎉',
+    'game_clear': '遊戲通關',
     'game_clear_desc': '你擊敗了創世神，證明了混亂中的絕對秩序！',
     'turn_attack_left': '剩餘 {0} 次發動攻擊次數',
     'history_empty': '暫無歷史牌局紀錄',
@@ -359,55 +359,55 @@ ui: {
     'death_hp': '血量耗盡，旅程結束！',
     'none': '無',
     'toast_need_relic': '請選擇一個遺物！',
-    'toast_berserker': '💢 【越戰越勇】發動：永久增加 1 次重骰次數！',
-    'toast_thornarmor': '🛡️ 【反傷裝甲】發動：傷害過低，受到 1 點反傷！',
-    'toast_mutual_destruct': '💥 【同歸於盡】發動：受到 {0} 點反傷！',
-    'toast_mutual_destruct_survive': '💥 【同歸於盡】發動：血量只剩 1，免於致死反彈！',
-    'toast_shackle_found': '⚠️ 發現枷鎖！\n{0}: {1}{2}',
-    'toast_gluttony': '🍖 【貪吃】發動：敵人恢復 {0} HP！',
-    'toast_fragile': '⚠️ 【易碎骰子】無法鎖定骰子！',
-    'toast_cursedlock': '⛓️ 【詛咒之鎖】無法解鎖此骰子！',
-    'toast_ultimatelock': '🔒 【終極封鎖】中間位置的骰子無法鎖定！',
-    'toast_hardcap': '🔒 【上限鎖死】最多只能鎖定 4 顆骰子！',
-    'toast_rusty': '🔒 【生鏽的鎖】最多只能鎖定 6 顆骰子！',
-    'toast_rebel': '😡 【叛逆】發動：{0} 顆骰子掙脫鎖定！',
-    'toast_balance': '⚖️ 【動態平衡】發動：首次重骰不消耗次數！',
-    'toast_forcedshift': '🌀 【強制轉換】發動：已鎖定骰子數值被改變！',
-    'toast_tremor': '🖐️ 【手抖】發動：強制重骰了 1 顆未鎖定的骰子！',
-    'toast_dragonslayer': '🐉 【屠龍者】發動：對 Boss/菁英怪傷害 x1.5！',
-    'toast_power': '💪 力量藥劑發動：總傷害 x{0}！',
-    'toast_ironwall': '🛡️ 【鐵壁】發動：最終傷害減少 20%！',
-    'toast_absolutebarrier': '🛡️ 【絕對屏障】發動：第一次攻擊無效化！',
-    'toast_abyssgaze': '👁️ 【深淵凝視】發動：傷害過低，轉為治療 Boss {0} HP！',
-    'toast_healingdice': '💉 【治癒之骰】發動：敵人恢復 {0} HP！',
-    'toast_wrath': '⚡ 【天譴】發動：觸發傳說牌型，強制扣除 1 HP！',
-    'toast_timeout_wealth': '⚠️ 未在回合內擊殺！\n破財消災發動，重新挑戰！',
-    'toast_timeout_retry': '⚠️ 未在回合內擊殺！\n扣除 1 HP，重新挑戰！',
-    'toast_fusion_res': '✨ 遺物共鳴！\n【{0}】與【{1}】\n融合成了 {2}！',
+    'toast_berserker': '【越戰越勇】發動：永久增加 1 次重骰次數！',
+    'toast_thornarmor': '【反傷裝甲】發動：傷害過低，受到 1 點反傷！',
+    'toast_mutual_destruct': '【同歸於盡】發動：受到 {0} 點反傷！',
+    'toast_mutual_destruct_survive': '【同歸於盡】發動：血量只剩 1，免於致死反彈！',
+    'toast_shackle_found': '發現枷鎖！\n{0}: {1}{2}',
+    'toast_gluttony': '【貪吃】發動：敵人恢復 {0} HP！',
+    'toast_fragile': '【易碎骰子】無法鎖定骰子！',
+    'toast_cursedlock': '【詛咒之鎖】無法解鎖此骰子！',
+    'toast_ultimatelock': '【終極封鎖】中間位置的骰子無法鎖定！',
+    'toast_hardcap': '【上限鎖死】最多只能鎖定 4 顆骰子！',
+    'toast_rusty': '【生鏽的鎖】最多只能鎖定 6 顆骰子！',
+    'toast_rebel': '【叛逆】發動：{0} 顆骰子掙脫鎖定！',
+    'toast_balance': '【動態平衡】發動：首次重骰不消耗次數！',
+    'toast_forcedshift': '【強制轉換】發動：已鎖定骰子數值被改變！',
+    'toast_tremor': '【手抖】發動：強制重骰了 1 顆未鎖定的骰子！',
+    'toast_dragonslayer': '【屠龍者】發動：對 Boss/菁英怪傷害 x1.5！',
+    'toast_power': '力量藥劑發動：總傷害 x{0}！',
+    'toast_ironwall': '【鐵壁】發動：最終傷害減少 20%！',
+    'toast_absolutebarrier': '【絕對屏障】發動：第一次攻擊無效化！',
+    'toast_abyssgaze': '【深淵凝視】發動：傷害過低，轉為治療 Boss {0} HP！',
+    'toast_healingdice': '【治癒之骰】發動：敵人恢復 {0} HP！',
+    'toast_wrath': '【天譴】發動：觸發傳說牌型，強制扣除 1 HP！',
+    'toast_timeout_wealth': '未在回合內擊殺！\n破財消災發動，重新挑戰！',
+    'toast_timeout_retry': '未在回合內擊殺！\n扣除 1 HP，重新挑戰！',
+    'toast_fusion_res': '遺物共鳴！\n【{0}】與【{1}】\n融合成了 {2}！',
     'toast_dismantle': '已捨棄並分解【{0}】，退回基礎素材。',
-    'toast_fusion_replace': '✨ 遺物共鳴！\n捨棄了【{0}】並退回素材。\n全新的力量【{1}】已加入！',
-    'toast_firstaid': '🚑 【急救包】發動：恢復 1 點 HP！',
-    'toast_shop_limit': '⚠️ 只能刷新一次！',
-    'toast_fusion_preview': '✨ 融合預覽：【{0}】\n{1}',
-    'toast_cons_bomb': '💥 【起爆符】使用成功！下場戰鬥基礎點數 +300！',
-    'toast_cons_clover': '🍀 【幸運{0}葉草】使用成功！下場戰鬥開場會出現三個 {0}！',
-    'toast_cons_power': '💪 【力量藥劑】使用成功！下場戰鬥傷害提升！',
-    'toast_cons_potential': '🔥 【潛能秘藥】使用成功！永久基礎點數 +50！',
-    'toast_cons_hp': '❤️ 【生命紅藥】使用成功！回復 1 HP！',
-    'toast_cons_pliers': '✂️ 【重型破壞鉗】使用成功！下場戰鬥將破壞一個枷鎖！',
-    'toast_cons_doll': '🎎 【替身草人】使用成功！下場戰鬥將抵擋一次 HP 扣除懲罰！',
-    'toast_cons_fruit': '🍎 【生命果實】使用成功！永久最大 HP +1！',
-    'toast_cons_loaded_dice': '🎲 【灌鉛骰子】使用成功！下場戰鬥額外獲得 2 次重骰！',
-    'toast_cons_guide': '📖 【巧手指南】使用成功！永久初始重骰次數 +1！',
-    'toast_cons_combo_a': '🎯 【精密打擊藥劑】使用成功！下場戰鬥 A 區倍率額外 x2.0！',
-    'toast_cons_fever_b': '🔥 【順子狂熱藥劑】使用成功！下場戰鬥 B 區倍率額外 x2.0！',
-    'toast_cons_combo_c': '⚗️ 【複合強化藥劑】使用成功！下場戰鬥 C 區倍率額外 x2.0！',
-    'toast_cons_science_d': '🧪 【理科腦興奮劑】使用成功！下場戰鬥 D 區倍率額外 x2.0！',
-    'toast_noise_interfere': '🔇 【噪音】干擾，無法查看遺物效果！',
+    'toast_fusion_replace': '遺物共鳴！\n捨棄了【{0}】並退回素材。\n全新的力量【{1}】已加入！',
+    'toast_firstaid': '【急救包】發動：恢復 1 點 HP！',
+    'toast_shop_limit': '只能刷新一次！',
+    'toast_fusion_preview': '融合預覽：【{0}】\n{1}',
+    'toast_cons_bomb': '【起爆符】使用成功！下場戰鬥基礎點數 +300！',
+    'toast_cons_clover': '【幸運{0}葉草】使用成功！下場戰鬥開場會出現三個 {0}！',
+    'toast_cons_power': '【力量藥劑】使用成功！下場戰鬥傷害提升！',
+    'toast_cons_potential': '【潛能秘藥】使用成功！永久基礎點數 +50！',
+    'toast_cons_hp': '【生命紅藥】使用成功！回復 1 HP！',
+    'toast_cons_pliers': '【重型破壞鉗】使用成功！下場戰鬥將破壞一個枷鎖！',
+    'toast_cons_doll': '【替身草人】使用成功！下場戰鬥將抵擋一次 HP 扣除懲罰！',
+    'toast_cons_fruit': '【生命果實】使用成功！永久最大 HP +1！',
+    'toast_cons_loaded_dice': '【灌鉛骰子】使用成功！下場戰鬥額外獲得 2 次重骰！',
+    'toast_cons_guide': '【巧手指南】使用成功！永久初始重骰次數 +1！',
+    'toast_cons_combo_a': '【精密打擊藥劑】使用成功！下場戰鬥 A 區倍率額外 x2.0！',
+    'toast_cons_fever_b': '【順子狂熱藥劑】使用成功！下場戰鬥 B 區倍率額外 x2.0！',
+    'toast_cons_combo_c': '【複合強化藥劑】使用成功！下場戰鬥 C 區倍率額外 x2.0！',
+    'toast_cons_science_d': '【理科腦興奮劑】使用成功！下場戰鬥 D 區倍率額外 x2.0！',
+    'toast_noise_interfere': '【噪音】干擾，無法查看遺物效果！',
     'toast_obtained': '獲得：',
-    'toast_dev_get_all': '🛠️ 【開發者模式】已獲得所有遺物！商店將開始販售消耗品。',
-    'toast_doll_block': '🎎 替身草人為你抵擋了傷害！',
-    'toast_doll_timeout': '🎎 替身草人抵擋了超時懲罰！',
+    'toast_dev_get_all': '【開發者模式】已獲得所有遺物！商店將開始販售消耗品。',
+    'toast_doll_block': '替身草人為你抵擋了傷害！',
+    'toast_doll_timeout': '替身草人抵擋了超時懲罰！',
     'relic_points_note': '+{0} 點數 ({1})',
     'relic_multi_note': 'x{0} ({1})',
     'shackle_multi_note': 'x{0} ({1})',
@@ -421,11 +421,11 @@ ui: {
     'rarity_3': '史詩',
     'rarity_4': '傳說',
     'rarity_5': '神話',
-    'shop_select': '✅ 選擇',
+    'shop_select': '選擇',
     'shop_select_consumable': '選擇並馬上使用',
     'consumable_tag': '消耗品',
-    'shop_rerolled': '🚫 已刷新過',
-    'shop_leave': '離開商店前往下一關 👉',
+    'shop_rerolled': '已刷新過',
+    'shop_leave': '離開商店前往下一關',
     'confirm_back_title': '確定要回到標題嗎？',
     'extremist_zone_note': '{0} D區 x{1}',
     'scale_apex_order_note': '{0} 絕對秩序倍率 x{1}'

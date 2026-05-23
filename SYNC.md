@@ -1,3 +1,12 @@
+### 2026-05-23 鑀韻東（勝利花灑方向與全遊戲 emoji 移除）
+- 狀態：完成。
+- 任務：修正勝利通關時花灑方向錯誤，並移除遊戲內所有 emoji，避免 UI 呈現 AI 感。
+- 修改：`js/ui.js` 的 `shootConfetti()` 改用 `angle: 180` 讓粒子向上灑出；`index.html`、`js/main.js`、`js/ui.js`、`js/i18n.js` 與四個 `js/locales/*.js` 移除 UI / 教學 / 提示 / 備援字串中的 emoji。
+- 補強：移除空掉的骰子 / 攻擊按鈕圖示 span、收集冊解鎖勾選空 span；鎖定骰保留遮罩與 SVG 角標；靈魂奉獻等級標記改為 ASCII `I` / `-`；歷史紀錄展開符號改為 `+` / `-`。
+- 驗證：`rg` 掃描 `index.html` 與 `js/`（排除 `js/vendor/`）未找到 emoji 字元；`node --check js/ui.js`、`node --check js/main.js`、`node --check js/locales/zh-tw.js`、`npm.cmd run steam:i18n:verify`、`npm.cmd run steam:package:verify` 通過。
+- 產出：已重建 `dist/steam-demo` 與 `dist/steam-windows/BIBI-DICE.exe`。第一次打包時舊 exe 被已開啟的遊戲程序佔用，已關閉舊 `BIBI-DICE.exe` 後重跑成功。
+- 下一步：請製作人實機看勝利花灑方向與整體無 emoji UI 是否符合預期。
+
 ### 2026-05-23 阿扣（【混沌法則】枷鎖難度重新分類）
 - 狀態：完成。
 - 任務：依製作人決定，將【混沌法則】枷鎖從重度（heavy）改為輕度（light）。

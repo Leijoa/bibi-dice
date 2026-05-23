@@ -527,7 +527,7 @@ function initTitleScreen() {
     const btnTutorial = document.getElementById('btn-tutorial');
     if (btnTutorial) {
         btnTutorial.onclick = () => {
-            const confirmMsg = (i18n.t('tutorial.btn_start') || '🎓 新手教學') + '\n\n' +
+            const confirmMsg = (i18n.t('tutorial.btn_start') || '新手教學') + '\n\n' +
                 (i18n.getLocale() === 'en' ? 'Enter tutorial mode? Dice will be preset for learning. (~2 min)' :
                  i18n.getLocale() === 'ja' ? 'チュートリアルを開始しますか？ダイスは事前設定されます。(約2分)' :
                  i18n.getLocale() === 'zh-cn' ? '进入新手引导局？骰子将被预设以利教学。(约2分钟)' :
