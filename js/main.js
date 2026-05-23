@@ -61,6 +61,7 @@ let drunkInterval = null;
 let battle = { state: 'IDLE', dice: Array(8).fill().map((_, i) => ({ val: 1, locked: false, id: i, matchedGroups: {A:false, B:false, C:false, D:false} })), rollsLeft: 0, scoreResult: null };
 let shopItems = [];
 let shopRerollsUsed = 0;
+let pendingShopAdvanceAfterFusion = false;
 let activeHighlight = null;
 const SAVE_KEY = 'bibbidiba_save_v60';
 
@@ -559,7 +560,7 @@ function initTitleScreen() {
     UI.el.shopRerollBtn.onclick = () => window.rerollShop(false);
     document.getElementById('btn-next-stage').onclick = () => {
         if (UI.el.shopOverlay.classList.contains('hidden')) return;
-        nextStage();
+        finishShopAndAdvance();
     };
     document.getElementById('btn-restart').onclick = () => location.reload();
 
@@ -1574,7 +1575,7 @@ function checkRelicFusion() {
                     // Trigger modal and pause the checking loop
                     player.relics = player.relics.filter(r => r !== rec.mat1 && r !== rec.mat2);
                     window.triggerFusionReplace(currentRarity5, fid, rec.mat1, rec.mat2);
-                    return; // Important: return to pause execution. Callback will resume if needed.
+                    return true; // Important: return to pause execution. Callback will resume if needed.
                 }
 
                 // Normal fusion
@@ -1598,6 +1599,8 @@ function checkRelicFusion() {
             UI.renderShopItems(shopItems, player);
         }
     }
+
+    return false;
 }
 
 window.triggerFusionReplace = function(currentFusions, newFusionId, mat1, mat2) {
@@ -1635,7 +1638,7 @@ window.triggerFusionReplace = function(currentFusions, newFusionId, mat1, mat2) 
 
         // Re-check just in case the returned materials can form something else
         // (though they shouldn't since we added them to dismantledFusions)
-        checkRelicFusion();
+        const fusionStillPending = checkRelicFusion();
 
         // Update UI
         UI.renderInventory(player, battle);
@@ -1643,6 +1646,11 @@ window.triggerFusionReplace = function(currentFusions, newFusionId, mat1, mat2) 
             UI.renderShopItems(shopItems, player);
         }
         saveGame();
+
+        if (pendingShopAdvanceAfterFusion && !fusionStillPending) {
+            pendingShopAdvanceAfterFusion = false;
+            finishShopAndAdvance();
+        }
     });
 };
 
@@ -1881,6 +1889,7 @@ window.buyItem = function(idx) {
 
     Audio.playBuySound();
     window.itemsBoughtThisScreen++;
+    let fusionPending = false;
 
     if (r.id.startsWith('cons_')) {
         // Consumable logic
@@ -1915,7 +1924,7 @@ window.buyItem = function(idx) {
         // Relic logic
         player.relics.push(r.id);
         unlockCollectionItem('relic', r.id);
-        checkRelicFusion();
+        fusionPending = checkRelicFusion();
     }
 
     shopItems.splice(idx, 1);
@@ -1923,10 +1932,21 @@ window.buyItem = function(idx) {
     UI.renderInventory(player, battle);
     saveGame();
 
-    // Close shop immediately after picking one
-    UI.el.shopOverlay.classList.add('hidden');
-    nextStage();
+    if (fusionPending) {
+        pendingShopAdvanceAfterFusion = true;
+        UI.el.shopOverlay.classList.add('hidden');
+        UI.el.shopOverlay.classList.remove('flex');
+        return;
+    }
+
+    finishShopAndAdvance();
 };
+
+function finishShopAndAdvance() {
+    UI.el.shopOverlay.classList.add('hidden');
+    UI.el.shopOverlay.classList.remove('flex');
+    nextStage();
+}
 
 function nextStage() { loadStage(stage.level + 1); }
 

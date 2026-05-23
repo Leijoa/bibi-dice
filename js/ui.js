@@ -611,19 +611,23 @@ export function renderDice(battle, activeHighlight, player) {
 
         const imgVal = (valDisplay === '-' || valDisplay === '?') ? 0 : valDisplay;
 
+        const isLockedVisible = d.locked && !activeHighlight;
+        const lockedStateClass = isLockedVisible ? 'dice-locked-state' : '';
+        const cursedLockedClass = isLockedVisible && shackleId === 'cursedlock' && shackleMeta && d.id === shackleMeta.cursedId ? ' dice-locked-cursed' : '';
+
         let lockIconHtml = '';
-        if (d.locked && !activeHighlight) {
+        if (isLockedVisible) {
             if (shackleId === 'cursedlock' && shackleMeta && d.id === shackleMeta.cursedId) {
                 // Cursed lock UI: blue overlay + red SVG corner badge
-                lockIconHtml = `<div style="position:absolute;inset:0;background:rgba(30,80,200,0.4);border-radius:inherit;pointer-events:none;z-index:10;"></div><div class="absolute -top-1.5 -right-1.5 bg-red-600 rounded-full p-0.5 shadow border border-red-300 z-20 animate-pulse"><svg class="w-3.5 h-3.5 md:w-4 md:h-4 text-red-950" fill="currentColor" viewBox="0 0 20 20"><path d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" fill-rule="evenodd"></path></svg></div>`;
+                lockIconHtml = `<div class="dice-lock-overlay dice-lock-overlay-cursed"></div><div class="dice-lock-badge dice-lock-badge-cursed"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" fill-rule="evenodd"></path></svg><span>LOCK</span></div>`;
             } else {
                 // Standard lock UI: blue overlay
-                lockIconHtml = `<div style="position:absolute;inset:0;background:rgba(30,80,200,0.4);border-radius:inherit;pointer-events:none;z-index:10;"></div>`;
+                lockIconHtml = `<div class="dice-lock-overlay"></div><div class="dice-lock-badge"><svg viewBox="0 0 20 20" aria-hidden="true"><path d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" fill-rule="evenodd"></path></svg><span>LOCK</span></div>`;
             }
         }
 
         return `
-        <div id="dice-element-${idx}" onclick="window.toggleLock(${idx})" class="${wrapperClass} ${extraClass}" ${displayOrderStyle}>
+        <div id="dice-element-${idx}" onclick="window.toggleLock(${idx})" class="${wrapperClass} ${extraClass} ${lockedStateClass}${cursedLockedClass}" ${displayOrderStyle}>
             <img src="${getDiceImageUrl(imgVal)}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;display:block;" alt="${d.val}">
             ${lockIconHtml}
             ${baseBadgeHtml}

@@ -1,3 +1,8 @@
+### 修正：商店後融合分解流程與鎖定骰視覺 [2026/05/23]
+* **`js/main.js`**：商店購買遺物後若觸發神話遺物上限分解視窗，現在會暫停進入下一關；待玩家完成分解選擇、融合流程全部收尾後，才關閉商店並進入下一關，避免枷鎖動畫與枷鎖訊息插入分解環節。
+* **`js/ui.js` / `css/style.css`**：鎖定骰子改為正式 UI 狀態，加入紫金發光外框、半透明遮罩、自製 SVG 小鎖與 `LOCK` 標籤；詛咒鎖定使用紅色變體，提升可讀性且不回復使用 emoji。
+* **驗證**：`node --check js/main.js`、`node --check js/ui.js`、`npm.cmd run steam:i18n:verify`、emoji 掃描、`npm.cmd run steam:package:verify` 通過，已重建 `dist/steam-demo` 與 `dist/steam-windows/BIBI-DICE.exe`。
+
 ### 修正：勝利花灑方向與全遊戲 emoji 移除 [2026/05/23]
 * **`js/ui.js`**：勝利花灑 `shootConfetti()` 改為 `angle: 180`，修正原本往右噴、沒有向上灑出的方向問題。
 * **`index.html` / `js/main.js` / `js/ui.js` / `js/i18n.js` / `js/locales/*.js`**：移除遊戲 UI、教學、提示訊息、四語系文字與備援字串中的 emoji，避免視覺上產生廉價或 AI 感；同步移除空掉的按鈕圖示欄位與收集冊勾選符號。

@@ -1,3 +1,12 @@
+### 2026-05-23 鑀韻東（商店後融合分解流程與鎖定骰視覺）
+- 狀態：完成。
+- 任務：修正「商店買完東西後，遺物分解環節被下一關枷鎖動畫 / 訊息打斷」的流程問題，並補強移除 emoji 後不明顯的鎖定骰視覺。
+- 修改：`js/main.js` 新增 `pendingShopAdvanceAfterFusion` 與 `finishShopAndAdvance()`；`checkRelicFusion()` 會回傳是否開啟分解視窗。商店購買若觸發分解視窗，會先隱藏商店並暫停進下一關，直到 `showFusionReplaceModal()` 回呼完成、再次確認沒有新的分解視窗後，才進入下一關並播放枷鎖流程。
+- 修改：`js/ui.js` / `css/style.css` 將鎖定骰子改為紫金發光外框、半透明遮罩、自製 SVG 小鎖與 `LOCK` 標籤；詛咒鎖定使用紅色變體，避免回復 emoji。
+- 驗證：`node --check js/main.js`、`node --check js/ui.js`、`npm.cmd run steam:i18n:verify`、emoji 掃描、`npm.cmd run steam:package:verify` 通過。
+- 產出：已重建 `dist/steam-demo` 與 `dist/steam-windows/BIBI-DICE.exe`。第一次打包時舊 exe 被已開啟的遊戲程序佔用，已關閉舊 `BIBI-DICE.exe` 後重跑成功。
+- 下一步：請製作人實機確認鎖定骰視覺是否足夠明顯，以及商店後分解流程是否不再被枷鎖演出插隊。
+
 ### 2026-05-23 鑀韻東（勝利花灑方向與全遊戲 emoji 移除）
 - 狀態：完成。
 - 任務：修正勝利通關時花灑方向錯誤，並移除遊戲內所有 emoji，避免 UI 呈現 AI 感。

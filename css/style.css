@@ -1208,7 +1208,91 @@ button[id^="btn-close"]:hover {
   filter: drop-shadow(0 0 8px rgba(45,212,191,0.95)) drop-shadow(0 0 18px rgba(20,184,166,0.65));
 }
 .dice-glow-locked {
-  filter: drop-shadow(0 0 7px rgba(52,211,153,0.9)) drop-shadow(0 0 14px rgba(16,185,129,0.6));
+  filter:
+    drop-shadow(0 0 8px rgba(251,191,36,0.95))
+    drop-shadow(0 0 18px rgba(124,58,237,0.75))
+    drop-shadow(0 0 26px rgba(251,191,36,0.35));
+}
+.dice-locked-state {
+  transform: translateY(-1px);
+}
+.dice-locked-state::before {
+  content: "";
+  position: absolute;
+  inset: -5px;
+  border: 2px solid rgba(251,191,36,0.95);
+  border-radius: 14px;
+  box-shadow:
+    0 0 0 1px rgba(124,58,237,0.75),
+    0 0 14px rgba(251,191,36,0.75),
+    inset 0 0 10px rgba(124,58,237,0.35);
+  pointer-events: none;
+  z-index: 13;
+}
+.dice-locked-state::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border-radius: 12px;
+  background:
+    linear-gradient(135deg, rgba(251,191,36,0.25), transparent 35%),
+    linear-gradient(315deg, rgba(124,58,237,0.28), transparent 42%);
+  pointer-events: none;
+  z-index: 12;
+}
+.dice-lock-overlay {
+  position: absolute;
+  inset: 0;
+  border-radius: 10px;
+  background: linear-gradient(160deg, rgba(15,23,42,0.12), rgba(76,29,149,0.28));
+  box-shadow: inset 0 0 18px rgba(251,191,36,0.18);
+  pointer-events: none;
+  z-index: 10;
+}
+.dice-lock-badge {
+  position: absolute;
+  right: -7px;
+  top: -7px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  min-width: 34px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  border: 1px solid rgba(253,230,138,0.9);
+  background: linear-gradient(180deg, #fbbf24, #92400e);
+  color: #111827;
+  font-family: "Bahnschrift", "Arial Narrow", sans-serif;
+  font-size: 8px;
+  font-weight: 900;
+  letter-spacing: 0;
+  line-height: 1;
+  box-shadow: 0 0 12px rgba(251,191,36,0.65), 0 2px 5px rgba(0,0,0,0.4);
+  pointer-events: none;
+  z-index: 24;
+}
+.dice-lock-badge svg {
+  width: 10px;
+  height: 10px;
+  fill: currentColor;
+  flex: 0 0 auto;
+}
+.dice-lock-badge-cursed {
+  border-color: rgba(252,165,165,0.95);
+  background: linear-gradient(180deg, #ef4444, #7f1d1d);
+  color: #fff7ed;
+  box-shadow: 0 0 14px rgba(239,68,68,0.78), 0 2px 5px rgba(0,0,0,0.45);
+}
+.dice-lock-overlay-cursed {
+  background: linear-gradient(160deg, rgba(30,41,59,0.22), rgba(127,29,29,0.34));
+}
+.dice-locked-cursed::before {
+  border-color: rgba(248,113,113,0.95);
+  box-shadow:
+    0 0 0 1px rgba(127,29,29,0.85),
+    0 0 16px rgba(239,68,68,0.75),
+    inset 0 0 10px rgba(127,29,29,0.42);
 }
 .dice-glow-idle {
   filter: drop-shadow(0 0 4px rgba(122,59,245,0.35));
