@@ -1,3 +1,11 @@
+### 2026-05-23 鑀韻東（無限塔枷鎖動畫節奏）
+- 狀態：完成。
+- 任務：進入無限塔後仍每層保留枷鎖效果，但降低枷鎖封印動畫頻率。
+- 修改：`js/main.js` 新增 `shouldPlayShackleIntroAnimation(levelIndex)`；主線關卡枷鎖動畫照舊，無限塔只在第 3、6、9... 層播放封印動畫，其他無限塔樓層直接顯示枷鎖訊息後開始關卡。
+- 驗證：`node --check js/main.js`、`npm.cmd run steam:i18n:verify`、`npm.cmd run steam:package:verify` 通過。
+- 產出：已重建 `dist/steam-demo` 與 `dist/steam-windows/BIBI-DICE.exe`。
+- 下一步：請製作人實機確認無限塔爬塔節奏是否比較順。
+
 ### 2026-05-23 鑀韻東（商店後融合分解流程與鎖定骰視覺）
 - 狀態：完成。
 - 任務：修正「商店買完東西後，遺物分解環節被下一關枷鎖動畫 / 訊息打斷」的流程問題，並補強移除 emoji 後不明顯的鎖定骰視覺。

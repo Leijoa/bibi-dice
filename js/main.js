@@ -860,6 +860,12 @@ function assignShackleForStage(levelIndex) {
     return { id: null, meta: null };
 }
 
+function shouldPlayShackleIntroAnimation(levelIndex) {
+    if (levelIndex < ENEMY_DB.length) return true;
+    const infiniteLevel = levelIndex - ENEMY_DB.length + 1;
+    return infiniteLevel > 0 && infiniteLevel % 3 === 0;
+}
+
 function setBoardTexture(levelIndex) {
     const board = document.getElementById('board-panel');
     if (!board) return;
@@ -990,9 +996,13 @@ function loadStage(levelIndex, isLoad = false, parsedData = null) {
 
     if (!isLoad || !parsedData || !parsedData.battle || battle.state === 'IDLE') {
         if (shackleIntroMessage) {
-            UI.playShackleSealAnimation(() => {
+            if (shouldPlayShackleIntroAnimation(levelIndex)) {
+                UI.playShackleSealAnimation(() => {
+                    UI.showToast(shackleIntroMessage, startTurn);
+                });
+            } else {
                 UI.showToast(shackleIntroMessage, startTurn);
-            });
+            }
         } else {
             startTurn();
         }
