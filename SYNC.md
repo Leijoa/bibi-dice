@@ -1,3 +1,12 @@
+### 2026-05-23 阿扣（整理 Steamworks 後台填寫包）
+- 狀態：完成。
+- 任務：依製作人指示整理一份「Steamworks 後台填寫包」，讓帳號審核通過後可以照表貼上。
+- 產出：`promo/steam/STEAMWORKS_UPLOAD_PACKET.md`，14 區結構含：App 名稱 / 開發商 / 短描述四語 / 長描述繁中英文 / 關於此遊戲 / 關於此 Demo / 定價 / 語言 / 標籤 19 個 / AI 揭露文字繁中英文 / IARC 答案摘要 / Privacy Policy URL / 11 張素材檔案路徑 + 尺寸 / Build 上傳 ContentRoot 為 `dist/steam-windows`、Launch Option `BIBI-DICE.exe` / Coming Soon 與 Demo 排程 / 後台填寫順序 22 步。
+- 盤點：交叉核對 `STEAM_RELEASE_CHECKLIST.md`、`STEAMWORKS_FIELDS_DRAFT.md`、`STEAMPIPE_DEPOT_DRAFT.md`、`STEAM_STORE_BRIEF.md`、`ASSET_CHECKLIST.md` 後確認所有可貼欄位已備齊；無發現文件與實際 Build 不一致。
+- 驗證：本次僅新增文件，未動程式或 build 腳本；`git diff` 範圍限於 `promo/steam/STEAMWORKS_UPLOAD_PACKET.md`（新增）、`SYNC.md`、`CHANGELOG.md`。
+- 注意：itch.io 頁面 Privacy Policy 連結仍需製作人登入 itch.io 後台手動加入；正式版送審時 E-08 需重評（含購買機制）。
+- 下一步：等製作人帳號審核通過、建立 Base Game App 後，依本檔第 14 區順序填寫；Demo AppID / DepotID 取得後回填 `STEAMPIPE_DEPOT_DRAFT.md` 第 2 區。
+
 ### 2026-05-23 鑀韻東（無限塔枷鎖動畫節奏）
 - 狀態：完成。
 - 任務：進入無限塔後仍每層保留枷鎖效果，但降低枷鎖封印動畫頻率。

@@ -1,3 +1,7 @@
+### 文件：整理 Steamworks 後台填寫包 [2026/05/23]
+* **`promo/steam/STEAMWORKS_UPLOAD_PACKET.md`**：新增 Steamworks 後台「照表貼上」填寫包，14 區涵蓋 App 基本資訊（名稱 / 開發商 / Privacy Policy URL）、短描述四語、長描述繁中英文 BBCode、關於此遊戲 / 此 Demo、定價（US$2.99 + Demo Free）、支援語言四語、推薦標籤 19 個、AI 生成揭露文字繁中英文、IARC 問卷 10 題答案摘要（含 E-08 Demo / 正式版差異與 E-10 隱私政策連動）、所有 Steam 素材檔案路徑與尺寸（11 張）、SteamPipe Build 上傳（ContentRoot = `dist/steam-windows`、Launch Option = `BIBI-DICE.exe`）、Coming Soon 與 Demo 發布排程、後台填寫順序 22 步。
+* **內容來源**：彙整自 `STEAMWORKS_FIELDS_DRAFT.md`、`STEAMPIPE_DEPOT_DRAFT.md`、`STEAM_ASSET_FINAL_AUDIT.md`、`STEAM_RELEASE_CHECKLIST.md`、`STEAM_OWNER_DECISIONS.md`、`PRIVACY_POLICY.md`，並於每節標示「⚠️ 後台動作」區別本機可備妥 vs 需登入後台手動操作的部分。
+
 ### 調整：無限塔枷鎖動畫節奏 [2026/05/23]
 * **`js/main.js`**：無限塔仍保留每一層的枷鎖效果與枷鎖提示，但枷鎖封印動畫只在無限塔第 3、6、9... 層播放，降低連續爬塔時的節奏干擾；主線關卡枷鎖動畫維持原行為。
 * **驗證**：`node --check js/main.js`、`npm.cmd run steam:i18n:verify`、`npm.cmd run steam:package:verify` 通過，已重新建立 `dist/steam-demo` 與 `dist/steam-windows/BIBI-DICE.exe`。
