@@ -69,9 +69,9 @@ async function capturePortrait(page, name) {
 async function renderStoreScreenshot(browser, portraitPath, outputName) {
   const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
   const portraitUrl = `data:image/png;base64,${fs.readFileSync(portraitPath).toString('base64')}`;
-  const bgPath = path.join(DIST, 'img', 'home_bg.webp');
+  const bgPath = path.join(DIST, 'img', 'title_bg.png');
   const bgUrl = fs.existsSync(bgPath)
-    ? `data:image/webp;base64,${fs.readFileSync(bgPath).toString('base64')}`
+    ? `data:image/png;base64,${fs.readFileSync(bgPath).toString('base64')}`
     : portraitUrl;
   await page.setContent(`<!doctype html>
     <html>

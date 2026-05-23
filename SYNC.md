@@ -1,3 +1,18 @@
+### 2026-05-23 鑀韻東（四語系隨機截圖壓測）
+- 狀態：完成。
+- 任務：依製作人要求，對 `zh-tw`、`zh-cn`、`en`、`ja` 各跑 100 場隨機遊玩流程，並隨機產出 100 張截圖。
+- 修改：新增 `scripts/capture-random-locale-playtest.js`，用 Playwright 啟動本機 `dist/steam-demo`，透過既有 dev hook 快速推進遊玩狀態並截圖。
+- 產出：`promo/steam/playtest-random-screenshots/2026-05-22T19-32-02-517Z/`，共 100 張 PNG 與 `report.json`。
+- 驗證：總場次 400，截圖 100，errorCount 0；截圖分布為 `zh-tw:23`、`zh-cn:25`、`en:24`、`ja:28`。
+- 注意：這批截圖是 QA 壓測素材，不是 Steam 商店正式素材。
+
+### 2026-05-23 鑀韻東（新手教學訊息框定位修正）
+- 狀態：完成。
+- 問題：Steam 直式桌面視窗會將 `#game-container` 以 `scale()` 放大，教學訊息框雖然用 `fixed` 定位，但實際仍受縮放容器影響，導致底部與右側步驟被推出視窗。
+- 修改：`js/ui.js` 的 `_positionTutorialTooltip()` 改用 `visualViewport` 量測可視範圍，並將 clamp 後的視窗座標換算回 `#game-container` 的縮放前座標；`css/style.css` 補上教學訊息框寬高限制與內部捲動。
+- 驗證：`node --check js/ui.js`、`node --check js/main.js`、`npm.cmd run steam:build` 通過；Playwright 量測 `540x960` 新手教學 step0-step4 無超出可視範圍。
+- 下一步：請製作人用 Steam Windows 版本再實機跑一次新手教學，確認商店步驟的手感與遮擋是否符合預期。
+
 # SYNC.md
 
 這是 `bibi-dice` 專案的 AI 協作同步入口。任何 AI Agent 開始工作前，請先讀本檔，並依照本檔要求補讀其他文件。工作結束後，必須更新本檔與 `CHANGELOG.md`，讓下一位接手者能接上進度。
@@ -453,3 +468,9 @@ npm.cmd run steam:library
 - 驗證結果：確認專案有 GitHub remote `origin`，本檔位於專案根目錄。
 - 下一步：建立 Steam 上架前檢查表 `promo/steam/STEAM_RELEASE_CHECKLIST.md`。
 - 注意事項：之後任何 AI 開工前只要先讀 `SYNC.md`，就會被要求補讀 `AGENTS.md` 與 `CHANGELOG.md`。
+### 2026-05-23 鑀韻東：統一標題畫面底圖
+- 做了什麼：依照製作人要求，將目前所有版本的標題畫面底圖統一改用 `promo/steam/assets/library_capsule_600x900.png` 的主視覺。
+- 實作方式：新增遊戲內資產 `img/title_bg.png`，避免發佈腳本排除 `promo/` 後造成 itch.io / Steam Demo 找不到圖片。
+- 改了哪些檔案：`img/title_bg.png`、`css/style.css`、`index.html`、`scripts/capture-steam-portrait-screenshots.js`、`CHANGELOG.md`、`SYNC.md`。
+- 驗證：已執行 `node --check scripts/capture-steam-portrait-screenshots.js`；`npm.cmd run steam:build` 通過，確認 `dist/steam-demo/img/title_bg.png` 已被打包進 Steam Demo；已輸出 `promo/steam/screenshots/current_title_bg_540x960.png` 檢查標題畫面實際載入 `title_bg.png`。
+- 下一步：請製作人重新打開 itch/dev/Steam Demo 首頁，確認主視覺裁切位置符合預期。

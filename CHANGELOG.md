@@ -828,3 +828,19 @@
 ### Fix：預估傷害大數字自動縮放 [2026/05/16]
 * **`js/ui.js`**：新增 `setFinalScoreText()` 與位數判斷，當傷害數字達 10 位、12 位、14 位以上時自動套用縮小字級；`renderScore()`、歸零狀態與 `countUpTo()` 動畫跳數都改走同一套顯示邏輯，避免動畫中途再次超出畫面。
 * **`css/style.css`**：新增 `damage-digits-long`、`damage-digits-xl`、`damage-digits-xxl` 三段 `clamp()` 字級，覆蓋原本 inline 字體大小，讓超長傷害值仍留在預覽框內。
+### 新增：四語系隨機遊玩截圖壓測腳本 [2026/05/23]
+* **`scripts/capture-random-locale-playtest.js`**：新增 Playwright 壓測腳本，可對 `zh-tw`、`zh-cn`、`en`、`ja` 各跑 100 場隨機流程，並從 400 場中隨機抽取 100 張 `540x960` 截圖。
+* **產出**：本次截圖輸出於 `promo/steam/playtest-random-screenshots/2026-05-22T19-32-02-517Z/`，共 100 張，並附 `report.json`。
+* **驗證**：腳本執行完成，總場次 400，截圖 100，errorCount 0。
+
+### 修正：新手教學訊息框超出視窗 [2026/05/23]
+* **`js/ui.js`**：修正教學訊息框定位，改用 `visualViewport` 量測可視範圍，並把遊戲容器 `scale()` 造成的座標差換算回容器內座標，避免 Steam 直式視窗中訊息框被放大後超出右側或底部。
+* **`css/style.css`**：補上教學訊息框的 `box-sizing`、視窗寬高限制與內部捲動，避免長文字或較小視窗下被裁切。
+* **驗證**：`node --check js/ui.js`、`node --check js/main.js` 通過；`npm.cmd run steam:build` 通過；Playwright 量測新手教學 step0-step4 於 `540x960` 視窗內皆未超出可視範圍。
+
+### 修改：統一標題畫面底圖 [2026/05/23]
+* **`img/title_bg.png`**：新增遊戲內標題畫面背景圖，來源為 `promo/steam/assets/library_capsule_600x900.png`，讓開發版、itch.io 與 Steam Demo 都能使用同一份正式主視覺。
+* **`css/style.css`**：將 `#title-screen::before` 的背景圖由 `img/home_bg.webp` 改為 `img/title_bg.png`。
+* **`index.html`**：將 Open Graph / Twitter 預覽圖同步改為 `img/title_bg.png`。
+* **`scripts/capture-steam-portrait-screenshots.js`**：商店截圖合成背景改用 `dist/steam-demo/img/title_bg.png`，避免後續截圖仍吃舊首頁圖。
+* **驗證**：`node --check scripts/capture-steam-portrait-screenshots.js` 通過；`npm.cmd run steam:build` 通過，`dist/steam-demo/img/title_bg.png` 已產生；已輸出標題確認截圖 `promo/steam/screenshots/current_title_bg_540x960.png`。

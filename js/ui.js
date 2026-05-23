@@ -1907,32 +1907,54 @@ function _positionTutorialTooltip(targetEl) {
     if (!tooltip) return;
 
     const PAD = 12;
-    const vw = window.innerWidth, vh = window.innerHeight;
+    const viewport = window.visualViewport || { width: window.innerWidth, height: window.innerHeight, offsetLeft: 0, offsetTop: 0 };
+    const vw = viewport.width;
+    const vh = viewport.height;
+    const viewLeft = viewport.offsetLeft || 0;
+    const viewTop = viewport.offsetTop || 0;
     // 使用實際渲染尺寸（overlay 已在此函式呼叫前移除 hidden），確保手機窄螢幕下也準確
-    const TOOLTIP_W = tooltip.offsetWidth || 290;
-    const TOOLTIP_H = tooltip.offsetHeight || 150;
+    tooltip.style.width = `${Math.min(290, Math.max(220, vw - PAD * 2))}px`;
+    tooltip.style.maxHeight = `${Math.max(120, vh - PAD * 2)}px`;
+
+    const tooltipRect = tooltip.getBoundingClientRect();
+    const TOOLTIP_W = tooltipRect.width || tooltip.offsetWidth || 290;
+    const TOOLTIP_H = tooltipRect.height || tooltip.offsetHeight || 150;
+    const container = document.getElementById('game-container');
+    const containerRect = container ? container.getBoundingClientRect() : null;
+    const containerScale = container && containerRect && container.offsetWidth
+        ? (containerRect.width / container.offsetWidth)
+        : 1;
 
     let left, top;
 
     if (targetEl) {
         const rect = targetEl.getBoundingClientRect();
         // 優先顯示於元素下方，空間不足則改顯示於上方
-        if (rect.bottom + TOOLTIP_H + PAD < vh) {
+        if (rect.bottom + TOOLTIP_H + PAD <= viewTop + vh - PAD) {
             top = rect.bottom + PAD;
-        } else {
+        } else if (rect.top - TOOLTIP_H - PAD >= viewTop + PAD) {
             top = rect.top - TOOLTIP_H - PAD;
+        } else {
+            const spaceBelow = viewTop + vh - rect.bottom;
+            const spaceAbove = rect.top - viewTop;
+            top = spaceBelow >= spaceAbove ? rect.bottom + PAD : rect.top - TOOLTIP_H - PAD;
         }
         // 水平置中對齊目標元素
         left = rect.left + rect.width / 2 - TOOLTIP_W / 2;
     } else {
         // 無目標時置中螢幕
-        left = vw / 2 - TOOLTIP_W / 2;
-        top = vh / 2 - TOOLTIP_H / 2;
+        left = viewLeft + vw / 2 - TOOLTIP_W / 2;
+        top = viewTop + vh / 2 - TOOLTIP_H / 2;
     }
 
     // 統一進行四邊邊界限制，避免任何情況下溢出螢幕（手機直式螢幕極端情況亦安全）
-    left = Math.max(PAD, Math.min(vw - TOOLTIP_W - PAD, left));
-    top = Math.max(PAD, Math.min(vh - TOOLTIP_H - PAD, top));
+    left = Math.max(viewLeft + PAD, Math.min(viewLeft + vw - TOOLTIP_W - PAD, left));
+    top = Math.max(viewTop + PAD, Math.min(viewTop + vh - TOOLTIP_H - PAD, top));
+
+    if (containerRect && containerScale) {
+        left = (left - containerRect.left) / containerScale;
+        top = (top - containerRect.top) / containerScale;
+    }
 
     tooltip.style.left = `${left}px`;
     tooltip.style.top = `${top}px`;
