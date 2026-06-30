@@ -137,7 +137,7 @@ export const zh_tw_data = {
     'groupD': '特殊',
     'groupA_desc': 'A區：相同的數字',
     'groupB_desc': 'B區：連續的順子',
-    'groupC_desc': 'C區：複合牌型(包含對子、3同、4同與3順、4順的組合)',
+    'groupC_desc': 'C區：複合牌型（包含對子、三同、四同與三連順、四連順的組合）',
     'groupD_desc': 'D區：特殊牌型',
     'rule_a0': { name: '比比丟八', desc: '8顆相同數字' },
     'rule_a1': { name: '七同', desc: '7顆相同數字' },
@@ -152,21 +152,21 @@ export const zh_tw_data = {
     'rule_b3': { name: '五連順', desc: '5顆數字相連' },
     'rule_b4': { name: '四連順', desc: '4顆數字相連' },
     'rule_b5': { name: '三連順', desc: '3顆數字相連' },
-    'rule_c0': { name: '雙子星', desc: '兩組4同' },
-    'rule_c1': { name: '南瓜馬車', desc: '5同 + 3同' },
-    'rule_c2': { name: '豪華四對子', desc: '至少包含一組4同的4組對子' },
-    'rule_c3': { name: '三龍會', desc: '兩組3連順 + 一組2連號' },
-    'rule_c4': { name: '經典四對子', desc: '嚴格的4組對子(無3同或4同)' },
-    'rule_c5': { name: '雙四連順', desc: '兩組4連順' },
-    'rule_c6': { name: '白馬', desc: '4同 + 3同' },
-    'rule_c7': { name: '平胡', desc: '兩組3連順 + 一組對子' },
-    'rule_c8': { name: '碰碰胡', desc: '兩組3同 + 一組對子' },
-    'rule_c9': { name: '順碰交響曲', desc: '1組3連順 + 1組3同' },
-    'rule_c10': { name: '雙三連順', desc: '兩組3連順' },
-    'rule_c11': { name: '雙三同', desc: '兩組3同' },
-    'rule_c12': { name: '南瓜', desc: '3同 + 一組對子' },
-    'rule_c13': { name: '三對子', desc: '任意3組對子' },
-    'rule_c14': { name: '雙對子', desc: '任意2組對子' },
+    'rule_c0': { name: '雙子星', desc: '兩組四同' },
+    'rule_c1': { name: '南瓜馬車', desc: '五同 + 三同' },
+    'rule_c2': { name: '豪華四對子', desc: '至少包含一組四同的四組對子' },
+    'rule_c3': { name: '三龍會', desc: '兩組三連順 + 一組二連號' },
+    'rule_c4': { name: '經典四對子', desc: '嚴格四組對子（不含三同或四同）' },
+    'rule_c5': { name: '雙四連順', desc: '兩組四連順' },
+    'rule_c6': { name: '白馬', desc: '四同 + 三同' },
+    'rule_c7': { name: '平胡', desc: '兩組三連順 + 一組對子' },
+    'rule_c8': { name: '碰碰胡', desc: '兩組三同 + 一組對子' },
+    'rule_c9': { name: '順碰交響曲', desc: '一組三連順 + 一組三同' },
+    'rule_c10': { name: '雙三連順', desc: '兩組三連順' },
+    'rule_c11': { name: '雙三同', desc: '兩組三同' },
+    'rule_c12': { name: '南瓜', desc: '一組三同 + 一組對子' },
+    'rule_c13': { name: '三對子', desc: '任意三組對子' },
+    'rule_c14': { name: '雙對子', desc: '任意兩組對子' },
     'rule_d0': { name: '兩極', desc: '盤面只有 1 和 8' },
     'rule_d1': { name: '絕對秩序', desc: '7顆以上數字為全奇數或全偶數' },
     'rule_d2': { name: '全異', desc: '8顆數字皆不相同' },
@@ -188,6 +188,13 @@ ui: {
     bgm_volume: '音樂音量',
     sfx_volume: '音效音量',
     setting_step_animation_label: '逐步結算動畫',
+    window_size_label: '視窗大小',
+    window_size_small: '小（450 x 800）',
+    window_size_medium: '中（540 x 960）',
+    window_size_large: '大（675 x 1200）',
+    dice_skin_label: '骰子外觀',
+    dice_skin_default: '藍晶骰',
+    dice_skin_rainbow: '彩虹晶骰',
     title_main: 'BIBI DICE',
     title_sub: '比比丟八',
     title_desc: '擲八顆骰子湊牌型疊加倍率！每回合重骰兩次，在限制回合內打倒敵人獲取遺物強化流派，挑戰連過十關！',
@@ -197,8 +204,14 @@ ui: {
     btn_collection: '收集冊',
     btn_history: '歷史牌局',
     btn_souls: '靈魂奉獻',
-    version: '[免費測試版]',
+    version: '1.0.0',
     author_info: '作者:雷爪獅 | Youtube:雷爪獅遊戲頻道 | threads:@leijoalan',
+    promo_title_label: '正式版現已推出',
+    promo_title_desc: '更多收集、成長與挑戰內容等你探索',
+    promo_title_btn: '查看 Steam 正式版',
+    promo_win_label: '你已征服 Demo！',
+    promo_win_desc: '正式版擁有更完整的收集、成長與挑戰內容，繼續打造你的極限流派。',
+    promo_win_btn: '查看 Steam 正式版',
     stage: '關卡 {0}',
     next_stage: '下一關：{0}',
     hp: 'HP',
@@ -212,7 +225,19 @@ ui: {
     rules_title: '全牌型倍率表',
     shop_title: '芝芝商店',
     shop_desc: '選擇獲取一件遺物來強化流派，或進入下一關。',
+    omen_forecast_title: '下一關預兆',
+    run_setup_title: '新局準備',
+    run_contract_title: '輪迴契約',
+    run_contract_level: '強度 {0} / {1}',
+    run_contract_effect: '敵人 HP x{0}，每次靈魂收益 +{1}',
+    fate_selection_title: '命運鑑選',
+    fate_selection_body: '選擇一件普通遺物作為本局初始裝備。',
+    blank_ledger_title: '遺物封存',
+    blank_ledger_body: '選擇本局不會出現在初始裝備與商店中的遺物。',
+    blank_ledger_count: '已選 {0} / {1}',
+    blank_ledger_empty: '尚未在收集冊解鎖可封存的遺物。',
     btn_reroll: '刷新商店',
+    shop_reroll_remaining: '刷新商店（剩餘 {0}/{1}）',
     btn_next_stage: '離開並前往下一關',
     game_over: 'GAME OVER',
     game_over_desc: '你未能擊敗敵人，旅程到此為止。',
@@ -227,7 +252,7 @@ ui: {
     pb_title: '個人最佳紀錄',
     pb_highest_dmg: '最高傷害',
     pb_highest_multi: '最高倍率',
-    fusion_limit_title: '力量超載！再生遺物達上限 (2/2)',
+    fusion_limit_title: '力量超載！神話遺物達上限 ({0}/{0})',
     fusion_materials: '退回素材：',
     fusion_new_item: 'NEW',
     fusion_discard_btn: '捨棄並分解',
@@ -240,6 +265,8 @@ ui: {
     dev_shackle_filter: '搜尋枷鎖...',
     dev_shackle_select_ph: '-- 選擇枷鎖 --',
     dev_shackle_conflict: '已有枷鎖套用中，強制套用將覆蓋現有枷鎖。',
+    dev_damage_self: '扣自己 HP',
+    dev_turn_one: '敵人剩餘回合變 1',
     stage_type_boss: 'Boss',
     stage_type_elite: '精英',
     stage_type_infinite: '無限塔',
@@ -248,7 +275,29 @@ ui: {
     history_best_hand: '最佳牌型',
     history_relics: '遺物',
     history_shackles: '枷鎖',
-    score_calculating: '盤面結算中...'
+    score_calculating: '盤面結算中...',
+    highlight_card_eyebrow: '精彩時刻',
+    highlight_card_title: '精彩牌局',
+    highlight_damage: '最大傷害',
+    highlight_multiplier: '最高倍率',
+    highlight_combo: '代表牌型',
+    copy_highlight: '複製戰績',
+    copy_highlight_done: '已複製戰績！',
+    highlight_bibi_hand: '比比丟八',
+    highlight_zone_resonance: '四區共鳴',
+    highlight_one_hp_clutch: '一血逆轉',
+    highlight_shackle_breaker: '枷鎖反殺',
+    highlight_last_turn_kill: '最後回合斬殺',
+    highlight_damage_100m: '破億神局',
+    highlight_damage_1m: '百萬爆發',
+    highlight_overkill: '超額擊殺',
+    highlight_multiplier_monster: '倍率怪物',
+    highlight_mythic_engine: '神話引擎',
+    highlight_mythic_hand: '神話牌型',
+    highlight_boss_slayer: 'Boss 擊破',
+    collection_progress: '收集進度 {0} / {1}',
+    collection_total_progress: '總完成度 {0} / {1}',
+    toast_close: '關閉'
   },
   tutorial: {
     btn_start: '新手教學',
@@ -256,13 +305,21 @@ ui: {
     skip: '跳過教學',
     step_indicator: '{0} / {1}',
     next_btn: '繼續 →',
-    step0: '歡迎來到比比丟八！你有 8 顆骰子，目標是湊出牌型來造成傷害擊敗敵人！',
-    step1: '點擊骰子可以「鎖定」它。鎖定後重骰時這顆骰子不會改變。試著鎖定兩顆一樣的骰子！',
-    step2: '很好！現在點「重骰」按鈕，重新投擲未鎖定的骰子。',
-    step3: '系統自動偵測到牌型！各區的倍率會相乘，湊出越好的牌型傷害越高！',
-    step4: '準備好了！點「攻擊」按鈕，用目前的骰面造成傷害！',
-    step5: '打倒敵人後進入商店，從遺物中選一件。遺物會永久改變你的遊戲規則！',
-    step6: '教學完成！挑戰 10 關，最終面對創世神。祝你好運，骰子之神！',
+    confirm_title: '開始新手教學',
+    confirm_body: '進入新手引導局？骰子結果將被預先設定以利教學，預計約 2 分鐘。',
+    confirm_ok: '開始教學',
+    confirm_cancel: '取消',
+    lock_pair_hint: '請鎖定兩顆點數相同的骰子！',
+    step0: '敵人 HP 在上方紅色血條。\n\n血條中間的數字會顯示目前 HP / 最大 HP。把敵人 HP 打到 0，你就能通過這一層。',
+    step1: '史萊姆身上有紅色的「生鏽的鎖」枷鎖標籤。\n\n請點擊這個枷鎖標籤，查看本場戰鬥的特殊限制。',
+    step2: '右上角是剩餘回合數。\n\n每次攻擊或回合推進都會消耗回合數。當它歸零時，敵人會反攻並扣你的 HP。',
+    step3: '下方 8 顆骰子是你的武器。\n\n你要用這些骰子湊出牌型，牌型越完整，最後能造成的傷害通常越高。',
+    step4: '點擊骰子可以「鎖定」它。\n\n鎖定後，重骰時這顆骰子不會改變。先試著鎖定兩顆一樣的骰子！',
+    step5: '很好！現在點「重骰」按鈕。\n\n系統只會重新投擲未鎖定的骰子，讓你繼續朝更好的牌型前進。',
+    step6: '左側愛心是你的 HP，中間的大數字是目前骰面的預估傷害。\n\n下方各區倍率會相乘，牌型越好，最終傷害越高。',
+    step7: '準備好了！點「攻擊」按鈕。\n\n攻擊會用目前骰面結算傷害，並把傷害打到敵人的 HP 上。',
+    step8: '打倒敵人後會進入商店。\n\n從遺物中選一件加入背包。遺物會永久改變這場遊戲的規則。',
+    step9: '教學完成！\n\n正式挑戰共有 10 關，最後要面對創世神。祝你好運，骰子之神！',
     complete_btn: '開始正式挑戰',
     htp_title: '玩法說明',
     htp_tab_basics: '基本玩法',
@@ -279,6 +336,12 @@ ui: {
       <p>每回合有固定的<b class="text-white">重骰次數</b>（通常 2~3 次）。點「重骰」重新投擲未鎖定的骰子，找出更好的牌型。</p>
       <h3 class="text-base font-black text-violet-300">攻擊</h3>
       <p>點「攻擊」結算目前盤面。系統計算所有牌型的基礎點數與倍率相乘得出<b class="text-white">最終傷害</b>。在限制回合數內打倒敵人！</p>
+      <h3 class="text-base font-black text-violet-300">鍵盤操作</h3>
+      <div class="grid grid-cols-1 gap-1.5 text-xs bg-slate-900/50 border border-slate-700 rounded-lg p-2.5">
+        <div><b class="text-white">Q W E R / A S D F</b> 或 <b class="text-white">1~8</b>：鎖定對應骰子</div>
+        <div><b class="text-white">Ctrl</b>：重骰</div>
+        <div><b class="text-white">Space</b>：攻擊</div>
+      </div>
       <h3 class="text-base font-black text-violet-300">勝利條件</h3>
       <p>連續打倒 10 關的敵人（最終 Boss 是創世神）即可通關！每關打倒敵人後可在商店獲取遺物。</p>
     </div>`,
@@ -292,7 +355,7 @@ ui: {
         <div class="flex items-center gap-2"><span class="text-fuchsia-400 font-black w-12">神話</span><span>融合兩件遺物後才能獲得</span></div>
       </div>
       <h3 class="text-base font-black text-violet-300 mt-1">遺物融合</h3>
-      <p>持有特定兩件遺物時會自動觸發<b class="text-white">融合</b>，生成一件神話遺物（同時消耗原材料）。每人最多持有 2 件神話遺物。</p>
+      <p>持有特定兩件遺物時會自動觸發<b class="text-white">融合</b>，生成一件神話遺物（同時消耗原材料）。基礎上限為 2 件，可透過「神話容器」提升。</p>
     </div>`,
     htp_shackles: `<div class="flex flex-col gap-3 text-slate-300">
       <h3 class="text-base font-black text-violet-300">枷鎖說明</h3>
@@ -316,7 +379,14 @@ ui: {
         <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-red-400">體魄鍛鍊</span><span>最大 HP +1（最多 2 級）</span></div>
         <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-violet-400">骰子掌握</span><span>初始重骰次數 +1（最多 2 級）</span></div>
         <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-amber-400">力量覺醒</span><span>最終傷害 +10%（最多 5 級）</span></div>
-        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-fuchsia-400">靈魂爆發</span><span>敵人 HP 提升，靈魂獲取增加，神話遺物上限提升</span></div>
+        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-sky-300">命運鑑選</span><span>開局從 3 件普通遺物選擇初始裝備</span></div>
+        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-fuchsia-400">輪迴契約</span><span>解鎖新局可選的敵人 HP 與靈魂收益強度</span></div>
+        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-blue-300">遺珍感應</span><span>提高稀有、史詩與傳說遺物出現率</span></div>
+        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-amber-300">神話容器</span><span>提高神話遺物持有上限</span></div>
+        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-cyan-300">融合羅盤</span><span>提高缺少的融合素材在商店出現的權重</span></div>
+        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-emerald-300">商店再議</span><span>每間商店可額外刷新一次</span></div>
+        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-amber-300">預兆之瞳</span><span>在商店預告下一關枷鎖</span></div>
+        <div class="flex items-center gap-2 bg-slate-900/50 p-2 rounded-lg"><span class="text-violet-300">遺物封存</span><span>新局前從初始裝備與商店排除已解鎖遺物</span></div>
       </div>
       <p class="text-xs text-slate-500 mt-1">靈魂強化跨遊戲局永久保留。</p>
     </div>`
@@ -325,8 +395,15 @@ ui: {
     'hp': { name: '體魄鍛鍊', desc: '最大 HP +1' },
     'rerolls': { name: '骰子掌握', desc: '初始重骰次數 +1' },
     'startRelic': { name: '初始裝備', desc: '開局隨機獲得 1 個普通遺物' },
+    'fateSelection': { name: '命運鑑選', desc: '已購買「初始裝備」時，開局從 3 件普通遺物選 1 件' },
     'finalDamage': { name: '力量覺醒', desc: '最終傷害 +10%' },
-    'soulBurst': { name: '靈魂爆發', desc: '敵人血量 x(等級+1)，靈魂獲得量 +(等級)，在2,5,8,10級時神話遺物上限+1' },
+    'soulBurst': { name: '輪迴契約', desc: '購買等級代表新局可選的最高契約強度' },
+    'relicSense': { name: '遺珍感應', desc: '提高稀有、史詩與傳說遺物出現率' },
+    'mythicVessel': { name: '神話容器', desc: '神話遺物持有上限每級 +1' },
+    'fusionCompass': { name: '融合羅盤', desc: '持有融合素材時，提高另一件素材在商店出現的權重' },
+    'shopReconsider': { name: '商店再議', desc: '每間商店可額外刷新一次' },
+    'omenEye': { name: '預兆之瞳', desc: '在商店預告下一關的枷鎖' },
+    'blankLedger': { name: '遺物封存', desc: '新局前可排除已解鎖遺物；每級增加 1 件，最多 2 件' },
     'cost': '花費 {0}',
     'maxed': '已滿級',
     'owned': '目前持有靈魂：{0}'
@@ -342,6 +419,8 @@ ui: {
     'toast_dev_mode': '【開發者模式】已獲得 {0} 金幣、1000 靈魂，並全開收集冊！',
     'toast_dev_mode_simple': '【開發者模式】已獲得 {0} 金幣與 1000 靈魂！',
     'toast_dev_get_relic': '【開發者模式】獲得 {0}',
+    'toast_dev_damage_self': '【開發者模式】扣除自身 {0} HP（目前 {1}/{2}）',
+    'toast_dev_turn_one': '【開發者模式】敵人剩餘回合已設為 1！',
     'stage_infinite': '無限塔 第 {0} 層',
     'stage_infinite_boss': '無限塔 第 {0} 層 (Boss)',
     'stage_infinite_elite': '無限塔 第 {0} 層 (菁英)',
@@ -387,7 +466,7 @@ ui: {
     'toast_dismantle': '已捨棄並分解【{0}】，退回基礎素材。',
     'toast_fusion_replace': '遺物共鳴！\n捨棄了【{0}】並退回素材。\n全新的力量【{1}】已加入！',
     'toast_firstaid': '【急救包】發動：恢復 1 點 HP！',
-    'toast_shop_limit': '只能刷新一次！',
+    'toast_shop_limit': '本間商店最多刷新 {0} 次！',
     'toast_fusion_preview': '融合預覽：【{0}】\n{1}',
     'toast_cons_bomb': '【起爆符】使用成功！下場戰鬥基礎點數 +300！',
     'toast_cons_clover': '【幸運{0}葉草】使用成功！下場戰鬥開場會出現三個 {0}！',

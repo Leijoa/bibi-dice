@@ -1,558 +1,400 @@
-### 2026-05-24 鑀韻東（修正 GitHub Pages Jekyll 解析 SteamPipe 文件失敗）
-- 狀態：完成。
-- 問題：GitHub Pages 內建 Jekyll build 解析 `promo/steam/STEAMPIPE_DEPOT_DRAFT.md` 時，將 `{{DEMO_APPID}}` 等 SteamPipe 占位符誤判為 Liquid 模板語法，造成 `pages build and deployment / build` 失敗。
-- 修改：新增 `.nojekyll`，讓 Pages 以靜態檔方式發布；新增 `_config.yml` 排除專案文件、`promo/`、`scripts/`、`steam-app/`、`dist/`、`node_modules/` 等非網站輸出內容，降低日後文件再次觸發 Jekyll/Liquid 錯誤的風險。
-- 下一步：推送後確認 GitHub Actions 的 `pages build and deployment` 是否恢復成功。
-
-### 2026-05-24 製作人 → 阿扣（Steam 商店截圖目視通過）
-- 狀態：完成。
-- 任務：製作人對同日重產的 6 張 Steam 商店截圖做最終目視確認。
-- 結果：6 張全部通過、可作為 Steam 商店頁正式素材：
-  - #1 `store_screenshot_01_title_1920x1080.png` ✅ OK
-  - #2 `store_screenshot_02_battle_start_1920x1080.png` ✅ OK
-  - #3 `store_screenshot_03_combo_preview_1920x1080.png` ✅ OK
-  - #4 `store_screenshot_04_rules_table_1920x1080.png` ✅ OK（製作人特別確認牌型倍率表保留，不需替換成 Boss 枷鎖）
-  - #5 `store_screenshot_05_relic_shop_1920x1080.png` ✅ OK
-  - #6 `store_screenshot_06_soul_offering_1920x1080.png` ✅ OK
-- 更新：`SYNC.md`（移除前一筆的「未涵蓋 Boss 枷鎖風險」描述）、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`promo/steam/ASSET_CHECKLIST.md`、`CHANGELOG.md`。
-- 規則：此後不再把 #4 標為風險或待替換項。
-- 提交：`標記 Steam 商店截圖目視通過`。
-
-### 2026-05-24 阿扣（Steam 商店截圖最終盤點與重產）
-- 狀態：完成。
-- 任務：確認 Steam store screenshot 是否反映最新版 UI；不是則重產 6 張正式版 1920×1080 實機截圖。
-- 盤點：原 6 張截圖時間戳為 2026-05-19，期間 5/23 有大量 UI 變更（emoji 全移除、鎖定骰新視覺、勝利花灑方向修正、新手教學定位修正、商店融合流程修正、無限塔枷鎖動畫節奏）→ 需重產。
-- 修改：執行 `npm.cmd run steam:capture` 重產 6 張（會先 `steam:build` 再用 Playwright 實機擷圖）。
-- 驗證：(1) 6 張新檔時間戳 2026-05-24；(2) `npm.cmd run steam:assets:verify` 通過，15 個必要素材尺寸正確，`library_hero_3840x1240.png` 維持不存在；(3) 目視檢查 6 張 — 標題畫面（中文 Logo 清楚、按鈕無 emoji）、戰鬥開局（8 骰、HP、預估傷害 13,728）、牌型預覽（八同 4,800,000 倍率爆發）、牌型倍率表彈窗、商店遺物三選一、靈魂奉獻清單，無血腥、無成人、無跑版、無文字截斷。
-- 主題對照：#1 標題、#2 戰鬥、#3 牌型預覽、#4 牌型倍率表（B-04 製作人決定保留，**2026-05-24 製作人已確認保留，不需替換**）、#5 商店遺物、#6 靈魂奉獻。
-- 更新：`promo/steam/ASSET_CHECKLIST.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`SYNC.md`、`CHANGELOG.md`。
-- 提交：`確認 Steam 商店截圖最終版`。
-
-### 2026-05-23 阿扣（整理 Steamworks 後台填寫包）
-- 狀態：完成。
-- 任務：依製作人指示整理一份「Steamworks 後台填寫包」，讓帳號審核通過後可以照表貼上。
-- 產出：`promo/steam/STEAMWORKS_UPLOAD_PACKET.md`，14 區結構含：App 名稱 / 開發商 / 短描述四語 / 長描述繁中英文 / 關於此遊戲 / 關於此 Demo / 定價 / 語言 / 標籤 19 個 / AI 揭露文字繁中英文 / IARC 答案摘要 / Privacy Policy URL / 11 張素材檔案路徑 + 尺寸 / Build 上傳 ContentRoot 為 `dist/steam-windows`、Launch Option `BIBI-DICE.exe` / Coming Soon 與 Demo 排程 / 後台填寫順序 22 步。
-- 盤點：交叉核對 `STEAM_RELEASE_CHECKLIST.md`、`STEAMWORKS_FIELDS_DRAFT.md`、`STEAMPIPE_DEPOT_DRAFT.md`、`STEAM_STORE_BRIEF.md`、`ASSET_CHECKLIST.md` 後確認所有可貼欄位已備齊；無發現文件與實際 Build 不一致。
-- 驗證：本次僅新增文件，未動程式或 build 腳本；`git diff` 範圍限於 `promo/steam/STEAMWORKS_UPLOAD_PACKET.md`（新增）、`SYNC.md`、`CHANGELOG.md`。
-- 注意：itch.io 頁面 Privacy Policy 連結仍需製作人登入 itch.io 後台手動加入；正式版送審時 E-08 需重評（含購買機制）。
-- 下一步：等製作人帳號審核通過、建立 Base Game App 後，依本檔第 14 區順序填寫；Demo AppID / DepotID 取得後回填 `STEAMPIPE_DEPOT_DRAFT.md` 第 2 區。
-
-### 2026-05-23 鑀韻東（無限塔枷鎖動畫節奏）
-- 狀態：完成。
-- 任務：進入無限塔後仍每層保留枷鎖效果，但降低枷鎖封印動畫頻率。
-- 修改：`js/main.js` 新增 `shouldPlayShackleIntroAnimation(levelIndex)`；主線關卡枷鎖動畫照舊，無限塔只在第 3、6、9... 層播放封印動畫，其他無限塔樓層直接顯示枷鎖訊息後開始關卡。
-- 驗證：`node --check js/main.js`、`npm.cmd run steam:i18n:verify`、`npm.cmd run steam:package:verify` 通過。
-- 產出：已重建 `dist/steam-demo` 與 `dist/steam-windows/BIBI-DICE.exe`。
-- 下一步：請製作人實機確認無限塔爬塔節奏是否比較順。
-
-### 2026-05-23 鑀韻東（商店後融合分解流程與鎖定骰視覺）
-- 狀態：完成。
-- 任務：修正「商店買完東西後，遺物分解環節被下一關枷鎖動畫 / 訊息打斷」的流程問題，並補強移除 emoji 後不明顯的鎖定骰視覺。
-- 修改：`js/main.js` 新增 `pendingShopAdvanceAfterFusion` 與 `finishShopAndAdvance()`；`checkRelicFusion()` 會回傳是否開啟分解視窗。商店購買若觸發分解視窗，會先隱藏商店並暫停進下一關，直到 `showFusionReplaceModal()` 回呼完成、再次確認沒有新的分解視窗後，才進入下一關並播放枷鎖流程。
-- 修改：`js/ui.js` / `css/style.css` 將鎖定骰子改為紫金發光外框、半透明遮罩、自製 SVG 小鎖與 `LOCK` 標籤；詛咒鎖定使用紅色變體，避免回復 emoji。
-- 驗證：`node --check js/main.js`、`node --check js/ui.js`、`npm.cmd run steam:i18n:verify`、emoji 掃描、`npm.cmd run steam:package:verify` 通過。
-- 產出：已重建 `dist/steam-demo` 與 `dist/steam-windows/BIBI-DICE.exe`。第一次打包時舊 exe 被已開啟的遊戲程序佔用，已關閉舊 `BIBI-DICE.exe` 後重跑成功。
-- 下一步：請製作人實機確認鎖定骰視覺是否足夠明顯，以及商店後分解流程是否不再被枷鎖演出插隊。
-
-### 2026-05-23 鑀韻東（勝利花灑方向與全遊戲 emoji 移除）
-- 狀態：完成。
-- 任務：修正勝利通關時花灑方向錯誤，並移除遊戲內所有 emoji，避免 UI 呈現 AI 感。
-- 修改：`js/ui.js` 的 `shootConfetti()` 改用 `angle: 180` 讓粒子向上灑出；`index.html`、`js/main.js`、`js/ui.js`、`js/i18n.js` 與四個 `js/locales/*.js` 移除 UI / 教學 / 提示 / 備援字串中的 emoji。
-- 補強：移除空掉的骰子 / 攻擊按鈕圖示 span、收集冊解鎖勾選空 span；鎖定骰保留遮罩與 SVG 角標；靈魂奉獻等級標記改為 ASCII `I` / `-`；歷史紀錄展開符號改為 `+` / `-`。
-- 驗證：`rg` 掃描 `index.html` 與 `js/`（排除 `js/vendor/`）未找到 emoji 字元；`node --check js/ui.js`、`node --check js/main.js`、`node --check js/locales/zh-tw.js`、`npm.cmd run steam:i18n:verify`、`npm.cmd run steam:package:verify` 通過。
-- 產出：已重建 `dist/steam-demo` 與 `dist/steam-windows/BIBI-DICE.exe`。第一次打包時舊 exe 被已開啟的遊戲程序佔用，已關閉舊 `BIBI-DICE.exe` 後重跑成功。
-- 下一步：請製作人實機看勝利花灑方向與整體無 emoji UI 是否符合預期。
-
-### 2026-05-23 阿扣（【混沌法則】枷鎖難度重新分類）
-- 狀態：完成。
-- 任務：依製作人決定，將【混沌法則】枷鎖從重度（heavy）改為輕度（light）。
-- 分析：枷鎖實作（`engine.js:46-53`）只在 postCalc 對調 `tagA` / `tagB` 物件；因最終倍率為乘法（或 `order` 遺物下的加法），交換律使**單獨存在時對傷害數值零影響**。真正威脅來自與其他 A/B 區針對型枷鎖（秩序崩壞 / 孤立無援）或槽位專屬遺物（`cons_strike_a` / `cons_fever_b` / `flicker`）的交互，但目前關卡不會雙枷鎖共存。
-- 修改：`js/data.js:150` `chaoslaw.type` 由 `'heavy'` 改為 `'light'`。
-- 驗證：locale 檔不需異動（描述文字未變）；i18n 結構未受影響。
-- 潛在後續：`flicker` 遺物在混沌法則下永遠無法觸發（檢查 `tagA.name === '對子'`），目前不修但可考慮日後加入收集冊提示。
-
-### 2026-05-23 鑀韻東（四語系隨機截圖壓測）
-- 狀態：完成。
-- 任務：依製作人要求，對 `zh-tw`、`zh-cn`、`en`、`ja` 各跑 100 場隨機遊玩流程，並隨機產出 100 張截圖。
-- 修改：新增 `scripts/capture-random-locale-playtest.js`，用 Playwright 啟動本機 `dist/steam-demo`，透過既有 dev hook 快速推進遊玩狀態並截圖。
-- 產出：`promo/steam/playtest-random-screenshots/2026-05-22T19-32-02-517Z/`，共 100 張 PNG 與 `report.json`。
-- 驗證：總場次 400，截圖 100，errorCount 0；截圖分布為 `zh-tw:23`、`zh-cn:25`、`en:24`、`ja:28`。
-- 注意：這批截圖是 QA 壓測素材，不是 Steam 商店正式素材。
-
-### 2026-05-23 鑀韻東（新手教學訊息框定位修正）
-- 狀態：完成。
-- 問題：Steam 直式桌面視窗會將 `#game-container` 以 `scale()` 放大，教學訊息框雖然用 `fixed` 定位，但實際仍受縮放容器影響，導致底部與右側步驟被推出視窗。
-- 修改：`js/ui.js` 的 `_positionTutorialTooltip()` 改用 `visualViewport` 量測可視範圍，並將 clamp 後的視窗座標換算回 `#game-container` 的縮放前座標；`css/style.css` 補上教學訊息框寬高限制與內部捲動。
-- 驗證：`node --check js/ui.js`、`node --check js/main.js`、`npm.cmd run steam:build` 通過；Playwright 量測 `540x960` 新手教學 step0-step4 無超出可視範圍。
-- 下一步：請製作人用 Steam Windows 版本再實機跑一次新手教學，確認商店步驟的手感與遮擋是否符合預期。
-
-# SYNC.md
-
-這是 `bibi-dice` 專案的 AI 協作同步入口。任何 AI Agent 開始工作前，請先讀本檔，並依照本檔要求補讀其他文件。工作結束後，必須更新本檔與 `CHANGELOG.md`，讓下一位接手者能接上進度。
-
-## 一句話指令
-
-如果製作人只對你說「先讀 SYNC.md」，你必須執行以下流程：
-
-1. 讀 `SYNC.md`
-2. 讀 `AGENTS.md`
-3. 讀 `CHANGELOG.md`
-4. 再讀本次任務相關檔案
-5. 開始修改前，先列出預計修改項目與涉及檔案，取得製作人同意
-6. 工作完成後，更新 `SYNC.md` 與 `CHANGELOG.md`
-
-## 必守規則
-
-- 全程使用繁體中文溝通、寫計畫、寫紀錄、寫 commit message 與 PR 描述。
-- 不要假設現況。修改前先讀相關檔案與最近紀錄。
-- 不要跨 `engine.js`、`ui.js`、`data.js` 做無差別重構。
-- 新增任何遊戲內顯示文字時，必須同步更新 `js/locales/en.js`、`js/locales/ja.js`、`js/locales/zh-cn.js`、`js/locales/zh-tw.js`。
-- 修改後必須記錄到 `CHANGELOG.md`。
-- 本檔必須跟著重要進度更新，並在提交或 PR 中同步到 GitHub。
-- 工作中發現的 bug、風險、缺漏、待確認事項，即使尚未修正，也必須寫入本檔的「待處理問題」或當次工作紀錄。
-- 已完成的問題不得只從待處理清單刪除，必須移到「已處理問題」並註明完成日期與處理方式。
-
-## 協作稱呼
-
-- 阿雲：Google Gemini
-- 阿揪：Google Jules
-- 阿克：Claude
-- 阿扣：Claude Code
-- 鑀韻東：Codex
-
-這些稱呼只作為溝通代號，不代表固定分工。製作人會依任務安排誰接手。
-
-## 目前產品方向
-
-狀態：進行中
-
-Steam 版方向已從橫版大螢幕改為「桌面直式小遊戲」。
-
-- 遊戲啟動時以直式桌面視窗呈現，接近手機比例。
-- 玩家可切換直式解析度大小，但仍維持直式比例。
-- 不承諾 Steam Deck / 掌機橫版支援。
-- 定位為約 US$2.99 的輕量桌面小遊戲。
-- 目前版本可作為 Demo，正式版再增加成就、靈魂奉獻、更多內容與長線目標。
-
-## 目前 Steam 進度
-
-| 項目 | 狀態 | 備註 |
-| --- | --- | --- |
-| Steam 桌面直式策略 | 已完成 | 見 `promo/steam/STEAM_DESKTOP_PORTRAIT_STRATEGY.md` |
-| Steam Demo 輸出 | 已完成第一版 | `scripts/publish-steam-demo.ps1` 會注入 `steam-portrait` |
-| Electron 桌面殼 | 已完成第一版 | `steam-app/main.js`、`steam-app/preload.js` |
-| Windows Steam Build 打包 | 已完成第一版 | `npm.cmd run steam:package:verify` 會產出並驗證 `dist/steam-windows/BIBI-DICE.exe` |
-| 直式桌面截圖 | 已完成第一版 | `npm.cmd run steam:capture` 可重產 |
-| Store Capsule | 已完成 D8 修正版，製作人已確認通過 | `npm.cmd run steam:capsules` 可重產；不得額外疊英文遮住中文 Logo |
-| Library Capsule / Header / Logo / Icon | 已完成 D8 修正版，製作人已確認通過 | `npm.cmd run steam:library` 可重產；Library Logo 維持主視覺美術字擷取版 |
-| Library Hero | 暫停 / 不做 | 已刪除，不要重產 `library_hero_3840x1240.png` |
-| 隱私政策 | 已完成，待填入 Steamworks / itch.io | 見 `promo/steam/PRIVACY_POLICY.md`；GitHub 公開 URL：`https://github.com/Leijoa/bibi-dice/blob/main/promo/steam/PRIVACY_POLICY.md`；itch.io 頁面需登入後台手動加入此連結 |
-| Steam Release Checklist | 已完成第一版 | 見 `promo/steam/STEAM_RELEASE_CHECKLIST.md` |
-| Steam 可上傳 Build / depot 檢查 | Build 已可打包，SteamPipe 待後台 ID | 已通過 Electron 基礎驗證、解析度切換、存檔重開驗證與 Windows exe 煙霧測試；仍需製作人取得 Demo AppID / DepotID 後執行 SteamPipe |
-| Steamworks 後台資料填寫 | 進行中 | 已確定 Coming Soon / Demo 目標排程；仍需製作人完成 AI 揭露、IARC、素材目視確認 |
-
-## Steam 目標排程
-
-| 日期 | 目標 |
-| --- | --- |
-| 2026-06-01 前 | 商店頁素材、文案、Demo Build 準備完成 |
-| 2026-06-03 | 送 Steam 商店頁審核 |
-| 2026-06-10 | 目標公開 Coming Soon 頁 |
-| 2026-07-01 | 目標發布 Demo |
-
-`2026-06-10` 到 `2026-07-01` 間隔 21 天，符合 Steam Coming Soon 頁至少公開 2 週的要求。
-
-## 重要踩雷紀錄
-
-- 不要再走 Steam 橫版 UI 主路線。橫版文件只保留為探索紀錄。
-- 不要產出或誤用 `library_hero_3840x1240.png`。前一版素材與遊戲關聯不足，製作人已刪除。
-- `library_logo_1280x720.png` 必須使用主視覺美術字風格，不可用普通系統字。
-- 正確遊戲名是「比比丟八」，不是「比比丟人」。
-- Store / Library 圖不要讓英文 `BIBI DICE` 遮住中文主視覺 Logo。
-- `npm.cmd run steam:capsules` 產出的 Store Capsule 不可再額外疊 `BIBI DICE` 或 `bibi-dice` 文字層；只能保留原主視覺中的 Logo。
-- Steam screenshot 必須使用實機遊戲畫面；宣傳合成圖不能混進 screenshot 欄位。
-- Steam 版不承諾掌機與橫版 UI。
-
-## 待處理問題
-
-| 狀態 | 發現日期 | 發現者 | 問題 | 影響 | 預計處理 |
-| --- | --- | --- | --- | --- | --- |
-| ~~已完成~~ | 2026-05-20 | 阿扣 → 阿扣 | `package.json` 缺少 `name`、`productName`、`version` 欄位。 | Electron 可能把 app 名稱視為 `Electron`，導致 `userData` 存檔路徑落到 `%APPDATA%\Electron\`，未來與其他 Electron app 或 debug 存檔混淆。 | 已修正，見「已處理問題」。 |
-| ~~已完成~~ | 2026-05-20 | 鑀韻東 | 僅補 `package.json` metadata 後，Electron 執行期仍顯示 appName 為 `Electron`，`userData` 仍落在 `%APPDATA%\Electron\`。 | 實際 Steam build 存檔路徑仍可能混淆，阿扣前次靜態修正不足以覆蓋 Electron dev 啟動情境。 | 已在 `steam-app/main.js` 呼叫 `app.setName()`，見「已處理問題」。 |
-| ~~已完成~~ | 2026-05-20 | 阿扣 → 鑀韻東 | `store_header_capsule_920x430.png`、`store_small_capsule_462x174.png`、`store_main_capsule_1232x706.png`、`store_vertical_capsule_748x896.png` 四張 Store Capsule 檔案**實際不在 `promo/steam/assets/` 目錄中**，ASSET_CHECKLIST.md 標記為「已產出」但盤點時缺失。 | 上架前缺少必要商店圖片，需重產後才能上傳 Steamworks。 | 已執行 `npm.cmd run steam:capsules` 重產，見「已處理問題」。 |
-| ~~已完成~~ | 2026-05-21 | 製作人 → 鑀韻東 | 四張 Store Capsule 修補後仍額外疊上英文 `BIBI DICE` 與 `bibi-dice` 膠囊副標，遮住中文主視覺 Logo，重犯先前已刪除素材的問題。 | 素材尺寸正確但視覺不合格，若上傳會違反製作人已定下的中文 Logo 優先規則。 | 已修正 `scripts/generate-steam-capsules.js` 移除額外文字層並重產，見「已處理問題」。 |
-| ~~已完成~~ | 2026-05-21 | 製作人 → 阿扣 | Library Capsule / Header 與四張 Store Capsule（共 6 張）色澤跑掉、整體偏暗（F-01/02/04~07）。 | 6 張關鍵商店圖視覺不合格，目前無法上傳。 | 已改用 D8 修正版 Steam 專用主視覺源圖、降低暗化層並重產，見「已處理問題」。 |
-| ~~已完成~~ | 2026-05-21 | 製作人 → 阿扣 | Shortcut Icon `256x256` 與 App Icon `184x184` 由 favicon 縮放產生，品質不足（F-08/F-09）。 | Icon 在 Steam Library 與桌面顯示效果差。 | 已由鑀韻東重生 `favicon.png` 並重產 256×256 PNG 與 184×184 JPG，見「已處理問題」。 |
-| ~~已完成~~ | 2026-05-21 | 製作人 → 阿扣 | 開發商 / 發行商名稱（A-01/A-02）列三候選未選定。 | Steamworks 建立 App 後不可改。 | 製作人選定「雷爪獅」，見「已處理問題」。 |
-| ~~已完成~~ | 2026-05-21 | 製作人 → 阿扣 | A-07 未提供 itch.io URL。 | Steam 後台 Homepage URL 無法填寫。 | 製作人提供 `https://leijoa.itch.io/bibi-dice`，見「已處理問題」。 |
-| ~~已完成~~ | 2026-05-21 | 製作人 → 阿扣 | C-03/04/05 未填。 | Demo 上傳流程細節未定。 | 製作人決定：C-03 先進 internal branch、C-04 製作人 SetLive、C-05 `steam-build/` 加入 .gitignore，見「已處理問題」。 |
-| ~~已完成~~ | 2026-05-21 | 製作人 → 阿扣 | D-04 favicon AI 揭露答覆不明確。 | AI 揭露文字無法定稿。 | 製作人確認「是」（含 AI），同時指派鑀韻東重新生成 favicon，見「已處理問題」與新待處理項。 |
-| ~~已完成~~ | 2026-05-21 | 製作人 → 鑀韻東 | 製作人不滿意現有 `favicon.png`，已指派鑀韻東重新生成。 | F-08/F-09 Shortcut Icon 與 App Icon 需以新 favicon 為來源重產；AI 揭露文字需依新 favicon 是否含 AI 而定。 | 已由鑀韻東重生暗紫霓虹骰子 `favicon.png`，並同步更新 AI 揭露文字，見「已處理問題」。 |
-| 待填後台 | 2026-05-21 | 製作人 → 阿扣 → 鑀韻東 | E-10 答「是」（將收集玩家遊玩數據評估更新方向），觸發 Steam 隱私政策審查需求。 | 上架前需提供隱私政策連結，否則 Steam 商店審核可能退回。 | 2026-05-23 已轉為正式政策 `promo/steam/PRIVACY_POLICY.md` 並補入公開聯絡信箱；GitHub 公開 URL：`https://github.com/Leijoa/bibi-dice/blob/main/promo/steam/PRIVACY_POLICY.md`。Steamworks 可填此 URL；itch.io 頁面需登入後台手動加入此連結。 |
-
-## 已處理問題
-
-| 完成日期 | 處理者 | 問題 | 處理方式 | 驗證 |
-| --- | --- | --- | --- | --- |
-| 2026-05-21 | 阿扣 | 日文 locale 缺少 2 個 key（`messages.extremist_zone_note`、`messages.scale_apex_order_note`）。 | 補入日文翻譯「{0} Dゾーン x{1}」與「{0} 絶対秩序倍率 x{1}」。 | `npm.cmd run steam:i18n:verify` 通過，四語系共 601 個 key 完全對齊。 |
-| 2026-05-21 | 製作人 → 阿扣 | A-01/A-02 開發商與發行商名稱三選一未定。 | 製作人選定「雷爪獅」，A-02 同 A-01。 | 已同步至 `STEAMWORKS_FIELDS_DRAFT.md` 第 1 / 第 10 區與 `STEAM_RELEASE_CHECKLIST.md` 第二區。 |
-| 2026-05-21 | 製作人 → 阿扣 | A-07 itch.io URL 未提供。 | 製作人提供 `https://leijoa.itch.io/bibi-dice`。 | 已同步至 `STEAMWORKS_FIELDS_DRAFT.md` 第 1 / 第 10 區。 |
-| 2026-05-21 | 製作人 → 阿扣 | C-03/C-04/C-05 SteamPipe 流程細節未定。 | 製作人決定：先進 internal branch 自測、製作人本人 SetLive、`steam-build/` 加入 `.gitignore`。 | 已同步至 `STEAMPIPE_DEPOT_DRAFT.md` 第 3 / 4 / 6 區；`.gitignore` 已加入 `steam-build/`。 |
-| 2026-05-21 | 製作人 → 阿扣 | D-04 favicon AI 揭露答覆不明確。 | 製作人確認「是」（含 AI），並指派鑀韻東重新生成 favicon。 | 已同步至 `STEAMWORKS_FIELDS_DRAFT.md` 第 8 / 第 10 區；favicon 重生任務已由鑀韻東於 2026-05-21 完成。 |
-| 2026-05-21 | 鑀韻東 | `favicon.png` 舊版風格不符合目前 Steam 主視覺，且 Shortcut / App Icon 品質不足。 | 使用 AI 生成暗紫霓虹骰子新版 `favicon.png`，並重產 `shortcut_icon_256x256.png` 與 `app_icon_184x184.jpg`。 | `npm.cmd run steam:assets:verify` 通過，確認 15 個必要素材尺寸正確且 `library_hero_3840x1240.png` 維持不存在。 |
-| 2026-05-21 | 鑀韻東 | Store / Library Capsule 色澤偏暗，且角色手上骰子不是遊戲內八面骰。 | 參考原主視覺、遊戲內 `dice_8.webp` / `dice_1.webp` 與真實 D8 形體，使用 AI 生成 `promo/steam/source/key_art_d8_banner.png` 與 `promo/steam/source/key_art_d8_portrait.png`；修改 Store / Library 產圖腳本改用新源圖並降低暗化層，重產 F-01/02/04~07 共 6 張 Capsule。 | `node --check scripts/generate-steam-capsules.js`、`node --check scripts/generate-steam-library-assets.js`、`npm.cmd run steam:capsules`、`npm.cmd run steam:library`、`npm.cmd run steam:assets:verify` 全部通過；15 個必要素材尺寸正確，`library_hero_3840x1240.png` 維持不存在。 |
-| 2026-05-20 | 阿扣 | `package.json` 缺少 `name`、`productName`、`version`，Electron userData 路徑為 `%APPDATA%\Electron\`。 | 加入 `"name": "bibi-dice"`、`"productName": "BIBI DICE 比比丟八"`、`"version": "0.1.0"`。 | 靜態確認欄位已寫入；執行期 userData 路徑須製作人實際啟動 Electron 後以 `app.getPath('userData')` 確認。 |
-| 2026-05-20 | 鑀韻東 | Electron dev / Playwright 啟動時仍使用預設 appName `Electron`，導致 `userData` 路徑仍為 `%APPDATA%\Electron\`。 | `steam-app/main.js` 讀取 `package.json`，並在 app ready 前呼叫 `app.setName(productName || name || 'bibi-dice')`。 | `npm.cmd run steam:verify` 通過，輸出 appName 為 `BIBI DICE 比比丟八`，userData 為 `%APPDATA%\BIBI DICE 比比丟八\`。 |
-| 2026-05-21 | 鑀韻東 | 阿扣盤點發現四張 Store Capsule 檔案缺失。 | 執行 `npm.cmd run steam:capsules` 重產 `store_header_capsule_920x430.png`、`store_small_capsule_462x174.png`、`store_main_capsule_1232x706.png`、`store_vertical_capsule_748x896.png`。 | 以 `System.Drawing` 驗證尺寸分別為 `920x430`、`462x174`、`1232x706`、`748x896`；並目視確認小膠囊標題可讀。 |
-| 2026-05-21 | 鑀韻東 | Store Capsule 腳本額外疊英文，遮住中文主視覺 Logo。 | 修改 `scripts/generate-steam-capsules.js`，移除 `.title`、`.subtitle` 與對應 DOM，讓四張 Store Capsule 只使用原主視覺，不再額外疊英文標題。 | 已重跑 `npm.cmd run steam:capsules`、`npm.cmd run steam:assets:verify`，並目視確認四張修正版沒有額外英文遮住中文 Logo。 |
-| 2026-05-20 | 鑀韻東 | `library_logo_1280x720.png` 使用普通系統字，風格不符合主視覺。 | 改為從 `img/home_bg.webp` 擷取主視覺美術 Logo，輸出透明 PNG。 | 已重跑 `npm.cmd run steam:library` 並確認尺寸為 `1280x720`。 |
-| 2026-05-20 | 鑀韻東 | `library_hero_3840x1240.png` 與遊戲本體關聯不足，可能被誤用。 | 從產圖腳本移除 Library Hero 產出，檔案由製作人刪除後不再重生。 | 已確認重跑 `npm.cmd run steam:library` 不會產出 `library_hero_3840x1240.png`。 |
-
-## 目前可用指令
-
-```powershell
-npm.cmd run steam:build
-npm.cmd run steam:package
-npm.cmd run steam:package:verify
-npm.cmd run steam:app
-npm.cmd run steam:app:dev
-npm.cmd run steam:verify
-npm.cmd run steam:capture
-npm.cmd run steam:capsules
-npm.cmd run steam:assets:verify
-npm.cmd run steam:i18n:verify
-npm.cmd run steam:library
-```
-
-注意：在 Windows PowerShell 中，優先使用 `npm.cmd`，避免 `npm.ps1` execution policy 問題。
-
-## 下一步建議
-
-狀態：待做
-
-1. ~~新增 `promo/steam/STEAM_RELEASE_CHECKLIST.md`~~（已完成 2026-05-20）
-2. ~~驗證 Electron build、預設視窗尺寸與 userData 路徑~~（已完成 2026-05-20）
-3. ~~驗證三段解析度切換與重開後存檔可正確讀取~~（已完成 2026-05-20）
-4. ~~確認 6 張截圖排序與全年齡可顯示~~（阿扣已完成 2026-05-20，見 `promo/steam/STEAM_ASSET_FINAL_AUDIT.md`）
-5. 製作人依第二區完成剩餘決策：年齡分級、AI 素材揭露、素材目視確認
-6. Steamworks 後台第三區，製作人登入後依序操作
-
-## 工作後更新格式
-
-每次 AI 工作完成後，請在本區最上方新增一筆。
-
-請固定使用以下欄位。若沒有內容，請寫「無」，不要省略欄位。
-
-```md
-### YYYY-MM-DD 名稱
-
-- 狀態：
-- 本次做了什麼：
-- 發現的問題：
-- 預計但尚未執行的修改：
-- 已完成問題：
-- 改了哪些檔案：
-- 驗證結果：
-- 下一步：
-- 注意事項：
-```
-
-### 2026-05-23 鑀韻東（Windows 打包）
-
-- 狀態：已完成
-- 本次做了什麼：新增 Steam Windows portable 打包流程，使用既有 Electron runtime 產出 `dist/steam-windows/BIBI-DICE.exe`；新增封裝後 build 驗證腳本；更新 `package.json` 指令 `steam:package` 與 `steam:package:verify`；同步修正 SteamPipe 文件與上架檢查表，明確 SteamPipe ContentRoot 應使用 `dist/steam-windows`。
-- 發現的問題：Windows PowerShell 5 對無 BOM 腳本中的中文預設 exe 檔名解碼不穩，會造成非法路徑錯誤；已改用 ASCII 檔名 `BIBI-DICE.exe`，遊戲顯示名稱仍由 Electron app name 顯示為 `BIBI DICE 比比丟八`。Playwright `_electron.launch` 不適合直接連封裝後 exe，驗證改為檔案結構檢查 + exe 啟動煙霧測試。
-- 預計但尚未執行的修改：等待製作人取得 Demo AppID / DepotID 後，建立實際 `steam-build/*.vdf` 並執行 steamcmd 上傳。
-- 已完成問題：Steam Build 已從純 web / dev Electron 驗證推進到可供 SteamPipe 上傳的 Windows portable build 資料夾。
-- 改了哪些檔案：`scripts/package-steam-windows.ps1`（新增）、`scripts/verify-steam-windows-build.js`（新增）、`package.json`、`promo/steam/STEAMPIPE_DEPOT_DRAFT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：`npm.cmd run steam:package:verify` 通過，確認 `dist/steam-windows/BIBI-DICE.exe`、`resources/app`、`resources/app/dist/steam-demo/index.html` 與 Electron runtime 存在，且 exe 啟動煙霧測試通過。
-- 下一步：製作人等待 Steamworks / TaxIdentity 審核；通過後建立 Demo App / Depot，取得真實 AppID / DepotID，依 `STEAMPIPE_DEPOT_DRAFT.md` 上傳 `dist/steam-windows`。
-- 注意事項：`dist/steam-windows` 是產物，不提交 Git；Steamworks Launch Option 請填 `BIBI-DICE.exe`。
-
-### 2026-05-23 鑀韻東（Windows 打包修正）
-
-- 狀態：已完成
-- 本次做了什麼：修正 `BIBI-DICE.exe` 雙擊時的 Electron 主程序錯誤；封裝後 `resources/app/package.json` 會補入 `main: "steam-app/main.js"`，並將 packaged metadata 的 `productName` 改為 ASCII，以避開 Electron 42 對 packaged `package.json` 中文 `productName` 的 access violation 問題；Electron 顯示名稱改由 `steam-app/main.js` 明確設定為 `BIBI DICE 比比丟八`。
-- 發現的問題：封裝後 package 缺少 `main` 時，Electron 會預設尋找 `resources/app/index.js`；補上 main 後，又發現 packaged `package.json` 含中文 `productName` 會讓此 Electron runtime 直接崩潰。
-- 預計但尚未執行的修改：無。
-- 已完成問題：`BIBI-DICE.exe` 可啟動並保持開啟；不再跳出 `Cannot find module ... index.js`。
-- 改了哪些檔案：`scripts/package-steam-windows.ps1`、`scripts/verify-steam-windows-build.js`、`steam-app/main.js`、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：`npm.cmd run steam:package:verify` 通過，確認封裝後 `packageMain` 與 `launchSmoke` 均為 true。
-- 下一步：製作人可重新雙擊 `D:\unity\bibi-dice\dist\steam-windows\BIBI-DICE.exe` 測試；通過後等待 Steamworks ID 進行 SteamPipe。
-- 注意事項：封裝用 `package.json` 的 `productName` 是 ASCII，但 app 執行期名稱仍是 `BIBI DICE 比比丟八`。
-
-### 2026-05-23 鑀韻東
-
-- 狀態：已完成
-- 本次做了什麼：將隱私政策草稿轉為正式公開文件 `promo/steam/PRIVACY_POLICY.md`，補入公開聯絡信箱 `leijoalion@gmail.com`，並把 Steamworks 文件中的 Privacy Policy URL 統一指向 GitHub 公開頁面。
-- 發現的問題：`scripts/publish-itch.ps1` 只能透過 butler 上傳遊戲檔案，不能修改 itch.io 專案頁描述、外部連結或新增隱私政策欄位；itch.io 頁面仍需製作人登入後台手動加入 GitHub 隱私政策 URL。
-- 預計但尚未執行的修改：若製作人要求，我方可再整理 itch.io 頁面要貼的短文案。
-- 已完成問題：E-10 隱私政策文件與 GitHub 公開 URL 已準備完成；Steamworks 後台仍待填 URL。
-- 改了哪些檔案：`promo/steam/PRIVACY_POLICY.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`、`promo/steam/STEAMWORKS_ONBOARDING_FLOW.md`、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：`npm.cmd run steam:i18n:verify` 通過，四語系各 601 keys 完全對齊；`rg` 已確認正式隱私政策文件含繁中 / 英文聯絡信箱，主要 Steam 文件均指向 `PRIVACY_POLICY.md`。
-- 下一步：提交並推送至 GitHub；製作人登入 itch.io 編輯頁，加入隱私政策 URL。
-- 注意事項：不要把 `.claude/settings.local.json` 或 `promo/steam/assets - 複製/` 納入提交。
-
-### 2026-05-22 鑀韻東
-
-- 狀態：已完成
-- 本次做了什麼：新增 `promo/steam/PRIVACY_POLICY_DRAFT.md`，整理繁中與英文隱私政策草稿，說明目前 Demo 本機存檔、未來可能收集匿名 / 彙整遊玩數據、Steam 平台資料分工、資料用途、保存與刪除、第三方服務、兒童隱私與政策更新；同步更新 Steam 上架檢查表、Steamworks 欄位草稿與 Steamworks 後台流程表。
-- 發現的問題：隱私政策草稿仍缺製作人的公開聯絡信箱；Steamworks 後台仍需要一個公開 URL，草稿檔本身不能直接填入後台。
-- 預計但尚未執行的修改：不替製作人發布公開頁面；待製作人決定發布位置並補上聯絡信箱後，再回填 Steamworks 文件。
-- 已完成問題：E-10 隱私政策「撰寫草稿」已完成；但「公開 URL」仍為待發布狀態。
-- 改了哪些檔案：`promo/steam/PRIVACY_POLICY_DRAFT.md`（新增）、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`、`promo/steam/STEAMWORKS_ONBOARDING_FLOW.md`、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：文件交叉搜尋 `E-10`、`隱私政策`、`Privacy`，確認主要狀態已從「缺草稿」更新為「草稿完成，待發布 URL」。
-- 下一步：製作人補公開聯絡信箱並選擇隱私政策發布位置；完成後把 URL 填入 Steamworks Privacy Policy URL 欄位。
-- 注意事項：本草稿不是法律意見；若正式版加入第三方分析、雲端、成就、排行榜或當機回報，發布前需再次更新隱私政策。
-
-### 2026-05-21 阿扣（第五次）
-
-- 狀態：已完成
-- 本次做了什麼：(1) 建立 `promo/steam/STEAMWORKS_ONBOARDING_FLOW.md`，整理 9 階段 Steamworks 後台流程含甘特圖、阻塞依賴、必死注意事項；(2) 建立 `scripts/verify-i18n.js` 自動比對四語系 key 並加入 `npm.cmd run steam:i18n:verify`；(3) 修補日文 locale 缺漏的 2 個 key。
-- 發現的問題：日文 `ja.js` 缺少 `messages.extremist_zone_note` 與 `messages.scale_apex_order_note`，已即時補上。
-- 預計但尚未執行的修改：無。
-- 已完成問題：i18n 四語系切換驗證（檢查表第一區唯一未勾項）；日文 2 個缺失 key。
-- 改了哪些檔案：`promo/steam/STEAMWORKS_ONBOARDING_FLOW.md`（新增）、`scripts/verify-i18n.js`（新增）、`js/locales/ja.js`、`package.json`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：`npm.cmd run steam:i18n:verify` 通過，zh-tw/zh-cn/en/ja 四語系各 601 個 key 完全對齊。
-- 下一步：(1) 製作人最高優先：撰寫隱私政策頁面（E-10）+ 登入 Steamworks 走階段 1~2；(2) 選擇性：Page Background 1438×810 補做、Steam Trailer 剪輯。
-- 注意事項：Steamworks 流程表中標註的「30 天 App 冷卻期」是隱性阻塞，5/23 前建立 App 才能保證 6/22 前解除冷卻、7/1 順利發布 Demo。
-
-### 2026-05-21 鑀韻東
-
-- 狀態：已完成
-- 本次做了什麼：依製作人回覆，將 Store / Library Capsule D8 修正版 6 張素材標記為「製作人已確認通過」，並準備提交同步至 GitHub。
-- 發現的問題：無。
-- 預計但尚未執行的修改：E-10 隱私政策頁面仍待製作人準備；Page Background 與 Trailer 仍為選擇性待做。
-- 已完成問題：F-01/02/04~07 六張 Capsule 已從「待製作人最終目視」更新為「製作人確認通過」。
-- 改了哪些檔案：`SYNC.md`、`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`CHANGELOG.md`
-- 驗證結果：文件狀態已同步；提交前會再次執行 `npm.cmd run steam:assets:verify`。
-- 下一步：提交並推送目前 Steam 上架素材與同步文件；接著處理 E-10 隱私政策草稿。
-- 注意事項：`.claude/settings.local.json` 是本機設定，不納入提交。
-
-### 2026-05-21 鑀韻東
-
-- 狀態：已完成
-- 本次做了什麼：依製作人提供的原主視覺、遊戲內藍色八面骰與真實 D8 參考，重生 Steam 專用 D8 主視覺源圖 `key_art_d8_banner.png` / `key_art_d8_portrait.png`；修改 Store / Library 產圖腳本改用新源圖並降低暗化層，重產 F-01/02/04~07 共 6 張 Capsule。
-- 發現的問題：舊 Capsule 不只是偏暗，角色手上的骰子也偏六面黑金骰，與遊戲實際八面骰美術不一致。
-- 預計但尚未執行的修改：E-10 隱私政策頁面仍待製作人準備；Page Background 與 Trailer 仍為選擇性待做。
-- 已完成問題：Store / Library Capsule 色澤偏暗與角色手上骰子不真實問題已移到「已處理問題」。
-- 改了哪些檔案：`promo/steam/source/key_art_d8_banner.png`、`promo/steam/source/key_art_d8_portrait.png`、`promo/steam/assets/store_header_capsule_920x430.png`、`promo/steam/assets/store_small_capsule_462x174.png`、`promo/steam/assets/store_main_capsule_1232x706.png`、`promo/steam/assets/store_vertical_capsule_748x896.png`、`promo/steam/assets/library_capsule_600x900.png`、`promo/steam/assets/library_header_capsule_920x430.png`、`scripts/generate-steam-capsules.js`、`scripts/generate-steam-library-assets.js`、`promo/steam/ASSET_CHECKLIST.md`、`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：`node --check scripts/generate-steam-capsules.js` 通過；`node --check scripts/generate-steam-library-assets.js` 通過；`npm.cmd run steam:capsules` 通過；`npm.cmd run steam:library` 通過；`npm.cmd run steam:assets:verify` 通過，15 個必要素材尺寸正確且 `library_hero_3840x1240.png` 維持不存在。
-- 下一步：請製作人目視確認 D8 修正版 6 張 Capsule 是否可上傳；若通過，下一步可處理 E-10 隱私政策頁面或選擇性 Page Background。
-- 注意事項：D8 修正版主視覺源圖含 AI 生成 / 編修，Steamworks AI 揭露草稿已同步補入 revised Steam Capsule key art。
-
-### 2026-05-21 鑀韻東
-
-- 狀態：已完成
-- 本次做了什麼：重生 `favicon.png`，將舊版藍色花體 B icon 替換為暗紫霓虹水晶骰子 icon；以新版 favicon 重產 `shortcut_icon_256x256.png` 與 `app_icon_184x184.jpg`，並同步更新素材盤點、Release checklist 與 Steamworks AI 揭露草稿。
-- 發現的問題：無新增問題；本次處理的是既有 F-08/F-09 Icon 品質不足與 favicon 重生任務。
-- 預計但尚未執行的修改：F-01/02/04~07 Capsule 色澤偏暗後續已由鑀韻東於 2026-05-21 修正；E-10 隱私政策頁面仍待製作人準備。
-- 已完成問題：Shortcut Icon / App Icon 品質不足、`favicon.png` 重生任務共 2 項，已移到「已處理問題」。
-- 改了哪些檔案：`favicon.png`、`promo/steam/assets/shortcut_icon_256x256.png`、`promo/steam/assets/app_icon_184x184.jpg`、`promo/steam/ASSET_CHECKLIST.md`、`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：已確認 `favicon.png` 為 512×512、`shortcut_icon_256x256.png` 為 256×256、`app_icon_184x184.jpg` 為 184×184；`npm.cmd run steam:assets:verify` 通過，15 個必要 Steam 素材尺寸皆正確，`library_hero_3840x1240.png` 維持不存在。
-- 下一步：修正 Store / Library Capsule 色澤偏暗問題，或由製作人先準備 E-10 隱私政策頁面。
-- 注意事項：新版 favicon / Shortcut Icon / App Icon 含 AI 生成，Steamworks AI 揭露草稿已同步加入 application icon 說明。
-
-### 2026-05-21 阿扣（第四次）
-
-- 狀態：已完成
-- 本次做了什麼：依製作人補填的 5 項決定（A-01/02 雷爪獅、A-07 itch.io URL、C-03/04/05 SteamPipe 流程、D-04 favicon 是 AI 含並指派鑀韻東重生）同步 5 份文件，並修改 `.gitignore` 加入 `steam-build/`。
-- 發現的問題：D-04 衍生新任務 — 製作人指派鑀韻東重新生成 `favicon.png`，需追蹤 F-08/F-09 Icon 與 AI 揭露文字後續更新；E-10 隱私政策仍待製作人撰寫。
-- 預計但尚未執行的修改：F-01/02/04~07 Capsule 色澤偏暗後續已由鑀韻東於 2026-05-21 修正；F-08/F-09 Icon 後續已由鑀韻東於 2026-05-21 完成；隱私政策頁面未建立。
-- 已完成問題：A-01/02 開發商選定、A-07 URL 提供、C-03/04/05 流程定案、D-04 揭露答案明確化共 4 項，全部移到「已處理問題」。
-- 改了哪些檔案：`.gitignore`、`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`promo/steam/STEAMPIPE_DEPOT_DRAFT.md`、`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：5 份文件交叉核對，A-01「雷爪獅」、A-07 URL、C-03~05、D-04 在所有對應位置均一致；`.gitignore` 新增 `steam-build/` 一行。
-- 下一步：(1) 鑀韻東執行 favicon 重生任務；(2) 鑀韻東或阿揪修產圖腳本解決 Capsule 色澤偏暗；(3) 製作人撰寫隱私政策頁面。
-- 注意事項：A-04 商店繁中名仍為純「比比丟八」；E-08 IARC 答案 Demo 與正式版不同（送審需分別處理）。
-
-### 2026-05-21 阿扣（第三次）
-
-- 狀態：已完成
-- 本次做了什麼：依製作人於 `STEAM_OWNER_DECISIONS.md` 填寫的決策，批量同步 4 份相關文件 — 更新 `STEAMWORKS_FIELDS_DRAFT.md` 第 1/5/8/9/10 區、`STEAM_RELEASE_CHECKLIST.md` 第二區勾選、`STEAM_ASSET_FINAL_AUDIT.md` 第二區改為製作人目視結果。
-- 發現的問題：本次同步發現 7 項待釐清項目，全部寫入「待處理問題」：(1) Capsule/Library 6 張色澤偏暗 (2) Icon 兩張需重新設計 (3) A-01/A-02 開發商三選一未定 (4) A-07 itch.io URL 未填 (5) C-03/04/05 未填 (6) D-04 favicon 揭露答案不明確 (7) E-10 需準備隱私政策。
-- 預計但尚未執行的修改：色澤偏暗需修改產圖腳本（屬下次任務）；Icon 重新設計屬美術工作（製作人決定）；隱私政策頁面需製作人撰寫。
-- 已完成問題：B-01 售價、B-02/B-03 標籤、B-04~B-09 商店頁送審項目、C-01/C-02 排程、D-01/02/03/05/06/07 AI 揭露、E-01~E-09 IARC 大部分項目皆已同步至 STEAMWORKS_FIELDS_DRAFT.md 與 STEAM_RELEASE_CHECKLIST.md。
-- 改了哪些檔案：`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：四份文件交叉核對，已決定欄位均同步且彼此一致；7 項待釐清問題均寫入 SYNC.md 待處理區。
-- 下一步：(1) 製作人選定 A-01 開發商名稱、提供 itch.io URL、補填 C-03/04/05、釐清 D-04；(2) 製作人撰寫隱私政策頁面；(3) 由其他 AI 處理產圖腳本色澤問題；(4) 製作人安排 Icon 重新設計。
-- 注意事項：A-04 商店繁中名改為純「比比丟八」（捨棄中英並列），已同步至 STEAMWORKS_FIELDS_DRAFT.md 第 1 區；E-08 IARC 答案 Demo 與正式版不同，Demo 送審時答「否」，正式版送審前需重新評估。
-
-### 2026-05-21 鑀韻東
-
-- 狀態：已完成
-- 本次做了什麼：將製作人確認的 Steam 目標排程寫入同步文件、決策清單、上架檢查表、Steamworks 欄位草稿與 SteamPipe 草案。
-- 發現的問題：無新增問題。
-- 預計但尚未執行的修改：尚未依剩餘決策更新 AI 生成素材揭露、IARC 問卷與素材目視確認結果。
-- 已完成問題：Coming Soon / Demo 目標排程已定案。
-- 改了哪些檔案：`SYNC.md`、`CHANGELOG.md`、`promo/steam/STEAM_OWNER_DECISIONS.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`、`promo/steam/STEAMPIPE_DEPOT_DRAFT.md`
-- 驗證結果：確認 `2026-06-10` 到 `2026-07-01` 間隔 21 天，符合 Steam Coming Soon 至少公開 2 週要求。
-- 下一步：製作人需補完 `STEAM_OWNER_DECISIONS.md` 的 D 區 AI 生成素材揭露、E 區 IARC 問卷、F 區素材目視確認。
-- 注意事項：2026-06-01 前需完成商店頁素材、文案與 Demo Build，留出 2026-06-03 送審緩衝。
-
-### 2026-05-21 鑀韻東
-
-- 狀態：已完成
-- 本次做了什麼：修正 Store Capsule 產圖腳本，移除額外疊上的英文 `BIBI DICE` 與 `bibi-dice` 膠囊副標，重產四張 Store Capsule 修正版。
-- 發現的問題：先前只用 `steam:assets:verify` 驗證尺寸，沒有驗證「英文不可遮住中文 Logo」這條視覺規則，導致尺寸正確但視覺不合格。
-- 預計但尚未執行的修改：仍建議製作人於 Steamworks 後台預覽四張 Store Capsule 實際顯示效果。
-- 已完成問題：四張 Store Capsule 英文遮擋中文 Logo 問題已修正。
-- 改了哪些檔案：`scripts/generate-steam-capsules.js`、`promo/steam/assets/store_header_capsule_920x430.png`、`promo/steam/assets/store_small_capsule_462x174.png`、`promo/steam/assets/store_main_capsule_1232x706.png`、`promo/steam/assets/store_vertical_capsule_748x896.png`、`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：`node --check scripts/generate-steam-capsules.js` 通過；`npm.cmd run steam:capsules` 通過；`npm.cmd run steam:assets:verify` 通過；已目視檢查四張修正版，確認沒有額外英文標題遮住中文主視覺 Logo。
-- 下一步：製作人可再次目視確認四張 Store Capsule；若通過，後續再處理 Steam Owner Decisions 內的決策欄位。
-- 注意事項：素材驗證腳本只能檢查尺寸與檔案存在，不能替代視覺遮擋檢查。
-
-### 2026-05-21 阿扣（第二次）
-
-- 狀態：已完成
-- 本次做了什麼：依 `CLAUDE_STEAM_DECISIONS_TASK.md` 建立 `promo/steam/STEAM_OWNER_DECISIONS.md`，集中整理製作人必須親自決定的所有 Steam 上架欄位，分八區：建立 App 前（8 項）、商店頁送審前（9 項）、Demo 發布前（5 項）、AI 揭露（7 項）、IARC 問卷（10 項）、素材目視確認（10 項）、可延後到正式版（10 項）、決策回覆格式範例。
-- 發現的問題：無新增問題。本次任務僅整理選項與待確認欄位，未替製作人決定任何答案，符合任務禁止事項。
-- 預計但尚未執行的修改：無。
-- 已完成問題：無。
-- 改了哪些檔案：`promo/steam/STEAM_OWNER_DECISIONS.md`（新增）、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：交叉核對 `STEAM_RELEASE_CHECKLIST.md`、`STEAMWORKS_FIELDS_DRAFT.md`、`STEAM_ASSET_FINAL_AUDIT.md`、`STEAMPIPE_DEPOT_DRAFT.md`、`FULL_VERSION_SCOPE.md`、`STEAM_DESKTOP_PORTRAIT_STRATEGY.md`，所有需製作人決定欄位均已涵蓋並建立同步對應表。
-- 下一步：製作人依 `STEAM_OWNER_DECISIONS.md` 第 8 區建議格式回覆，AI 即可依「決定後需同步到」欄位逐一更新對應文件。
-- 注意事項：本檔不提供任何決策建議，僅整理選項；製作人決定後請填入「決定」欄位再交給 AI 同步。
-
-### 2026-05-21 鑀韻東
-
-- 狀態：已完成
-- 本次做了什麼：新增 Steam 素材完整性自動驗證腳本，將阿扣人工盤點抓到的素材缺漏風險轉成可重複執行的檢查；另建立給阿扣的製作人 Steam 決策清單任務檔。
-- 發現的問題：無新增問題。
-- 預計但尚未執行的修改：尚未整理製作人決策清單，已交由阿扣依 `promo/steam/CLAUDE_STEAM_DECISIONS_TASK.md` 處理。
-- 已完成問題：素材存在性、尺寸與禁止誤用 Library Hero 的自動檢查已完成。
-- 改了哪些檔案：`scripts/verify-steam-assets.js`、`package.json`、`promo/steam/CLAUDE_STEAM_DECISIONS_TASK.md`、`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：`node --check scripts/verify-steam-assets.js` 通過；`npm.cmd run steam:assets:verify` 通過，確認 15 個必要 Steam 素材存在且尺寸正確，`library_hero_3840x1240.png` 維持不存在。
-- 下一步：請阿扣依 `promo/steam/CLAUDE_STEAM_DECISIONS_TASK.md` 產出 `promo/steam/STEAM_OWNER_DECISIONS.md`；我方下一步可整合 `steam:verify` 與 `steam:assets:verify` 成上架前總驗證流程。
-- 注意事項：`.claude/settings.local.json` 是本機設定變更，不應納入提交。
-
-### 2026-05-21 阿扣
-
-- 狀態：已完成
-- 本次做了什麼：依 `CLAUDE_STEAMPIPE_DRAFT_TASK.md` 建立 `promo/steam/STEAMPIPE_DEPOT_DRAFT.md`，整理 SteamPipe / Depot 上傳操作草案，分八區涵蓋前提條件、Build 來源與重建指令、Depot/Branch 命名建議、Windows 上傳流程、後台檢查項目、製作人專屬事項、可能失敗點排查、正式執行前檢查清單。
-- 發現的問題：`steam-build/` 目錄目前不存在，需製作人決定建立位置與是否納入 git；VDF 中的 AppID / DepotID 屬公開資訊，但帳號密碼絕不可寫入。
-- 預計但尚未執行的修改：無（任務僅限產出草案文件，不執行 steamcmd、不新增憑證假資料）。
-- 已完成問題：無。
-- 改了哪些檔案：`promo/steam/STEAMPIPE_DEPOT_DRAFT.md`（新增）、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：草案交叉核對 `publish-steam-demo.ps1` 排除清單、`STEAM_ASSET_FINAL_AUDIT.md`、`STEAMWORKS_FIELDS_DRAFT.md`、`FULL_VERSION_SCOPE.md`，無衝突。所有 AppID / DepotID / 帳號密碼均以 `<待製作人於後台建立後填入>` 占位，無假資料。
-- 下一步：製作人完成 Steamworks 後台 App 建立、取得 AppID / DepotID 後，依本草案建立 `steam-build/` 與 VDF 設定檔，即可執行 steamcmd 上傳。
-- 注意事項：VDF 設定檔內 AppID / DepotID 可提交 git，但 steamcmd 帳號密碼絕不可寫進任何腳本或文件。
-
-### 2026-05-21 鑀韻東
-
-- 狀態：已完成
-- 本次做了什麼：依阿扣的素材盤點結果重產四張缺失的 Store Capsule，驗證尺寸，更新素材盤點與上架檢查表；另建立給阿扣的 SteamPipe / Depot 上傳草案任務檔。
-- 發現的問題：無新增問題；阿扣先前指出的 Store Capsule 缺口已確認並修正。
-- 預計但尚未執行的修改：尚未建立 SteamPipe / Depot 上傳流程文件，已交由阿扣依 `promo/steam/CLAUDE_STEAMPIPE_DRAFT_TASK.md` 處理。
-- 已完成問題：四張 Store Capsule 缺失已修正。
-- 改了哪些檔案：`promo/steam/assets/store_header_capsule_920x430.png`、`promo/steam/assets/store_small_capsule_462x174.png`、`promo/steam/assets/store_main_capsule_1232x706.png`、`promo/steam/assets/store_vertical_capsule_748x896.png`、`promo/steam/CLAUDE_STEAMPIPE_DRAFT_TASK.md`、`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：`npm.cmd run steam:capsules` 通過；`System.Drawing` 驗證四張圖片尺寸皆符合官方規格；已目視檢查小膠囊 `store_small_capsule_462x174.png` 標題可讀。
-- 下一步：請阿扣依 `promo/steam/CLAUDE_STEAMPIPE_DRAFT_TASK.md` 產出 `promo/steam/STEAMPIPE_DEPOT_DRAFT.md`；製作人仍需目視確認所有素材品質與 AI 生成素材揭露。
-- 注意事項：`.claude/settings.local.json` 是本機設定變更，不應納入提交。
-
-### 2026-05-20 阿扣（第四次）
-
-- 狀態：已完成
-- 本次做了什麼：依 `CLAUDE_ASSET_AUDIT_TASK.md` 對 `promo/steam/assets/` 進行實際檔案盤點，建立 `promo/steam/STEAM_ASSET_FINAL_AUDIT.md`，分七區整理可上傳素材、待目視確認素材、暫不製作素材、缺口素材、截圖排序建議、全年齡風險與 AI 素材揭露提醒。
-- 發現的問題：**Store Capsule 四張檔案（920×430、462×174、1232×706、748×896）實際不在 `promo/steam/assets/` 目錄中**，ASSET_CHECKLIST.md 標記為「已產出」但盤點時缺失，為嚴重缺口，已寫入「待處理問題」。
-- 預計但尚未執行的修改：不需修改任何程式碼，Store Capsule 需執行 `npm.cmd run steam:capsules` 重產，但此動作超出本次任務範圍（不重產圖片），留待製作人確認後執行。
-- 已完成問題：無。
-- 改了哪些檔案：`promo/steam/STEAM_ASSET_FINAL_AUDIT.md`（新增）、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：以 `ls -la promo/steam/assets/` 盤點實際存在檔案 11 個，與 ASSET_CHECKLIST.md 對照後確認 Store Capsule 四張缺失、Library Hero 正確不存在。
-- 下一步：製作人執行 `npm.cmd run steam:capsules` 重產 Store Capsule，並目視確認所有素材品質（見 STEAM_ASSET_FINAL_AUDIT.md 第二區）。
-- 注意事項：截圖第 4 張（牌型倍率表彈窗）建議製作人評估是否替換為更具張力的 Boss 枷鎖截圖。
-
-### 2026-05-20 鑀韻東
-
-- 狀態：已完成
-- 本次做了什麼：擴充 `steam:verify`，加入三段直式解析度切換驗證與 Electron 重開後 localStorage 持久化驗證；另建立給阿扣的素材盤點並行任務檔。
-- 發現的問題：Playwright Electron 的 `app.evaluate()` 環境不能直接使用 `require('electron')`，因此驗證腳本改用 Playwright 的 BrowserWindow handle 操作視窗尺寸與 IPC。
-- 預計但尚未執行的修改：尚未確認 6 張 Steam 截圖排序與全年齡顯示；可交由阿扣依 `promo/steam/CLAUDE_ASSET_AUDIT_TASK.md` 做文件盤點。
-- 已完成問題：三段解析度切換與重開後存檔讀取已通過自動驗證。
-- 改了哪些檔案：`scripts/verify-steam-electron.js`、`promo/steam/CLAUDE_ASSET_AUDIT_TASK.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：`node --check scripts/verify-steam-electron.js` 通過；`npm.cmd run steam:verify` 通過，確認 small `450x800`、medium `540x960`、large `675x1200`、`steam-portrait-large`、離線本機 protocol 與 localStorage 重開保留。
-- 下一步：請阿扣依 `promo/steam/CLAUDE_ASSET_AUDIT_TASK.md` 產出素材最終盤點；我方下一步可依盤點結果修正缺口或準備 SteamPipe build 上傳草案。
-- 注意事項：`.claude/settings.local.json` 是本機設定變更，不應納入提交。
-
-### 2026-05-20 阿扣（第三次）
-
-- 狀態：已完成
-- 本次做了什麼：依 `CLAUDE_STEAMWORKS_FIELDS_TASK.md` 建立 `promo/steam/STEAMWORKS_FIELDS_DRAFT.md`，整理 Steamworks 後台十個欄位區塊的填寫草稿，供製作人登入後台時對照使用。
-- 發現的問題：AI 生成素材揭露無法由 AI 代判，原始美術來源（`img/home_bg.webp`、`img/itch_banner.png`）是否含 AI 生成需製作人確認。
-- 預計但尚未執行的修改：無。
-- 已完成問題：無。
-- 改了哪些檔案：`promo/steam/STEAMWORKS_FIELDS_DRAFT.md`（新增）、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：草稿內容與 `STEAM_STORE_BRIEF.md`、`FULL_VERSION_SCOPE.md`、`ASSET_CHECKLIST.md`、`STEAM_DESKTOP_PORTRAIT_STRATEGY.md` 交叉核對，無衝突或超出承諾範圍之文案。
-- 下一步：製作人確認第十區各欄位（開發商名稱、售價、AI 素材揭露、Coming Soon 時機），即可準備登入 Steamworks 後台操作。
-- 注意事項：年齡分級問卷須製作人依實際遊戲畫面與功能作答，草稿僅為建議參考方向。
-
-### 2026-05-20 鑀韻東
-
-- 狀態：已完成
-- 本次做了什麼：建立給阿扣的並行任務檔，要求他只整理 Steamworks 後台欄位草稿；我方則新增 Electron 自動驗證腳本，並修正 Electron 執行期 app 名稱與 userData 路徑。
-- 發現的問題：僅補 `package.json` 的 `name` / `productName` 不足以讓 Playwright Electron dev 啟動時套用正確 appName，實測仍會落到 `Electron`。
-- 預計但尚未執行的修改：尚未驗證三段解析度選單切換、重開後存檔讀取、6 張截圖排序與全年齡顯示。
-- 已完成問題：Electron 執行期 appName / userData 路徑已修正並通過 `steam:verify`。
-- 改了哪些檔案：`package.json`、`steam-app/main.js`、`scripts/verify-steam-electron.js`、`promo/steam/CLAUDE_STEAMWORKS_FIELDS_TASK.md`、`promo/steam/STEAM_RELEASE_CHECKLIST.md`、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：`node --check scripts/verify-steam-electron.js` 通過；`node --check steam-app/main.js` 通過；`npm.cmd run steam:verify` 通過，確認 `dist/steam-demo`、`bibi://app/index.html`、`540x960`、`steam-portrait`、appName 與 userData 路徑皆正確。
-- 下一步：請阿扣依 `promo/steam/CLAUDE_STEAMWORKS_FIELDS_TASK.md` 產出 `promo/steam/STEAMWORKS_FIELDS_DRAFT.md`；我方下一步可做解析度切換與存檔重開驗證。
-- 注意事項：`.claude/settings.local.json` 是本機設定變更，不應納入提交。
-
-### 2026-05-20 鑀韻東
-
-- 狀態：已完成
-- 本次做了什麼：補強 `SYNC.md` 的問題追蹤規則，新增「待處理問題」與「已處理問題」區塊。
-- 發現的問題：阿扣發現 `package.json` 缺少 `name`、`productName`、`version` 欄位，但尚未寫入文件。
-- 預計但尚未執行的修改：後續需修改 `package.json`，讓 Electron 正確使用 `bibi-dice` / `BIBI DICE 比比丟八` 作為 app 名稱與 `userData` 路徑基準。
-- 已完成問題：已把 `package.json` app 命名問題補進「待處理問題」；已把 Library Logo 與 Library Hero 兩個已修事項補進「已處理問題」。
-- 改了哪些檔案：`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：已確認 `SYNC.md` 包含待處理與已處理問題清單。
-- 下一步：修正 `package.json` app 命名欄位，並驗證 Electron `userData` 路徑。
-- 注意事項：`.claude/settings.local.json` 是本機設定變更，不應納入專案提交。
-
-### 2026-05-20 阿扣（第二次）
-
-- 狀態：已完成
-- 本次做了什麼：靜態驗證 Electron build 架構（離線、視窗尺寸、存檔機制），發現並修正 `package.json` 缺少 app 命名欄位問題。
-- 發現的問題：`package.json` 無 `name` / `productName` / `version`，Electron 預設以 `"Electron"` 為 app 名稱，userData 路徑不正確。
-- 預計但尚未執行的修改：無。
-- 已完成問題：`package.json` app 命名欄位已補齊，問題移至「已處理問題」。
-- 改了哪些檔案：`package.json`、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：靜態確認 `dist/steam-demo` 存在、index.html 無外部 CDN、存檔全用 localStorage、視窗預設 540×960、9:16 比例鎖定。執行期 userData 路徑需製作人啟動 Electron 後目視確認。
-- 下一步：製作人可執行 `npm.cmd run steam:app:dev` 實際啟動 Electron，確認 userData 路徑與三段解析度切換正常。
-- 注意事項：無。
-
-### 2026-05-20 阿扣
-
-- 狀態：已完成
-- 本次做了什麼：建立 `promo/steam/STEAM_RELEASE_CHECKLIST.md`，分三區（現在就能補、需製作人決定、Steamworks 後台才能做），涵蓋素材確認、Build 驗證、後台填寫、送審流程。
-- 發現的問題：無（本次為新增文件，未修改既有邏輯）。
-- 預計但尚未執行的修改：無。
-- 已完成問題：無。
-- 改了哪些檔案：`promo/steam/STEAM_RELEASE_CHECKLIST.md`（新增）、`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：文件結構與 `STEAM_STORE_BRIEF.md`、`FULL_VERSION_SCOPE.md`、`ASSET_CHECKLIST.md` 交叉核對，無遺漏。
-- 下一步：依第一區逐項驗證 Electron build（離線、視窗尺寸、存檔路徑）。
-- 注意事項：AI 生成素材揭露、Library Hero、Page Background、Trailer 需製作人決定後再填入。
-
-### 2026-05-20 鑀韻東
-
-- 狀態：已完成
-- 本次做了什麼：建立 `SYNC.md` 作為所有 AI 的共同同步入口。
-- 改了哪些檔案：`SYNC.md`、`CHANGELOG.md`
-- 驗證結果：確認專案有 GitHub remote `origin`，本檔位於專案根目錄。
-- 下一步：建立 Steam 上架前檢查表 `promo/steam/STEAM_RELEASE_CHECKLIST.md`。
-- 注意事項：之後任何 AI 開工前只要先讀 `SYNC.md`，就會被要求補讀 `AGENTS.md` 與 `CHANGELOG.md`。
-### 2026-05-23 鑀韻東：統一標題畫面底圖
-- 做了什麼：依照製作人要求，將目前所有版本的標題畫面底圖統一改用 `promo/steam/assets/library_capsule_600x900.png` 的主視覺。
-- 實作方式：新增遊戲內資產 `img/title_bg.png`，避免發佈腳本排除 `promo/` 後造成 itch.io / Steam Demo 找不到圖片。
-- 改了哪些檔案：`img/title_bg.png`、`css/style.css`、`index.html`、`scripts/capture-steam-portrait-screenshots.js`、`CHANGELOG.md`、`SYNC.md`。
-- 驗證：已執行 `node --check scripts/capture-steam-portrait-screenshots.js`；`npm.cmd run steam:build` 通過，確認 `dist/steam-demo/img/title_bg.png` 已被打包進 Steam Demo；已輸出 `promo/steam/screenshots/current_title_bg_540x960.png` 檢查標題畫面實際載入 `title_bg.png`。
-- 下一步：請製作人重新打開 itch/dev/Steam Demo 首頁，確認主視覺裁切位置符合預期。
-### 2026-05-23 鑀韻東：Steam 直式版特效定位與字體修正
-- 狀態：已完成。
-- 工作內容：修正 Steam 桌面直式視窗中跳出訊息、通關灑花與敵人扣血數字的定位，使其以 `#game-container` 實際畫面為基準，不再以整個 Electron 視窗為中心。
-- 涉及檔案：`js/ui.js`、`js/main.js`、`css/style.css`、`index.html`、`CHANGELOG.md`、`SYNC.md`。
-- 技術重點：`showToast()` 與 `shootConfetti()` 改用遊戲容器矩形計算座標；傷害文字移除 Tailwind translate 與 CSS animation transform 的雙重位移，並依數字長度縮小字級。
-- 字體策略：不使用外部 CDN，改用 Steam 離線可用的 Windows / Electron 系統字體堆疊，繁中 UI 優先 `Microsoft JhengHei UI`，數字優先 `Bahnschrift`。
-- 驗證：`node --check js/ui.js`、`node --check js/main.js`、`npm.cmd run steam:build`、`npm.cmd run steam:package:verify` 通過；Playwright 量測確認 toastInside=true、damageInside=true、toastCenterDelta=0、damageCenterDelta=0。
-- 輸出：`dist/steam-demo` 與 `dist/steam-windows/BIBI-DICE.exe` 已重新產生，package smoke test 通過，沒有殘留 Electron / BIBI 程序。
-- 下一步：請製作人實機開啟 Steam Windows 版快速確認視覺觀感，若 OK 再決定是否同步推 GitHub / itch.io。
+# SYNC.md - AI 協作交接總表
+
+## AI 快速交接區（任何 AI 開工前必讀）
+
+最後更新：2026-06-30
+
+### 2026-06-30 鑀韻西：完成 Steam 正式版四語快速節奏 Shorts
+- **狀態**：四支正式影片已完成並通過品管，尚未上傳或發布 YouTube。
+- **交付檔案**：
+  - `promo/social/steam-launch-short/previews/bibi_dice_steam_launch_en_1080x1920.mp4`（17,014,686 bytes）
+  - `promo/social/steam-launch-short/previews/bibi_dice_steam_launch_ja_1080x1920.mp4`（16,097,200 bytes）
+  - `promo/social/steam-launch-short/previews/bibi_dice_steam_launch_zh-cn_1080x1920.mp4`（15,169,875 bytes）
+  - `promo/social/steam-launch-short/previews/bibi_dice_steam_launch_zh-tw_1080x1920.mp4`（16,418,816 bytes）
+- **影片內容**：四語皆採用對應語系實機畫面，統一節奏為「第一秒破億傷害 → 鎖定／重擲 → 牌型效果 → 遺物構築 → 破億結算 → Steam 立即遊玩」；大型 CTA 只在最後約 3 秒出現。
+- **在地化**：英文 `PLAY NOW`、日文 `今すぐプレイ`、簡中 `立即游玩`、繁中 `立即遊玩`；四支片尾均顯示正式版已推出與 Steam AppID `4792230` 商店網址。
+- **製作結構**：`promo/social/steam-launch-short/index.html` 為四語共用 HyperFrames 合成；`assets/gameplay/{locale}/` 各有 6 段直式素材；`variables/{locale}.json` 與 `scripts/prepare-active-locale.cjs` 用於切換文案及實機錄影。目前預設已切回 `zh-tw`。
+- **片尾品管修正**：日文與簡中片尾來源原本會在後段閃白或露出主選單，已改為保留前段標題粒子動態並延長穩定主視覺；重新輸出後接觸表確認無閃白、無選單穿幫。
+- **輸出規格**：四支皆為 H.264、1080×1920、60fps、AAC 48kHz 雙聲道，長度 `13.034667` 秒。
+- **驗證結果**：`npm.cmd run check` 通過（lint 0 error／0 warning、validate 無 console error、inspect 0 layout issue）；四支正式 MP4 均通過 FFmpeg 全片解碼，`ffprobe` 規格正確，四語成品接觸表已逐張肉眼確認。
+- **範圍控制**：未修改遊戲原始碼、Steam／itch.io Build、商店頁、YouTube 草稿或發布狀態。
+
+### 2026-06-30 阿扣：加入正式版導購區塊（Demo / itch 版）
+- **狀態**：完成，待製作人 commit + push
+- **任務**：在標題畫面與通關畫面加入「查看 Steam 正式版」導購入口，僅 Demo / itch 版顯示
+- **修改**：
+  - `js/locales/zh-tw.js` / `en.js` / `ja.js` / `zh-cn.js`：新增 6 個導購文字 key（`promo_title_label/desc/btn`、`promo_win_label/desc/btn`）
+  - `index.html`：標題畫面加 `#promo-title-card`；通關畫面 `#end-overlay` 加 `#promo-win-card`
+  - `css/style.css`：新增 `.promo-card` / `.promo-card--win` / `.promo-card-btn` 樣式
+  - `js/ui.js`：新增 `initPromo()`、`showPromoWinCard()`、`hidePromoWinCard()` export
+  - `js/main.js`：`bootGame()` 呼叫 `UI.initPromo()`；`gameWin()` 呼叫 `UI.showPromoWinCard()`；`gameOver()` 呼叫 `UI.hidePromoWinCard()`
+  - `scripts/publish-itch.ps1`：打包時注入 `itch-build` class 到 `<body>`
+  - `steam-app/preload.js`：新增 `electronAPI.openExternal(url)`
+  - `steam-app/main.js`：新增 `open-external-url` ipcMain handler，僅允許 `store.steampowered.com`
+- **版本識別邏輯**：`<body>` 有 `steam-portrait` → Steam Demo；有 `itch-build` → itch.io；兩者都沒有 → 正式版/開發環境（不顯示）
+- **驗證**：`npm.cmd run steam:i18n:verify` 通過，四語系 674 keys 完全對齊
+- **注意**：Steam Demo 按鈕走 Electron `shell.openExternal`（白名單限 steampowered.com）；itch 版走 `window.open`。正式版 exe 不含 `steam-portrait` body class 故不顯示導購。打包後建議跑 `npm.cmd run steam:package:verify` 確認 exe 行為正確。
+更新者：鑀韻西（Codex）
+
+### 2026-06-30 鑀韻西：完成新錄影盤點與 Steam 正式版繁中 Shorts 草稿
+- **素材盤點**：`promo/steam/trailer/raw-captures/` 共 23 支影片，全部為 1920×1080、60fps、AAC 48kHz 雙聲道。繁中 7 支、英文 6 支、日文 5 支、簡中 5 支；已建立四語接觸表並實際檢查畫面內容。
+- **繁中素材確認**：具備 `172,800,000` 高傷害、重擲、兩極牌型角色演出、商店／遺物選擇、破億神局、遊戲通關、挑戰失敗與標題畫面。本輪繁中版所需鏡頭完整，沒有需要製作人補錄的畫面。
+- **新合成專案**：新增 `promo/social/steam-launch-short/`，使用六段裁切後的繁中遊戲畫面與既有 BGM／擲骰／攻擊音效，總節奏為「第一秒高傷害 → 重擲 → 牌型效果 → 商店構築 → 破億神局 → 正式版 CTA」。
+- **繁中草稿**：`promo/social/steam-launch-short/previews/bibi_dice_steam_launch_zh-tw_draft.mp4`；H.264、1080×1920、30fps、AAC 48kHz 雙聲道、長度 `13.034667` 秒、檔案大小 `6,047,992` bytes。
+- **CTA**：最後約 3 秒顯示 `正式版現已推出`、`立即遊玩` 與 `store.steampowered.com/app/4792230`。前段只講玩法，不先露出大型廣告式 CTA。
+- **驗證結果**：`npm.cmd run check` 通過，validate 無 console error、inspect 0 error；靜態檢查保留 5 項迴圈選擇器造成的 GSAP 重疊警告與 4 項雙行標題區域警告，七張時間點快照及最終接觸表確認實際畫面無遮擋、無離框。最終 MP4 以 FFmpeg 完整解碼無錯誤，`ffprobe` 規格正確。
+- **阿扣協作狀態**：`claude.exe auth status` 顯示 claude.ai／Pro 已登入，但依規範使用 `--max-budget-usd 5.00` 的正式唯讀核對仍回傳 `401 Invalid authentication credentials`，request ID `req_011CcZMDT2B4Pcd3nZv5bj7H`；本輪未取得阿扣審查，由鑀韻西完成素材檢查與草稿。
+- **下一步**：等待製作人確認繁中草稿節奏與字幕；確認後可輸出 60fps 高品質繁中正式檔，再依相同節奏製作英文、日文、簡中版本。
+- **範圍控制**：未修改遊戲原始碼、Steam／itch.io Build、商店頁、YouTube 草稿或發布狀態；舊版四語 Shorts 與所有既有輸出均未覆蓋。
+
+### 2026-06-30 鑀韻西：Steam 商店影片四語改版規劃與英文直式草稿
+- **製作方向**：製作人認為原 Steam 商店影片的剪輯與演出更適合宣傳，後續將提供移除特效中文字的乾淨來源。四語版統一保留原片的「擲骰 → 牌型倍率 → 遺物構築 → 高傷害／高塔 → 品牌」節奏，只替換各語言重點與 Steam 願望清單 CTA。
+- **草稿輸出**：已先用現有 `promo/steam/trailer/bibi_dice_demo_trailer_final_2026-06-05.mp4` 製作英文直式草稿 `promo/social/itch-overseas-short/previews/bibi_dice_steam_trailer_en_vertical_draft.mp4`，保留原音樂與完整 42 秒剪輯，中央遊戲畫面裁切為 1080×1920。
+- **英文段落**：`ROLL 8 DICE / BREAK THE DAMAGE LIMIT` → `CHAIN PATTERNS / STACK MULTIPLIERS` → `CHOOSE RELICS / CHANGE YOUR BUILD` → `CLEAR 10 FLOORS / CLIMB EVEN HIGHER` → `WISHLIST NOW / ON STEAM`。
+- **暫時處理**：目前繁中特效字已燒進來源，草稿只用局部模糊與壓暗遮罩展示排版方向；乾淨來源到手後會移除遮罩，再製作英文、日文、簡中、繁中四支獨立版本。
+- **驗證結果**：`ffprobe` 確認草稿為 H.264、1080×1920、30fps、AAC 48kHz 雙聲道、長度 `42.200` 秒、檔案大小 `12,484,948` bytes；另抽查五個關鍵畫面，主要傷害數字、英文字幕與 Steam CTA 均可讀。
+- **待確認事項**：乾淨來源若仍保留繁中遊戲 UI，四語正式版只會替換外加特效字與 CTA；若要連遊戲 UI 一併對應語系，需提供各語系來源影片。
+- **範圍控制**：沒有修改遊戲原始碼、Steam／itch.io Build、商店頁、YouTube 草稿或發布狀態；既有四語 Shorts 與所有草稿均未覆蓋。
+
+### 2026-06-29 鑀韻西：完成 Steam 四語系 Shorts 正式版
+- **任務背景**：阿雷確認 YouTube 私人草稿是英文版，要求英文、日文、簡中、繁中四種語言版本分開製作與宣傳，且宣傳重點必須放在 Steam 正式版／願望清單，不是 itch.io Demo。
+- **短片架構**：`promo/social/itch-overseas-short/index.html` 已新增 HyperFrames `locale` enum 變數（`en`、`ja`、`zh-cn`、`zh-tw`），同一份 12 秒動畫可切換四語畫面文字、背景截圖與 CTA。畫面主 CTA 統一為 Steam 願望清單，URL 顯示 `store.steampowered.com/app/4792230`。
+- **四語素材**：新增 `promo/social/itch-overseas-short/assets/images/ja/`、`zh-cn/`、`zh-tw/`，各自包含 `01_title.png`、`03_combo_preview.png`、`08_highlight_moment.png`；來源為 `promo/steam/description/source/{locale}/` 已產出的 Steam 說明圖素材。
+- **貼文文案**：`POST_COPY_EN.md` 已改為 Steam launch 版本，並新增 `POST_COPY_JA.md`、`POST_COPY_ZH_CN.md`、`POST_COPY_ZH_TW.md`。四語 YouTube Shorts / Threads / X 文案皆以 Steam 願望清單為主連結，itch.io 免費瀏覽器 Demo 為次要試玩連結，UTM 依平台與語系拆分。
+- **變數檔**：新增 `promo/social/itch-overseas-short/variables/en.json`、`ja.json`、`zh-cn.json`、`zh-tw.json`，供後續正式 render 使用 `--variables-file`，避免 PowerShell 直接傳 JSON 時引號被吃掉。
+- **預覽輸出**：已完成四支 draft 預覽檔：`previews/bibi_dice_steam_short_en_draft.mp4`、`previews/bibi_dice_steam_short_ja_draft.mp4`、`previews/bibi_dice_steam_short_zh-cn_draft.mp4`、`previews/bibi_dice_steam_short_zh-tw_draft.mp4`。另有四張 contact sheet：`previews/bibi_dice_steam_short_{locale}_sheet.jpg`。阿雷已看過四支預覽並確認沒有重大問題。
+- **正式輸出**：已完成四支高品質 MP4：`bibi_dice_steam_short_en_1080x1920.mp4`（15,416,337 bytes）、`bibi_dice_steam_short_ja_1080x1920.mp4`（15,569,588 bytes）、`bibi_dice_steam_short_zh-cn_1080x1920.mp4`（15,330,062 bytes）、`bibi_dice_steam_short_zh-tw_1080x1920.mp4`（15,357,494 bytes）。四支皆為 1080×1920、60fps、長度 `12.032` 秒。
+- **驗證結果**：在 `promo/social/itch-overseas-short` 執行 `npm.cmd run check` 通過；lint 0 error、validate 無 console error、inspect 0 warning。保留既有 `composition_file_too_large` 警告，這是單檔維護提醒，不影響輸出。四語 draft render 皆成功，contact sheet 已肉眼確認文字可讀、無豆腐字、CTA 為 Steam；正式 MP4 輸出後以 `ffprobe` 確認解析度、fps 與長度。
+- **阿扣協作狀態**：`claude.exe auth status` 顯示已登入（claude.ai / pro），但正式 `claude.exe -p --no-session-persistence --permission-mode bypassPermissions --max-budget-usd 5.00` 唯讀檢查仍回傳 `401 Invalid authentication credentials`；本輪未取得阿扣審查，已依規範記錄限制並由 Codex 繼續。
+- **尚未做**：尚未上傳或發布 YouTube。下一步可依語系分別上傳四支正式 MP4，填入對應 `POST_COPY_*.md` 文案，再做廣告適合度自評與發布排程。
+- **範圍控制**：本輪沒有修改遊戲原始碼、Steam Build、itch.io Build、玩家存檔或 YouTube 發布狀態。
+
+### 2026-06-28 鑀韻西：完成 itch.io 海外曝光直式短片
+- **交付影片**：`promo/social/itch-overseas-short/bibi_dice_itch_overseas_short_en_1080x1920.mp4`，H.264、1080×1920、60fps、AAC 48kHz 雙聲道，長度 `12.032` 秒。
+- **內容節奏**：`ROLL 8 DICE` → `STACK 4 MULTIPLIER ZONES` → `4.8 BILLION DAMAGE` → `HOW HIGH CAN YOU GO? / PLAY FREE ON ITCH.IO`。
+- **素材來源**：沿用 `promo/steam/description/source/en/` 的英文直式截圖，以及既有 `bibbidiba_BGM_01.mp3`、`dice.mp3`、`attack.mp3`；素材已複製到宣傳專案，未引用線上資源。
+- **貼文文案**：`promo/social/itch-overseas-short/POST_COPY_EN.md` 內含 YouTube Shorts、Threads、X 三組英文版本與各自 UTM。
+- **製作檔案**：`index.html` 為可編輯 HyperFrames 來源；`frame.md` 為品牌規格；`.hyperframes/expanded-prompt.md` 與 `.hyperframes/anim-map/animation-map.json` 保留分鏡及動畫 QA 紀錄。
+- **驗證結果**：lint、runtime／對比驗證、15 點 inspect 均為 0 錯誤、0 警告；快照確認四個主畫面的文字、玩法截圖與 CTA 可讀。動畫地圖標示的離框項目均為刻意的水平推進轉場，慢速項目為背景 Ken Burns，音訊 0×0 標記為正常。
+- **範圍控制**：沒有修改遊戲原始碼、Steam／itch.io Build 或玩家存檔。
+
+### 2026-06-28 鑀韻西：itch.io 海外曝光與搜尋資訊優化
+- **分類與可發現性**：已儲存 Mouse、Keyboard、`A few minutes`、English、Japanese、Chinese (Simplified)、Chinese (Traditional)、Interactive tutorial；玩家數維持單人 `1`。
+- **短介紹與標籤**：公開 meta description 更新為 `Build 8-dice hands, stack four multiplier zones, and chase absurd damage in a free browser roguelite.`；標籤為 `browser-game`、`dice`、`drm-free`、`fantasy`、`high-score`、`roguelite`、`singleplayer`、`turn-based`、`turn-based-combat`。
+- **三語商店頁**：既有傷害 GIF 已移到英文首句後方；新增日文完整介紹，並保留英文與繁中內容。公開頁已讀回三語內容，GIF paragraph 緊接英文 hook。
+- **外部導流**：Steam 使用 `https://store.steampowered.com/app/4792230/BIBI_DICE/?utm_source=itchio&utm_medium=web&utm_campaign=browser_demo`；另新增 YouTube `https://www.youtube.com/@LeijoaLion`、Threads `https://www.threads.com/@leijoalan`、X `https://x.com/Leijoa2588`。
+- **Release Announcements**：已用 `Browser` 標籤送出英文宣傳主題，標題為 `[Free Browser Demo] Roll 8 Dice, Stack 4 Multiplier Zones, Break the Damage Counter — BIBI DICE`；內含 UTM 遊玩連結、完整摘要、功能條列、回饋問題與既有 `137,149,200` 傷害 GIF。
+- **公開狀態**：英文宣傳主題已通過版主審核並公開；正式網址為 `https://itch.io/t/6546891/free-browser-demo-roll-8-dice-stack-4-multiplier-zones-break-the-damage-counter-bibi-dice`。公開頁已顯示瀏覽次數與回覆入口。
+- **範圍控制**：本輪只修改 itch.io 後台中繼資料與公開頁文案，沒有修改遊戲原始碼、HTML Build、上傳檔或玩家瀏覽器進度。
+- **未完成項**：原定替開發日誌 `1566826` 上傳 `promo/steam/assets/store_screenshot_01_title_1920x1080.png` 作為封面，但 Codex 內建瀏覽器不支援本機檔案上傳；未儲存任何半成品，文章內容、公開狀態與第 14 版附件均保持不變。
+
+### 2026-06-28 鑀韻西：itch.io 同步至 Steam Demo Build 23496399
+- **發佈結果**：itch.io `leijoa/bibi-dice:html` 已由第 13 版更新至第 14 版；butler Upload `#17558645`、Build `#1756725` 已上線。
+- **同步範圍**：只將 `dist/itch/index.html` 的 `<body>` 補上 `steam-portrait`；其餘 44 個 runtime 檔原本就與 Steam Demo BuildID `23496399` 相同。未修改目前較新的專案原始碼、遊戲邏輯、數值、樣式或語系。
+- **排除內容**：未將 Steam Demo 包內的 `.nojekyll`、`_config.yml`、`FULL_VERSION_ROADMAP.md`、`SYNC.md` 上傳到 itch.io。
+- **驗證**：發佈前 SHA256 逐檔比對 45/45 通過，butler push preview 顯示 0 新增、1 修改、0 刪除；發佈後重新抓取線上第 14 版，45/45 個 runtime 檔與已安裝的 Steam Demo Build `23496399` 完全一致，線上 `<body>` 已含 `steam-portrait`。
+- **開發日誌**：已公開〈現在，瀏覽器版也同步 Steam Demo 了！〉，附加第 14 版 HTML Build，並確認公開頁面完整顯示玩家導向文案；網址：`https://leijoa.itch.io/bibi-dice/devlog/1566826/-steam-demo-`。
+
+### 2026-06-27 鑀韻西：Steam 四語系圖文說明草稿
+- **需求來源**：阿雷希望 Steam 說明頁加入新手教學引導與能精確對應遊戲介面的 UI 說明圖，再接續牌型、遺物、神話演出及結算卡內容。
+- **新增生成流程**：`scripts/generate-steam-description-assets.js` 依繁中、簡中、英文、日文產生 6 組共 24 張 WebP；`scripts/capture-steam-portrait-screenshots.js` 新增說明素材專用的語系、暫存目錄與 portrait-only 參數。
+- **UI 導覽圖**：中央使用真實遊戲畫面，11 個編號說明皆以同色框線與連接線指向實際 UI；右上角功能按鈕為第 5 項，畫面文字使用實際的「回標題」。
+- **Steamworks 狀態**：24 張圖已上傳至 Base Game AppID `4792230`。英、日、簡中、繁中「關於此遊戲」皆依 `tutorial → ui-guide → combo → relics → mythic → result` 插入 6 張在地化圖片並儲存草稿；重新載入後確認四語系各 6 張且順序正確，尚未公開發佈。
+
+### 2026-06-26 鑀韻西：重產 alldamege.csv 完整傷害表
+- **需求來源**：阿雷要求更新 `alldamege.csv`，同步剛調整的彗星與全異倍率。
+- **修改 `alldamege.csv`**：用目前 `engine.calculateEngineScore()` 重新產生 6435 種非遞減骰面組合（`11111111` 至 `88888888`），欄位維持「骰子組合、基礎點數總和、發動牌型、發動牌型總倍率、最終傷害」。
+- **驗證**：總行數為 6436（表頭 + 6435 組）；抽查 `12345678` 為 `彗星(x40) + 雙四連順(x22) + 全異(x15)`，總倍率 `13200`、最終傷害 `475200`；表頭使用 UTF-8 中文字串重寫，避免 PowerShell here-string 造成問號。
+
+### 2026-06-26 鑀韻西：彗星升格神話與全異倍率下修
+- **需求來源**：阿雷要求「彗星」倍率增加到 `x40` 並變成神話牌型以觸發特效，同時將「全異」改成 `x15`。
+- **修改 `js/data.js`**：`rule_b0` 彗星改為 `multi: 'x40'`、`rarity: 5`；`rule_d2` 全異改為 `multi: 'x15'`。彗星升格後會自動套用已完成的神話牌型滿版立繪演出。
+- **修改 `js/engine.js`**：實際結算同步改為彗星 `multi: 40.0`、全異 `multi: 15.0`。
+- **驗證**：以 Node 直接呼叫 `calculateEngineScore()` 測試骰面 `[1,2,3,4,5,6,7,8]`，確認 `tagB` 為彗星 `x40`、`tagD` 為全異 `x15`，`RULE_DB.groupB[0]` 為 `rarity 5`。`node --check js\data.js`、`node --check js\engine.js`、`npm.cmd run steam:i18n:verify`、限縮 `git diff --check`、`npm.cmd run steam:verify`、`npm.cmd run steam:package:verify` 全部通過。
+
+### 2026-06-26 鑀韻西：神話牌型滿版立繪演出
+- **需求來源**：阿雷認為神話牌型效果仍太弱，希望像附圖一樣整個版面顯示神話牌型名稱、逐字出現，並滑入雷爪獅或捧夠立繪；另要求日文版 8 個數字一樣的牌型名稱統一為「ビビデバ」。
+- **新增素材**：將附圖角色整理為去背版並放入 `img/characters/thunderclaw-lion-cutout.png`、`img/characters/pongo-cutout.png`；未使用的白底原圖不保留在專案內，避免包版膨脹。
+- **修改 `js/ui.js`**：`showHandNamesPreview()` 的最後揭示牌型若 rarity >= 5，改觸發 `showMythicHandReveal()`；A 區／`rule_a0` 使用雷爪獅，其它神話牌型使用捧夠。牌型名稱拆成逐字 span 顯示，並保留 HTML escape。
+- **修改 `css/style.css`**：新增 `mythic-hand-reveal` 系列滿版演出，包含暗化、魔力光暈、斬擊線、角色滑入、直排逐字牌型名稱與 `mythic-hand-hit` 戰鬥區域震撼效果；英文牌型會自動橫排。
+- **修改 `js/locales/ja.js`**：`rules.rule_a0.name` 與 `ui.highlight_bibi_hand` 統一為「ビビデバ」。
+- **驗證**：Electron 以 `RULE_DB.groupA[0]` 觸發神話 reveal，確認 `540x960` 滿版顯示雷爪獅、逐字「比比丟八」、圖片 `1087x1447` 載入且文字在畫面內；以 `RULE_DB.groupC[0]` 確認雙子星使用捧夠；切到 ja locale 後，`rule_a0` 與演出標題皆為「ビビデバ」。`node --check js\ui.js`、`node --check js\locales\ja.js`、`npm.cmd run steam:i18n:verify`、限縮 `git diff --check`、`npm.cmd run steam:verify`、`npm.cmd run steam:package:verify` 全部通過；dist stale 的白底原圖與 QA 圖已清除，正式包無 extra file 提示。
+
+### 2026-06-26 鑀韻西：破億神局滿版高潮演出
+- **需求來源**：阿雷回報「破億神局」訊息出現太快，玩家來不及看與截圖，希望改成滿版大字、有魄力地彈出並加特效。
+- **修改 `js/ui.js`**：`showHighlightBurst()` 偵測到 `damage_100m` 時改走 `showEpicHighlightBurst()`；一般高光仍保留原本小橫幅，破億高光固定主標為「破億神局」，並顯示傷害數字與最多三個輔助高光標籤。
+- **修改 `css/style.css`**：新增 `highlight-epic-overlay` 系列樣式與動畫，包含 5 秒停留、滿版暗化、爆光、衝擊波、放射粒子、大字彈出、傷害數字發光，以及戰鬥區域 `highlight-epic-hit` 強化效果。
+- **驗證**：重建 `dist/steam-demo` 後以 Electron 觸發 `damage_100m`；`540x960` 量測 overlay 動畫 5 秒、3 秒後仍存在，標題為「破億神局」、傷害為 `234,000,000`；`450x800` 小視窗標題與傷害皆在畫面內。`node --check`、`npm.cmd run steam:i18n:verify`、限縮 `git diff --check`、`npm.cmd run steam:verify`、`npm.cmd run steam:package:verify` 全部通過；第一次正式包驗證曾提示舊 QA 圖片被複製為 extra file，已刪除 `tmp` QA 圖後重跑，第二次乾淨通過。
+
+### 2026-06-26 鑀韻西：結算卡改為精彩時刻並完整顯示遺物
+- **需求來源**：阿雷確認作弊模式多語系先保留，並要求結算卡「本局高光」改成「精彩時刻」，下方遺物不要橫向捲動，而是一次顯示所有遺物。
+- **修改 `js/locales/zh-tw.js`**：將 `ui.highlight_card_eyebrow` 改為「精彩時刻」。
+- **修改 `js/ui.js` / `css/style.css`**：最終持有遺物改用 `highlight-card__relic-grid`，一般視窗顯示 3 欄，窄視窗自動改 2 欄，chip 允許換行避免文字擠出。
+- **修改 `index.html` / `css/style.css`**：替結算按鈕區加上 `end-actions`，並收緊結算 overlay 的標題、說明、卡片與頁腳間距，讓變高的精彩時刻卡片仍能放在畫面中。
+- **驗證**：`540x960` Electron 臨時結算卡塞入 18 個遺物，量測為 3 欄 grid、無橫向溢位，截圖輸出至 `tmp/highlight-card-grid-qa.png`；`node --check`、`npm.cmd run steam:i18n:verify`、限縮 `git diff --check`、`npm.cmd run steam:verify`、`npm.cmd run steam:package:verify` 全部通過。正式包驗證前曾因舊 `BIBI-DICE.exe` 鎖檔失敗，確認路徑在 `dist/steam-windows` 後已關閉殘留行程並重跑通過。
+
+### 2026-06-26 鑀韻西：開發者模式新增扣血與剩餘回合控制
+
+- **任務背景**：製作人回報「破億神局」訊息消失太快，先要求新增作弊工具，方便穩定造出一血、最後回合與高傷害測試局。
+- **已改 `index.html`**：開發者模式「戰鬥控制」區新增 `dev-damage-input` / `dev-damage-btn`，以及 `dev-turn-one-btn`。
+- **已改 `js/main.js`**：新增 `window.devDamagePlayer(amount)`，扣自己指定 HP 但最低保留 1 HP；新增 `window.devSetEnemyTurnsOne()`，將敵人剩餘回合設為 1；兩者都會呼叫共用的 dev 分數重算 helper，確保 HP 與剩餘回合相關倍率立即反映。
+- **已改 i18n**：`js/locales/en.js`、`ja.js`、`zh-cn.js`、`zh-tw.js` 新增 `ui.dev_damage_self`、`ui.dev_turn_one`、`messages.toast_dev_damage_self`、`messages.toast_dev_turn_one`。
+- **驗證**：以臨時 Electron user data 實測按鈕 onclick；扣 2 HP 後 toast 顯示目前 `1/3`，敵人剩餘回合變為 1，分數重新刷新。`npm.cmd run steam:i18n:verify` 顯示四語系 `668 keys` 對齊。
+- **未處理**：本段尚未調整神局高光訊息停留時間；下一步可針對 `highlight-burst-banner` 動畫時間與截圖節奏調整。
+
+### 2026-06-26 鑀韻西：修正 D 區「兩極」有效牌型變暗
+
+- **問題**：當盤面同時觸發 A 區「比比丟八」、C 區「雙子星」、D 區「兩極」時，D 區雖然顯示 `x60.0`，但 UI 被套用 disabled 暗色樣式。
+- **原因**：`js/ui.js` 的區塊亮暗使用 `isZoneSelectable()`，而該函式依賴骰子上的 `matchedGroups[group]`；D 區「兩極」屬於特殊盤面判定，可能與 A/C 共用整盤骰子，導致 `tagD` 有效但 `matchedGroups.D` 不足以作為 UI 亮暗依據。
+- **修改**：`js/ui.js` 新增/使用 `isZoneActive(tag)` 判斷顯示亮暗，只要 tag 有效就亮；`isZoneSelectable()` 保留點擊高亮用途，且 D 區有效時允許點擊。`js/main.js` 的 `window.setHighlight('D')` 也不再強制要求 `matchedGroups.D`。
+- **驗證**：以臨時 Electron user data 開局後 `devSetDice('11111111')`，確認 D 區顯示「兩極 x60.0」且 class 不含 `opacity-40` / `text-slate-500`。
+
+### 2026-06-26 鑀韻西：神局判定、結算炫耀卡與最後一擊高潮
+
+- **任務目標**：回應「能否讓 BIBI DICE 產生 30 秒值得分享的瞬間」這條主軸，先落地三個傳播層功能：神局判定層、結算炫耀卡、最後一擊爆發演出。
+- **架構決策**：不改 `engine.js` 計分公式、不改 `data.js` 數值；神局判定放在 `js/main.js` 攻擊結算周邊，屬於敘事與分享標籤，不參與遊戲規則計算。
+- **已改 `js/main.js`**：新增 `player.highlights`、神局標籤建構與最佳高光記錄；攻擊結算會辨識比比丟八、四區共鳴、一血逆轉、枷鎖反殺、最後回合斬殺、百萬／破億爆發、超額擊殺、倍率怪物、神話引擎、神話牌型與 Boss 擊破，並把最佳高光寫進歷史紀錄與結算畫面。
+- **已改 `js/ui.js` / `css/style.css`**：結算統計改為截圖導向的炫耀卡，顯示高光標籤、最大傷害、最高倍率、代表牌型與遺物；新增複製戰績；最後一擊傷害動畫收尾顯示高光橫幅、戰鬥區命中強化與高光傷害浮字。
+- **截圖乾淨度小修**：`js/ui.js` 新增 `clearToasts()`，`js/main.js` 的 `gameOver()` / `gameWin()` 進入結算時會清掉既有 toast；`shootConfetti()` 偵測高光卡後改由卡片左右側噴彩帶，避免蓋住傷害與倍率。
+- **已改 i18n**：`js/locales/en.js`、`ja.js`、`zh-cn.js`、`zh-tw.js` 新增炫耀卡、複製戰績與高光標籤文字，四語系 key 已對齊。
+- **阿扣協作**：已用 `claude.exe -p --no-session-persistence --permission-mode bypassPermissions --max-budget-usd 5.00` 嘗試請阿扣唯讀複核三項實作切法，但 164 秒逾時，未取得可用回覆；本輪由 Codex 依 Ponytail 規則與既有架構完成。
+- **驗證結果**：`node --check js\main.js`、`node --check js\ui.js`、四語系 `node --check`、`npm.cmd run steam:i18n:verify`、`git diff --check -- js\main.js js\ui.js css\style.css js\locales\zh-tw.js js\locales\zh-cn.js js\locales\en.js js\locales\ja.js`、`npm.cmd run steam:verify`、`npm.cmd run steam:package:verify` 皆通過。
+- **畫面 QA**：使用臨時 Electron user data 造出高光通關局並截圖檢查；`540x960` 下高光卡 rect 約 `461x395`、未超出 viewport，`activeToastCount=0`，彩帶粒子沒有落在高光卡內。
+- **驗證注意**：`steam:verify` 第一次失敗是本機保存 `bibbidiba_settings.windowSize=large`，腳本初始期待 `540x960`；已將本機測試設定改回 `medium` 後原腳本通過。這不是本次功能回歸。
+- **下一步建議**：用實際高傷害局或開發注入局檢查炫耀卡截圖構圖與最後一擊節奏，再決定是否增加「神局回放／自動短片剪輯」或更細的社群挑戰成就。
+
+### 2026-06-23 鑀韻西：發行前後台總檢完成，商店變更已公開發佈
+
+- **發行資格**：Steamworks 應用程式總覽確認商店頁與遊戲組建皆「已獲准發行」，商店狀態可見，最早可發行日為 2026-06-26；Base Game 仍為 `prerelease`，指定時間為 `2026-07-01 00:00 [GMT+8]`。
+- **商務設定**：正式版套件 `1665834` 定價為 `US$2.99`，首發折扣為 10%／7 天；應用程式只啟用 Windows 64 位元，套件含 Base Game AppID `4792230` 與 Depot `4792231`。
+- **功能後台**：15 項成就 API Name 全數存在，每項都有已達成／未達成圖示；Steam Cloud 配額為 10 MB／10 檔，Auto-Cloud 使用 `WinAppDataRoaming` + `BIBI DICE 比比丟八\steam-cloud` + `*.json`，正式存檔與備份共約 12 KB；Steamworks 應用程式設定沒有待發佈變更。
+- **商店公開發佈**：製作人授權後，已公開發佈 Steam 成就／Steam 雲端支援標示、6 張新版截圖與 Demo 關聯中繼資料。Steamworks 回報 `Successfully published!`，再次檢視差異為 `This game has not been modified.`；公開商店可見 Steam 成就、Steam 雲端與 Demo 下載入口。
+- **Demo／Build**：Demo AppID `4796530` 仍為已發行且與 Base Game 關聯；`default` 與 `internal` 仍指向 Build `23853875`，本輪未修改 Build 或遊戲程式。
+- **阿扣協作**：使用 `--max-budget-usd 5.00` 完成唯讀發行稽核，實際消耗約 US$0.40；指出 `STEAMWORKS_UPLOAD_PACKET.md` 的 BuildID、645 keys 與支援功能說明落後，已由鑀韻西依 Steamworks 實際後台結果同步。
+- **剩餘事項**：沒有技術或後台設定 P0；2026-07-01 仍需由製作人在應用程式總覽執行正式發行。顧客可見日期目前顯示 `2026年6月`，若希望與台灣時間 7 月 1 日字面一致，發行前需決定是否調整顯示方式。
+
+### 2026-06-23 鑀韻西：正式版 Build 23853875 驗收通過並發布至 default
+
+- **正式包重建**：`npm.cmd run steam:i18n:verify` 通過，四語各 645 keys；`npm.cmd run steam:package:verify` 通過全部 15 項檢查，包含 `steam-full`、Steamworks native module、`steam_api64.dll`、Cloud／成就橋接與 EXE smoke。
+- **SteamPipe 上傳**：正式版 AppID `4792230`／DepotID `4792231` 已由 SteamCMD 使用既有快取登入成功上傳，建立 BuildID `23853875`，描述為 `BIBI DICE Base v1.0.0 RC - 2026-06-22`。
+- **Steam 用戶端驗收**：原生 Steam 已下載並啟動 `internal` Build `23853875`；三種固定視窗、續玩／Cloud 存檔、芝芝商店、收集冊、牌型表、靈魂奉獻、Steam 成就 API 與主要介面 smoke 通過，製作人完成實玩與 Cloud 同步確認並回覆通過。
+- **正式分支狀態**：2026-06-23 Steamworks 已將同一 Build `23853875` 設定上線至 `default`；後台分支表與歷史紀錄皆確認成功。`default` 與私人 `internal` 目前都指向 `23853875`。
+- **目前阻擋**：本輪「重建正式包 → SteamCMD 上傳 → internal 驗收 → default 發布」已完成，沒有組建發布阻擋。
+- **下一步**：發行前後台核對已於 2026-06-23 完成；若遊戲程式再有修改，需建立新 Build 重走 `internal` 驗收，不可直接覆蓋 `default`。
+
+### 2026-06-21 鑀韻西：今日收工交接與下一輪優先順序
+
+- **今日狀態**：今天完成的介面、靈魂奉獻、收集冊、牌型表、骰子外觀與錯誤修正，已通過語法、四語 645 keys、正式 Windows 包驗證及 Electron smoke；今晚不再修改遊戲程式。
+- **P0｜製作人 + AI：上傳最新 SteamPipe Build**：製作人先前確認 BuildID `23816702` 已設為 `default`，但今天後續修改尚未上傳。下一輪先將目前 `dist/steam-windows` 上傳至測試 branch，記錄新 BuildID，完整測試後再切換 `default`。
+- **P1｜製作人實機驗收**：用 Steam 用戶端測試啟動、三種固定視窗大小、存檔續玩、Steam 成就、Steam Cloud、彩虹骰外觀、靈魂奉獻、商店、收集冊、牌型表、融合與枷鎖；我與阿扣可依結果立即修正。
+- **P2｜平衡調整**：實玩新靈魂奉獻項目與輪迴契約，確認價格、等級效果、敵人 HP 與靈魂收益；目前先保留既有暫定價格，等製作人試玩後集中調整。
+- **P3｜文件同步**：更新已落後現況的 `FULL_VERSION_ROADMAP.md`、Steam README、上傳封包與檢查表，補記最新 BuildID、四語 645 keys、成就與 Cloud 已實作／已測狀態。
+- **P4｜Steam 商店素材**：待本輪 UI 確認不再變動後，重新擷取 6 張 `1920x1080` 商店截圖並上傳，避免介面仍調整時重複製作。
+- **P5｜7 月 1 日發行前檢查**：核對定價、發售日期與選項、商店頁、Base Game 最新 Build、Demo 入口、15 項成就、支援功能欄位、Steam Cloud 與 Auto-Cloud Root Path。
+- **後續內容（非當前阻擋）**：新遺物／融合、敵人／Boss／挑戰、無限塔變化與鍵盤快捷鍵；排行榜與每日挑戰維持研究項目，不列為首發承諾。
+- **阿扣協作**：已依 `US$5.00` 上限完成唯讀盤點；結論同樣將「今天版本上傳 SteamPipe」列為最高優先，並指出發行文件與商店截圖已落後目前版本。
+
+### 2026-06-21 鑀韻西：神話超載卡片 NEW 標籤移到框外
+
+- 根因：`js/ui.js` 原本把 `NEW` 做成卡片內右上角斜向緞帶，但卡片為了保護圓角內容使用 `overflow-hidden`，文字會被卡片邊界裁切。
+- 修正：`js/ui.js` 為每張融合選擇卡加入不裁切的 wrapper；`css/style.css` 將新合成標記改為卡片右上方的小型水平標籤，標籤底緣貼齊卡片上框，卡片本身仍保留內容裁切。
+- i18n：沿用既有四語 `ui.fusion_new_item`，目前皆為 `NEW`，未新增文案或語系 key。
+- 驗證：Electron `675x1200` 三欄與 `450x800` 單欄實測均確認標籤完整位於框外、可見且無水平溢位；頁面錯誤為 0。`node --check`、四語 645 keys、`npm.cmd run steam:package:verify` 均通過，正式 Windows 包已重建並完成啟動 smoke。
+
+### 2026-06-21 鑀韻西：資訊框切換與彩虹骰辨識度修正
+
+- 資訊框：`js/ui.js` 為遺物／枷鎖詳情 toast 新增 keyed toggle。再次點擊同一項目會關閉現有詳情；點擊不同項目會先關閉舊詳情再開新內容，避免堆疊。一般戰鬥 toast 不參與此狀態，仍可與詳情提示並存。
+- 互動相容：沿用既有遺物 pointer／click 去重；按 X、10 秒逾時與第二次點擊都會清除詳情狀態。教學枷鎖 callback 只在真正開啟詳情時觸發。
+- 彩虹骰：`js/diceSkin.js` 重新分配並實圖確認八色為紅、橙、金黃、藍、紫、銀白、綠、青綠；1 與 3、1 與 6 均不再近色。所有濾鏡增加對比並針對過亮／過暗色調調整亮度，強化骰面數字辨識。
+- 阿扣協作：使用 `--max-budget-usd 5.00` 完成唯讀審查，確認重複框根因在 `showToast()` 無詳情狀態，並建議 keyed 單例與色相／對比實機驗證；最終配色另以 Electron 色相試片排除 CSS 高飽和夾色。
+- 驗證：Electron 實際點擊遺物與枷鎖均通過開啟／再次關閉、不同項目替換、X 關閉後重開與一般 toast 並存；彩虹骰八個 filter 唯一且實圖清晰。顛倒是非覆蓋、盲眼遮罩與零頁面錯誤回歸通過；`node --check`、四語 645 keys、`npm.cmd run steam:package:verify` 均通過，正式 Windows 包已重建並完成啟動 smoke。
+
+### 2026-06-21 鑀韻西：新增藍晶骰／彩虹晶骰外觀選擇
+
+- 功能：設定視窗新增「骰子外觀」，可在既有藍晶骰與彩虹晶骰間切換；彩虹晶骰讓 1～8 點各自使用固定且不同的顏色，切換後立即重繪並以既有 `diceSkin` localStorage／Steam Cloud 白名單保存。
+- Ponytail 實作：沿用同一組 `img/skins/default/dice_0.webp`～`dice_8.webp` 與 CSS filter，未新增圖片、套件或遊戲狀態；`js/diceSkin.js` 改為原生 ES module，由 `js/main.js`、`js/ui.js` 明確匯入，移除隱性全域載入順序。
+- 枷鎖相容：「顛倒是非」的當局亂序色彩優先於玩家外觀，仍保有辨識錯亂效果；彩虹固定色只在無該枷鎖時使用。
+- 防洩漏：外觀濾色依畫面實際 `imgVal` 計算。盲眼、未擲與重骰遮罩使用 `dice_0` 且不著色；幻覺使用假點數的顏色，不會透過色彩洩漏真實點數。
+- i18n：繁中、簡中、英文、日文新增外觀標籤與兩個選項，四語維持 645 keys 完全對齊。
+- 阿扣協作：使用 `--max-budget-usd 5.00` 完成唯讀審查，確認應以 `imgVal` 防止幻覺洩漏、沿用既有 Cloud key，並讓顛倒是非覆蓋固定外觀色。
+- 驗證：Electron 功能測試通過 `450x800` 設定視窗零溢出、即時切換、重載保存、八色唯一、顛倒是非覆蓋與盲眼遮罩；頁面錯誤為 0。`node --check`、四語 645 keys、`npm.cmd run steam:verify`、`npm.cmd run steam:package:verify` 均通過，正式 Windows 包已重建並完成啟動 smoke；測試前後玩家設定已還原。
+
+### 2026-06-21 鑀韻西：修復「顛倒是非」枷鎖沒有實際視覺效果
+
+- 根因：關卡指派與存檔皆有正確產生 `shackleMeta.colorMap`，但骰子改用 PNG 圖片後，`js/ui.js` 仍把亂色結果寫入已不再輸出的 `innerColor`／`outerColor` 背景 class；最終 `<img>` 完全沒有消費色彩資料。
+- 修復：`js/ui.js` 將既有色彩 token 依顏色家族轉成 PNG 骰子的 `hue-rotate`／飽和度／明度濾鏡，並依骰子點數取色，使同一點數在同一關固定顯示同一錯色。
+- 相容性：未改 `colorMap` 存檔格式，正式流程既有 `-500/-600/-900` token 與開發工具／舊測試存檔的 `-800` token 均可解析；無枷鎖、IDLE 與 ROLLING 狀態不套用錯色。
+- 阿扣協作：使用 `--max-budget-usd 5.00` 完成唯讀審查，獨立確認斷點為 PNG 模板未使用舊背景色變數，並確認濾鏡方案是最小且舊存檔相容的修復。
+- 驗證：實際 `renderDice()` 測試通過正式與舊版／開發 colorMap、無枷鎖回歸；瀏覽器實戰套用顛倒是非後，8 顆骰子皆具有效濾鏡，同點數同色且畫面可明顯辨識。`node --check`、四語 642 keys、限縮 diff 與 `npm.cmd run steam:package:verify` 均通過，正式 Windows 包已重建並完成啟動 smoke。
+
+### 2026-06-21 鑀韻西：修復南瓜馬車招式浮字誤顯示為南瓜
+
+- 根因：`js/engine.js` 的 C 區判定與牌型區顯示皆正確產生「南瓜馬車」；問題位於 `js/ui.js` 的招式浮字翻譯查找，使用無邊界的 `startsWith()`，使「南瓜馬車」先命中正確規則後，又被較短的「南瓜」規則覆寫。
+- 修復：`js/ui.js` 新增共用 `isRuleNameMatch()`，名稱只允許完全相同，或符合既有 `牌型名(...)` 後綴格式；同步套用牌型區稀有度、單一浮字與多牌型預覽四個查找點，移除對規則陣列順序的依賴。
+- 影響範圍：未修改 `js/engine.js`、`js/data.js`、倍率、判定優先權或語系文案。現有規則盤點唯一前綴碰撞為「南瓜馬車／南瓜」。
+- 阿扣協作：使用 `--max-budget-usd 5.00` 完成唯讀審查，獨立確認根因為 `showHandNamesPreview()` 的前綴覆寫，並建議覆蓋南瓜馬車、南瓜、多牌型及四語測試。
+- 驗證：實際呼叫 `showHandNamesPreview()` 驗證繁中「南瓜馬車」、簡中「南瓜马车」、英文 `Cinderella Ride`、日文「南瓜の馬車」皆正確；真正的「南瓜」仍顯示南瓜。`node --check js/ui.js`、四語 642 keys、限縮 diff 與 `npm.cmd run steam:package:verify` 均通過，正式 Windows 包已重建並完成啟動 smoke。
+
+### 2026-06-21 製作人決策：阿扣單次協作預算提高至 US$5.00
+
+- 決策：阿扣（Claude Code）正式協作任務的單次預算上限由 `US$1.00` 提高為 `US$5.00`。
+- 長期規則：已更新 `AGENTS.md`；後續 `claude.exe` 正式任務預設使用 `--max-budget-usd 5.00`，除非製作人另行指定。
+- 歷史紀錄：本次調整前以 `US$1.00` 執行的協作仍保留原始預算與結果；新上限只套用於本決策之後的任務。
+- 範圍：只調整 AI 協作安全上限，不涉及遊戲、Steam 或專案營運費用。
+
+### 2026-06-21 鑀韻西：收集冊進度重排與牌型／加成四語修正
+
+- 收集冊：`index.html`、`js/main.js`、`js/ui.js`、`css/style.css` 將總完成度移到「收集冊」標題旁，牌型／遺物／枷鎖各自的收集數移到分頁標籤旁；刪除內容區重複的總進度與分頁進度卡，保留既有 `NEW` 狀態。
+- Ponytail 整理：移除收集冊進度卡的 HTML 產生函式、相關 CSS 與分頁按鈕的一輪無效重複渲染；未新增套件或額外狀態。
+- 加成 i18n：`js/engine.js` 的力量覺醒與力量藥劑加成名稱改讀取 `souls.finalDamage.name`、`consumables.cons_power.name`，不再硬編碼繁體中文；英文力量藥劑 toast 名稱同步統一為 `Power Elixir`。
+- 牌型文案：四語系 C 區複合牌型說明改用各語系正式 A／B 區術語，移除 `4同`、`3同`、`4-of-a-kind`、`quartet` 等混用寫法；日文「碰碰和」改為「対々和」，「双三同」改為「ダブルスリーカード」。中英文 C 區標題也同步改用完整正式術語。
+- 阿扣協作：第一輪廣域唯讀審查使用當時上限 `US$1.00`，回報 `Exceeded USD budget (1)` 且無可用輸出；第二輪限縮審查於同一上限內完成，確認無阻斷問題，並指出英文力量藥劑名稱、兩個日文牌型名稱與分頁重複渲染，皆已修正。製作人之後另行將未來任務上限提高為 `US$5.00`。
+- 驗證：`node --check`、`npm.cmd run steam:i18n:verify`（四語各 642 keys）、限縮 `git diff --check`、英文力量覺醒／力量藥劑實際結算輸出測試均通過。瀏覽器實測 `450x800` 與 `675x1200` 收集冊無水平溢位或重疊，日文 C 區 15 張牌型文案正確；`npm.cmd run steam:package:verify` 完成正式包重建與啟動 smoke。
+
+### 2026-06-21 製作人決策：阿扣單次協作預算提高至 US$1.00
+
+- 決策：阿扣（Claude Code）正式協作任務的單次預算上限由 `US$0.50` 提高為 `US$1.00`。
+- 長期規則：已更新 `AGENTS.md`；後續 `claude.exe` 正式任務預設使用 `--max-budget-usd 1.00`，除非製作人另行指定。
+- 歷史紀錄：過去以 `US$0.50` 執行並超限的審查紀錄保留不變；新上限只套用於本決策之後的任務。
+- 範圍：只調整 AI 協作安全上限，不涉及遊戲、Steam 或專案營運費用。
+
+### 2026-06-20 鑀韻西：靈魂奉獻第二階段擴充與輪迴契約重製
+
+- 任務：依製作人確認，先完成靈魂奉獻功能，花費數值保留日後調整；同時修復項目增加後卡片內容與晶體節點跑出邊框。
+- 資料集中：`js/data.js` 新增 `SOUL_UPGRADE_DB`／`SOUL_UPGRADE_BY_ID`，統一管理所有能力等級、花費與效果參數。首版花費為命運鑑選 60、遺珍感應 40／80／120、神話容器 100／150／200／250、融合羅盤 50／80／110、商店再議 80；之後只需修改這份資料表。
+- 輪迴契約：沿用既有 `soulBurst` 存檔 key 以保留已購買等級，但顯示與行為改為「輪迴契約」。新局準備可在 0～解鎖等級間選擇；強度 N 套用敵人 HP `x(N+1)`、靈魂收益 `+N`，選擇存入該局存檔，不再強制使用最高等級。
+- 舊存檔遷移：舊戰鬥存檔缺少契約強度時沿用原購買等級，避免續玩時 HP 突變。舊靈魂爆發達 2／5／8／10 級會繼承 1／2／3／4 級神話容器；繼承等級標記為免費，重置靈魂時不會退還未支付的花費。
+- 命運鑑選：已購買初始裝備後才可購買；新局在排除封存遺物後，提供 3 件普通遺物直接選 1 件。完成所有新局設定前不清除既有繼續存檔。
+- 遺珍感應：每級把普通遺物單件權重降低 3，稀有／史詩／傳說各提高 1；3 級權重由 `50/30/15/5` 變為 `41/33/18/8`，套用商店與菁英／Boss 掉落。
+- 神話容器：神話持有基礎上限 2，每級 +1，完全取代輪迴契約的舊上限效果；融合超限視窗會依實際容量顯示 `3/3` 等動態數字。
+- 融合羅盤：持有單一融合素材時，另一件素材在商店的單件權重依等級變為 x2／x3／x4；已分解並停用的融合配方不加權。
+- 商店再議：每間商店刷新上限由 1 增為 2，按鈕顯示剩餘次數，商店中存檔／重載後保留已用次數。
+- 新局 UI：`index.html`、`js/ui.js`、`css/style.css` 將輪迴契約與遺物封存整合為「新局準備」視窗，再接命運鑑選三選一；四語系同步新增與改寫 642 個對齊 key。
+- 跑框修復：`.soul-upgrade-card` 設為 `flex: 0 0 auto`，避免可捲動 flex 欄在項目增加後壓縮卡片高度；`450x800` 與 `675x1200` 的十二張卡片皆無內容溢出或互相重疊。
+- 阿扣協作：依規則以 `--max-budget-usd 0.50` 啟動唯讀審查，阿扣回報 `Exceeded USD budget (0.5)`，未取得可用輸出；本輪未以其他代理替代。
+- 自動驗證：隔離 Playwright 已通過舊資料遷移、契約 HP／靈魂收益、命運三選一、封存排除、兩次刷新、遺珍權重、融合權重、神話容量與動態上限、免費繼承重置，以及兩種直向尺寸零跑框／瀏覽器零錯誤。`npm.cmd run steam:package:verify` 通過全部封裝檢查與啟動 smoke，測試程序已退出，正式包不含測試截圖。
+
+### 2026-06-20 鑀韻西：靈魂奉獻新增「預兆之瞳」與「遺物封存」
+
+- 任務：依製作人授權，完成先前討論的兩項靈魂奉獻能力；沿用現有 Vanilla JS 與 localStorage 架構，未新增套件或跨層重構。
+- `預兆之瞳`：最高 1 級、暫定花費 40；商店會預告下一關枷鎖。預告只先決定枷鎖 ID，奇偶、目標數字、封印遺物等動態參數仍在進場時產生；預告會寫入戰鬥存檔，重載商店不會改變結果，進入該關後才消耗。
+- `遺物封存`：最高 2 級，暫定花費 50／100。開始新局前可從已解鎖、非神話、非消耗品遺物中封存 1／2 件，封存項目不會成為初始遺物，也不會出現在該局商店；選擇會記住供下次調整。取消選擇不會清除既有繼續存檔。
+- 存檔相容：`js/main.js` 加入完整 meta upgrade 預設值合併，舊 meta／戰鬥存檔缺少新欄位時會補為 `0`、`[]` 或 `null`；靈魂重置會同步清除記住的封存清單。
+- UI／i18n：`index.html`、`js/ui.js`、`css/style.css` 新增封存選擇視窗與商店預兆卡；四語系同步新增能力、提示與說明文字。封存視窗在 `450x800` 為單欄、`675x1200` 為雙欄，且明確使用 `z-index:140` 避免標題畫面攔截操作。
+- 阿扣協作：依規則以 `--max-budget-usd 0.50` 啟動唯讀審查，但阿扣回報 `Exceeded USD budget (0.5)`，未取得可用輸出；本輪未以其他代理冒充阿扣。
+- 自動驗證：隔離 Playwright 流程已通過封存上限、取消保留舊存檔、初始遺物／商店排除、預兆跨重載固定、下一關採用同一枷鎖、`450x800`／`675x1200` 無水平溢位與瀏覽器零錯誤；測試曾隨機覆蓋 `盲眼` 與 `溺水` 預兆。`npm.cmd run steam:package:verify` 亦通過全部封裝檢查與啟動 smoke，測試程序已退出。
+- 待製作人確認：花費 40、50／100 為首版平衡值，可在實玩後調整。無限塔第一次進入前沒有商店，因此第一次無限層不會顯示預兆；後續無限塔商店照常預告。
+
+### 2026-06-20 製作人決策：阿扣單次協作預算調整
+
+- 決策：阿扣（Claude Code）正式協作任務的單次預算上限由 `US$0.20` 提高為 `US$0.50`。
+- 長期規則：已寫入 `AGENTS.md`；後續 `claude.exe` 正式任務預設使用 `--max-budget-usd 0.50`，除非製作人另行指定。
+- 範圍：只調整 AI 協作安全上限，不涉及遊戲、Steam 或專案營運費用。
+
+### 2026-06-20 鑀韻西：牌型倍率表直向版閱讀優化
+
+- 任務：依製作人確認，修正遊戲內牌型表在直向大視窗被排成兩欄、卡片內容過小的問題。
+- 完成：`js/ui.js` 為群組、網格、卡片、名稱、說明與倍率加入專用 class；`css/style.css` 讓直向版固定單欄，放大卡片及文字，倍率使用固定右側區塊。非直向寬版仍維持雙欄。
+- Ponytail 整理：刪除遊戲說明「牌型」分頁內重複的牌型 HTML 產生碼，改為呼叫 `renderRulesDB()` 後共用結果；未新增套件、資料或語系文字。
+- 阿扣協作：登入狀態正常；唯讀檢查於 69.5 秒時超過 `US$0.20` 預算，未取得可用輸出，本輪未以其他代理替代阿扣。
+- 視覺驗證：Electron 實測 39 張牌型卡；`450x800` 與 `675x1200` 均為單欄、所有名稱／說明／倍率無溢出；遊戲說明牌型分頁同步套用；`1200x800` 寬版維持雙欄且無溢出。
+- 最終驗證：`node --check js/ui.js`、`npm.cmd run steam:i18n:verify`、限縮 `git diff --check`、`npm.cmd run steam:package:verify` 全部通過；`dist/steam-windows/BIBI-DICE.exe` 啟動 smoke 成功且測試程序已退出。
+- 目前狀態：本輪介面需求完成，等待製作人在 Steam 用戶端確認實際閱讀感受。
+
+### 2026-06-20 鑀韻西：遺物商店擴版與靈魂節點雙態化
+
+- 任務：依製作人確認，降低遺物商店下方留白、放大並增加卡片資訊承載；靈魂奉獻移除容易混淆的第三種晶體狀態。
+- 完成：`js/ui.js` 將商店卡片整理成上方名稱／稀有度、下方完整效果說明的兩層結構，不新增遺物資料或虛構分類。
+- 完成：`css/style.css` 放大卡片、標題、效果文字與稀有度標籤；直向版三張卡片會共同使用主要高度。`450x800` 的三筆長描述與 `675x1200` 的三筆一般描述均無裁切、溢出或不必要捲動。
+- 完成：靈魂節點只使用 `img/ui/soul_node_on.png` 與 `img/ui/soul_node_off.png`；已購買為亮、未購買為暗，移除 `soul_node_next.png`。購買能力仍由既有卡片狀態與花費按鈕呈現。
+- 阿扣協作：`claude.exe auth status` 正常；唯讀稽核命令於 184 秒後逾時，未取得可用回覆，本輪未以其他代理冒充阿扣。
+- 驗證：`node --check js/ui.js`、`npm.cmd run steam:i18n:verify`、限縮 `git diff --check`、`npm.cmd run steam:package:verify` 全部通過；`dist/steam-windows/BIBI-DICE.exe` 啟動 smoke 成功。
+- 目前狀態：本輪需求完成，沒有未解決的程式問題；下一步為製作人在 Steam 用戶端實際操作商店與靈魂奉獻，確認視覺偏好。
+
+
+---
+
+### 開工讀取順序
+
+1. 先讀本區，確認目前真實狀態。
+2. 再讀 `AGENTS.md`，遵守繁體中文、MVC 分層、i18n 與改檔前計畫規則。
+3. 再讀 `AI_COLLABORATORS.md`，確認 AI 協作稱呼與身份。
+4. 再讀 `CHANGELOG.md` 最新段落，確認已完成變更。
+5. 若任務與 Steam 有關，先讀 `promo/steam/README.md`，不要直接讀舊任務單或憑記憶判斷。
+
+### 重要協作規則
+
+- 禁止只依照 AI 自己的記憶判斷進度。
+- 禁止從本檔下方很舊的歷史紀錄直接推斷目前狀態。
+- 若文件互相衝突，以本區、`promo/steam/README.md`、`STEAMWORKS_UPLOAD_PACKET.md` 的最新狀態為準，並回報衝突。
+- 新任務完成後，必須把「目前真實狀態」更新到本區或相關主文件，避免下一位 AI 讀到落後資訊。
+- 已封存到 `promo/steam/archive/` 的文件只供追溯，不再作為任務進度來源。
+
+### 已安裝插件與優先使用時機
+
+後續 AI 不可只用通用回答；遇到下列任務時，應優先檢查並使用對應插件或 MCP 工具：
+
+- **Canva**：社群圖、宣傳圖、Steam/itch.io 行銷素材、可編輯設計稿。
+- **Creative Production**：行銷視覺、廣告素材、活動宣傳圖初稿。
+- **Figma / Product Design**：UI 設計稿、Steam 圖像版型、設計系統、Figma 連結或設計轉程式工作。
+- **HyperFrames by HeyGen**：HTML 動畫影片、Steam Trailer、短影片、社群影片、可重複渲染的影片模板。
+- **Remotion**：程式化影片、發售倒數影片、更新公告影片、固定模板式 Trailer。
+- **Presentations**：簡報、提案、pitch deck、企劃整理。
+- **Spreadsheets / Data Analytics**：表格、數據整理、KPI、銷售/願望清單/測試回饋分析。
+- **GitHub**：PR、Issue、CI、發佈流程、程式碼審查與上傳協作。
+- **CodeRabbit**：PR 自動審查、風險檢查、程式碼品質回饋。
+- **Linear**：任務管理、bug 追蹤、Steam 發行 checklist、阿扣/Codex 分工。
+- **Sentry**：玩家端錯誤、Electron/前端例外、發行後 crash 或錯誤追蹤。
+- **Notion / Google Drive / Gmail / Slack**：文件、雲端檔案、信件與團隊訊息需要搜尋、整理或撰寫時使用。
+
+注意：上述插件不能直接補上 in-app Browser 的本機檔案上傳能力；Steamworks 檔案選擇器若仍不支援自動選檔，需由製作人手動選檔，AI 負責產生、驗證、整理正確檔案路徑。
+---
+
+### 目前真實狀態
+
+| 項目 | 狀態 |
+|---|---|
+| Base Game AppID | 4792230 |
+| Base Game Build | 23853875 (default + internal) |
+| 發行排程 | 2026-07-01 00:00 [GMT+8] |
+| Demo AppID | 4796530 |
+| Demo Build | 23496399（已發行） |
+| 四語系 | 668 keys 對齊（2026-06-26 驗證） |
+| SteamCMD | D:\tools\steamcmd\steamcmd.exe |
+| ContentRoot | D:\unity\bibi-dice\dist\steam-windows |
+| itch.io html Build | 第 14 版，同步 Demo Build 23496399 |
+
+---
+
+### 待處理問題
+
+| 問題 | 狀態 | 說明 |
+|---|---|---|
+| Steam 商店影片四語版 | 待乾淨來源 | 英文直式草稿已完成；需製作人提供無特效中文字的來源，再製英/日/簡中/繁中四支 |
+
+### 已處理問題
+
+| 問題 | 完成日期 | 處理方式 |
+|---|---|---|
+| Build 23853875 驗收通過並發布至 default | 2026-06-23 | SteamPipe 上傳，internal 驗收後 SetLive default |
+| 發行前後台總檢完成 | 2026-06-23 | 阿扣唯讀稽核後同步文件 |
+| D 區「兩極」有效牌型顯示變暗 | 2026-06-26 | isZoneActive() 分離判斷 |
+| 南瓜馬車招式浮字誤顯示為南瓜 | 2026-06-21 | isRuleNameMatch() 完全比對 |
+| 顛倒是非枷鎖沒有實際視覺效果 | 2026-06-21 | hue-rotate 濾鏡替代舊背景 class |
+|幻覺枷鎖重骰後沒有立即套用假資訊 | 2026-06-06 | renderDice 收尾套用 fakeNumber |
+| library_hero_3840x1240.png 規則誤判 | 2026-06-01 | 改為必要素材（Steam 守則更新） |
+
+---
+
+### 目前可用指令
+
+    npm.cmd run steam:build               # 重產 dist/steam-demo（純 web）
+    npm.cmd run steam:package              # 打包 Windows Steam build
+    npm.cmd run steam:package:verify       # 打包 + 驗證 + smoke（UI 改後必跑）
+    npm.cmd run steam:verify               # Electron 啟動驗證
+    npm.cmd run steam:i18n:verify          # 四語系 key 對齊驗證
+    npm.cmd run steam:assets:verify        # Steam 素材尺寸驗證（19 必要）
+    npm.cmd run steam:capture              # 重產 9 張 Steam 商店截圖
+    npm.cmd run steam:capsules             # 重產 Store Capsule
+    npm.cmd run steam:library              # 重產 Library 素材
+    npm.cmd run steam:app:dev              # Electron 直接啟動（不重打包）

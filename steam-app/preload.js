@@ -16,9 +16,39 @@ ipcRenderer.on('steam-portrait-size', (_event, payload) => {
 });
 
 contextBridge.exposeInMainWorld('steamPortrait', {
+  setWindowSize(sizeKey) {
+    return ipcRenderer.invoke('steam-portrait-set-size', sizeKey);
+  },
+  getWindowSize() {
+    return ipcRenderer.invoke('steam-portrait-get-size');
+  },
   setSizeClass(className) {
     document.body.classList.remove('steam-portrait-large');
     if (className) document.body.classList.add(className);
     window.dispatchEvent(new Event('resize'));
+  }
+});
+
+contextBridge.exposeInMainWorld('steamCloud', {
+  loadProfile() {
+    return ipcRenderer.invoke('steam-cloud-load-profile');
+  },
+  saveProfile(profile) {
+    return ipcRenderer.invoke('steam-cloud-save-profile', profile);
+  },
+  saveProfileSync(profile) {
+    return ipcRenderer.sendSync('steam-cloud-save-profile-sync', profile);
+  }
+});
+
+contextBridge.exposeInMainWorld('steamAchievements', {
+  unlock(achievementId) {
+    return ipcRenderer.invoke('steam-achievement-unlock', achievementId);
+  }
+});
+
+contextBridge.exposeInMainWorld('electronAPI', {
+  openExternal(url) {
+    return ipcRenderer.invoke('open-external-url', url);
   }
 });

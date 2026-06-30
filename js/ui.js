@@ -1,17 +1,46 @@
 // js/ui.js
-import { RARITY, RELIC_DB, ENEMY_DB, RULE_DB, SHACKLE_DB, getEnemy, FUSION_RECIPES, FUSION_MATERIAL_LOOKUP, CONSUMABLES_DB } from './data.js';
+import { RARITY, RELIC_DB, ENEMY_DB, RULE_DB, SHACKLE_DB, getEnemy, FUSION_RECIPES, FUSION_MATERIAL_LOOKUP, CONSUMABLES_DB, SOUL_UPGRADE_DB, SOUL_UPGRADE_BY_ID } from './data.js';
 import { i18n } from './i18n.js';
 import * as Audio from './audio.js';
+import { getDiceImageFilter, getDiceImageUrl } from './diceSkin.js';
 window.i18n = i18n;
 
-const SOULS_UPG_DEFS = [
-    { id: 'hp', name: '體魄鍛鍊', desc: '最大 HP +1', max: 2, cost: (lv) => 10 },
-    { id: 'rerolls', name: '骰子掌握', desc: '初始重骰次數 +1', max: 2, cost: (lv) => 15 },
-    { id: 'startRelic', name: '初始裝備', desc: '開局隨機獲得 1 個普通遺物', max: 1, cost: (lv) => 30 },
-    { id: 'finalDamage', name: '力量覺醒', desc: '最終傷害 +10%', max: 5, cost: (lv) => 20 },
-    { id: 'soulBurst', name: '靈魂爆發', desc: '敵人血量x(等級+1), 靈魂獲得量+(等級), 在2,5,8,10級時神話遺物上限+1', max: 10, cost: (lv) => 100 }
-];
+const MYTHIC_CHARACTER_ASSETS = {
+    lion: 'img/characters/thunderclaw-lion-cutout.png',
+    pongo: 'img/characters/pongo-cutout.png'
+};
 
+const escapeHtml = value => String(value ?? '').replace(/[&<>"']/g, char => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+}[char]));
+
+const isRuleNameMatch = (rawName, ruleName) =>
+    rawName === ruleName || rawName.startsWith(`${ruleName}(`);
+
+const INVERSION_DICE_FILTERS = {
+    slate: 'grayscale(0.85) brightness(1.15)',
+    blue: 'hue-rotate(0deg)',
+    pink: 'hue-rotate(78deg) saturate(1.3)',
+    purple: 'hue-rotate(45deg) saturate(1.2)',
+    teal: 'hue-rotate(300deg) saturate(1.15)',
+    emerald: 'hue-rotate(270deg) saturate(1.25)',
+    green: 'hue-rotate(270deg) saturate(1.25)',
+    red: 'hue-rotate(120deg) saturate(1.45)',
+    amber: 'hue-rotate(170deg) saturate(1.35) brightness(1.05)',
+    yellow: 'hue-rotate(180deg) saturate(1.35) brightness(1.08)',
+    orange: 'hue-rotate(150deg) saturate(1.4) brightness(1.04)'
+};
+
+const getInversionDiceFilter = (value, shackleMeta) => {
+    if (!shackleMeta || !Array.isArray(shackleMeta.colorMap) || value < 1) return '';
+    const colorToken = shackleMeta.colorMap[(value - 1) % shackleMeta.colorMap.length];
+    const colorFamily = /^bg-([a-z]+)-\d+$/.exec(colorToken)?.[1];
+    return INVERSION_DICE_FILTERS[colorFamily] || '';
+};
 
 // 緩存 DOM 元素
 export const el = {
@@ -33,6 +62,7 @@ export const el = {
     shopOverlay: document.getElementById('shop-overlay'),
     shopItemsContainer: document.getElementById('shop-items'),
     shopRerollBtn: document.getElementById('shop-reroll-btn'),
+    shopForecast: document.getElementById('shop-omen-forecast'),
     endOverlay: document.getElementById('end-overlay'),
     endTitle: document.getElementById('end-title'),
     endDesc: document.getElementById('end-desc'),
@@ -48,6 +78,7 @@ export const el = {
     endStats: document.getElementById('end-stats'),
     btnCollection: document.getElementById('btn-collection'),
     collectionModal: document.getElementById('collection-modal'),
+    collectionTotalProgress: document.getElementById('collection-total-progress'),
     btnCloseCollection: document.getElementById('btn-close-collection'),
     collectionContent: document.getElementById('collection-content'),
     tabHands: document.getElementById('tab-hands'),
@@ -58,15 +89,32 @@ export const el = {
     btnCloseSouls: document.getElementById('btn-close-souls'),
     soulsContent: document.getElementById('souls-content'),
     soulsHeaderText: document.getElementById('souls-header-text'),
+    runSetupModal: document.getElementById('run-setup-modal'),
+    runSetupRelicSection: document.getElementById('run-setup-relic-section'),
+    runSetupRelicList: document.getElementById('run-setup-relic-list'),
+    runSetupRelicCount: document.getElementById('run-setup-relic-count'),
+    runContractSection: document.getElementById('run-contract-section'),
+    runContractRange: document.getElementById('run-contract-range'),
+    runContractLevel: document.getElementById('run-contract-level'),
+    runContractEffect: document.getElementById('run-contract-effect'),
+    btnRunSetupConfirm: document.getElementById('btn-run-setup-confirm'),
+    btnRunSetupCancel: document.getElementById('btn-run-setup-cancel'),
+    btnCloseRunSetup: document.getElementById('btn-close-run-setup'),
+    fateSelectionModal: document.getElementById('fate-selection-modal'),
+    fateSelectionList: document.getElementById('fate-selection-list'),
+    btnFateSelectionCancel: document.getElementById('btn-fate-selection-cancel'),
+    btnCloseFateSelection: document.getElementById('btn-close-fate-selection'),
     devModal: document.getElementById('dev-modal'),
     settingsTitle: document.getElementById('settings-title'),
     devRelicSelect: document.getElementById('dev-relic-select'),
     devRelicCancel: document.getElementById('dev-relic-cancel'),
     devRelicConfirm: document.getElementById('dev-relic-confirm'),
     fusionReplaceModal: document.getElementById('fusion-replace-modal'),
+    fusionReplaceTitle: document.getElementById('fusion-replace-title'),
     fusionReplaceContent: document.getElementById('fusion-replace-content'),
     damagePreviewBar: document.getElementById('damage-preview-bar'),
     finalDamagePreview: document.getElementById('final-damage-preview'),
+    playerHeartHp: document.getElementById('player-heart-hp'),
     boardPanel: document.getElementById('board-panel')
 };
 
@@ -92,6 +140,22 @@ if (document.getElementById('btn-rules')) {
 export function shootConfetti() {
     if (typeof confetti === 'function') {
         const rect = getGameViewportRect();
+        const highlightCard = document.querySelector('.highlight-card');
+        if (highlightCard) {
+            const cardRect = highlightCard.getBoundingClientRect();
+            const leftOrigin = {
+                x: Math.max(0.04, (cardRect.left - 8) / window.innerWidth),
+                y: Math.max(0.12, (cardRect.top + cardRect.height * 0.28) / window.innerHeight)
+            };
+            const rightOrigin = {
+                x: Math.min(0.96, (cardRect.right + 8) / window.innerWidth),
+                y: leftOrigin.y
+            };
+            const colors = ['#fbbf24', '#f87171', '#60a5fa', '#34d399'];
+            confetti({ particleCount: 36, spread: 42, angle: 225, origin: leftOrigin, colors });
+            confetti({ particleCount: 36, spread: 42, angle: 135, origin: rightOrigin, colors });
+            return;
+        }
         const origin = {
             x: (rect.left + rect.width * 0.5) / window.innerWidth,
             y: (rect.top + rect.height * 0.56) / window.innerHeight
@@ -102,10 +166,47 @@ export function shootConfetti() {
 
 // 更新：讓 Toast 提示更顯眼，支援多行文字
 let activeToasts = [];
+let activeInfoToast = null;
 
-export function showToast(msg, callback) {
+function repositionToasts() {
+    const rect = getGameViewportRect();
+    const spacing = Math.max(8, Math.min(12, rect.height * 0.012));
+    let currentY = rect.top + rect.height * 0.42;
+
+    for (let i = activeToasts.length - 1; i >= 0; i--) {
+        let t = activeToasts[i].toast || activeToasts[i];
+        t.style.left = `${rect.left + rect.width / 2}px`;
+        t.style.maxWidth = `${Math.max(240, rect.width - 32)}px`;
+        t.style.top = currentY + 'px';
+        currentY += t.offsetHeight + spacing;
+    }
+}
+
+export function clearToasts() {
+    activeToasts.forEach(entry => {
+        if (entry.timer) clearTimeout(entry.timer);
+        entry.dismissed = true;
+        if (entry.toast) entry.toast.remove();
+    });
+    activeToasts = [];
+    activeInfoToast = null;
+}
+
+export function showToast(msg, callback, options = {}) {
+    const duration = Number.isFinite(options.duration) ? options.duration : 2200;
+    const closable = Boolean(options.closable);
+    const zIndex = Number.isFinite(options.zIndex) ? options.zIndex : null;
+    const toggleKey = typeof options.toggleKey === 'string' ? options.toggleKey : null;
+    if (toggleKey && activeInfoToast) {
+        const shouldCloseOnly = activeInfoToast.key === toggleKey;
+        activeInfoToast.dismiss();
+        if (shouldCloseOnly) return null;
+    }
+
     let toast = document.createElement('div');
     toast.className = 'fixed bg-slate-900 text-white font-bold py-4 px-6 rounded-2xl shadow-[0_0_50px_rgba(122,59,245,0.4)] border-2 border-violet-500/60 z-[100] text-lg md:text-2xl text-center flex flex-col gap-2 toast-enter whitespace-pre-wrap leading-relaxed transition-all duration-300';
+    if (closable) toast.style.paddingRight = '2.75rem';
+    if (zIndex !== null) toast.style.zIndex = String(zIndex);
 
     if (msg instanceof Node) {
         toast.appendChild(msg);
@@ -113,31 +214,51 @@ export function showToast(msg, callback) {
         toast.textContent = msg;
     }
 
-    document.body.appendChild(toast);
-    activeToasts.push(toast);
+    const toastEntry = {
+        toast,
+        timer: null,
+        dismissed: false
+    };
+    const dismissToast = () => {
+        if (toastEntry.dismissed) return;
+        toastEntry.dismissed = true;
+        if (toastEntry.timer) clearTimeout(toastEntry.timer);
+        if (activeInfoToast && activeInfoToast.toast === toast) activeInfoToast = null;
+        toast.style.opacity = '0';
+        setTimeout(() => {
+            toast.remove();
+            activeToasts = activeToasts.filter(entry => entry.toast !== toast);
+            repositionToasts();
+            if(callback) callback();
+        }, 300);
+    };
 
-    // Reposition all active toasts
-    const rect = getGameViewportRect();
-    const spacing = Math.max(8, Math.min(12, rect.height * 0.012));
-    let currentY = rect.top + rect.height * 0.42;
-    
-    // We position them relative to top or bottom? Let's just stack them downwards from middle
-    for (let i = activeToasts.length - 1; i >= 0; i--) {
-        let t = activeToasts[i];
-        t.style.left = `${rect.left + rect.width / 2}px`;
-        t.style.maxWidth = `${Math.max(240, rect.width - 32)}px`;
-        t.style.top = currentY + 'px';
-        currentY += t.offsetHeight + spacing;
+    if (closable) {
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.className = 'absolute top-1.5 right-2.5 text-slate-400 hover:text-white active:scale-95 transition-colors text-2xl leading-none font-black';
+        closeBtn.style.position = 'absolute';
+        closeBtn.style.top = '6px';
+        closeBtn.style.right = '10px';
+        closeBtn.style.left = 'auto';
+        closeBtn.textContent = '×';
+        closeBtn.setAttribute('aria-label', i18n.t('ui.toast_close') || 'Close');
+        closeBtn.setAttribute('title', i18n.t('ui.toast_close') || 'Close');
+        closeBtn.onclick = (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            dismissToast();
+        };
+        toast.appendChild(closeBtn);
     }
 
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => { 
-            toast.remove(); 
-            activeToasts = activeToasts.filter(t => t !== toast);
-            if(callback) callback(); 
-        }, 300);
-    }, 2200);
+    document.body.appendChild(toast);
+    activeToasts.push(toastEntry);
+    if (toggleKey) activeInfoToast = { key: toggleKey, toast, dismiss: dismissToast };
+
+    repositionToasts();
+    toastEntry.timer = setTimeout(dismissToast, duration);
+    return toast;
 }
 
 export function playShackleSealAnimation(callback) {
@@ -182,8 +303,8 @@ export function renderRulesDB() {
     ];
     
     groups.forEach(g => {
-        html += `<h3 class="text-base md:text-lg font-black text-slate-300 mt-4 mb-2 border-b border-slate-700 pb-1">${i18n.t(g.titleKey)}</h3>`;
-        html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">`;
+        html += `<h3 class="rules-group-title text-base md:text-lg font-black text-slate-300 mt-4 mb-2 border-b border-slate-700 pb-1">${i18n.t(g.titleKey)}</h3>`;
+        html += `<div class="rules-grid grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">`;
         RULE_DB[g.key].slice().sort((a, b) => b.rarity - a.rarity).forEach((rule, rIdx) => {
             const origIdx = RULE_DB[g.key].indexOf(rule);
             let rStyle = RARITY[rule.rarity] || RARITY[1];
@@ -192,19 +313,33 @@ export function renderRulesDB() {
             let ruleDesc = i18n.t(`rules.rule_${letter}${origIdx}.desc`) || rule.desc;
 
             html += `
-            <div class="flex justify-between items-center bg-slate-900/50 p-2.5 rounded-lg border border-slate-700">
-                <div>
-                    <div class="flex items-center gap-2">
-                        <div class="text-sm md:text-base font-bold ${rStyle.color}">${ruleName}</div>
-                    </div>
-                    <div class="text-[12px] md:text-sm text-slate-400">${ruleDesc}</div>
+            <div class="rule-card flex justify-between items-center bg-slate-900/50 p-2.5 rounded-lg border border-slate-700">
+                <div class="rule-card__copy">
+                    <div class="rule-card__name font-bold ${rStyle.color}">${ruleName}</div>
+                    <div class="rule-card__desc text-slate-400">${ruleDesc}</div>
                 </div>
-                <div class="text-base md:text-lg font-black text-violet-300">${rule.multi}</div>
+                <div class="rule-card__multi font-black text-violet-300">${rule.multi}</div>
             </div>`;
         });
         html += `</div>`;
     });
     el.rulesContent.innerHTML = html;
+}
+
+function syncLowHealthVignette(isDanger) {
+    const ID = 'low-health-vignette';
+    let overlay = document.getElementById(ID);
+    if (isDanger) {
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.id = ID;
+            overlay.className = 'low-health-vignette';
+            document.body.appendChild(overlay);
+        }
+        overlay.classList.remove('hidden');
+    } else {
+        if (overlay) overlay.classList.add('hidden');
+    }
 }
 
 // --- 更新 UI 狀態 ---
@@ -241,7 +376,22 @@ export function updateHeaderUI(player, stage) {
         maxHp = 1;
     }
     
-    el.playerHp.innerText = `${player.hp}/${maxHp}`;
+    if (el.playerHp) el.playerHp.innerText = `${player.hp}/${maxHp}`;
+    if (el.playerHeartHp) {
+        const hp = Math.max(0, Math.floor(player.hp || 0));
+        const totalHearts = Math.max(hp, Math.max(0, Math.floor(maxHp || 0)));
+        const hpLabel = `<span class="heart-hp__label">${i18n.t('ui.hp')}:</span>`;
+        const heartHtml = Array.from({ length: totalHearts }, (_, idx) => {
+            const isFull = idx < hp;
+            const src = isFull ? 'img/Heart_full.png' : 'img/Heart_null.png';
+            const cls = isFull ? 'heart-hp__icon' : 'heart-hp__icon heart-hp__icon--empty';
+            return `<img class="${cls}" src="${src}" alt="" aria-hidden="true" data-heart-index="${idx}">`;
+        }).join('');
+        el.playerHeartHp.innerHTML = hpLabel + heartHtml;
+        el.playerHeartHp.setAttribute('aria-label', `HP ${hp}/${maxHp}`);
+        el.playerHeartHp.classList.toggle('heart-hp--state-danger', hp > 0 && hp <= 1);
+        syncLowHealthVignette(hp > 0 && hp <= 1);
+    }
 
     let recycleStatus = document.getElementById('recycle-status');
     if (recycleStatus) {
@@ -256,7 +406,7 @@ export function updateEnemyUI(stage) {
     let shackleHtml = '';
     // legacy support if stage.shackles array exists
     if (stage.shackles && stage.shackles.length > 0) {
-        shackleHtml += stage.shackles.map(sh => `<span onclick="window.showShackleInfo('${sh.id}')" class="ml-2 bg-red-900/80 hover:bg-red-800 text-[12px] md:text-xs text-red-300 px-1.5 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0">當前枷鎖</span>`).join('');
+        shackleHtml += stage.shackles.map(sh => `<span onclick="window.showShackleInfo('${sh.id}')" class="ml-2 bg-red-900/80 hover:bg-red-800 text-[12px] md:text-xs text-red-300 px-1.5 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0">${i18n.t('ui.dev_shackle_current')}</span>`).join('');
     }
 
     // new logic using activeShackle
@@ -265,7 +415,10 @@ export function updateEnemyUI(stage) {
         const _shackleDef = SHACKLE_DB.find(s => s.id === activeShackleId);
         const _shackleName = _shackleDef ? (i18n.t(`shackles.${activeShackleId}.name`) || _shackleDef.name) : '';
         const _shackleLabel = _shackleName.replace(/[【】\[\]]/g, '').trim();
-        shackleHtml += `<span onclick="window.showShackleInfo('${activeShackleId}')" class="ml-1.5 bg-red-900/80 hover:bg-red-800 text-[12px] md:text-[12px] text-red-300 px-1 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0 max-w-[72px] md:max-w-none truncate" title="${_shackleLabel}">${_shackleLabel}</span>`;
+        const _newBadge = window.isCurrentShackleNew && window.isCurrentShackleNew(activeShackleId)
+            ? renderNewBadge('new-badge--shackle')
+            : '';
+        shackleHtml += `<span id="active-shackle-badge" onclick="window.showShackleInfo('${activeShackleId}')" class="relative ml-1.5 bg-red-900/80 hover:bg-red-800 text-[12px] md:text-[12px] text-red-300 px-1 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0 max-w-[72px] md:max-w-none truncate overflow-visible" title="${_shackleLabel}">${_shackleLabel}${_newBadge}</span>`;
     }
 
     let localizedEnemyName = enemy.name;
@@ -346,6 +499,13 @@ window.showShackleInfo = function(id) {
         nameSpan.className = s.type === 'heavy' ? "text-red-400 font-black" : "text-amber-400 font-black";
         nameSpan.textContent = sName; // 使用翻譯後的名稱
 
+        if (window.isCurrentShackleNew && window.isCurrentShackleNew(id)) {
+            let badgeSpan = document.createElement('span');
+            badgeSpan.className = "new-badge new-badge--inline";
+            badgeSpan.textContent = i18n.t('ui.fusion_new_item');
+            nameSpan.appendChild(badgeSpan);
+        }
+
         let descSpan = document.createElement('span');
         descSpan.className = "text-sm md:text-lg text-slate-200 mt-2 block";
         descSpan.textContent = sDesc; // 使用翻譯後的描述
@@ -353,7 +513,13 @@ window.showShackleInfo = function(id) {
         container.appendChild(nameSpan);
         container.appendChild(descSpan);
 
-        showToast(container);
+        const infoToast = showToast(container, null, {
+            duration: 10000,
+            closable: true,
+            zIndex: 220,
+            toggleKey: `shackle:${id}`
+        });
+        if (infoToast && window.onTutorialShackleInfo) window.onTutorialShackleInfo(id);
     }
 };
 
@@ -439,7 +605,12 @@ window.showRelicInfo = function(id) {
         container.appendChild(nameSpan);
         container.appendChild(descSpan);
 
-        showToast(container);
+        showToast(container, null, {
+            duration: 10000,
+            closable: true,
+            zIndex: 220,
+            toggleKey: `relic:${id}`
+        });
     }
 };
 
@@ -504,6 +675,7 @@ export function renderDice(battle, activeHighlight, player) {
         let textColor = "text-white";
         let extraClass = "";
         let displayOrderStyle = "";
+        let inversionFilter = "";
 
         // UI Hook: dizziness - random visual grid order
         if (shackleId === 'dizziness' && shackleMeta && shackleMeta.displayOrder) {
@@ -540,11 +712,9 @@ export function renderDice(battle, activeHighlight, player) {
             }
         }
 
-        // UI Hook: inversion - color mapping corruption
+        // UI Hook: inversion - apply the saved color map to the PNG dice skin.
         if (shackleId === 'inversion' && shackleMeta && shackleMeta.colorMap && battle.state !== 'IDLE' && battle.state !== 'ROLLING') {
-            innerColor = shackleMeta.colorMap[idx % 8];
-            outerColor = shackleMeta.colorMap[(idx + 3) % 8];
-            textColor = "text-slate-900";
+            inversionFilter = getInversionDiceFilter(d.val, shackleMeta);
         }
 
         let octagonClip = "[clip-path:polygon(29%_0%,71%_0%,100%_29%,100%_71%,71%_100%,29%_100%,0%_71%,0%_29%)]";
@@ -610,6 +780,8 @@ export function renderDice(battle, activeHighlight, player) {
         if (battle.state === 'ROLLING' && !d.locked) valDisplay = '?';
 
         const imgVal = (valDisplay === '-' || valDisplay === '?') ? 0 : valDisplay;
+        const skinFilter = getDiceImageFilter(imgVal);
+        const diceImageFilter = inversionFilter || skinFilter;
 
         const isLockedVisible = d.locked && !activeHighlight;
         const lockedStateClass = isLockedVisible ? 'dice-locked-state' : '';
@@ -628,7 +800,7 @@ export function renderDice(battle, activeHighlight, player) {
 
         return `
         <div id="dice-element-${idx}" onclick="window.toggleLock(${idx})" class="${wrapperClass} ${extraClass} ${lockedStateClass}${cursedLockedClass}" ${displayOrderStyle}>
-            <img src="${getDiceImageUrl(imgVal)}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;display:block;" alt="${d.val}">
+            <img src="${getDiceImageUrl(imgVal)}" style="width:100%;height:100%;object-fit:contain;pointer-events:none;display:block;${diceImageFilter ? `filter:${diceImageFilter};` : ''}" alt="${imgVal || ''}">
             ${lockIconHtml}
             ${baseBadgeHtml}
         </div>`;
@@ -648,26 +820,50 @@ export function startRerollAnimation(unlockedIndices, finalDice) {
     });
     _rerollAnimTimers = [];
 
+    const shackleId = window.getStageActiveShackle ? window.getStageActiveShackle() : null;
+    const shackleMeta = window.getShackleMeta ? window.getShackleMeta() : null;
+    const isBlindMasked = (diceIdx) => (
+        shackleId === 'blind'
+        && shackleMeta
+        && Array.isArray(shackleMeta.blindIndices)
+        && shackleMeta.blindIndices.includes(diceIdx)
+    );
+    const getFinalDisplayValue = (die, diceIdx) => {
+        if (isBlindMasked(diceIdx)) {
+            return 0;
+        }
+        if (shackleId === 'illusion' && die && !die.locked) {
+            return shackleMeta && shackleMeta.fakeNumber ? shackleMeta.fakeNumber : 8;
+        }
+        return die ? die.val : 0;
+    };
+
     unlockedIndices.forEach((diceIdx, staggerPos) => {
         const dieEl = document.getElementById(`dice-element-${diceIdx}`);
         if (!dieEl) return;
         const img = dieEl.querySelector('img');
         if (!img) return;
 
-        const finalVal = finalDice[diceIdx].val;
+        const finalVal = getFinalDisplayValue(finalDice[diceIdx], diceIdx);
         const staggerDelay = staggerPos * 35;
+        const setAnimatedFace = (value) => {
+            img.src = getDiceImageUrl(value);
+            img.style.filter = shackleId === 'inversion'
+                ? getInversionDiceFilter(value, shackleMeta)
+                : getDiceImageFilter(value);
+        };
 
         const startTimeout = setTimeout(() => {
             dieEl.classList.add('dice-rerolling');
 
             const scrambleInterval = setInterval(() => {
-                img.src = getDiceImageUrl(Math.ceil(Math.random() * 8));
+                setAnimatedFace(isBlindMasked(diceIdx) || shackleId === 'illusion' ? finalVal : Math.ceil(Math.random() * 8));
             }, 40);
             _rerollAnimTimers.push({ interval: scrambleInterval, timeout: null });
 
             const stopTimeout = setTimeout(() => {
                 clearInterval(scrambleInterval);
-                img.src = getDiceImageUrl(finalVal);
+                setAnimatedFace(finalVal);
                 dieEl.classList.remove('dice-rerolling');
             }, 280);
             _rerollAnimTimers.push({ interval: null, timeout: stopTimeout });
@@ -686,7 +882,8 @@ export function renderControls(battle, maxRolls) {
     let rollClass = isRollDisabled ? "opacity-40 cursor-not-allowed" : "hover:bg-violet-600 active:border-b-0 active:translate-y-1 shadow-lg shadow-violet-950/60";
 
     const tutState = window.getTutorialState?.();
-    const isTutorialAttackLocked = tutState?.mode && tutState.step < 4;
+    const tutorialAttackUnlockStep = window.TUTORIAL_ATTACK_UNLOCK_STEP || 7;
+    const isTutorialAttackLocked = tutState?.mode && tutState.step < tutorialAttackUnlockStep;
     let isScoreDisabled = (isRolling || isAttacking || isTutorialAttackLocked);
     let scoreClass = isScoreDisabled ? "opacity-40 cursor-not-allowed" : "hover:bg-red-500 active:border-b-0 active:translate-y-1 shadow-lg shadow-red-950/60";
 
@@ -805,8 +1002,24 @@ export function renderScore(battle, activeHighlight) {
         return tagName;
     };
 
+    const isZoneActive = (tag) => {
+        if (isAmnesia || !tag || tag.name === '無' || tag.name === '???') return false;
+        return true;
+    };
+
+    const isZoneSelectable = (group, tag) => {
+        if (!isZoneActive(tag)) return false;
+        if (group === 'D') return true;
+        return Array.isArray(battle.dice) && battle.dice.some(d => d.matchedGroups && d.matchedGroups[group]);
+    };
+
+    const getZoneAction = (group, tag) => {
+        if (!isZoneSelectable(group, tag)) return 'aria-disabled="true"';
+        return `onclick="window.setHighlight('${group}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();window.setHighlight('${group}')}" role="button" tabindex="0"`;
+    };
+
     let getBoxStyle = (group, tag) => {
-        if(tag.name === '無') return 'text-slate-500 border-slate-700/50 opacity-40 bg-slate-900/50';
+        if(!isZoneActive(tag)) return 'text-slate-500 border-slate-700/50 opacity-40 bg-slate-900/50 cursor-not-allowed select-none';
         let base = '';
         if(group === 'A') base = 'text-blue-300 border-blue-900/80 bg-blue-900/30 hover:border-blue-400 cursor-pointer transition-all active:scale-95';
         if(group === 'B') base = 'text-pink-300 border-pink-900/80 bg-pink-900/30 hover:border-pink-400 cursor-pointer transition-all active:scale-95';
@@ -818,6 +1031,34 @@ export function renderScore(battle, activeHighlight) {
         return base;
     };
 
+    const getRuleMetaForTag = (tag) => {
+        if (isAmnesia || !tag || tag.name === '無' || tag.name === '???') return null;
+        const ruleId = window.getRuleCollectionId ? window.getRuleCollectionId(tag.name) : null;
+        for (const rules of Object.values(RULE_DB)) {
+            const byId = ruleId ? rules.find(rule => rule.id === ruleId) : null;
+            if (byId) return byId;
+            const byName = rules.find(rule => isRuleNameMatch(tag.name, rule.name));
+            if (byName) return byName;
+        }
+        return null;
+    };
+
+    const getTagEmphasisClass = (tag) => {
+        const rule = getRuleMetaForTag(tag);
+        return rule && rule.rarity >= 5 ? 'zone-legendary-hand' : '';
+    };
+
+    const zoneTags = [res.tagA, res.tagB, res.tagC, res.tagD];
+    const hasZoneResonance = !isAmnesia && zoneTags.every(tag => tag && tag.name !== '無' && tag.name !== '???');
+    const zoneGridClass = hasZoneResonance ? 'zone-resonance' : '';
+
+    const getTagNewBadge = (tag) => {
+        if (isAmnesia || !tag || tag.name === '無' || tag.name === '???') return '';
+        const ruleId = window.getRuleCollectionId ? window.getRuleCollectionId(tag.name) : null;
+        if (!ruleId) return '';
+        return isUncollected('hand', ruleId) ? renderNewBadge('new-badge--zone') : '';
+    };
+
     el.scoreDisplay.innerHTML = `
     <div class="flex flex-col gap-1 px-2 py-1.5 rounded-lg border mb-1.5" style="background:#0e0e10;border-color:#2a2a2c;">
         <div class="flex items-baseline gap-2 whitespace-nowrap">
@@ -827,20 +1068,24 @@ export function renderScore(battle, activeHighlight) {
         <div id="score-notes-row" class="scrollable-row flex overflow-x-auto gap-1 pb-0.5 scroll-smooth hide-scrollbar">${notesHtml}</div>
     </div>
 
-    <div class="grid grid-cols-4 gap-1 mb-1">
-        <div id="zone-box-A" onclick="window.setHighlight('A')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('A', res.tagA)}">
+    <div class="relative grid grid-cols-4 gap-1 mb-1 ${zoneGridClass}">
+        <div id="zone-box-A" ${getZoneAction('A', res.tagA)} class="relative flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-visible ${getBoxStyle('A', res.tagA)} ${getTagEmphasisClass(res.tagA)}">
+            ${getTagNewBadge(res.tagA)}
             <div class="text-[12px] md:text-[12px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagA.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagA.multi.toFixed(1)}</div>
         </div>
-        <div id="zone-box-B" onclick="window.setHighlight('B')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('B', res.tagB)}">
+        <div id="zone-box-B" ${getZoneAction('B', res.tagB)} class="relative flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-visible ${getBoxStyle('B', res.tagB)} ${getTagEmphasisClass(res.tagB)}">
+            ${getTagNewBadge(res.tagB)}
             <div class="text-[12px] md:text-[12px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagB.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagB.multi.toFixed(1)}</div>
         </div>
-        <div id="zone-box-C" onclick="window.setHighlight('C')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('C', res.tagC)}">
+        <div id="zone-box-C" ${getZoneAction('C', res.tagC)} class="relative flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-visible ${getBoxStyle('C', res.tagC)} ${getTagEmphasisClass(res.tagC)}">
+            ${getTagNewBadge(res.tagC)}
             <div class="text-[12px] md:text-[12px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagC.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagC.multi.toFixed(1)}</div>
         </div>
-        <div id="zone-box-D" onclick="window.setHighlight('D')" class="flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-hidden ${getBoxStyle('D', res.tagD)}">
+        <div id="zone-box-D" ${getZoneAction('D', res.tagD)} class="relative flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-visible ${getBoxStyle('D', res.tagD)} ${getTagEmphasisClass(res.tagD)}">
+            ${getTagNewBadge(res.tagD)}
             <div class="text-[12px] md:text-[12px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagD.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagD.multi.toFixed(1)}</div>
         </div>
@@ -957,7 +1202,7 @@ function showHandNameFloat(rawName) {
 
     let foundGroup = null, foundIndex = -1, foundRule = null;
     for (const g of groups) {
-        const idx = g.rules.findIndex(r => rawName === r.name || rawName.startsWith(r.name));
+        const idx = g.rules.findIndex(r => isRuleNameMatch(rawName, r.name));
         if (idx !== -1) { foundGroup = g.letter; foundIndex = idx; foundRule = g.rules[idx]; break; }
     }
 
@@ -1008,8 +1253,9 @@ export function showHandNamesPreview(scoreResult) {
     ];
 
     zones.forEach(z => {
-        const rule = allRules.find(r => r.name === z.name || z.name.startsWith(r.name));
+        const rule = allRules.find(r => isRuleNameMatch(z.name, r.name));
         z.handRarity = rule ? (rule.rarity || 1) : 1;
+        z.ruleId = rule ? rule.id : null;
     });
 
     zones.sort((a, b) => {
@@ -1023,7 +1269,7 @@ export function showHandNamesPreview(scoreResult) {
         ['groupA', 'groupB', 'groupC', 'groupD'].forEach(gKey => {
             const letter = gKey.replace('group', '').toLowerCase();
             (RULE_DB[gKey] || []).forEach((r, rIdx) => {
-                if (r.name === z.name || z.name.startsWith(r.name)) {
+                if (isRuleNameMatch(z.name, r.name)) {
                     const translated = i18n.t(`rules.rule_${letter}${rIdx}.name`);
                     if (translated && translated !== `rules.rule_${letter}${rIdx}.name`) {
                         displayName = translated;
@@ -1036,6 +1282,11 @@ export function showHandNamesPreview(scoreResult) {
             const isFinal = (idx === zones.length - 1);
             Audio.playHandRevealSound(rarity, isFinal);
             const floatEl = document.createElement('div');
+
+            if (isFinal && rarity >= 5) {
+                showMythicHandReveal(displayName, z);
+                return;
+            }
 
             if (isFinal) {
                 floatEl.className = `hand-float-base hand-float-${getRarityClass(rarity)}`;
@@ -1054,6 +1305,49 @@ export function showHandNamesPreview(scoreResult) {
     });
 }
 
+function getMythicCharacterKey(hand) {
+    if (hand?.ruleId === 'rule_a0' || hand?.zone === 'A') return 'lion';
+    return 'pongo';
+}
+
+function showMythicHandReveal(handName, hand) {
+    const oldOverlay = document.querySelector('.mythic-hand-reveal');
+    if (oldOverlay) oldOverlay.remove();
+
+    const characterKey = getMythicCharacterKey(hand);
+    const titleLayoutClass = /^[\x00-\x7F\s-]+$/.test(handName || '') ? ' mythic-hand-reveal--latin' : '';
+    const letters = Array.from(handName || '')
+        .map((char, index) => `<span style="--i:${index};">${escapeHtml(char)}</span>`)
+        .join('');
+    const overlay = document.createElement('div');
+    overlay.className = `mythic-hand-reveal mythic-hand-reveal--${characterKey}${titleLayoutClass}`;
+    overlay.innerHTML = `
+        <div class="mythic-hand-reveal__aura"></div>
+        <div class="mythic-hand-reveal__slash mythic-hand-reveal__slash--top"></div>
+        <div class="mythic-hand-reveal__slash mythic-hand-reveal__slash--bottom"></div>
+        <img class="mythic-hand-reveal__character" src="${MYTHIC_CHARACTER_ASSETS[characterKey]}" alt="" aria-hidden="true">
+        <div class="mythic-hand-reveal__text">
+            <div class="mythic-hand-reveal__eyebrow">${escapeHtml(i18n.t('ui.highlight_mythic_hand'))}</div>
+            <div class="mythic-hand-reveal__title" aria-label="${escapeHtml(handName)}">${letters}</div>
+            <div class="mythic-hand-reveal__multi">x${Number(hand?.multi || 0).toLocaleString(undefined, { maximumFractionDigits: 1 })}</div>
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    if (el.battleArea) {
+        el.battleArea.classList.add('highlight-cinematic-hit', 'mythic-hand-hit');
+        setTimeout(() => el.battleArea.classList.remove('highlight-cinematic-hit', 'mythic-hand-hit'), 2200);
+    }
+
+    const removeOverlay = () => {
+        if (overlay.parentNode) overlay.remove();
+    };
+    overlay.addEventListener('animationend', event => {
+        if (event.target === overlay) removeOverlay();
+    }, { once: true });
+    setTimeout(removeOverlay, 4300);
+}
+
 function getRarityClass(rarity) {
     if (rarity >= 5) return 'mythic';
     if (rarity >= 4) return 'legendary';
@@ -1062,7 +1356,71 @@ function getRarityClass(rarity) {
     return 'common';
 }
 
-export function playDamageStepsAnimation(steps, callback) {
+function showHighlightBurst(highlight) {
+    if (!highlight || !Array.isArray(highlight.tags) || highlight.tags.length === 0) return;
+    if (highlight.tags.includes('damage_100m')) {
+        showEpicHighlightBurst(highlight);
+        return;
+    }
+    const rect = getGameViewportRect();
+    const banner = document.createElement('div');
+    banner.className = 'highlight-burst-banner';
+    banner.style.left = `${rect.left + rect.width / 2}px`;
+    banner.style.top = `${rect.top + rect.height * 0.34}px`;
+    banner.innerHTML = `
+        <div class="highlight-burst-banner__main">${getHighlightLabel(highlight.primaryTag || highlight.tags[0])}</div>
+        <div class="highlight-burst-banner__sub">${highlight.tags.slice(1, 3).map(getHighlightLabel).join(' / ')}</div>
+    `;
+    document.body.appendChild(banner);
+    if (el.battleArea) {
+        el.battleArea.classList.add('highlight-cinematic-hit');
+        setTimeout(() => el.battleArea.classList.remove('highlight-cinematic-hit'), 1400);
+    }
+    setTimeout(() => banner.remove(), 1500);
+}
+
+function showEpicHighlightBurst(highlight) {
+    const oldOverlay = document.querySelector('.highlight-epic-overlay');
+    if (oldOverlay) oldOverlay.remove();
+
+    const overlay = document.createElement('div');
+    const mainLabel = getHighlightLabel('damage_100m');
+    const supportTags = highlight.tags
+        .filter(id => id !== 'damage_100m')
+        .slice(0, 3)
+        .map(getHighlightLabel);
+
+    overlay.className = 'highlight-epic-overlay';
+    overlay.innerHTML = `
+        <div class="highlight-epic-overlay__flare"></div>
+        <div class="highlight-epic-overlay__shockwave"></div>
+        <div class="highlight-epic-overlay__particles">
+            ${Array.from({ length: 18 }, (_, index) => `<span style="--i:${index};"></span>`).join('')}
+        </div>
+        <div class="highlight-epic-overlay__content">
+            <div class="highlight-epic-overlay__eyebrow">${i18n.t('ui.highlight_card_eyebrow')}</div>
+            <div class="highlight-epic-overlay__title">${mainLabel}</div>
+            <div class="highlight-epic-overlay__damage">${Number(highlight.damage || 0).toLocaleString()}</div>
+            ${supportTags.length ? `<div class="highlight-epic-overlay__tags">${supportTags.map(label => `<span>${label}</span>`).join('')}</div>` : ''}
+        </div>
+    `;
+    document.body.appendChild(overlay);
+
+    if (el.battleArea) {
+        el.battleArea.classList.add('highlight-cinematic-hit', 'highlight-epic-hit');
+        setTimeout(() => el.battleArea.classList.remove('highlight-cinematic-hit', 'highlight-epic-hit'), 2200);
+    }
+
+    const removeOverlay = () => {
+        if (overlay.parentNode) overlay.remove();
+    };
+    overlay.addEventListener('animationend', event => {
+        if (event.target === overlay) removeOverlay();
+    }, { once: true });
+    setTimeout(removeOverlay, 5200);
+}
+
+export function playDamageStepsAnimation(steps, callback, options = {}) {
     // Sync mythic-suppressed visuals on relic cards (single pass)
     if (el.inventoryGrid) {
         const _asid = window.getStageActiveShackle && window.getStageActiveShackle();
@@ -1115,6 +1473,7 @@ export function playDamageStepsAnimation(steps, callback) {
 
         if (step.final) {
             Audio.playAttackImpactSound();
+            showHighlightBurst(options.highlight);
             countUpTo(el.finalScoreValue, step.damageAfter, animDuration, callback);
             return;
         }
@@ -1202,6 +1561,37 @@ const RARITY_LEFT_COLOR = {
     4: 'rgba(245,158,11,0.5)',
     5: 'rgba(6,182,212,0.55)'
 };
+
+function renderNewBadge(extraClass = '') {
+    return `<span class="new-badge ${extraClass}">${i18n.t('ui.fusion_new_item')}</span>`;
+}
+
+function isUncollected(type, id) {
+    if (typeof id !== 'string' || id === '') return false;
+    return window.isCollectionUnlocked ? !window.isCollectionUnlocked(type, id) : false;
+}
+
+export function renderShopForecast(forecast) {
+    if (!el.shopForecast) return;
+    const shackle = forecast ? SHACKLE_DB.find(item => item.id === forecast.id) : null;
+    if (!shackle) {
+        el.shopForecast.innerHTML = '';
+        el.shopForecast.classList.add('hidden');
+        return;
+    }
+
+    const name = i18n.t(`shackles.${shackle.id}.name`) || shackle.name;
+    const desc = i18n.t(`shackles.${shackle.id}.desc`) || shackle.desc;
+    const typeClass = shackle.type === 'heavy' ? 'shop-omen-forecast--heavy' : 'shop-omen-forecast--light';
+    el.shopForecast.className = `shop-omen-forecast ${typeClass}`;
+    el.shopForecast.innerHTML = `
+        <button type="button" class="shop-omen-forecast__button" onclick="window.showShackleInfo('${shackle.id}')">
+            <span class="shop-omen-forecast__eyebrow">${i18n.t('ui.omen_forecast_title')}</span>
+            <span class="shop-omen-forecast__name">${name}</span>
+            <span class="shop-omen-forecast__desc">${desc}</span>
+        </button>`;
+}
+
 export function renderShopItems(shopItems, player) {
     let playerRelicSet = (player && player.relics) ? new Set(player.relics) : null;
 
@@ -1223,28 +1613,26 @@ export function renderShopItems(shopItems, player) {
         let rName = isConsumable ? i18n.t(`consumables.${r.id}.name`) : (i18n.t(`relics.${r.id}.name`) || r.name);
         let rDesc = isConsumable ? i18n.t(`consumables.${r.id}.desc`) : (i18n.t(`relics.${r.id}.desc`) || r.desc);
         let cardBg = isConsumable ? 'linear-gradient(160deg,#1c1a14 0%,#19160e 100%)' : 'linear-gradient(160deg,#1c1b1d 0%,#161519 100%)';
-        let consumableBadgeHtml = isConsumable ? `<span class="text-[12px] md:text-[12px] px-2 py-0.5 rounded-full bg-amber-900/60 text-amber-300 border border-amber-600/60 font-bold">${i18n.t('messages.consumable_tag')}</span>` : '';
-        let selectBtnText = isConsumable ? i18n.t('messages.shop_select_consumable') : i18n.t('messages.shop_select');
+        let consumableBadgeHtml = isConsumable ? `<span class="shop-choice-card__tag bg-amber-900/60 text-amber-300 border border-amber-600/60">${i18n.t('messages.consumable_tag')}</span>` : '';
+        let collectionNewBadge = !isConsumable && isUncollected('relic', r.id) ? renderNewBadge('new-badge--shop') : '';
 
         return `
-        <div class="p-3 rounded-xl flex flex-col justify-between relative overflow-hidden" style="background:${cardBg}; border:1px solid rgba(74,68,85,0.3); border-top:2px solid ${RARITY_TOP_COLOR[r.rarity]}; border-left:3px solid ${RARITY_LEFT_COLOR[r.rarity]};">
+        <div class="relative">
+        <button type="button" data-relic-id="${r.id}" onclick="window.buyItem(${idx})" class="shop-choice-card" style="--shop-accent:${RARITY_TOP_COLOR[r.rarity]}; background:${cardBg}; border:1px solid rgba(74,68,85,0.3); border-top:2px solid ${RARITY_TOP_COLOR[r.rarity]}; border-left:3px solid ${RARITY_LEFT_COLOR[r.rarity]};">
             <div class="absolute top-0 right-0 w-24 h-24 ${style.bg} blur-3xl rounded-full transform translate-x-1/2 -translate-y-1/2 opacity-60"></div>
-            <div class="relative z-10">
-                <div class="flex flex-col gap-1 mb-2">
-                    <div class="flex justify-between items-start gap-2">
-                        <h3 class="text-base md:text-xl font-black leading-tight ${style.color}">${rName}</h3>
-                        <div class="flex flex-col items-end gap-1 shrink-0">
-                            <span class="text-[12px] md:text-[12px] px-2 py-0.5 rounded-full ${style.bg} ${style.color} border ${style.border} font-bold tracking-wide">${i18n.t(`messages.rarity_${r.rarity}`) || style.label}</span>
+            <div class="shop-choice-card__content relative z-10">
+                <div class="shop-choice-card__header">
+                    <h3 class="shop-choice-card__title ${style.color}">${rName}</h3>
+                    <div class="shop-choice-card__meta">
+                            <span class="shop-choice-card__tag ${style.bg} ${style.color} border ${style.border}">${i18n.t(`messages.rarity_${r.rarity}`) || style.label}</span>
                             ${consumableBadgeHtml}
-                            ${isFusionMaterial ? `<span onclick="window.showFusionInfo('${fusionResultId}')" class="text-xs cursor-pointer px-1.5 py-0.5 rounded bg-cyan-900/60 text-cyan-300 border border-cyan-500 font-black shadow-[0_0_8px_rgba(34,211,238,0.4)] animate-pulse hover:bg-cyan-800 hover:scale-105 active:scale-95 transition-all">${i18n.t('ui.shop_fusion_hint') || '可融合'}</span>` : ''}
-                        </div>
+                            ${isFusionMaterial ? `<span onclick="event.stopPropagation(); window.showFusionInfo('${fusionResultId}')" class="shop-choice-card__fusion">${i18n.t('ui.shop_fusion_hint') || '可融合'}</span>` : ''}
                     </div>
                 </div>
-                <p class="text-xs md:text-sm text-slate-400 mb-3 min-h-[2.5rem] leading-relaxed">${rDesc}</p>
+                <p class="shop-choice-card__desc">${rDesc}</p>
             </div>
-            <button onclick="window.buyItem(${idx})" class="w-full btn-primary font-black py-2.5 rounded-lg relative z-10 text-sm md:text-base">
-                ${selectBtnText}
             </button>
+        ${collectionNewBadge}
         </div>`;
     }).join('');
     
@@ -1253,6 +1641,9 @@ export function renderShopItems(shopItems, player) {
 
 export function showFusionReplaceModal(currentFusions, newFusionId, callback) {
     if (!el.fusionReplaceModal || !el.fusionReplaceContent) return;
+    if (el.fusionReplaceTitle) {
+        el.fusionReplaceTitle.textContent = i18n.t('ui.fusion_limit_title', currentFusions.length);
+    }
 
     let html = '';
     const allRelics = [...currentFusions, newFusionId];
@@ -1287,10 +1678,10 @@ export function showFusionReplaceModal(currentFusions, newFusionId, callback) {
         let newFusionText = i18n.t('ui.fusion_new_item') || '本次合成';
         let discardBtnText = i18n.t('ui.fusion_discard_btn') || '捨棄並分解';
 
-        // 修正右上角文字看不清楚的問題：將原本的 right-8 改為 right-6，並稍微增加 padding
         html += `
-        <div class="bg-slate-900/80 border-2 ${isNew ? 'border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.3)]' : 'border-slate-600'} rounded-xl p-3 md:p-4 flex flex-col justify-between h-full relative overflow-hidden">
-            ${isNew ? `<div class="absolute -top-1 -right-6 bg-amber-500 text-slate-900 text-[12px] font-black px-10 py-1 rotate-45 text-center">${newFusionText}</div>` : ''}
+        <div class="fusion-replace-card-wrap">
+            ${isNew ? `<span class="fusion-replace-card-new">${newFusionText}</span>` : ''}
+            <div class="fusion-replace-card bg-slate-900/80 border-2 ${isNew ? 'border-amber-400 shadow-[0_0_15px_rgba(251,191,36,0.3)]' : 'border-slate-600'} rounded-xl p-3 md:p-4 flex flex-col justify-between overflow-hidden">
             <div>
                 <div class="flex justify-between items-start mb-2 mt-2">
                     <h3 class="text-base md:text-lg font-black ${style.color}">${rName}</h3>
@@ -1303,6 +1694,7 @@ export function showFusionReplaceModal(currentFusions, newFusionId, callback) {
             <button onclick="window.selectFusionDiscard('${id}')" class="w-full mt-4 bg-red-950/80 hover:bg-red-900 border border-red-800 hover:border-red-500 text-red-400 hover:text-white font-black py-2.5 rounded-lg transition-all active:scale-95 text-sm md:text-base">
                 ${discardBtnText}
             </button>
+            </div>
         </div>
         `;
     });
@@ -1325,10 +1717,10 @@ export function showFusionReplaceModal(currentFusions, newFusionId, callback) {
     el.fusionReplaceModal.classList.add('flex');
 }
 
-export function updateShopRerollBtn(shopRerollsUsed, hasScavenger = false, hasFusionRecycle = false) {
-    if (shopRerollsUsed === 0) {
-        // 動態抓取 ui.btn_reroll 語系鍵
-        el.shopRerollBtn.innerHTML = i18n.t('ui.btn_reroll') || "刷新商店 (限1次)";
+export function updateShopRerollBtn(shopRerollsUsed, rerollLimit = 1) {
+    const remaining = Math.max(0, rerollLimit - shopRerollsUsed);
+    if (remaining > 0) {
+        el.shopRerollBtn.innerHTML = i18n.t('ui.shop_reroll_remaining', remaining, rerollLimit);
         el.shopRerollBtn.className = "w-full sm:w-auto flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl transition-colors active:scale-95 text-base md:text-lg border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1 shadow-lg shadow-emerald-900/50";
         el.shopRerollBtn.disabled = false;
     } else {
@@ -1356,6 +1748,65 @@ function getLocalizedCombo(comboStr) {
         return name;
     }).join(' + ');
 }
+
+function getHighlightLabel(id) {
+    if (!id) return '';
+    const key = `ui.highlight_${id}`;
+    const translated = i18n.t(key);
+    return translated && translated !== key ? translated : id;
+}
+
+function renderHighlightBadges(highlight, extraClass = '') {
+    if (!highlight || !Array.isArray(highlight.tags) || highlight.tags.length === 0) return '';
+    return `<div class="highlight-badge-row ${extraClass}">${
+        highlight.tags.slice(0, 5).map(id => `<span class="highlight-badge">${getHighlightLabel(id)}</span>`).join('')
+    }</div>`;
+}
+
+function buildHighlightShareText(highlight, damage, combo, relics, multiplier = 0) {
+    const title = highlight && highlight.primaryTag ? getHighlightLabel(highlight.primaryTag) : i18n.t('ui.highlight_card_title');
+    const lines = [
+        `BIBI DICE - ${title}`,
+        `${i18n.t('ui.highlight_damage')}: ${Number(damage || 0).toLocaleString()}`,
+        `${i18n.t('ui.highlight_multiplier')}: x${Number(multiplier || highlight?.multiplier || 0).toLocaleString(undefined, { maximumFractionDigits: 1 })}`,
+        `${i18n.t('ui.highlight_combo')}: ${getLocalizedCombo(combo || highlight?.combo || '無')}`
+    ];
+    if (highlight && Array.isArray(highlight.tags) && highlight.tags.length > 0) {
+        lines.push(highlight.tags.map(getHighlightLabel).join(' / '));
+    }
+    if (Array.isArray(relics) && relics.length > 0) {
+        const relicNames = relics.slice(0, 6).map(id => {
+            const relicDef = RELIC_DB.find(x => x.id === id) || CONSUMABLES_DB.find(x => x.id === id);
+            if (!relicDef) return null;
+            return id.startsWith('cons_') ? i18n.t(`consumables.${id}.name`) : (i18n.t(`relics.${id}.name`) || relicDef.name);
+        }).filter(Boolean);
+        if (relicNames.length > 0) lines.push(`${i18n.t('messages.history_relics_label')}: ${relicNames.join(' ')}`);
+    }
+    return lines.join('\n');
+}
+
+window.copyHighlightSummary = async function() {
+    const text = window.__lastHighlightShareText || '';
+    if (!text) return;
+    try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+        } else {
+            const area = document.createElement('textarea');
+            area.value = text;
+            area.style.position = 'fixed';
+            area.style.opacity = '0';
+            document.body.appendChild(area);
+            area.select();
+            document.execCommand('copy');
+            area.remove();
+        }
+        showToast(i18n.t('ui.copy_highlight_done'));
+    } catch (error) {
+        console.warn('copyHighlightSummary failed', error);
+        showToast(text, null, { closable: true, duration: 6000 });
+    }
+};
 
 export function renderHistoryModal(records, metaData) {
     const dash = '-';
@@ -1447,6 +1898,7 @@ export function renderHistoryModal(records, metaData) {
             let rName = id.startsWith('cons_') ? i18n.t(`consumables.${id}.name`) : (i18n.t(`relics.${id}.name`) || relicDef.name);
             return `<span class="bg-slate-700 px-1.5 py-0.5 rounded text-[12px] text-slate-300 mr-1 mb-1 inline-block">${rName}</span>`;
         }).filter(Boolean).join('') : '<span class="text-slate-500 text-[12px]">' + i18n.t('messages.none') + '</span>';
+        const highlightHtml = renderHighlightBadges(r.highlight, 'highlight-badge-row--history');
 
         return `
         <div class="bg-slate-800 rounded-lg border border-slate-700 overflow-hidden">
@@ -1484,6 +1936,7 @@ export function renderHistoryModal(records, metaData) {
                     <div class="text-[12px] text-slate-500 mb-0.5">${i18n.t('ui.history_relics')}</div>
                     <div class="flex flex-wrap">${relicHtml}</div>
                 </div>
+                ${highlightHtml ? `<div class="mt-2">${highlightHtml}</div>` : ''}
             </div>
         </div>`;
     }).filter(Boolean).reverse().join('');
@@ -1493,7 +1946,7 @@ export function renderHistoryModal(records, metaData) {
         `<div class="history-list-section">${listHtml}</div>`;
 }
 
-export function renderEndGameStats(highestDamage, highestDamageCombo, relics) {
+export function renderEndGameStats(highestDamage, highestDamageCombo, relics, highlight = null, highestMulti = 0) {
     if(!el.endStats) return;
     
     let relicHtml = (relics && relics.length > 0) ? relics.map(id => {
@@ -1501,30 +1954,79 @@ export function renderEndGameStats(highestDamage, highestDamageCombo, relics) {
         if (!relicDef) return '';
         let style = RARITY[relicDef.rarity] || RARITY[1];
         let rName = id.startsWith('cons_') ? i18n.t(`consumables.${id}.name`) : (i18n.t(`relics.${id}.name`) || relicDef.name);
-        return `<span class="${style.bg} ${style.color} px-2 py-1 rounded text-xs border ${style.border} inline-block">${rName}</span>`;
-    }).join(' ') : '<span class="text-slate-500">' + i18n.t('messages.none') + '</span>';
+        return `<span class="highlight-relic-chip ${style.bg} ${style.color} border ${style.border}">${rName}</span>`;
+    }).join('') : '<span class="highlight-card__empty">' + i18n.t('messages.none') + '</span>';
     
+    const primaryHighlight = highlight && highlight.primaryTag ? getHighlightLabel(highlight.primaryTag) : i18n.t('ui.highlight_card_title');
+    const shareText = buildHighlightShareText(highlight, highestDamage, highestDamageCombo, relics, highestMulti);
+    window.__lastHighlightShareText = shareText;
+
     el.endStats.innerHTML = `
-        <div class="bg-slate-900/80 p-3 rounded-lg border border-slate-700/50 w-full max-w-sm mx-auto shadow-inner text-left">
-            <div class="mb-2 border-b border-slate-700/50 pb-2">
-                <div class="text-xs text-slate-400 mb-1">${i18n.t('messages.history_dmg_label')}</div>
-                <div class="text-2xl md:text-3xl font-black text-white">${Number(highestDamage).toLocaleString()}</div>
-                <div class="text-sm font-bold text-blue-300 mt-1">${getLocalizedCombo(highestDamageCombo)}</div>
+        <div class="highlight-card w-full mx-auto text-left">
+            <div class="highlight-card__header">
+                <div>
+                    <div class="highlight-card__eyebrow">${i18n.t('ui.highlight_card_eyebrow')}</div>
+                    <div class="highlight-card__title">${primaryHighlight}</div>
+                </div>
+                <button type="button" class="highlight-copy-btn" onclick="window.copyHighlightSummary()">${i18n.t('ui.copy_highlight')}</button>
             </div>
-            <div>
-                <div class="text-xs text-slate-400 mb-1.5">${i18n.t('messages.history_relics_label')}</div>
-                <div class="flex overflow-x-auto gap-1 pb-1 scroll-smooth hide-scrollbar">${relicHtml}</div>
+            ${renderHighlightBadges(highlight)}
+            <div class="highlight-card__stats">
+                <div>
+                    <div class="highlight-card__label">${i18n.t('ui.highlight_damage')}</div>
+                    <div class="highlight-card__damage">${Number(highestDamage).toLocaleString()}</div>
+                </div>
+                <div>
+                    <div class="highlight-card__label">${i18n.t('ui.highlight_multiplier')}</div>
+                    <div class="highlight-card__multi">x${Number(highestMulti || highlight?.multiplier || 0).toLocaleString(undefined, { maximumFractionDigits: 1 })}</div>
+                </div>
+            </div>
+            <div class="highlight-card__combo">
+                <div class="highlight-card__label">${i18n.t('ui.highlight_combo')}</div>
+                <div class="highlight-card__combo-text">${getLocalizedCombo(highestDamageCombo || highlight?.combo)}</div>
+            </div>
+            <div class="highlight-card__relics">
+                <div class="highlight-card__label">${i18n.t('messages.history_relics_label')}</div>
+                <div class="highlight-card__relic-grid">${relicHtml}</div>
             </div>
         </div>
     `;
 }
 
-// --- 收集冊渲染 ---
-export function renderCollectionModal(tab) {
+function renderCollectionEntry({ unlocked, title, desc, colorClass, metaHtml = '', badgeHtml = '', extraHtml = '', lockedText }) {
+    const stateClass = unlocked ? 'collection-entry--unlocked' : 'collection-entry--locked';
+    return `
+        <div class="collection-entry ${stateClass}">
+            <div class="collection-entry__main">
+                <div class="collection-entry__title-row">
+                    <h3 class="collection-entry__title ${unlocked ? colorClass : 'text-slate-500'}">${unlocked ? title : '???'}</h3>
+                    ${unlocked ? badgeHtml : ''}
+                </div>
+                <p class="collection-entry__desc">${unlocked ? desc : lockedText}</p>
+                ${unlocked ? extraHtml : ''}
+            </div>
+            ${unlocked && metaHtml ? `<div class="collection-entry__meta">${metaHtml}</div>` : ''}
+        </div>`;
+}
+
+export function renderCollectionModal(tab = 'hands') {
     const coll = window.getCollection ? window.getCollection() : { hands: [], relics: [], shackles: [] };
+    const newItems = window.getCollectionNewItems ? window.getCollectionNewItems() : { hands: [], relics: [], shackles: [] };
+    const summary = window.getCollectionSummary ? window.getCollectionSummary() : null;
     let html = '';
+    if (el.collectionTotalProgress) {
+        el.collectionTotalProgress.textContent = summary?.total
+            ? i18n.t('ui.collection_total_progress', summary.total.collected, summary.total.count)
+            : '';
+    }
 
     if (tab === 'hands') {
+        const allRules = [
+            ...(RULE_DB.groupA || []),
+            ...(RULE_DB.groupB || []),
+            ...(RULE_DB.groupC || []),
+            ...(RULE_DB.groupD || []),
+        ];
         const groups = [
             { key: 'groupA', titleKey: 'rules.groupA_desc' },
             { key: 'groupB', titleKey: 'rules.groupB_desc' },
@@ -1532,103 +2034,92 @@ export function renderCollectionModal(tab) {
             { key: 'groupD', titleKey: 'rules.groupD_desc' }
         ];
         groups.forEach(g => {
-            html += `<h3 class="text-base md:text-lg font-black text-slate-300 mt-2 mb-1 border-b border-slate-700 pb-1">${i18n.t(g.titleKey)}</h3>`;
-            html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">`;
+            html += `<section class="collection-section"><h3 class="collection-section-title">${i18n.t(g.titleKey)}</h3>`;
+            html += `<div class="collection-grid">`;
             let letter = g.key.replace('group', '').toLowerCase();
             let renderArr = RULE_DB[g.key].slice().sort((a, b) => b.rarity - a.rarity);
             renderArr.forEach((rule, rIdx) => {
                 const origIdx = RULE_DB[g.key].indexOf(rule);
-                const unlocked = coll.hands.includes(rule.name);
+                const unlocked = coll.hands.includes(rule.id) || coll.hands.includes(rule.name);
+                const isNew = unlocked && (newItems.hands || []).includes(rule.id);
                 let ruleName = i18n.t(`rules.rule_${letter}${origIdx}.name`) || rule.name;
                 let ruleDesc = i18n.t(`rules.rule_${letter}${origIdx}.desc`) || rule.desc;
 
-                const nameStr = unlocked ? `${ruleName}` : `???`;
-                const descStr = unlocked ? ruleDesc : i18n.t('ui.locked'); // Hardcoded fallback for now
-                const opacity = unlocked ? 'opacity-100' : 'opacity-50 grayscale';
                 let rStyle = RARITY[rule.rarity] || RARITY[1];
-                let nameColor = unlocked ? rStyle.color : 'text-slate-200';
-                html += `
-                <div class="flex justify-between items-center bg-slate-900/50 p-2.5 rounded-lg border border-slate-700 ${opacity}">
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <div class="text-sm md:text-base font-bold ${nameColor}">${nameStr}</div>
-                        </div>
-                        <div class="text-[12px] md:text-sm text-slate-400">${descStr}</div>
-                    </div>
-                </div>`;
+                const newBadge = isNew ? renderNewBadge() : '';
+                const metaHtml = `<span class="collection-entry__tag ${rStyle.bg} ${rStyle.color} border ${rStyle.border}">${i18n.t(`messages.rarity_${rule.rarity}`) || rStyle.label}</span>`;
+                html += renderCollectionEntry({
+                    unlocked,
+                    title: ruleName,
+                    desc: ruleDesc,
+                    colorClass: rStyle.color,
+                    metaHtml,
+                    badgeHtml: newBadge,
+                    lockedText: i18n.t('ui.locked')
+                });
             });
-            html += `</div>`;
+            html += `</div></section>`;
         });
     } else if (tab === 'relics') {
-        html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">`;
+        html += `<div class="collection-grid">`;
         RELIC_DB.forEach(r => {
             const unlocked = coll.relics.includes(r.id);
-            if (unlocked) {
-                let style = RARITY[r.rarity] || RARITY[1];
-                let rName = r.id.startsWith('cons_') ? i18n.t(`consumables.${r.id}.name`) : (i18n.t(`relics.${r.id}.name`) || r.name);
-                let rDesc = r.id.startsWith('cons_') ? i18n.t(`consumables.${r.id}.desc`) : (i18n.t(`relics.${r.id}.desc`) || r.desc);
+            const isNew = unlocked && (newItems.relics || []).includes(r.id);
+            let style = RARITY[r.rarity] || RARITY[1];
+            let rName = r.id.startsWith('cons_') ? i18n.t(`consumables.${r.id}.name`) : (i18n.t(`relics.${r.id}.name`) || r.name);
+            let rDesc = r.id.startsWith('cons_') ? i18n.t(`consumables.${r.id}.desc`) : (i18n.t(`relics.${r.id}.desc`) || r.desc);
 
-                let fusionText = '';
-                if (r.rarity === 5 && FUSION_RECIPES[r.id]) {
-                    let mat1Id = FUSION_RECIPES[r.id].mat1;
-                    let mat2Id = FUSION_RECIPES[r.id].mat2;
-                    let mat1Def = RELIC_DB.find(x => x.id === mat1Id);
-                    let mat2Def = RELIC_DB.find(x => x.id === mat2Id);
-                    let mat1Name = mat1Def ? (i18n.t(`relics.${mat1Id}.name`) || mat1Def.name) : mat1Id;
-                    let mat2Name = mat2Def ? (i18n.t(`relics.${mat2Id}.name`) || mat2Def.name) : mat2Id;
-                    fusionText = `<p class="text-xs text-amber-300 mt-1 border-t border-slate-600 pt-1">${i18n.t('ui.fusion_text_short', mat1Name, mat2Name)}</p>`;
-                }
-                html += `
-                <div class="bg-slate-800 p-2 rounded-xl border border-slate-600 flex flex-col justify-between relative overflow-hidden">
-                    <div class="flex justify-between items-start mb-1">
-                        <h3 class="text-sm md:text-base font-black ${style.color}">${rName}</h3>
-                        <span class="text-[12px] md:text-xs px-1.5 py-0.5 rounded ${style.bg} ${style.color} border ${style.border} font-bold">${i18n.t(`messages.rarity_${r.rarity}`) || style.label}</span>
-                    </div>
-                    <p class="text-xs md:text-sm text-slate-300 font-bold">${rDesc}</p>
-                    ${fusionText}
-                </div>`;
-            } else {
-                html += `
-                <div class="bg-slate-900 p-2 rounded-xl border border-slate-700 flex flex-col justify-between relative overflow-hidden opacity-50">
-                    <div class="flex justify-between items-start mb-1">
-                        <h3 class="text-sm md:text-base font-black text-slate-500">???</h3>
-                    </div>
-                    <p class="text-xs md:text-sm text-slate-600 font-bold">${i18n.t('ui.locked_relic')}</p>
-                </div>`;
+            let fusionText = '';
+            if (r.rarity === 5 && FUSION_RECIPES[r.id]) {
+                let mat1Id = FUSION_RECIPES[r.id].mat1;
+                let mat2Id = FUSION_RECIPES[r.id].mat2;
+                let mat1Def = RELIC_DB.find(x => x.id === mat1Id);
+                let mat2Def = RELIC_DB.find(x => x.id === mat2Id);
+                let mat1Name = mat1Def ? (i18n.t(`relics.${mat1Id}.name`) || mat1Def.name) : mat1Id;
+                let mat2Name = mat2Def ? (i18n.t(`relics.${mat2Id}.name`) || mat2Def.name) : mat2Id;
+                fusionText = `<p class="collection-entry__note">${i18n.t('ui.fusion_text_short', mat1Name, mat2Name)}</p>`;
             }
+            const newBadge = isNew ? renderNewBadge() : '';
+            const metaHtml = `<span class="collection-entry__tag ${style.bg} ${style.color} border ${style.border}">${i18n.t(`messages.rarity_${r.rarity}`) || style.label}</span>`;
+            html += renderCollectionEntry({
+                unlocked,
+                title: rName,
+                desc: rDesc,
+                colorClass: style.color,
+                metaHtml,
+                badgeHtml: newBadge,
+                extraHtml: fusionText,
+                lockedText: i18n.t('ui.locked_relic')
+            });
         });
         html += `</div>`;
     } else if (tab === 'shackles') {
-        html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">`;
+        html += `<div class="collection-grid">`;
         SHACKLE_DB.forEach(s => {
             const unlocked = coll.shackles.includes(s.id);
-            if (unlocked) {
-                let colorClass = s.type === 'heavy' ? "text-red-400" : "text-amber-400";
-                let typeLabel = s.type === 'heavy' ? "重度" : "輕度";
-                let sName = i18n.t(`shackles.${s.id}.name`) || s.name;
-                let sDesc = i18n.t(`shackles.${s.id}.desc`) || s.desc;
-                html += `
-                <div class="bg-slate-800 p-2 rounded-xl border border-slate-600 flex flex-col justify-between relative overflow-hidden">
-                    <div class="flex justify-between items-start mb-1">
-                        <h3 class="text-sm md:text-base font-black ${colorClass}">${sName}</h3>
-                        <span class="text-[12px] md:text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-300 border border-slate-500 font-bold">${typeLabel}</span>
-                    </div>
-                    <p class="text-xs md:text-sm text-slate-300 font-bold">${sDesc}</p>
-                </div>`;
-            } else {
-                html += `
-                <div class="bg-slate-900 p-2 rounded-xl border border-slate-700 flex flex-col justify-between relative overflow-hidden opacity-50">
-                    <div class="flex justify-between items-start mb-1">
-                        <h3 class="text-sm md:text-base font-black text-slate-500">???</h3>
-                    </div>
-                    <p class="text-xs md:text-sm text-slate-600 font-bold">${i18n.t('ui.locked_shackle')}</p>
-                </div>`;
-            }
+            const isNew = unlocked && (newItems.shackles || []).includes(s.id);
+            let colorClass = s.type === 'heavy' ? "text-red-400" : "text-amber-400";
+            let sName = i18n.t(`shackles.${s.id}.name`) || s.name;
+            let sDesc = i18n.t(`shackles.${s.id}.desc`) || s.desc;
+            const newBadge = isNew ? renderNewBadge() : '';
+            const metaHtml = `<span class="collection-entry__type-dot collection-entry__type-dot--${s.type === 'heavy' ? 'heavy' : 'light'}" aria-hidden="true"></span>`;
+            html += renderCollectionEntry({
+                unlocked,
+                title: sName,
+                desc: sDesc,
+                colorClass,
+                metaHtml,
+                badgeHtml: newBadge,
+                lockedText: i18n.t('ui.locked_shackle')
+            });
         });
         html += `</div>`;
     }
-    
+
     el.collectionContent.innerHTML = html;
+    if (window.clearCollectionNewItems) {
+        window.clearCollectionNewItems(tab);
+    }
 }
 
 
@@ -1747,36 +2238,143 @@ if (el.devRelicCancel) {
     el.devRelicCancel.onclick = window.closeDevModal;
 }
 
+export function renderRunSetup(relics, setup, sealLimit, contractLimit) {
+    if (!el.runSetupModal) return;
+    const contractLevel = Math.max(0, Math.min(contractLimit, Number(setup.contractLevel) || 0));
+    if (el.runContractSection) el.runContractSection.classList.toggle('hidden', contractLimit === 0);
+    if (el.runContractRange) {
+        el.runContractRange.max = String(contractLimit);
+        el.runContractRange.value = String(contractLevel);
+    }
+    if (el.runContractLevel) {
+        el.runContractLevel.textContent = i18n.t('ui.run_contract_level', contractLevel, contractLimit);
+    }
+    if (el.runContractEffect) {
+        const hpMultiplier = 1 + (contractLevel * SOUL_UPGRADE_BY_ID.soulBurst.hpMultiplierPerLevel);
+        const soulBonus = contractLevel * SOUL_UPGRADE_BY_ID.soulBurst.soulBonusPerLevel;
+        el.runContractEffect.textContent = i18n.t('ui.run_contract_effect', hpMultiplier, soulBonus);
+    }
+
+    const selected = new Set(setup.sealedRelics || []);
+    const atLimit = selected.size >= sealLimit;
+    if (el.runSetupRelicSection) el.runSetupRelicSection.classList.toggle('hidden', sealLimit === 0);
+    if (el.runSetupRelicCount) {
+        el.runSetupRelicCount.textContent = i18n.t('ui.blank_ledger_count', selected.size, sealLimit);
+    }
+
+    if (!el.runSetupRelicList) return;
+    if (!Array.isArray(relics) || relics.length === 0) {
+        el.runSetupRelicList.innerHTML = `<p class="run-setup-empty">${i18n.t('ui.blank_ledger_empty')}</p>`;
+        return;
+    }
+
+    el.runSetupRelicList.innerHTML = relics.map(relic => {
+        const isSelected = selected.has(relic.id);
+        const style = RARITY[relic.rarity] || RARITY[1];
+        const name = i18n.t(`relics.${relic.id}.name`) || relic.name;
+        const desc = i18n.t(`relics.${relic.id}.desc`) || relic.desc;
+        return `
+            <label class="run-setup-entry ${isSelected ? 'run-setup-entry--selected' : ''}">
+                <span class="run-setup-entry__copy">
+                    <span class="run-setup-entry__name ${style.color}">${name}</span>
+                    <span class="run-setup-entry__desc">${desc}</span>
+                </span>
+                <input class="run-setup-entry__checkbox" type="checkbox" data-relic-id="${relic.id}"
+                    ${isSelected ? 'checked' : ''} ${!isSelected && atLimit ? 'disabled' : ''}>
+            </label>`;
+    }).join('');
+}
+
+export function showRunSetupModal() {
+    if (!el.runSetupModal) return;
+    const closeLabel = i18n.t('ui.toast_close');
+    if (el.btnCloseRunSetup) {
+        el.btnCloseRunSetup.setAttribute('aria-label', closeLabel);
+        el.btnCloseRunSetup.setAttribute('title', closeLabel);
+    }
+    el.runSetupModal.classList.remove('hidden');
+}
+
+export function hideRunSetupModal() {
+    if (el.runSetupModal) el.runSetupModal.classList.add('hidden');
+}
+
+export function renderFateSelection(relics) {
+    if (!el.fateSelectionList) return;
+    el.fateSelectionList.innerHTML = relics.map(relic => {
+        const style = RARITY[relic.rarity] || RARITY[1];
+        const name = i18n.t(`relics.${relic.id}.name`) || relic.name;
+        const desc = i18n.t(`relics.${relic.id}.desc`) || relic.desc;
+        return `
+            <button type="button" class="fate-selection-card" data-relic-id="${relic.id}">
+                <span class="fate-selection-card__name ${style.color}">${name}</span>
+                <span class="fate-selection-card__desc">${desc}</span>
+                <span class="fate-selection-card__meta">${i18n.t('messages.rarity_1')}</span>
+            </button>`;
+    }).join('');
+}
+
+export function showFateSelectionModal() {
+    if (!el.fateSelectionModal) return;
+    const closeLabel = i18n.t('ui.toast_close');
+    if (el.btnCloseFateSelection) {
+        el.btnCloseFateSelection.setAttribute('aria-label', closeLabel);
+        el.btnCloseFateSelection.setAttribute('title', closeLabel);
+    }
+    el.fateSelectionModal.classList.remove('hidden');
+}
+
+export function hideFateSelectionModal() {
+    if (el.fateSelectionModal) el.fateSelectionModal.classList.add('hidden');
+}
+
+function renderSoulLevelNodes(currentLv, max) {
+    const nodes = Array.from({ length: max }, (_, i) => {
+        const state = i < currentLv ? 'on' : 'off';
+        return `<img class="soul-level-node soul-level-node--${state}" src="img/ui/soul_node_${state}.png" alt="" aria-hidden="true">`;
+    }).join('');
+    return `<div class="soul-level-nodes" aria-label="${currentLv}/${max}">${nodes}</div>`;
+}
+
 export function renderSoulsModal(metaData) {
     if (!el.soulsContent) return;
     el.soulsHeaderText.innerText = i18n.t('souls.owned', metaData.souls);
 
-    const warningHtml = `<p class="text-xs text-red-400 font-bold mb-2">${i18n.t('ui.souls_warning')}</p>`;
-    el.soulsContent.innerHTML = warningHtml + SOULS_UPG_DEFS.map(u => {
+    const warningHtml = `<p class="souls-warning">${i18n.t('ui.souls_warning')}</p>`;
+    el.soulsContent.innerHTML = warningHtml + SOUL_UPGRADE_DB.map(u => {
         let currentLv = metaData.upgrades[u.id] || 0;
         let isMax = currentLv >= u.max;
-        let currentCost = u.cost(currentLv);
-        let canAfford = metaData.souls >= currentCost;
+        let currentCost = u.costs[Math.min(currentLv, u.costs.length - 1)];
+        const requirementMet = u.id !== 'fateSelection' || (metaData.upgrades.startRelic || 0) > 0;
+        let canAfford = requirementMet && metaData.souls >= currentCost;
 
         let uName = i18n.t(`souls.${u.id}.name`) || u.name;
         let uDesc = i18n.t(`souls.${u.id}.desc`) || u.desc;
 
-        let dots = Array(u.max).fill().map((_, i) => i < currentLv ? 'I' : '-').join(' ');
-        let btnHtml = isMax
-            ? `<button disabled class="bg-slate-700 text-slate-500 font-bold py-2 px-4 rounded-lg cursor-not-allowed">${i18n.t('souls.maxed')}</button>`
-            : `<button onclick="window.buySoulUpgrade('${u.id}', ${currentCost})" class="${canAfford ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_10px_rgba(79,70,229,0.5)]' : 'bg-slate-700 text-slate-500 cursor-not-allowed'} font-black py-2 px-4 rounded-lg transition-transform active:scale-95" ${canAfford ? '' : 'disabled'}>${i18n.t('souls.cost', currentCost)}</button>`;
+        const stateClass = isMax ? 'soul-upgrade-card--max' : (canAfford ? 'soul-upgrade-card--ready' : 'soul-upgrade-card--locked');
+        const costHtml = isMax
+            ? `<span class="soul-upgrade-card__cost soul-upgrade-card__cost--max">${i18n.t('souls.maxed')}</span>`
+            : `<span class="soul-upgrade-card__cost">${i18n.t('souls.cost', currentCost)}</span>`;
+        const disabledAttr = isMax || !canAfford ? 'disabled' : '';
+        const clickAttr = isMax || !canAfford ? '' : `onclick="window.buySoulUpgrade('${u.id}')"`;
 
         return `
-        <div class="bg-slate-900/50 border border-indigo-900/50 p-3 rounded-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-            <div>
-                <div class="text-base font-black text-indigo-300">${uName}</div>
-                <div class="text-xs text-slate-400 mt-0.5">${uDesc}</div>
-                <div class="text-xs mt-1">${dots} (${currentLv}/${u.max})</div>
+        <button type="button" class="soul-upgrade-card ${stateClass}" ${clickAttr} ${disabledAttr}>
+            <img class="soul-upgrade-card__icon" src="img/ui/soul_node_${currentLv > 0 ? 'on' : 'off'}.png" alt="" aria-hidden="true">
+            <div class="soul-upgrade-card__body">
+                <div class="soul-upgrade-card__head">
+                    <div>
+                        <div class="soul-upgrade-card__title">${uName}</div>
+                        <div class="soul-upgrade-card__desc">${uDesc}</div>
+                    </div>
+                    ${costHtml}
+                </div>
+                <div class="soul-upgrade-card__levels">
+                    ${renderSoulLevelNodes(currentLv, u.max)}
+                    <span>${currentLv}/${u.max}</span>
+                </div>
             </div>
-            <div class="w-full sm:w-auto text-right">
-                ${btnHtml}
-            </div>
-        </div>
+        </button>
         `;
     }).join('');
 
@@ -1787,12 +2385,23 @@ export function renderSoulsModal(metaData) {
     `;
 }
 
-window.buySoulUpgrade = function(id, cost) {
+window.buySoulUpgrade = function(id) {
     let meta = window.getMetaData();
+    const upgradeDef = SOUL_UPGRADE_DB.find(u => u.id === id);
+    const currentLevel = Number(meta.upgrades[id]) || 0;
+    const cost = upgradeDef?.costs[currentLevel];
+    const requirementMet = id !== 'fateSelection' || (meta.upgrades.startRelic || 0) > 0;
+    if (!upgradeDef || currentLevel >= upgradeDef.max || !requirementMet || !Number.isFinite(cost)) return;
     if (meta.souls >= cost) {
         meta.souls -= cost;
-        meta.upgrades[id] = (meta.upgrades[id] || 0) + 1;
+        meta.upgrades[id] = currentLevel + 1;
         window.saveMetaData();
+        if (window.unlockSteamAchievement) {
+            window.unlockSteamAchievement('ACH_SOUL_TIER_1');
+            if (upgradeDef && meta.upgrades[id] >= upgradeDef.max) {
+                window.unlockSteamAchievement('ACH_SOUL_MAX_ONE');
+            }
+        }
         if (window.clearSave) window.clearSave();
         if (el.btnContinue) el.btnContinue.classList.add('hidden');
         renderSoulsModal(meta);
@@ -1806,13 +2415,19 @@ window.resetSouls = function() {
     let meta = window.getMetaData();
     let totalRefund = 0;
 
-    for (let u of SOULS_UPG_DEFS) {
+    for (let u of SOUL_UPGRADE_DB) {
         let level = meta.upgrades[u.id] || 0;
-        for (let i = 0; i < level; i++) {
-            totalRefund += u.cost(i);
+        const refundFromLevel = u.id === 'mythicVessel'
+            ? Math.min(level, Number(meta.freeMythicVesselLevels) || 0)
+            : 0;
+        for (let i = refundFromLevel; i < level; i++) {
+            totalRefund += u.costs[i];
         }
         meta.upgrades[u.id] = 0;
     }
+    meta.sealedRelics = [];
+    meta.lastContractLevel = 0;
+    meta.freeMythicVesselLevels = 0;
 
     meta.souls += totalRefund;
     window.saveMetaData();
@@ -1825,7 +2440,19 @@ window.resetSouls = function() {
 
 // ===== Tutorial UI =====
 
-const _tutorialHighlighted = { el: null, origPos: '', origZ: '', origShadow: '', shopOverlay: null, origShopZ: '', boardPanel: null, origBoardPanelZ: '' };
+const _tutorialHighlighted = {
+    el: null,
+    origPos: '',
+    origZ: '',
+    origShadow: '',
+    shopOverlay: null,
+    origShopZ: '',
+    boardPanel: null,
+    origBoardPanelZ: '',
+    enemyCard: null,
+    origEnemyCardPos: '',
+    origEnemyCardZ: ''
+};
 
 export function showTutorialStep(stepIndex, totalSteps) {
     const overlay = document.getElementById('tutorial-overlay');
@@ -1864,9 +2491,13 @@ export function showTutorialStep(stepIndex, totalSteps) {
 
     // Apply new highlight
     const highlightMap = {
+        'enemy-hp': 'enemy-card',
+        'shackle-badge': 'active-shackle-badge',
+        'turns-left': 'turns-left',
         'dice-container': 'dice-container',
         'roll-btn': 'controls-container',
         'score-preview': 'score-area',
+        'damage-preview': 'final-damage-preview',
         'attack-btn': 'controls-container',
         'shop-container': 'shop-items'
     };
@@ -1886,6 +2517,16 @@ export function showTutorialStep(stepIndex, totalSteps) {
             _tutorialHighlighted.origShopZ = shopOverlay.style.zIndex;
             shopOverlay.style.zIndex = '196';
         }
+        if (step.highlight === 'enemy-hp' || step.highlight === 'shackle-badge' || step.highlight === 'turns-left') {
+            const enemyCard = document.getElementById('enemy-card');
+            if (enemyCard && enemyCard !== targetEl) {
+                _tutorialHighlighted.enemyCard = enemyCard;
+                _tutorialHighlighted.origEnemyCardPos = enemyCard.style.position;
+                _tutorialHighlighted.origEnemyCardZ = enemyCard.style.zIndex;
+                enemyCard.style.position = 'relative';
+                enemyCard.style.zIndex = '196';
+            }
+        }
         // 攻擊步驟：#game-container 有 transform:scale() 建立 stacking context，
         // board-panel 無 z-index 故會被 backdrop(z-195) 遮蔽；暫時提升至 196 使按鈕可點擊
         if (step.highlight === 'attack-btn' || step.highlight === 'dice-container' || step.highlight === 'roll-btn') {
@@ -1900,17 +2541,38 @@ export function showTutorialStep(stepIndex, totalSteps) {
 
     // Show overlay
     overlay.classList.remove('hidden');
+    tooltip.classList.remove('hidden');
 
     // 需要玩家直接點擊遊戲元素的步驟（shop_select、attack_action），
     // 將 backdrop 設為 pointer-events:none，讓點擊穿透至下方遊戲按鈕
-    const needsClickThrough = step.waitFor === 'shop_select' || step.waitFor === 'attack_action' || step.waitFor === 'lock_two_dice' || step.waitFor === 'roll_action';
+    const needsClickThrough = step.waitFor === 'shop_select' || step.waitFor === 'attack_action' || step.waitFor === 'lock_two_dice' || step.waitFor === 'roll_action' || step.waitFor === 'shackle_info';
     backdrop.style.pointerEvents = needsClickThrough ? 'none' : 'auto';
 
     // Position tooltip near highlighted element (or center-bottom if none)
     _positionTutorialTooltip(targetEl);
+    _positionTutorialPointer(targetEl);
+}
+
+export function clearTutorialTooltip() {
+    const backdrop = document.getElementById('tutorial-backdrop');
+    const tooltip = document.getElementById('tutorial-tooltip');
+    const indicatorEl = document.getElementById('tutorial-step-indicator');
+    const textEl = document.getElementById('tutorial-tooltip-text');
+    const nextBtn = document.getElementById('tutorial-next-btn');
+    const pointer = document.getElementById('tutorial-pointer');
+    if (backdrop) backdrop.style.pointerEvents = 'auto';
+    if (tooltip) tooltip.classList.add('hidden');
+    if (indicatorEl) indicatorEl.textContent = '';
+    if (textEl) textEl.textContent = '';
+    if (nextBtn) nextBtn.classList.add('hidden');
+    if (pointer) pointer.classList.add('hidden');
+    _unhighlightTutorialElement();
 }
 
 function _unhighlightTutorialElement() {
+    const pointer = document.getElementById('tutorial-pointer');
+    if (pointer) pointer.classList.add('hidden');
+
     if (_tutorialHighlighted.el) {
         _tutorialHighlighted.el.style.position = _tutorialHighlighted.origPos;
         _tutorialHighlighted.el.style.zIndex = _tutorialHighlighted.origZ;
@@ -1924,6 +2586,11 @@ function _unhighlightTutorialElement() {
     if (_tutorialHighlighted.boardPanel) {
         _tutorialHighlighted.boardPanel.style.zIndex = _tutorialHighlighted.origBoardPanelZ;
         _tutorialHighlighted.boardPanel = null;
+    }
+    if (_tutorialHighlighted.enemyCard) {
+        _tutorialHighlighted.enemyCard.style.position = _tutorialHighlighted.origEnemyCardPos;
+        _tutorialHighlighted.enemyCard.style.zIndex = _tutorialHighlighted.origEnemyCardZ;
+        _tutorialHighlighted.enemyCard = null;
     }
 }
 
@@ -1985,6 +2652,47 @@ function _positionTutorialTooltip(targetEl) {
     tooltip.style.top = `${top}px`;
 }
 
+function _positionTutorialPointer(targetEl) {
+    const pointer = document.getElementById('tutorial-pointer');
+    if (!pointer) return;
+    if (!targetEl) {
+        pointer.classList.add('hidden');
+        return;
+    }
+
+    const PAD = 12;
+    const POINTER_W = 24;
+    const POINTER_H = 18;
+    const viewport = window.visualViewport || { width: window.innerWidth, height: window.innerHeight, offsetLeft: 0, offsetTop: 0 };
+    const viewLeft = viewport.offsetLeft || 0;
+    const viewTop = viewport.offsetTop || 0;
+    const rect = targetEl.getBoundingClientRect();
+    const container = document.getElementById('game-container');
+    const containerRect = container ? container.getBoundingClientRect() : null;
+    const containerScale = container && containerRect && container.offsetWidth
+        ? (containerRect.width / container.offsetWidth)
+        : 1;
+
+    let left = rect.left + rect.width / 2 - POINTER_W / 2;
+    let top = rect.top - POINTER_H - 8;
+
+    if (top < viewTop + PAD) {
+        top = rect.bottom + 8;
+    }
+
+    left = Math.max(viewLeft + PAD, Math.min(viewLeft + viewport.width - POINTER_W - PAD, left));
+    top = Math.max(viewTop + PAD, Math.min(viewTop + viewport.height - POINTER_H - PAD, top));
+
+    if (containerRect && containerScale) {
+        left = (left - containerRect.left) / containerScale;
+        top = (top - containerRect.top) / containerScale;
+    }
+
+    pointer.style.left = `${left}px`;
+    pointer.style.top = `${top}px`;
+    pointer.classList.remove('hidden');
+}
+
 export function hideTutorialOverlay() {
     _unhighlightTutorialElement();
     const overlay = document.getElementById('tutorial-overlay');
@@ -2011,32 +2719,9 @@ export function renderHowToPlayTab(tabKey) {
     if (tabKey === 'hands') {
         // Reuse the already-rendered rules content
         const rulesContent = document.getElementById('rules-content');
-        if (rulesContent && rulesContent.innerHTML.trim()) {
-            contentEl.innerHTML = rulesContent.innerHTML;
-        } else {
-            // Render inline if rules-content isn't populated yet
-            let html = '';
-            const groups = [
-                { key: 'groupA', titleKey: 'rules.groupA_desc' },
-                { key: 'groupB', titleKey: 'rules.groupB_desc' },
-                { key: 'groupC', titleKey: 'rules.groupC_desc' },
-                { key: 'groupD', titleKey: 'rules.groupD_desc' }
-            ];
-            groups.forEach(g => {
-                html += `<h3 class="text-base font-black text-slate-300 mt-4 mb-2 border-b border-slate-700 pb-1">${i18n.t(g.titleKey)}</h3>`;
-                html += `<div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">`;
-                RULE_DB[g.key].slice().sort((a, b) => b.rarity - a.rarity).forEach((rule, rIdx) => {
-                    const origIdx = RULE_DB[g.key].indexOf(rule);
-                    let rStyle = RARITY[rule.rarity] || RARITY[1];
-                    let letter = g.key.replace('group', '').toLowerCase();
-                    let ruleName = i18n.t(`rules.rule_${letter}${origIdx}.name`) || rule.name;
-                    let ruleDesc = i18n.t(`rules.rule_${letter}${origIdx}.desc`) || rule.desc;
-                    html += `<div class="flex justify-between items-center bg-slate-900/50 p-2.5 rounded-lg border border-slate-700"><div><div class="text-sm font-bold ${rStyle.color}">${ruleName}</div><div class="text-[12px] text-slate-400">${ruleDesc}</div></div><div class="text-base font-black text-violet-300">${rule.multi}</div></div>`;
-                });
-                html += `</div>`;
-            });
-            contentEl.innerHTML = html;
-        }
+        if (!rulesContent) return;
+        if (!rulesContent.innerHTML.trim()) renderRulesDB();
+        contentEl.innerHTML = rulesContent.innerHTML;
         return;
     }
 
@@ -2212,4 +2897,122 @@ function enableDragScroll(el) {
 
 export function initDragScrollAll() {
     document.querySelectorAll('.scrollable-row').forEach(enableDragScroll);
+}
+
+export function showPlayerHit(amount, severity = 'light') {
+    const restartClass = (node, cls, duration) => {
+        if (!node) return;
+        node.classList.remove(cls);
+        void node.offsetWidth;
+        node.classList.add(cls);
+        setTimeout(() => node.classList.remove(cls), duration);
+    };
+
+    restartClass(el.battleArea, 'player-hit-screen-shake', severity === 'light' ? 380 : 460);
+
+    if (el.playerHeartHp) {
+        el.playerHeartHp.classList.remove('shake-player-hp', 'heart-hp--danger');
+        void el.playerHeartHp.offsetWidth;
+        el.playerHeartHp.classList.add('shake-player-hp');
+        setTimeout(() => el.playerHeartHp.classList.remove('shake-player-hp'), 420);
+        if (severity === 'fatal') {
+            el.playerHeartHp.classList.add('heart-hp--danger');
+            setTimeout(() => el.playerHeartHp.classList.remove('heart-hp--danger'), 1000);
+        }
+    }
+
+    const rect = el.playerHeartHp ? el.playerHeartHp.getBoundingClientRect() : null;
+    if (rect) {
+        const txt = document.createElement('div');
+        txt.className = 'player-damage-text';
+        txt.textContent = `-${amount}`;
+        txt.style.left = `${rect.left + rect.width / 2}px`;
+        txt.style.top = `${rect.top}px`;
+        document.body.appendChild(txt);
+        const removeTxt = () => { if (txt.parentNode) txt.remove(); };
+        txt.addEventListener('animationend', removeTxt, { once: true });
+        setTimeout(removeTxt, 1200);
+    }
+
+    const slash = document.createElement('div');
+    slash.className = 'player-hit-slash';
+    document.body.appendChild(slash);
+    const removeSlash = () => { if (slash.parentNode) slash.remove(); };
+    slash.addEventListener('animationend', removeSlash, { once: true });
+    setTimeout(removeSlash, 600);
+
+    const overlay = document.createElement('div');
+    if (severity === 'fatal') {
+        overlay.className = 'danger-vignette';
+    } else if (severity === 'heavy') {
+        overlay.className = 'player-heavy-hit-vignette';
+    } else {
+        overlay.className = 'player-hit-vignette';
+    }
+    document.body.appendChild(overlay);
+    const removeOverlay = () => { if (overlay.parentNode) overlay.remove(); };
+    overlay.addEventListener('animationend', removeOverlay, { once: true });
+    setTimeout(removeOverlay, 1500);
+}
+
+export function showEnemyAttackCue(onImpact) {
+    const enemyCard = el.enemyName?.closest('.card-enemy') || el.battleArea;
+
+    if (enemyCard) {
+        enemyCard.classList.remove('enemy-attack-cue');
+        void enemyCard.offsetWidth;
+        enemyCard.classList.add('enemy-attack-cue');
+        setTimeout(() => enemyCard.classList.remove('enemy-attack-cue'), 650);
+    }
+
+    const slash = document.createElement('div');
+    slash.className = 'enemy-attack-slash';
+    document.body.appendChild(slash);
+    const removeSlash = () => { if (slash.parentNode) slash.remove(); };
+    slash.addEventListener('animationend', removeSlash, { once: true });
+    setTimeout(removeSlash, 650);
+
+    setTimeout(() => {
+        if (typeof onImpact === 'function') onImpact();
+    }, 260);
+}
+
+const STEAM_STORE_URL = 'https://store.steampowered.com/app/4792230/_BIBI_DICE/';
+
+function isPromoTarget() {
+    const body = document.body;
+    return body.classList.contains('steam-portrait') || body.classList.contains('itch-build');
+}
+
+function openStoreUrl() {
+    if (window.electronAPI && window.electronAPI.openExternal) {
+        window.electronAPI.openExternal(STEAM_STORE_URL);
+    } else {
+        window.open(STEAM_STORE_URL, '_blank', 'noopener,noreferrer');
+    }
+}
+
+export function initPromo() {
+    if (!isPromoTarget()) return;
+
+    const titleCard = document.getElementById('promo-title-card');
+    const titleBtn  = document.getElementById('promo-title-btn');
+    if (titleCard) {
+        titleCard.classList.remove('hidden');
+        titleBtn?.addEventListener('click', openStoreUrl);
+    }
+
+    const winBtn = document.getElementById('promo-win-btn');
+    winBtn?.addEventListener('click', openStoreUrl);
+}
+
+export function showPromoWinCard() {
+    if (!isPromoTarget()) return;
+    const card = document.getElementById('promo-win-card');
+    if (card) card.classList.remove('hidden');
+}
+
+export function hidePromoWinCard() {
+    const card = document.getElementById('promo-win-card');
+    if (card) card.classList.add('hidden');
 }

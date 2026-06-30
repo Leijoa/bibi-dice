@@ -70,6 +70,19 @@ if (-not (Test-Path (Join-Path $UploadDir "index.html"))) {
     throw "Upload folder is missing index.html after sync: $UploadDir"
 }
 
+$indexPath = Join-Path $UploadDir "index.html"
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+$indexHtml = [System.IO.File]::ReadAllText($indexPath, [System.Text.Encoding]::UTF8)
+if ($indexHtml -notmatch '\bitch-build\b') {
+    if ($indexHtml -match '<body\s+class="([^"]*)"') {
+        $indexHtml = $indexHtml -replace '<body\s+class="([^"]*)"', '<body class="$1 itch-build"'
+    } else {
+        $indexHtml = $indexHtml -replace '<body', '<body class="itch-build"'
+    }
+    [System.IO.File]::WriteAllText($indexPath, $indexHtml, $utf8NoBom)
+    Write-Host "Injected itch-build class into index.html" -ForegroundColor Cyan
+}
+
 Write-Host "Push to itch.io: $Target" -ForegroundColor Cyan
 & butler push $UploadDir $Target
 if ($LASTEXITCODE -ne 0) {
