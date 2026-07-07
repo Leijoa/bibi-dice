@@ -45,6 +45,10 @@
     </div>
 
     <div class="flex flex-col gap-3 w-full max-w-xs">
+      <button id="mobile-energy-badge" class="mobile-only hidden mobile-energy-badge intro-main-ui" type="button">
+        <span data-i18n="ui.mobile_energy_label">挑戰次數</span>
+        <strong id="mobile-energy-value">5/5</strong>
+      </button>
       <button id="btn-continue" class="hidden btn-primary py-4 px-8 rounded-xl text-lg intro-main-ui" data-i18n="ui.btn_continue">繼續旅程</button>
       <button id="btn-new-game" class="btn-primary py-4 px-8 rounded-xl text-lg intro-main-ui" data-i18n="ui.btn_new_game">開始新遊戲</button>
 
@@ -246,12 +250,12 @@
   </div>
 
   <div id="settings-modal" class="hidden fixed inset-0 bg-slate-950/90 z-[120] flex items-center justify-center p-2">
-    <div class="bg-slate-800 border-2 border-slate-600 rounded-xl max-w-sm w-full shadow-2xl flex flex-col overflow-hidden">
+    <div class="bg-slate-800 border-2 border-slate-600 rounded-xl max-w-sm w-full max-h-[96vh] shadow-2xl flex flex-col overflow-hidden">
       <div class="p-3 md:p-4 border-b border-slate-700 flex justify-between items-center bg-slate-900 shrink-0">
         <h2 id="settings-title" class="text-xl font-black text-slate-200 flex items-center gap-2" data-i18n="ui.settings_title">遊戲設定</h2>
         <button id="btn-close-settings" class="text-slate-400 hover:text-white text-3xl leading-none">&times;</button>
       </div>
-      <div class="p-4 flex flex-col gap-5 flex-grow bg-slate-800">
+      <div class="p-4 flex flex-col gap-5 flex-grow bg-slate-800 overflow-y-auto">
         <div class="flex flex-col gap-2">
           <div class="flex items-center justify-between">
             <label class="text-sm font-bold text-slate-300" data-i18n="ui.bgm_volume">音樂音量</label>
@@ -306,9 +310,45 @@
             <option value="ja">日本語</option>
           </select>
         </div>
+        <section id="mobile-account-panel" class="platform-account-panel hidden mobile-account-panel">
+          <div class="flex items-center justify-between gap-2">
+            <h3 id="platform-account-title" class="font-black text-violet-300" data-i18n="ui.mobile_account_title">帳號與手機完整版</h3>
+            <span id="mobile-account-state" class="text-xs text-slate-400" data-i18n="ui.mobile_guest">訪客</span>
+          </div>
+          <input id="mobile-account-email" type="email" autocomplete="email" class="mobile-account-input" data-i18n-placeholder="ui.mobile_email" placeholder="Email">
+          <input id="mobile-account-password" type="password" autocomplete="current-password" class="mobile-account-input" data-i18n-placeholder="ui.mobile_password" placeholder="密碼">
+          <div id="mobile-auth-actions" class="grid grid-cols-2 gap-2">
+            <button id="btn-mobile-sign-in" class="btn-secondary py-2 rounded-lg text-sm" data-i18n="ui.mobile_sign_in">登入</button>
+            <button id="btn-mobile-sign-up" class="btn-secondary py-2 rounded-lg text-sm" data-i18n="ui.mobile_sign_up">建立帳號</button>
+            <button id="btn-mobile-forgot-password" class="btn-secondary py-2 rounded-lg text-xs" data-i18n="ui.mobile_forgot_password">忘記密碼</button>
+            <button id="btn-mobile-send-verification" class="btn-secondary py-2 rounded-lg text-xs" data-i18n="ui.mobile_send_verification">重寄驗證信</button>
+          </div>
+          <div id="mobile-user-actions" class="hidden grid grid-cols-2 gap-2">
+            <input id="mobile-delete-password" type="password" autocomplete="current-password" class="mobile-account-input col-span-2" data-i18n-placeholder="ui.mobile_current_password" placeholder="目前密碼（刪除帳號用）">
+            <button id="btn-mobile-sync" class="btn-secondary py-2 rounded-lg text-sm" data-i18n="ui.mobile_sync">同步進度</button>
+            <button id="btn-mobile-sign-out" class="btn-secondary py-2 rounded-lg text-sm" data-i18n="ui.mobile_sign_out">登出</button>
+            <button id="btn-mobile-delete-account" class="btn-secondary col-span-2 py-2 rounded-lg text-xs text-red-300" data-i18n="ui.mobile_delete_account">刪除帳號</button>
+          </div>
+          <div class="mobile-commerce-only grid grid-cols-2 gap-2">
+            <button id="btn-mobile-buy-premium" class="btn-primary py-2 rounded-lg text-sm" data-i18n="ui.mobile_buy_premium">永久解鎖 US$2.99</button>
+            <button id="btn-mobile-restore-purchases" class="btn-secondary py-2 rounded-lg text-sm" data-i18n="ui.mobile_restore_purchases">還原購買</button>
+          </div>
+          <button id="btn-mobile-privacy" class="btn-secondary w-full py-2 rounded-lg text-xs" data-i18n="ui.mobile_privacy_options">廣告隱私選項</button>
+        </section>
       </div>
       <div class="p-4 border-t border-slate-700 bg-slate-900">
         <button id="btn-settings-confirm" class="w-full bg-violet-700 hover:bg-violet-600 text-white font-black py-3 rounded-lg shadow-md active:scale-95 transition-transform" data-i18n="ui.btn_confirm">確認</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mobile-energy-modal" class="hidden fixed inset-0 bg-slate-950/90 z-[180] items-center justify-center p-4">
+    <div class="bg-slate-800 border-2 border-violet-500 rounded-2xl max-w-sm w-full p-5 shadow-2xl text-center">
+      <h2 class="text-xl font-black text-violet-200 mb-2" data-i18n="ui.mobile_energy_empty_title">挑戰次數不足</h2>
+      <p class="text-sm text-slate-300 mb-4" data-i18n="ui.mobile_energy_empty_desc">每小時會恢復 1 次，也可觀看獎勵廣告補充 1 次。</p>
+      <div class="grid grid-cols-2 gap-2">
+        <button id="btn-mobile-energy-cancel" class="btn-secondary py-3 rounded-xl" data-i18n="ui.btn_cancel">取消</button>
+        <button id="btn-mobile-energy-ad" class="btn-primary py-3 rounded-xl" data-i18n="ui.mobile_watch_ad">觀看廣告</button>
       </div>
     </div>
   </div>

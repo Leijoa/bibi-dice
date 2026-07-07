@@ -2,7 +2,174 @@
 
 ## AI 快速交接區（任何 AI 開工前必讀）
 
-最後更新：2026-06-30
+最後更新：2026-07-06
+
+### 2026-07-06 阿扣（Phase 3 交叉驗收通過；獨立完成 Phase 4，19 項全數修復）
+- 狀態：**Phase 1～4 全部完成**；尚未 commit / push / 發布，待製作人決定
+- 背景：阿扣 session 上限恢復後回歸；製作人指示韻西額度用盡，Phase 3 驗收與 Phase 4 由阿扣獨立完成
+- **Phase 3 交叉驗收：通過**（唯讀重驗 M2/M4/M7，並抽查 Phase 1/2）：
+  - M2 弒神：`buildActiveShackleConfig` 展開完整 SHACKLE_DB 定義、data.js 改 heavy、骰面角標同步停用；引擎獨立實測 8 顆 2＋血色聖戰 totalBase 240→16
+  - M4：`window.showToast` 已掛上；M7：subscribe 改呼叫 UI 模組函式並帶正確參數，`currentTab` 已提升作用域
+  - 抽查 H1（IS_DEV 閘門全數到位，含 keydown 作弊、dev API、5 連點）、H2（fireAttack→enemyDefeated、無限塔直接開商店）、M1/M3/M5/M6/M8 皆與計畫一致；引擎實測 M3 空區不生效／對子×2、banality 下 D 藥水維持×1
+- **Phase 4（L1~L9）由阿扣實作完成**：
+  - L1：applyMatch 加 matchVal（黑洞 8 視為 1）修高亮錯位
+  - L2：天譴改 `rarity >= 4`（含 rarity 5，依裁定）；並發現原精確比對會漏掉「比比丟八(ビビデバ)」，改用 `getRuleMetaByName`
+  - L3：商店買空文案與契約前綴改四語 key（`ui.contract_prefix`、`ui.contract_prefix_infinite`、`messages.shop_sold_out`）
+  - L4：依裁定採現狀（平庸之惡完全封鎖 D 藥水），不改碼
+  - L5：移除重骰動畫開始前的 saveGame，避免「已扣次、骰面未換」半套存檔
+  - L6：loadGame 回傳成敗；損毀存檔改退回標題＋清除＋`messages.save_corrupted` 提示，不再黑畫面軟鎖
+  - L7：i18n.js 四語 ui 區塊重複 key 去重（保留後者覆蓋的生效值，Node 實測 11 組一致）
+  - L8：Electron `bibi://` 路徑檢查補 `root + path.sep` 前綴
+  - L9：runtime.js `crypto.randomUUID` 加非安全來源 fallback
+  - M7 補強：語言切換時收集冊分頁按鈕文字同步刷新（`refreshCollectionModalUI`）
+- **驗證**：全部修改檔 `node --check` 通過；`steam:i18n:verify` 四語 710 keys（+4）完全對齊；i18n 生效值與新 key 格式化 Node 實測通過；引擎功能測試（弒神/藥水/banality）通過；`npm.cmd run steam:package:verify` 完整通過（17 項 check ＋ EXE smoke，含最終天譴修正後重跑一次）
+- **注意**：本檔待處理問題已結案搬移至已處理問題；發布前建議製作人實機試玩 `dist/steam-windows/BIBI-DICE.exe`（重點：通關 Boss 拿 2 靈魂＋掉落、正式包無作弊入口、四語切換）
+更新者：阿扣（Claude Code）
+
+### 2026-07-06 鑀韻西 × 阿扣（19 項 Bug 修復進行中；Phase 3 驗收受阻）
+- **製作人裁定**：M2「弒神」完成上線；M3 區域藥水採非空區 `×2.0`；L2「天譴」包含 rarity 5；【平庸之惡】完全封鎖 D 區藥水。
+- **Phase 1 已完成並由韻西交叉驗收**：正式 `bibi://` 封裝不再建立作弊碼、開發者 API／按鈕 handler 或五連點入口；localhost／127.0.0.1 開發工具維持可用。最終 Boss 改走 `enemyDefeated()` 正常發放 2＋契約靈魂與傳說掉落，進入無限塔改直接開商店、不重複發獎。
+- **Phase 2 已完成並由韻西交叉驗收**：修正破壞鉗套用順序、區域藥水乘算與空區判斷、血色聖戰角標／死碼、舊存檔契約 fallback、無掉落菁英靈魂。專項實測確認平庸之惡下 D 藥水最終維持 `×1`、血色聖戰 HP `2/3` 時八顆 2 皆顯示 40、全遺物後第 3 關菁英仍獲得 1 靈魂。
+- **Phase 3 已實作、尚未完成阿扣交叉驗收**：弒神已改為重型枷鎖並透過共用設定組裝傳入 `suppressMythic`；骰面角標同步停用神話加成；噪音遺物提示與三種 modal 語言切換已修復。本機實測弒神八顆 2 的總基礎由 240 降為 16、角標由 30 回到 2；噪音提示與歷史／收集冊／靈魂視窗切語言皆通過且零 console error。
+- **驗證**：Phase 1～3 相關檔案 `node --check`、`git diff --check`、四語 706 keys、最新 `npm.cmd run steam:package:verify` 16 項均通過。
+- **確切阻塞**：阿扣啟動 Phase 3 唯讀交叉驗收時，`claude.exe` 回報 `You've hit your session limit · resets 10pm (Asia/Taipei)`，未取得有效驗收輸出。依共同規劃硬閘門，韻西已停止後續 Phase 4，不得在阿扣恢復前獨自繼續。
+- **下一步**：台北時間 22:00 後重新呼叫阿扣完成 Phase 3 唯讀交叉驗收；通過後才開始 Phase 4（L1～L9、聚焦測試與最終文件收尾）。目前未 commit、未 push、未部署或發布。
+
+### 2026-07-06 阿扣（遊戲程式碼全面查核：19 項問題與修復計畫書）
+- 狀態：查核完成、**未修改任何遊戲程式**；待製作人核准後由阿扣 × 韻西共同修復
+- 任務：製作人指示全面細讀程式碼找出實際 bug 與邊界破綻，按嚴重度列出
+- 範圍：`js/` 全部（engine/data/main/ui/i18n/audio/diceSkin/platform 全套）、`steam-app/`、`index.html`；並以 grep 與 Node 腳本交叉驗證全域函式、遺物 id、四語系 key 對齊
+- 發現：**高 2 項**（H1 正式版作弊入口全未鎖 IS_DEV 可刷靈魂/成就；H2 通關最終 Boss 直接 gameWin 跳過靈魂與傳說掉落）、**中 8 項**（破壞鉗無法還原枯萎、弒神枷鎖半成品零效果、區域藥水空區白拿 3 倍、噪音枷鎖點遺物 TypeError、血色聖戰角標引用不存在 id、舊存檔誤套最高契約、語言切換回呼呼叫不存在函式、菁英怪無掉落時不給靈魂）、**低 9 項**
+- 產出：
+  - `docs/ai-collaboration/tasks/game-bugfix-2026-07/BUGFIX_PLAN.md`：完整問題清單（位置、影響、修復方案、驗收條件）與四階段修復計畫、分工建議、風險注意
+  - 本檔「待處理問題」新增 H1/H2、M1~M8、L1~L9 條目
+- 待製作人決策：M2（弒神完成或移除）、M3（藥水 +2.0 或 x2.0）、L2（天譴是否含 rarity 5 牌型）
+- 注意（給韻西）：四語系 key 與 data.js 全部 id 已驗證對齊、`.promo-card.hidden` 修正已在本機、平台層與 Electron IPC 白名單皆乾淨，免重工；修復動到 UI/邏輯後必跑 `npm.cmd run steam:package:verify` 才會反映到製作人玩的 exe
+更新者：阿扣（Claude Code）
+
+### 2026-07-05 鑀韻西 × 阿扣：完成 Firebase Email／密碼 Authentication 基礎
+- **共同方案 C**：雙方先完成獨立檢查、異議交換與責任表；將任務分成「本機安全修正」與「Auth-only 遠端部署」兩階段，製作人核准後才開始修改，Phase 1 未經阿扣通過前不得部署。
+- **客戶端安全修正**：驗證信、重寄驗證信與密碼重設信會依 App 語言設定 Firebase `auth.languageCode`；App 內刪除帳號改用登入後才顯示的專用密碼欄，順序固定為重新驗證、刪除 Firestore 使用者文件、刪除 Auth 使用者。訪客不再看到刪除入口，登出會清空刪除密碼。
+- **Auth-as-code**：`firebase.json` 使用官方 Boolean schema，只宣告 `auth.providers.emailPassword: true`；以 Firebase CLI 15.22.4 執行 `--only auth`，新專案 `bibi-dice-mobile-leijoa` 已成功啟用 Email／密碼，未部署 Firestore 或 Hosting。
+- **Console 權威狀態**：Email／密碼開啟、Email Link 關閉；帳號建立、帳號刪除與 Email 枚舉防護皆開啟；預設驗證信與密碼重設信範本存在；授權網域只有兩個 Firebase 預設網域，沒有 `localhost`；使用者清單維持 0。
+- **驗證**：四語 706 keys 完全對齊、手機建置 6 項、手機測試 12/12、帳號刪除頁建置、語法與任務檔案 diff 檢查通過；320／390／430px 無頁面水平溢位，320px 實際畫面確認訪客狀態正確。
+- **阿扣交叉驗收**：Phase 1 與 Phase 2 均使用 US$5 上限執行唯讀驗收；兩階段皆獨立重跑必要測試並明確回覆「交叉驗收通過」。
+- **安全停點與下一步**：`mobile.config.local.json` 仍為 `enabled:false`，RevenueCat Key、帳號刪除網址仍空白，AdMob 維持測試模式。下一個獨立任務應共同規劃帳號刪除 Hosting 或其餘手機後台，完成必要服務前不得啟用正式雲端客戶端。
+
+### 2026-07-04 鑀韻西 × 阿扣：完成台灣區 Firestore 基礎與新專案修復
+- **共同規劃**：韻西與阿扣先對 region、Rules 型別防線與責任表取得方案 C 共識；首次 Rules dry-run 意外在舊專案建立不可改位置的 `nam5` 資料庫後，雙方重新比較接受美國區、刪除重建、新專案與 named database，明確同意方案 R，並取得製作人二次核准。
+- **新 Firebase 專案**：建立 `bibi-dice-mobile-leijoa`（Display Name `BIBI DICE Mobile`，Spark／Analytics 停用），先單獨啟用 Firestore API 並確認資料庫清單為空，再用完整參數建立 `(default)`。
+- **Firestore 狀態**：新資料庫位於 `asia-east1`，使用 `FIRESTORE_NATIVE`／`STANDARD`，free tier 啟用、刪除保護啟用、PITR 停用；Rules 已完成語法 dry-run 與正式部署。
+- **Rules 補強**：`energySpendsByOrigin` 存在時必須是 map；`freeMythicVesselLevels` 存在時必須是 0～4 整數。Authentication 尚未啟用時，`owns(uid)` 讓所有第三方請求維持 fail-closed。
+- **新 Web App 與本機設定**：建立 App ID `1:406034512445:web:ea8a80105dc7b5cbf58854`；`.firebaserc` 與被 Git 忽略的 `mobile.config.local.json` 已切到新專案，四欄與遠端 SDK config 一致，`enabled:false`、AdMob 測試模式、RevenueCat 空 Key 與帳號刪除網址空白均未改變。
+- **舊專案保留**：`bibi-dice-leijoa` 與其中的 `nam5` 空資料庫完整保留，不部署 Rules、不啟用 Auth、不供 App 使用；資料庫 `createTime`／`updateTime` 均維持 `2026-07-04T10:24:38.310981Z`。前一條 Firebase Web App 紀錄保留為歷史，但已由新專案設定取代。
+- **驗證**：新舊專案與新 Web App 均為 ACTIVE；新資料庫全部欄位符合核准值；匿名讀取 `users/test` 回 HTTP 403；`mobile:verify` 6 項與 `test:mobile` 12 項通過；本機設定仍被 Git 忽略且沒有 stage、commit 或 push。
+- **阿扣交叉驗收**：第一次因 Claude shell 沙盒拒絕唯讀命令而退回；補齊方案 R 任務單並使用核准的唯讀權限模式後，阿扣獨立重跑 9 類驗收並明確回覆「交叉驗收通過」。
+- **範圍與下一步**：未修改遊戲碼、四語系、Android／iOS、Hosting、Authentication、AdMob、RevenueCat 或 Steam；下一個獨立任務才共同規劃 Email／密碼 Authentication、枚舉防護與帳號刪除流程，手機雲端功能在此之前不得切成 `true`。
+
+### 2026-07-04 鑀韻西 × 阿扣：首波 Threads 繁中貼文已公開
+- **發布完成**：製作人自行在 Threads 帳號 `@leijoalan` 發布繁中正式上市短片，公開網址為 `https://www.threads.com/@leijoalan/post/DaXgWWhDLQZ`，發布時間約為 2026-07-04 18:17（Asia/Taipei）。
+- **公開驗證**：未登入狀態可開啟貼文；主文正確顯示 `172,800,000` 傷害、鎖定／重擲／牌型／遺物玩法、正式上市與首發九折，影片附件與 Steam 商店預覽皆存在。
+- **連結限制**：公開頁的 Threads 轉址只保留正式版 Steam 商店基礎網址，原文規劃的 `utm_source=threads` 等查詢參數已被平台移除；本次不誤記為可追蹤 UTM 導流。
+- **首波狀態**：Threads 繁中與 YouTube Shorts 英文均已公開；接下來在各自發布後 24／72 小時回填觀看、互動與 Steam 成效，再決定第二、三波節奏。
+- **共同規劃與驗收**：韻西與阿扣先核對既有繁中 MP4、文案、傷害數字、折扣期限與發布範圍，明確同意由製作人／韻西負責瀏覽器、阿扣負責文件交叉驗收；發布後阿扣唯讀核對三份紀錄並回覆「交叉驗收通過」，未發現矛盾或需立即修正事項。
+- **範圍控制**：未修改遊戲程式、手機後台、Steam Build、四語影片成品或其他平台內容。
+
+### 2026-07-04 鑀韻西 × 阿扣：完成 Firebase Web App 與本機停用接線
+- **新流程執行**：韻西與阿扣先各自讀取需求與現況、提出方案、交換 `enabled` 與 Git ignore 驗收異議，最後明確同意共同計畫與責任表；製作人核准後才開始實作。
+- **任務單**：新增 `docs/ai-collaboration/tasks/mobile-firebase-foundation/TASK_BRIEF.md`，記錄本輪目標、禁止範圍、驗收條件、已知限制與責任表；未重複建立 PROJECT_CORE、DEV_LOG 或獨立驗收表。
+- **Firebase Web App**：在 `bibi-dice-leijoa` 建立唯一的 Web App `BIBI DICE Mobile`，App ID 為 `1:483341544303:web:f96579ff2797e42030d69a`，遠端狀態為 `ACTIVE`。
+- **本機設定**：新增 `.firebaserc`，default 指向 `bibi-dice-leijoa`；建立被 Git 忽略的 `mobile.config.local.json`，Firebase `apiKey`、`authDomain`、`projectId`、`appId` 均由 `apps:sdkconfig` 取得並核對一致。
+- **安全停用**：本機設定維持 `enabled: false`，AdMob 維持測試模式與官方測試 ID，RevenueCat Key 與帳號刪除網址保持空白。尚未完成 Auth／Firestore／Rules／Hosting 前，手機與 Steam 正式建置都不啟用雲端功能。
+- **韻西驗證**：`apps:list`、`apps:sdkconfig`、`git check-ignore`、ignored status、一般 git status、`npm.cmd run mobile:verify` 與管理端私鑰掃描全部通過；建置輸出含正確 projectId／appId 且 `enabled=false`。
+- **阿扣交叉驗收**：阿扣唯讀重跑全部 7 項驗收並明確回覆「交叉驗收通過」；確認沒有超出共同計畫，也沒有建立 Firestore／Auth 或部署 Rules／Hosting。
+- **範圍控制**：未修改遊戲程式、四語系、Android／iOS 原生專案、Firestore Rules、Hosting、AdMob、RevenueCat 或任何 Steam 檔案；未執行 Git stage、commit 或 push。
+- **下一步**：另立共同規劃任務後，才決定 Firestore 地區與 Authentication／Rules／Hosting 的建立順序；不得直接把 `enabled` 切成 `true`。
+
+### 2026-07-04 鑀韻西：手機版後台設定暫停，等待新版工作流程
+- **暫停狀態**：製作人要求立即停止手機版後台設定，先更新工作流程；在新版流程確認前，不得繼續建立 Web App、Firestore、Authentication、AdMob、RevenueCat、Google Play 資源，也不得部署 Rules 或 Hosting。
+- **Firebase 已完成**：Firebase CLI 已完成 Google OAuth 登入；Google Cloud／Firebase 專案 `BIBI DICE` 已建立，Project ID 為 `bibi-dice-leijoa`，使用 Spark 免費方案，Google Analytics 依首發規則保持停用。
+- **建立過程**：CLI 先成功建立 Google Cloud 專案，但因帳號尚未接受 Firebase 條款，`addFirebase` 回傳 `403 PERMISSION_DENIED`；製作人在 Firebase Console 接受條款後，以既有 Cloud 專案完成加入 Firebase。CLI 已再次確認專案為 `ACTIVE` 且帶有 `firebase: enabled`。
+- **明確未完成**：尚未建立 Firebase Web App；尚未建立 Cloud Firestore 或選擇資料位置；尚未啟用 Email／密碼 Authentication；尚未建立 `.firebaserc` 或 `mobile.config.local.json`；尚未部署 `firestore.rules`、帳號刪除 Hosting 或任何正式 App 設定。
+- **建議但未執行**：原規劃建議 Firestore 使用 `asia-east1`（台灣），但位置不可變更，因此尚未建立，留待新版工作流程重新確認。
+- **阿扣核對**：依專案規範以 US$5 上限完成唯讀盤點，確認 Android 工程已到需要真實後台識別碼的邊界，Firebase 應先於 RevenueCat，AdMob 可平行；本輪未讓阿扣修改檔案。
+- **續作入口**：恢復工作前先讀本條紀錄與新版工作流程，再由製作人重新核准外部資源建立順序；不可直接沿用舊流程繼續送出。
+
+### 2026-07-03 韻西：首波英文 YouTube Shorts 已公開
+- **發布完成**：英文正式上市短片已於 2026-07-03 晚間公開，標題為 `120,960,000 Damage From 8 Dice?! BIBI DICE Is Out Now 🎲`。
+- **公開網址**：`https://youtube.com/shorts/E2X6iPzoN7E`。
+- **導流設定**：說明已加入正式版 Steam AppID `4792230` 的英文 Shorts UTM 連結，並將公開正式預告片 `https://youtu.be/U4BvT5RyU5M` 設為 Shorts 相關影片。
+- **YouTube 設定**：影片語言為英文、非兒童專屬、AI 寫實內容聲明為否；廣告自評為不含列舉內容，著作權與廣告合適度檢查皆未發現問題。
+- **下一步**：完成第一波 Threads 繁中貼文；英文 Shorts 於發布後 24／72 小時回填觀看、留存、互動與 Steam UTM 成效，再安排日文、簡中版本。
+- **範圍控制**：本輪未修改遊戲程式、Steam Build 或四語影片成品，只執行英文 Shorts 發布並更新紀錄。
+
+### 2026-07-03 鑀韻西：手機版首發工程基線與 Android 模擬器驗收完成
+- **程式狀態**：Capacitor 8、Android／iOS 專案、手機 Web 建置、原生檔案存檔、Firebase Auth／Firestore、AdMob／UMP、RevenueCat、挑戰次數、四語手機 UI、本機通知與生命週期接線均已完成；未修改 `js/engine.js` 或靜態戰鬥數值。
+- **App 識別與平台**：主 App ID `com.leijoa.bibidice`；Android API 24～36，iOS 15+／僅 iPhone，兩邊固定直式。若後台占用，需將 Capacitor、Android、Xcode 三處一起切成 `com.leijoalion.bibidice`。
+- **資料安全**：手機完整白名單存檔寫入 `profile-v2.json`，採暫存檔、舊檔備份與 rename；Firebase 只合併局外進度。靈魂使用每來源單調帳本，收集冊聯集、奉獻與最高紀錄取高，舊檔遷移與重複同步已有測試。
+- **次數與收益**：免費版 5 次、每小時恢復 1；新局最終確認與無限塔確認各扣 1。廣告完成才給獎勵，商店再議規則與每店最多一支刷新廣告已接線；完整版移除廣告與次數限制，RevenueCat 權益為 `premium`。
+- **帳號**：訪客可玩；同步或購買才需 Email 帳號，購買前需驗證 Email。已完成 App 內與四語網頁刪除入口、密碼重設與 Firestore Rules；Firebase Console 仍需手動開啟 enumeration protection。
+- **Steam／Demo**：Steam 正式版可在存在 `mobile.config.local.json` 時打包 Firebase 局外同步；目前沒有正式設定，因此安全停用。Demo 與一般 Steam 包不含 Android／iOS、帳號刪除頁、Firebase 設定或手機 UI，正式包／EXE smoke 已通過。
+- **自動驗證**：`test:mobile` 12 項、四語 704 keys、`mobile:verify`、帳號刪除頁、`cap sync`、320／390／430px 四語瀏覽器回歸、`steam:verify`、`steam:package:verify` 與 `npm audit` 通過。Windows 大視窗 675×1200 實際為 676×1200 的系統四捨五入已納入測試容差。
+- **Android 工具鏈**：已安裝 Android Studio 2026.1.1.10、OpenJDK 21.0.11、Android SDK／Build Tools 36、ADB、Emulator 與 API 36 Google APIs x86_64 映像；Windows 使用者環境已寫入 `ANDROID_HOME`、`ANDROID_SDK_ROOT` 與工具路徑。
+- **Android 產物**：Debug APK `android/app/build/outputs/apk/debug/app-debug.apk` 與 Debug AAB `android/app/build/outputs/bundle/debug/app-debug.aab` 均建置成功；APK 已安裝到 `BIBI_DICE_API_36` Pixel 6 AVD，套件為 `com.leijoa.bibidice`、minSdk 24、targetSdk 36。
+- **Android 實測**：API 36 模擬器通過冷啟動、直式與觸控、開始新局 5/5→4/5、拒絕通知權限後進入戰鬥、背景建立 `profile-v2.json` 與備份、強制終止後顯示續玩且維持 4/5、續玩不扣次，以及戰鬥中返回鍵顯示離開確認。沒有 App 崩潰。
+- **仍待後台／實機**：AdMob 測試 App 與 UMP 初始化成功；Firebase Email、正式／獎勵廣告及 RevenueCat Test Store 尚待正式設定。Android 實機仍需驗證 WebView、內購、廣告、背景回收與低記憶體；Windows 仍無法執行 Xcode／TestFlight。
+- **建置警告**：AdMob 與 RevenueCat 會讓 Kotlin plugin 重複載入，RevenueCat 的 Amazon Appstore 相依套件在 APK dex 時會出現 stack-map 警告；目前未阻止 APK／AAB 建置及 API 36 啟動，升級外掛時再追蹤。
+- **製作人下一步**：建立 Firebase、AdMob、RevenueCat、Apple Developer、Google Play Console；提供正式設定、聯絡 Email、隱私政策網址、1024×1024 App Icon 與啟動畫面；借 Android 實機驗收，之後租 Mac＋Xcode 26 驗證 iPhone／TestFlight。
+- **文件入口**：先讀 `docs/mobile/README.md`，再依 `docs/mobile/RELEASE_CHECKLIST.md` 執行；隱私政策草案在 `docs/mobile/PRIVACY_POLICY_DRAFT_ZH_TW.md`。
+- **阿扣協作**：OAuth 過期問題已透過重新登入修復，實際模型請求與兩輪 US$5 唯讀審查成功。審查發現的離線廣告獎勵被上限吃掉、跨帳號消耗計數污染已修正並補回歸；client-authoritative 單機進度可由帳號本人竄改的限制已記錄，未來若加入排行榜必須改可信伺服器。
+
+### 2026-07-02 鑀韻西：完成 G8 電玩展報名截圖與表單資料包
+- **交付資料夾**：新增 `promo/g8-2026-registration/`，內含四張可直接上傳的 PNG 與 `APPLICATION_INFO.md`。
+- **指定檔名**：依主辦方文字原樣保留 `Scrrenshot` 拼字，建立 `Game Scrrenshot_LeijoaLion_2026-07-02_1.png` 至 `_4.png`。
+- **截圖內容**：依序選用戰鬥與八顆骰子、牌型倍率、遺物商店、48 億傷害精彩時刻；來源為既有 Steam 商店截圖 `02`、`03`、`05`、`08`，沒有修改或重新壓縮原圖。
+- **表單資料**：上市日期填 `2026-06-30`；Demo 為 `https://store.steampowered.com/app/4796530/BIBI_DICE_Demo/`；Steam 正式版為 `https://store.steampowered.com/app/4792230/BIBI_DICE/`。
+- **Trailer 核對**：表單畫面中的 `https://youtu.be/nnJj7DlKvxw` 是 G-EIGHT 官方 2024 宣傳片，不是《比比丟八》影片；目前沒有公開的《比比丟八》YouTube Trailer，因此報名資料明確標示該欄留白。
+- **驗證**：四張皆為 1920×1080 PNG、單檔低於 2MB，且 SHA-256 與各自來源完全相同。
+- **範圍控制**：沒有修改遊戲程式、Steam Build、原始截圖或影片；尚未替製作人送出 G8 表單。
+
+### 2026-07-01 鑀韻西：完成 video-autopilot-kit 正式版設定與四語四平台發布包
+- **工具設定**：外部 `video-autopilot-kit` v0.6.0 的 `config.py` 已改指向 `D:\unity\bibi-dice\promo\social\steam-launch-short`；原本的 Demo AppID `4796530`、Demo CTA、18 秒規格與「仍缺乾淨四語素材」皆已更新為正式版 AppID `4792230`、立即遊玩、13 秒四語成品與現有素材狀態。
+- **工具定位**：HyperFrames `0.7.17` 仍是四語影片的來源，不把 `video-autopilot-kit` 加入遊戲或影片專案依賴；該工具只供未來 CapCut 輔助、FFmpeg 後製、規劃與交付 QA。
+- **新增 profiles**：更新 `brand.md`、`content_pipeline.md`、`your_context.md`，新增 `algorithm.md`、`community.md`；已記錄 Steam 基準、四平台帳號、首波發布測試與 24／72 小時數據觀察方式，未蒐集的 YouTube／社群數字明確保留為未知。
+- **四語發布文案**：在 `promo/social/steam-launch-short/` 新增 `POST_COPY_EN.md`、`POST_COPY_JA.md`、`POST_COPY_ZH_CN.md`、`POST_COPY_ZH_TW.md`，每語皆包含 YouTube Shorts、Threads、Instagram Reels、X；CTA 改為正式版已上市與立即遊玩。
+- **追蹤連結**：四平台／四語使用獨立 Steam UTM，統一加入 `utm_content=high_damage_v1`；影片中各語傷害數字與文案一致，未沿用舊版 48 億或願望清單文案。
+- **發布檢查表**：新增 `PUBLISH_CHECKLIST.md`，包含成品對照、發布波次、平台限制、公開網址紀錄與 24／72 小時成效欄位。第一波建議為 Threads 繁中與 YouTube Shorts 英文。
+- **尚未執行**：本輪沒有登入或發布任何社群平台，也沒有修改、重剪或重新輸出四支正式影片。
+- **阿扣協作**：依規範以 `--max-budget-usd 5.00` 執行限縮唯讀核對；`auth status` 顯示已登入，但正式呼叫回傳 `401 Invalid authentication credentials`，request ID `req_011CcbGPT8pQhLa87bjkUi5u`，本輪由鑀韻西完成實作與驗證。
+
+### 2026-07-01 韻西：正式上市、熱修、Demo 導購與首日營運狀態已同步
+- **正式版目前 Build**：Base Game AppID `4792230`／DepotID `4792231` 的 `default` 與私人 `internal` 皆為 Build `23984755`，描述 `BIBI DICE Launch Hotfix - 2026-06-30`。正式版不再顯示 Demo／itch.io 專用導購卡，Steam 原生安裝、啟動與隱藏狀態皆已驗證。
+- **Demo 目前 Build**：Demo AppID `4796530`／DepotID `4796531` 的 `default` 為 Build `23985042`，描述 `BIBI DICE Demo Store CTA - 2026-06-30`。標題與通關導購按鈕會顯示、事件已綁定，並可安全開啟正式版 Steam 商店頁。
+- **修正根因**：正式版導購卡雖帶有 `hidden`，但較晚載入的 `.promo-card { display:flex; }` 覆蓋隱藏樣式，造成正式版出現無反應按鈕；已用 `.promo-card.hidden { display:none !important; }` 恢復正確版本行為。
+- **正式上市**：Steamworks 顯示遊戲已於 2026-06-30 上午 4:47 開始上架曝光，首發折扣為 10%／7 天；上架曝光回合已啟動，最長持續 30 天。
+- **首日銷售**：Steam 財務報表截至 2026-06-30 顯示售出 `4` 份、Steam 毛營收 `US$9`、扣除退款／拒付／稅金後淨額 `US$8`、退款 `0`；四份銷售目前皆來自台灣。
+- **願望清單**：累計新增 `42`、刪除 `6`、購買／啟用轉換 `2`，目前尚有 `34`。上市日新增 `11`、刪除 `1`、轉換 `2`，期間淨增 `8`；26 封上市通知帶來 2 次轉換，報表轉換率 `7.7%`，但 Steam 標記樣本仍不足。
+- **曝光資料**：商店流量目前只回填到 2026-06-29；6/23～6/29 共 `22,508` 次曝光、`1,210` 次造訪、`868` 次計入曝光點擊的造訪，CTR `3.9%`，其中 `339` 次造訪被標記為機器人流量。上市日完整曝光尚未回填，不可用上市前流量推算首日購買轉換率。
+- **外部導流**：6/17～6/30 UTM 共 `73` 次造訪、`40` 次可信造訪、`24` 次可追蹤造訪、`1` 次願望清單轉換，尚無 UTM 歸因購買；報表中的 `ig_text_post_permalink` 是目前最主要可信來源。Steam UTM 購買歸因可能延遲數日。
+- **Demo 觸及**：Demo 累計免費授權 `1,062`，但實際累計不重複玩家為 `23`、遊玩時間中位數 `18` 分鐘；2026-06-30 新增 `7` 份免費授權，不能把免費授權總數直接視為實際玩家數。
+- **宣傳狀態**：英、日、簡中、繁中四支正式上市短片均已完成且尚未發布；下一步仍是建立四平台／四語貼文、各平台獨立 UTM，並分批發布。
+- **文件範圍**：本次只同步交接文件，沒有修改遊戲程式、Steam Build、商店設定或影片成品。
+
+### 2026-07-01 鑀韻西：四平台四語宣傳影片工作已移交至專案內
+- **交接位置**：新增 `promo/social/multiplatform-launch-handoff/`，內含總交接、素材索引與四平台發布矩陣。後續新視窗應先讀本檔頂部，再讀該目錄的 `README.md`。
+- **平台帳號**：Threads `https://www.threads.com/@leijoalan`，Instagram `https://www.instagram.com/leijoalan/`，YouTube `https://www.youtube.com/@LeijoaLion`，X `https://x.com/Leijoa2588`；台灣地區以 Threads 為主力宣傳平台。
+- **既有成品**：確認 `promo/social/steam-launch-short/previews/` 已有英、日、簡中、繁中四支 1080×1920、60fps、約 13.035 秒正式成品，品質與在地化均優於 Codex 文件區的外部暫製原型，不需重新索取玩法錄影、BGM、音效、Logo、角色立繪或四語術語。
+- **素材盤點**：確認 `promo/steam/trailer/raw-captures/` 有 23 支四語 1920×1080、60fps 實機錄影，合計約 350.28 秒；專案另有完整 BGM／SFX、透明 Logo、兩張透明角色立繪與四語 locale。
+- **下一步**：在 `promo/social/steam-launch-short/` 新增四語發布文案，每語包含 YouTube Shorts、Threads、Instagram Reels、X；將舊版願望清單 CTA 更新為正式版已上市的立即遊玩 CTA，並建立分平台／語系 UTM。既有影片、遊戲程式與 Steam Build 不需修改。
+- **外部原型**：先前 Codex 文件區的 18 秒直式／橫式 HyperFrames 原型保留於原位置供研究，因素材與成品重複且畫面仍混有繁中 UI，未複製進正式專案。
+- **阿扣協作**：`claude.exe auth status` 顯示已登入，但正式唯讀素材核對回傳 `401 Invalid authentication credentials`，request ID `req_011CcbD8fxEQomf6xaWYw7f7`；本輪未以其他子代理替代。
+
+### 2026-06-30 鑀韻西：Launch Update Build 23984133 已發布至 Steam default（歷史紀錄，已由 23984755 取代）
+- **狀態**：完成；Build `23984133` 曾發布至 `default` 與私人 `internal`，之後已由修正導購顯示問題的 Build `23984755` 取代。
+- **發布內容**：包含目前本機正式版內容，並補上版本識別安全修正：`steam-portrait` 專注直式版面，僅 Demo 另有 `steam-demo-build`；導購只認 `steam-demo-build`／`itch-build`，正式版不會顯示「查看 Steam 正式版」自我導購。
+- **建置與驗證**：四語系 674 keys 對齊；Demo Electron 三種視窗與儲存回歸通過；`npm.cmd run steam:package:verify` 通過正式包、Steamworks native、Cloud、成就、版面／版本標記與 EXE smoke；彗星 `x40 / rarity 5`、全異 `x15` 另以引擎直接計算通過。
+- **SteamPipe**：帳號 `Leijoa2588` 上傳 Base Game AppID `4792230`／DepotID `4792231` 成功，BuildID `23984133`，Depot manifest `8736795010924365040`，描述 `BIBI DICE Launch Update - 2026-06-30`。
+- **internal 驗收**：先發布至 `internal`，Steam 用戶端下載後 manifest 顯示 `buildid = TargetBuildID = 23984133`，遊戲從原生 Steam 啟動成功；Steam 安裝檔與本機正式包逐檔 SHA-256 相符，差異僅為 VDF 排除的 4 個 `.log`。
+- **default 發布**：Steamworks 顯示原玩家版本為 Build `23933430`，本次更新到 `23984133` 的下載量約 `274.6 KB`；發布後分支表與歷史紀錄皆確認 `default`／`internal` 同步完成。
+- **文件更正**：舊交接文件誤將 `23853875` 視為本次發布前的 default；實際後台權威狀態是 `23933430` 已於 2026-06-26 發布至 default，`23853875` 當時只留在 internal。
+- **阿扣協作狀態**：`claude.exe auth status` 顯示已登入，但正式唯讀呼叫回傳 `401 Invalid authentication credentials`，request ID `req_011CcZUkwReHuqbh2oFxF963`；本輪由鑀韻西完成全部發布檢查。
 
 ### 2026-06-30 鑀韻西：完成 Steam 正式版四語快速節奏 Shorts
 - **狀態**：四支正式影片已完成並通過品管，尚未上傳或發布 YouTube。
@@ -355,14 +522,19 @@
 | 項目 | 狀態 |
 |---|---|
 | Base Game AppID | 4792230 |
-| Base Game Build | 23853875 (default + internal) |
-| 發行排程 | 2026-07-01 00:00 [GMT+8] |
+| Base Game Build | 23984755（default + internal，已發行） |
+| 發行狀態 | 2026-06-30 上午 4:47 已上市；10% 首發折扣／7 天 |
 | Demo AppID | 4796530 |
-| Demo Build | 23496399（已發行） |
-| 四語系 | 668 keys 對齊（2026-06-26 驗證） |
+| Demo Build | 23985042（default，已發行） |
+| 版本導購 | 正式版隱藏；Demo 顯示且可開啟正式版商店 |
+| 四語系 | 674 keys 對齊（2026-06-30 驗證） |
 | SteamCMD | D:\tools\steamcmd\steamcmd.exe |
 | ContentRoot | D:\unity\bibi-dice\dist\steam-windows |
-| itch.io html Build | 第 14 版，同步 Demo Build 23496399 |
+| 首日銷售 | 4 份；毛營收 US$9、淨額 US$8、退款 0 |
+| 願望清單 | 目前 34；上市日新增 11、轉換 2、淨增 8 |
+| 上市前一週曝光 | 22,508 次曝光、1,210 次造訪、CTR 3.9%；上市日資料尚未回填 |
+| 四語上市短片 | 四支正式成品與四語四平台文案／檢查表已完成；首波英文 YouTube Shorts 與 Threads 繁中已公開 |
+| itch.io html Build | 第 14 版；仍同步舊 Demo Build 23496399，尚未跟進 23985042 |
 
 ---
 
@@ -370,12 +542,40 @@
 
 | 問題 | 狀態 | 說明 |
 |---|---|---|
-| Steam 商店影片四語版 | 待乾淨來源 | 英文直式草稿已完成；需製作人提供無特效中文字的來源，再製英/日/簡中/繁中四支 |
+| 19 項 Bug 修復後的 SteamPipe 發布 | 待製作人決策 | Phase 1～4 已全部修復並通過 `steam:package:verify`；尚未 commit / push / 上傳 Steam。建議製作人實機試玩 `dist/steam-windows/BIBI-DICE.exe` 後再排程發布 |
+| G8 電玩展報名送件 | 待製作人上傳 | 四張截圖與表單資料已整理於 `promo/g8-2026-registration/`；目前可使用公開 Trailer `https://youtu.be/U4BvT5RyU5M` |
+| 四平台四語上市短片發布 | 進行中 | 第一波英文 YouTube Shorts 與 Threads 繁中已完成；待回填 24／72 小時數據後安排第二、三波 |
+| 上市日曝光判讀 | 待 Steam 回填 | 商店流量目前只到 2026-06-29；待 6 月 30 日資料可用後再計算上市曝光與購買轉換 |
+| itch.io 同步 | 待確認 | 線上第 14 版仍是舊 Demo Build 23496399；尚未同步目前 Demo 23985042 的正式版導購修正 |
 
 ### 已處理問題
 
 | 問題 | 完成日期 | 處理方式 |
 |---|---|---|
+| 【H1】正式版作弊入口未鎖 IS_DEV | 2026-07-06 | 作弊碼監聽、dev API、5 連點入口全收進 IS_DEV 閘門（韻西實作、雙方驗收） |
+| 【H2】通關最終 Boss 拿不到靈魂與傳說掉落 | 2026-07-06 | fireAttack 改走 enemyDefeated()，Boss 正常發 2＋契約靈魂與掉落；進無限塔改直接開商店不重複發獎 |
+| 【M1】破壞鉗無法還原枯萎/時間壓縮 | 2026-07-06 | cons_pliers 檢查移到枷鎖效果套用之前 |
+| 【M2】弒神枷鎖半成品 | 2026-07-06 | 製作人裁定完成上線：改 heavy 型別、buildActiveShackleConfig 傳入完整定義、骰面角標同步停用；引擎實測 240→16 |
+| 【M3】區域藥水與敘述不符 | 2026-07-06 | 製作人裁定非空區 ×2.0；空區不再生效（引擎實測通過） |
+| 【M4】噪音枷鎖點遺物 TypeError | 2026-07-06 | ui.js 補 `window.showToast = showToast` |
+| 【M5】血色聖戰角標錯誤 | 2026-07-06 | 改用 fusion_blood_crusade 正確公式與 getMaxHp；刪除 fusion_titan/fusion_bloody/fusion_peak 死碼 |
+| 【M6】舊存檔誤套最高契約 | 2026-07-06 | contractLevel fallback 改 0 |
+| 【M7】語言切換回呼呼叫不存在函式 | 2026-07-06 | 改呼叫 UI 模組函式並帶正確參數；阿扣補強收集冊分頁標籤同步刷新 |
+| 【M8】菁英怪無掉落時不給靈魂 | 2026-07-06 | else 分支補菁英 1 靈魂（＋契約加成） |
+| 【L1】黑洞下牌型高亮錯位 | 2026-07-06 | applyMatch 加 matchVal 換算（8 視為 1）（阿扣） |
+| 【L2】天譴不含 rarity 5 牌型 | 2026-07-06 | 製作人裁定含 rarity 5：改 `rarity >= 4` 並改用 getRuleMetaByName 比對（修正「比比丟八(ビビデバ)」精確比對漏判）（阿扣） |
+| 【L3】i18n 硬編碼 | 2026-07-06 | 商店買空文案與契約前綴改四語系 key（contract_prefix/contract_prefix_infinite/shop_sold_out）（阿扣） |
+| 【L4】平庸之惡洗掉 D 藥水 | 2026-07-06 | 製作人裁定完全封鎖 D 區藥水＝現行行為，不改碼（引擎實測 banality 下 D 藥水維持 ×1） |
+| 【L5】重骰動畫前先扣次存檔 | 2026-07-06 | 移除動畫開始前的 saveGame，改由動畫收尾存檔（阿扣） |
+| 【L6】損毀存檔黑畫面軟鎖 | 2026-07-06 | loadGame 回傳成功與否；失敗退回標題、清除存檔並顯示 save_corrupted 提示（阿扣） |
+| 【L7】i18n 重複 key | 2026-07-06 | 四語 ui 區塊去重，保留原「後者覆蓋」生效值（Node 實測 11 組生效值一致）（阿扣） |
+| 【L8】Electron 路徑前綴檢查 | 2026-07-06 | `startsWith(root + path.sep)` 補分隔符（阿扣） |
+| 【L9】randomUUID 非安全來源拋錯 | 2026-07-06 | runtime.js 加時間戳亂數 fallback（阿扣） |
+| G8 報名截圖與欄位資料未整理 | 2026-07-02 | 建立 G8 報名資料夾、四張指定檔名截圖與 APPLICATION_INFO.md |
+| video-autopilot-kit 仍是 Demo／18 秒舊設定 | 2026-07-01 | 更新 config 與五份 profiles，改用正式版 AppID 4792230、13 秒四語成品與立即遊玩 CTA |
+| 四語四平台上市文案與 UTM 尚未建立 | 2026-07-01 | 新增四份發布文案與 PUBLISH_CHECKLIST，依平台／語系拆分 UTM |
+| 正式版誤顯示 Demo 導購且按鈕無反應 | 2026-06-30 | Build 23984755 修正 `.hidden` 樣式覆蓋並發布至 default／internal |
+| Demo 缺少正式版導購 | 2026-06-30 | Build 23985042 加入 `steam-demo-build`、導購事件與驗證，發布至 Demo default |
 | Build 23853875 驗收通過並發布至 default | 2026-06-23 | SteamPipe 上傳，internal 驗收後 SetLive default |
 | 發行前後台總檢完成 | 2026-06-23 | 阿扣唯讀稽核後同步文件 |
 | D 區「兩極」有效牌型顯示變暗 | 2026-06-26 | isZoneActive() 分離判斷 |

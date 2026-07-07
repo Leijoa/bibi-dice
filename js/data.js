@@ -8,6 +8,25 @@ export const RARITY = {
     5: { label: '再生', color: 'text-cyan-400', bg: 'bg-cyan-900/40', border: 'border-cyan-500 shadow-[0_0_10px_rgba(34,211,238,0.5)]' }
 };
 
+export const SOUL_UPGRADE_DB = [
+    { id: 'hp', name: '體魄鍛鍊', desc: '最大 HP +1', max: 2, costs: [10, 10] },
+    { id: 'rerolls', name: '骰子掌握', desc: '初始重骰次數 +1', max: 2, costs: [15, 15] },
+    { id: 'startRelic', name: '初始裝備', desc: '開局隨機獲得 1 個普通遺物', max: 1, costs: [30] },
+    { id: 'fateSelection', name: '命運鑑選', desc: '已解鎖初始裝備時，開局從 3 件普通遺物選 1 件', max: 1, costs: [60], choiceCount: 3 },
+    { id: 'finalDamage', name: '力量覺醒', desc: '最終傷害 +10%', max: 5, costs: [20, 20, 20, 20, 20] },
+    { id: 'soulBurst', name: '輪迴契約', desc: '解鎖新局可選的契約強度上限', max: 10, costs: Array(10).fill(100), hpMultiplierPerLevel: 1, soulBonusPerLevel: 1 },
+    { id: 'relicSense', name: '遺珍感應', desc: '提高稀有、史詩與傳說遺物出現率', max: 3, costs: [40, 80, 120], commonWeightShiftPerLevel: 3, higherWeightShiftPerLevel: 1 },
+    { id: 'mythicVessel', name: '神話容器', desc: '神話遺物持有上限每級 +1', max: 4, costs: [100, 150, 200, 250], extraLimitPerLevel: 1 },
+    { id: 'fusionCompass', name: '融合羅盤', desc: '持有融合素材時，提高另一件素材在商店出現的權重', max: 3, costs: [50, 80, 110], partnerWeightMultipliers: [2, 3, 4] },
+    { id: 'shopReconsider', name: '商店再議', desc: '每間商店可額外刷新一次', max: 1, costs: [80], extraRerollsPerLevel: 1 },
+    { id: 'omenEye', name: '預兆之瞳', desc: '在商店預告下一關的枷鎖', max: 1, costs: [40] },
+    { id: 'blankLedger', name: '遺物封存', desc: '新局前可排除已解鎖遺物；每級增加 1 件，最多 2 件', max: 2, costs: [50, 100] }
+];
+
+export const SOUL_UPGRADE_BY_ID = Object.freeze(
+    Object.fromEntries(SOUL_UPGRADE_DB.map(upgrade => [upgrade.id, upgrade]))
+);
+
 
 export const FUSION_RECIPES = {
     'fusion_source': { mat1: 'b1', mat2: 'b2' },
@@ -164,7 +183,7 @@ export const SHACKLE_DB = [
     { id: 'illusionary', name: '【假象】', desc: '顯示虛假的最終傷害。', type: 'heavy' },
     { id: 'shackle_smoke', name: '【煙霧】', desc: '看不到血條預估傷害。', type: 'light', hidesDamagePreviewBar: true, hidesDamageNumber: false, distortsDamage: false },
     { id: 'shackle_drunk', name: '【酒醉】', desc: '無法精準掌握預估傷害。', type: 'heavy', hidesDamagePreviewBar: false, hidesDamageNumber: false, distortsDamage: true, distortRange: 0.20 },
-    { id: 'shackle_godslayer', name: '【弒神】', desc: '神話遺物無效化。', difficulty: 'heavy', type: 'relic_suppress', suppressMythic: true }
+    { id: 'shackle_godslayer', name: '【弒神】', desc: '神話遺物無效化。', type: 'heavy', suppressMythic: true }
 ];
 
 export function isElite(levelIndex) {
@@ -210,50 +229,50 @@ export function getEnemy(levelIndex) {
 
 export const RULE_DB = {
     groupA: [
-        { name: '比比丟八', desc: '8顆相同數字', multi: 'x100' , rarity: 5 },
-        { name: '七同', desc: '7顆相同數字', multi: 'x60' , rarity: 5 },
-        { name: '六同', desc: '6顆相同數字', multi: 'x25' , rarity: 4 },
-        { name: '五同', desc: '5顆相同數字', multi: 'x12' , rarity: 3 },
-        { name: '四同', desc: '4顆相同數字', multi: 'x5' , rarity: 2 },
-        { name: '三同', desc: '3顆相同數字', multi: 'x3' , rarity: 1 },
-        { name: '對子', desc: '2顆相同數字', multi: 'x2' , rarity: 1 }
+        { id: 'rule_a0', name: '比比丟八', desc: '8顆相同數字', multi: 'x100' , rarity: 5 },
+        { id: 'rule_a1', name: '七同', desc: '7顆相同數字', multi: 'x60' , rarity: 5 },
+        { id: 'rule_a2', name: '六同', desc: '6顆相同數字', multi: 'x25' , rarity: 4 },
+        { id: 'rule_a3', name: '五同', desc: '5顆相同數字', multi: 'x12' , rarity: 3 },
+        { id: 'rule_a4', name: '四同', desc: '4顆相同數字', multi: 'x5' , rarity: 2 },
+        { id: 'rule_a5', name: '三同', desc: '3顆相同數字', multi: 'x3' , rarity: 1 },
+        { id: 'rule_a6', name: '對子', desc: '2顆相同數字', multi: 'x2' , rarity: 1 }
     ],
     groupB: [
-        { name: '彗星', desc: '1~8各有一顆', multi: 'x30' , rarity: 4 },
-        { name: '七連順', desc: '7顆數字相連', multi: 'x12' , rarity: 3 },
-        { name: '六連順', desc: '6顆數字相連', multi: 'x7' , rarity: 2 },
-        { name: '五連順', desc: '5顆數字相連', multi: 'x4' , rarity: 1 },
-        { name: '四連順', desc: '4顆數字相連', multi: 'x3' , rarity: 1 },
-        { name: '三連順', desc: '3顆數字相連', multi: 'x2' , rarity: 1 }
+        { id: 'rule_b0', name: '彗星', desc: '1~8各有一顆', multi: 'x40' , rarity: 5 },
+        { id: 'rule_b1', name: '七連順', desc: '7顆數字相連', multi: 'x12' , rarity: 3 },
+        { id: 'rule_b2', name: '六連順', desc: '6顆數字相連', multi: 'x7' , rarity: 2 },
+        { id: 'rule_b3', name: '五連順', desc: '5顆數字相連', multi: 'x4' , rarity: 1 },
+        { id: 'rule_b4', name: '四連順', desc: '4顆數字相連', multi: 'x3' , rarity: 1 },
+        { id: 'rule_b5', name: '三連順', desc: '3顆數字相連', multi: 'x2' , rarity: 1 }
     ],
     groupC: [
-        { name: '雙子星', desc: '兩組4同', multi: 'x50' , rarity: 5 },
-        { name: '南瓜馬車', desc: '5同 + 3同', multi: 'x40' , rarity: 5 },
-        { name: '豪華四對子', desc: '至少包含一組4同的4組對子', multi: 'x20' , rarity: 4 },
-        { name: '三龍會', desc: '兩組3連順 + 一組2連號', multi: 'x10' , rarity: 2 },
-        { name: '經典四對子', desc: '嚴格的4組對子(無3同或4同)', multi: 'x12' , rarity: 3 },
-        { name: '雙四連順', desc: '兩組4連順', multi: 'x22' , rarity: 4 },
-        { name: '白馬', desc: '4同 + 3同', multi: 'x14' , rarity: 3 },
-        { name: '平胡', desc: '兩組3連順 + 一組對子', multi: 'x10' , rarity: 2 },
-        { name: '碰碰胡', desc: '兩組3同 + 一組對子', multi: 'x14' , rarity: 3 },
-        { name: '順碰交響曲', desc: '1組3連順 + 1組3同', multi: 'x3' , rarity: 1 },
-        { name: '雙三連順', desc: '兩組3連順', multi: 'x6' , rarity: 2 },
-        { name: '雙三同', desc: '兩組3同', multi: 'x11' , rarity: 3 },
-        { name: '南瓜', desc: '3同 + 一組對子', multi: 'x2' , rarity: 1 },
-        { name: '三對子', desc: '任意3組對子', multi: 'x3' , rarity: 1 },
-        { name: '雙對子', desc: '任意2組對子', multi: 'x2' , rarity: 1 }
+        { id: 'rule_c0',  name: '雙子星', desc: '兩組4同', multi: 'x50' , rarity: 5 },
+        { id: 'rule_c1',  name: '南瓜馬車', desc: '5同 + 3同', multi: 'x40' , rarity: 5 },
+        { id: 'rule_c2',  name: '豪華四對子', desc: '至少包含一組4同的4組對子', multi: 'x20' , rarity: 4 },
+        { id: 'rule_c3',  name: '三龍會', desc: '兩組3連順 + 一組2連號', multi: 'x10' , rarity: 2 },
+        { id: 'rule_c4',  name: '經典四對子', desc: '嚴格的4組對子(無3同或4同)', multi: 'x12' , rarity: 3 },
+        { id: 'rule_c5',  name: '雙四連順', desc: '兩組4連順', multi: 'x22' , rarity: 4 },
+        { id: 'rule_c6',  name: '白馬', desc: '4同 + 3同', multi: 'x14' , rarity: 3 },
+        { id: 'rule_c7',  name: '平胡', desc: '兩組3連順 + 一組對子', multi: 'x10' , rarity: 2 },
+        { id: 'rule_c8',  name: '碰碰胡', desc: '兩組3同 + 一組對子', multi: 'x14' , rarity: 3 },
+        { id: 'rule_c9',  name: '順碰交響曲', desc: '1組3連順 + 1組3同', multi: 'x3' , rarity: 1 },
+        { id: 'rule_c10', name: '雙三連順', desc: '兩組3連順', multi: 'x6' , rarity: 2 },
+        { id: 'rule_c11', name: '雙三同', desc: '兩組3同', multi: 'x11' , rarity: 3 },
+        { id: 'rule_c12', name: '南瓜', desc: '3同 + 一組對子', multi: 'x2' , rarity: 1 },
+        { id: 'rule_c13', name: '三對子', desc: '任意3組對子', multi: 'x3' , rarity: 1 },
+        { id: 'rule_c14', name: '雙對子', desc: '任意2組對子', multi: 'x2' , rarity: 1 }
     ],
     groupD: [
-        { name: '兩極', desc: '盤面只有 1 和 8', multi: 'x60' , rarity: 5 },
-        { name: '絕對秩序', desc: '7顆以上數字為全奇數或全偶數', multi: 'x12' , rarity: 3 },
-        { name: '全異', desc: '8顆數字皆不相同', multi: 'x18' , rarity: 4 },
-        { name: '中庸之道', desc: '盤面完全沒有 1 和 8', multi: 'x5' , rarity: 2 },
-        { name: '斐波那契數列', desc: '大自然隱藏的黃金螺旋公式 (112358)', multi: 'x10' , rarity: 3 },
-        { name: '圓周率', desc: '精準四捨五入，理科生的基本浪漫 (3.1416)', multi: 'x7' , rarity: 2 },
-        { name: '自然對數', desc: '刻在宇宙與工程師 DNA 裡的常數 (271828)', multi: 'x12', rarity: 3 },
-        { name: '二進位', desc: '世界上只有 10 種人懂得這組密碼 (1248)', multi: 'x3', rarity: 1 },
-        { name: '絕對二進位', desc: '雙通道記憶體插滿的極致愉悅 (11224488)', multi: 'x40', rarity: 5 },
-        { name: '質數', desc: '神父說緊張的時候就要數質數 (2357)', multi: 'x3', rarity: 1 },
-        { name: '絕對質數', desc: '神父狂喜！雙倍的孤獨，雙倍的安心感 (22335577)', multi: 'x40', rarity: 5 }
+        { id: 'rule_d0',  name: '兩極', desc: '盤面只有 1 和 8', multi: 'x60' , rarity: 5 },
+        { id: 'rule_d1',  name: '絕對秩序', desc: '7顆以上數字為全奇數或全偶數', multi: 'x12' , rarity: 3 },
+        { id: 'rule_d2',  name: '全異', desc: '8顆數字皆不相同', multi: 'x15' , rarity: 4 },
+        { id: 'rule_d3',  name: '中庸之道', desc: '盤面完全沒有 1 和 8', multi: 'x5' , rarity: 2 },
+        { id: 'rule_d4',  name: '斐波那契數列', desc: '大自然隱藏的黃金螺旋公式 (112358)', multi: 'x10' , rarity: 3 },
+        { id: 'rule_d5',  name: '圓周率', desc: '精準四捨五入，理科生的基本浪漫 (3.1416)', multi: 'x7' , rarity: 2 },
+        { id: 'rule_d6',  name: '自然對數', desc: '刻在宇宙與工程師 DNA 裡的常數 (271828)', multi: 'x12', rarity: 3 },
+        { id: 'rule_d7',  name: '二進位', desc: '世界上只有 10 種人懂得這組密碼 (1248)', multi: 'x3', rarity: 1 },
+        { id: 'rule_d8',  name: '絕對二進位', desc: '雙通道記憶體插滿的極致愉悅 (11224488)', multi: 'x40', rarity: 5 },
+        { id: 'rule_d9',  name: '質數', desc: '神父說緊張的時候就要數質數 (2357)', multi: 'x3', rarity: 1 },
+        { id: 'rule_d10', name: '絕對質數', desc: '神父狂喜！雙倍的孤獨，雙倍的安心感 (22335577)', multi: 'x40', rarity: 5 }
     ]
 };

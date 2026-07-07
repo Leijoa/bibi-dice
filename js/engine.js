@@ -133,8 +133,6 @@ function applyShacklePostHooks(scoreResult, activeShackles, workingDice, baseCon
 export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3, activeShackles = [], turnsLeft = 0, env = {}, stepCollector = null) {
     let stageLevel = env.level || 0;
     let E = stageLevel + 1;
-    let currentGold = env.gold || 0;
-    let totalGoldEarned = env.totalGoldEarned || 0;
     let totalRelics = (env.relics || []).length;
     let unlockedHands = env.unlockedHands || 0;
     let kills = env.level || 0;
@@ -196,12 +194,6 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
             if (v === 1 || v === 2) {
                 if (playerRelics.includes('fusion_source')) {
                     baseVal = 15 + (E * 2.5);
-                    hasBaseRelic = true;
-                }
-            }
-            if (v === 7 || v === 8) {
-                if (playerRelics.includes('fusion_peak')) {
-                    baseVal = v + Math.floor(currentGold / 15) * 3;
                     hasBaseRelic = true;
                 }
             }
@@ -395,7 +387,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     let tempUsed;
 
     if (counts.slice(1,9).every(c => c>=1)) {
-        tagB = { name: '彗星', multi: 30.0, used: [1,2,3,4,5,6,7,8] };
+        tagB = { name: '彗星', multi: 40.0, used: [1,2,3,4,5,6,7,8] };
     } else if ((tempUsed = extractVals([7]))) {
         tagB = { name: '七連順', multi: 12.0, used: tempUsed };
     } else if ((tempUsed = extractVals([6]))) {
@@ -499,7 +491,7 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     if (counts[1] + counts[8] === 8 && workingDice.length === 8) tagD = { name: '兩極', multi: 60.0, used: workingDice.map(d=>d.val) };
     else if (counts[1] === 2 && counts[2] === 2 && counts[4] === 2 && counts[8] === 2) tagD = { name: '絕對二進位', multi: 40.0, used: [1,1,2,2,4,4,8,8] };
     else if (counts[2] === 2 && counts[3] === 2 && counts[5] === 2 && counts[7] === 2) tagD = { name: '絕對質數', multi: 40.0, used: [2,2,3,3,5,5,7,7] };
-    else if (freqs.length === 8 && workingDice.length === 8) tagD = { name: '全異', multi: 18.0, used: workingDice.map(d=>d.val) };
+    else if (freqs.length === 8 && workingDice.length === 8) tagD = { name: '全異', multi: 15.0, used: workingDice.map(d=>d.val) };
     else if (oddCount >= orderReq || evenCount >= orderReq) tagD = { name: '絕對秩序', multi: 12.0, used: orderUsed };
     else if (counts[1] >= 2 && counts[2] >= 1 && counts[3] >= 1 && counts[5] >= 1 && counts[8] >= 1) tagD = { name: '斐波那契數列', multi: 10.0, used: [1,1,2,3,5,8] };
     else if (counts[1] >= 1 && counts[2] >= 2 && counts[7] >= 1 && counts[8] >= 2) tagD = { name: '自然對數', multi: 12.0, used: [1,2,2,7,8,8] };
@@ -717,10 +709,10 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
         _collect('reroll_bonus', 'reroll_bonus', rerollMulti);
     }
 
-    if (playerRelics.includes('cons_strike_a')) tagA.multi += 2.0;
-    if (playerRelics.includes('cons_fever_b')) tagB.multi += 2.0;
-    if (playerRelics.includes('cons_combo_c')) tagC.multi += 2.0;
-    if (playerRelics.includes('cons_science_d')) tagD.multi += 2.0;
+    if (playerRelics.includes('cons_strike_a') && tagA.name !== '無') tagA.multi *= 2.0;
+    if (playerRelics.includes('cons_fever_b') && tagB.name !== '無') tagB.multi *= 2.0;
+    if (playerRelics.includes('cons_combo_c') && tagC.name !== '無') tagC.multi *= 2.0;
+    if (playerRelics.includes('cons_science_d') && tagD.name !== '無') tagD.multi *= 2.0;
 
     // Capture globalMulti before shackle post-hooks so we can detect changes
     const preHookGlobalMulti = globalMulti;
@@ -787,18 +779,20 @@ export function calculateEngineScore(dice, playerRelics, rollsLeft, playerHp = 3
     // 2. 力量覺醒 (Meta 升級)
     if (env.finalDamageUpgrade > 0) {
         let buffMulti = 1.0 + (env.finalDamageUpgrade * 0.1);
+        const upgradeName = getLocalName('souls', 'finalDamage', '力量覺醒');
         result.globalMulti *= buffMulti;
         result.finalMultiplier *= buffMulti;
-        result.globalNotes.push({ text: `【力量覺醒】 x${buffMulti.toFixed(1)}`, type: 'relic' });
-        _collect('meta_final_damage', '【力量覺醒】', buffMulti);
+        result.globalNotes.push({ text: `【${upgradeName}】 x${buffMulti.toFixed(1)}`, type: 'relic' });
+        _collect('meta_final_damage', `【${upgradeName}】`, buffMulti);
     }
 
     // 3. 力量藥劑 (消耗品)
     if (env.damageBuffMulti > 1.0) {
+        const consumableName = getLocalName('consumables', 'cons_power', '【力量藥劑】');
         result.globalMulti *= env.damageBuffMulti;
         result.finalMultiplier *= env.damageBuffMulti;
-        result.globalNotes.push({ text: `【力量藥劑】 x${env.damageBuffMulti.toFixed(1)}`, type: 'relic' });
-        _collect('cons_power', '【力量藥劑】', env.damageBuffMulti);
+        result.globalNotes.push({ text: `${consumableName} x${env.damageBuffMulti.toFixed(1)}`, type: 'relic' });
+        _collect('cons_power', consumableName, env.damageBuffMulti);
     }
 
     result.finalScore = Math.min(Number.MAX_SAFE_INTEGER, result.totalBase * result.finalMultiplier);

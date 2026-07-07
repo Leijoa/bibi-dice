@@ -60,7 +60,7 @@ function registerGameProtocol() {
     let pathname = decodeURIComponent(requestUrl.pathname);
     if (pathname === '/' || pathname === '') pathname = '/index.html';
     const requestedPath = path.normalize(path.join(root, pathname));
-    if (!requestedPath.startsWith(root)) {
+    if (requestedPath !== root && !requestedPath.startsWith(root + path.sep)) {
       return new Response('Forbidden', { status: 403 });
     }
     return net.fetch(`file://${requestedPath.replace(/\\/g, '/')}`);

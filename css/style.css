@@ -3866,6 +3866,74 @@ body.steam-layout #btn-close-rules {
   text-align: center;
 }
 
+.mobile-only {
+  display: none !important;
+}
+
+.mobile-build .mobile-only:not(.hidden) {
+  display: flex !important;
+}
+
+.platform-account-panel {
+  display: none;
+}
+
+.mobile-build .platform-account-panel:not(.hidden),
+.cloud-build .platform-account-panel:not(.hidden) {
+  display: flex;
+}
+
+.cloud-build #btn-mobile-privacy {
+  display: none;
+}
+
+.mobile-commerce-only {
+  display: none;
+}
+
+.mobile-build .mobile-commerce-only {
+  display: grid;
+}
+
+.mobile-build #game-scaler {
+  height: calc(100dvh - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+  margin-top: env(safe-area-inset-top);
+  margin-bottom: env(safe-area-inset-bottom);
+}
+
+.mobile-energy-badge {
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.45rem 0.8rem;
+  border: 1px solid rgba(167, 139, 250, 0.55);
+  border-radius: 0.75rem;
+  color: #ddd6fe;
+  background: rgba(30, 27, 75, 0.78);
+  font-size: 0.8rem;
+}
+
+.mobile-account-panel {
+  flex-direction: column;
+  gap: 0.55rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(100, 116, 139, 0.5);
+}
+
+.mobile-account-input {
+  width: 100%;
+  border: 1px solid #475569;
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.7rem;
+  color: #e2e8f0;
+  background: #0f172a;
+}
+
+.promo-card.hidden {
+  display: none !important;
+}
+
 .promo-card--win {
   border-color: rgba(251,191,36,0.5);
   background: linear-gradient(135deg, rgba(120,80,10,0.22) 0%, rgba(15,10,30,0.88) 100%);

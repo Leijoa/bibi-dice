@@ -5,6 +5,9 @@ import * as UI from './ui.js';
 import * as Audio from './audio.js';
 import { i18n } from './i18n.js';
 import { getDiceSkinId, setDiceSkin } from './diceSkin.js';
+import './platform/runtime.js';
+import { applySharedProgress, createSharedProgress, normalizeSoulLedger } from './platform/progress.mjs';
+import { getShopRerollAccess, performRewardedAction } from './platform/monetization.mjs';
 
 
 function getWeightedRandomRelics(availableList, count, customWeights = null, itemWeight = null) {
@@ -46,10 +49,8 @@ export function getEnemyWithMeta(levelIndex) {
     let burstLevel = player.contractLevel || 0;
 
     if (burstLevel > 0) {
-        let prefix = "LV." + burstLevel;
-        if (levelIndex >= ENEMY_DB.length) {
-            prefix += "層";
-        }
+        const prefixKey = levelIndex >= ENEMY_DB.length ? 'ui.contract_prefix_infinite' : 'ui.contract_prefix';
+        const prefix = i18n.t(prefixKey, burstLevel);
         return {
             ...baseEnemy,
             name: prefix + " " + baseEnemy.name,
@@ -70,6 +71,7 @@ let pendingRunSetup = { contractLevel: 0, sealedRelics: [] };
 let runSetupEligibleRelics = [];
 let pendingFateChoices = [];
 let pendingShopAdvanceAfterFusion = false;
+let mobileChallengeStarting = false;
 let activeHighlight = null;
 let highlightAutoClearTimer = null;
 const SAVE_KEY = 'bibbidiba_save_v60';
@@ -150,6 +152,7 @@ const STEAM_ACHIEVEMENT_IDS = new Set([
 ]);
 let steamCloudFlushTimer = null;
 let steamCloudImporting = false;
+let platformProfileSaveTimer = null;
 
 const DEFAULT_META_UPGRADES = Object.freeze({
     hp: 0,
@@ -260,6 +263,23 @@ function scheduleSteamCloudFlush(delay = 1500) {
     steamCloudFlushTimer = setTimeout(() => {
         steamCloudFlushTimer = null;
         flushSteamCloudProfile();
+    }, delay);
+}
+
+async function flushPlatformProfile() {
+    try {
+        await window.bibiPlatform.saveLocalProfile();
+    } catch (error) {
+        console.warn('[Mobile Profile] save failed:', error);
+    }
+}
+
+function schedulePlatformProfileSave(delay = 500) {
+    if (!window.bibiPlatform?.isMobile) return;
+    if (platformProfileSaveTimer) clearTimeout(platformProfileSaveTimer);
+    platformProfileSaveTimer = setTimeout(() => {
+        platformProfileSaveTimer = null;
+        flushPlatformProfile();
     }, delay);
 }
 
@@ -378,8 +398,10 @@ function loadMetaData() {
     if (needsSoulUpgradeMigration) saveMetaData();
 }
 function saveMetaData() {
+    normalizeSoulLedger(metaData, window.bibiPlatform.getProgressOrigin(), SOUL_UPGRADE_BY_ID);
     localStorage.setItem(META_KEY, JSON.stringify(metaData));
     scheduleSteamCloudFlush();
+    schedulePlatformProfileSave();
 }
 
 window.getMetaData = () => metaData;
@@ -426,7 +448,8 @@ function triggerDevMode() {
     }
 }
 
-if (UI.el.devRelicConfirm) {
+// DEV ONLY
+if (IS_DEV && UI.el.devRelicConfirm) {
     UI.el.devRelicConfirm.onclick = () => {
         let select = UI.el.devRelicSelect;
         if (!select || !select.value) {
@@ -556,6 +579,152 @@ window.saveCollection = saveCollection;
 function saveCollection() {
     localStorage.setItem(COLLECTION_KEY, JSON.stringify(collection));
     scheduleSteamCloudFlush();
+    schedulePlatformProfileSave();
+}
+
+function updateMobilePlatformUI() {
+    if (!window.bibiPlatform?.isMobile && !window.bibiPlatform?.supportsCloud) return;
+    UI.updateMobilePlatformStatus(
+        window.bibiPlatform.getAuthState(),
+        window.bibiPlatform.getPremiumState(),
+        window.bibiPlatform.getEnergy()
+    );
+}
+
+async function syncMobileProgress() {
+    if ((!window.bibiPlatform?.isMobile && !window.bibiPlatform?.supportsCloud)
+        || !window.bibiPlatform.getAuthState().user) return false;
+    const origin = window.bibiPlatform.getProgressOrigin();
+    const local = createSharedProgress(metaData, collection, origin, SOUL_UPGRADE_BY_ID);
+    const remote = await window.bibiPlatform.syncProgress(local);
+    const merged = applySharedProgress(metaData, collection, remote, origin, SOUL_UPGRADE_BY_ID);
+    metaData = merged.meta;
+    collection = merged.collection;
+    localStorage.setItem('bibbidiba_pb_infinite', String(Math.max(
+        Number(localStorage.getItem('bibbidiba_pb_infinite')) || 0,
+        Number(metaData.stats.highestInfiniteLevel) || 0
+    )));
+    saveMetaData();
+    saveCollection();
+    updateMobilePlatformUI();
+    return true;
+}
+
+async function scheduleEnergyNotification() {
+    if (!window.bibiPlatform?.isMobile || window.bibiPlatform.getPremiumState().active) return;
+    await window.bibiPlatform.scheduleEnergyFullNotification({
+        title: i18n.t('ui.mobile_energy_full_notification_title'),
+        body: i18n.t('ui.mobile_energy_full_notification_body')
+    }).catch(error => console.warn('[Notification]', error));
+}
+
+async function spendMobileChallenge() {
+    if (!window.bibiPlatform?.isMobile) return true;
+    let result = await window.bibiPlatform.spendEnergy();
+    if (!result.ok) {
+        const wantsAd = await UI.requestMobileEnergyAd();
+        if (!wantsAd) return false;
+        const rewarded = await performRewardedAction({
+            showAd: () => window.bibiPlatform.showRewardedAd(),
+            onReward: () => window.bibiPlatform.grantEnergy(1)
+        });
+        if (!rewarded.ok) {
+            UI.showToast(i18n.t('ui.mobile_ad_failed'));
+            return false;
+        }
+        result = await window.bibiPlatform.spendEnergy();
+    }
+    updateMobilePlatformUI();
+    await scheduleEnergyNotification();
+    return result.ok;
+}
+
+function getMobileCredentials() {
+    return {
+        email: document.getElementById('mobile-account-email')?.value.trim() || '',
+        password: document.getElementById('mobile-account-password')?.value || ''
+    };
+}
+
+function bindMobilePlatformUI() {
+    if (!window.bibiPlatform?.isMobile && !window.bibiPlatform?.supportsCloud) return;
+    const bind = (id, action) => {
+        const button = document.getElementById(id);
+        if (!button) return;
+        button.onclick = async () => {
+            button.disabled = true;
+            try {
+                await action();
+                updateMobilePlatformUI();
+            } catch (error) {
+                console.warn(`[Mobile] ${id}`, error);
+                const key = error?.message === 'email_not_verified'
+                    ? 'ui.mobile_email_verification_required'
+                    : error?.message === 'auth_required'
+                        ? 'ui.mobile_login_required'
+                        : 'ui.mobile_action_failed';
+                UI.showToast(i18n.t(key));
+            } finally {
+                button.disabled = false;
+            }
+        };
+    };
+
+    bind('btn-mobile-sign-in', async () => {
+        const { email, password } = getMobileCredentials();
+        await window.bibiPlatform.signIn(email, password);
+        await syncMobileProgress();
+        UI.showToast(i18n.t('ui.mobile_action_done'));
+    });
+    bind('btn-mobile-sign-up', async () => {
+        const { email, password } = getMobileCredentials();
+        await window.bibiPlatform.signUp(email, password);
+        await syncMobileProgress();
+        UI.showToast(i18n.t('ui.mobile_action_done'));
+    });
+    bind('btn-mobile-forgot-password', async () => {
+        await window.bibiPlatform.sendPasswordReset(getMobileCredentials().email);
+        UI.showToast(i18n.t('ui.mobile_action_done'));
+    });
+    bind('btn-mobile-send-verification', async () => {
+        await window.bibiPlatform.sendVerification();
+        UI.showToast(i18n.t('ui.mobile_action_done'));
+    });
+    bind('btn-mobile-sync', async () => {
+        await syncMobileProgress();
+        UI.showToast(i18n.t('ui.mobile_action_done'));
+    });
+    bind('btn-mobile-sign-out', async () => {
+        await window.bibiPlatform.signOut();
+        UI.showToast(i18n.t('ui.mobile_action_done'));
+    });
+    bind('btn-mobile-buy-premium', async () => {
+        await window.bibiPlatform.purchasePremium();
+        await window.bibiPlatform.hideResultBanner();
+        UI.showToast(i18n.t('ui.mobile_action_done'));
+    });
+    bind('btn-mobile-restore-purchases', async () => {
+        await window.bibiPlatform.restorePurchases();
+        updateMobilePlatformUI();
+        UI.showToast(i18n.t('ui.mobile_action_done'));
+    });
+    bind('btn-mobile-privacy', () => window.bibiPlatform.openPrivacyOptions());
+    bind('btn-mobile-delete-account', async () => {
+        const passwordInput = document.getElementById('mobile-delete-password');
+        const password = passwordInput?.value || '';
+        if (!password) {
+            UI.showToast(i18n.t('ui.mobile_current_password_required'));
+            return;
+        }
+        if (!confirm(i18n.t('ui.mobile_delete_confirm'))) return;
+        await window.bibiPlatform.deleteAccount(password);
+        passwordInput.value = '';
+        UI.showToast(i18n.t('ui.mobile_action_done'));
+    });
+
+    const badge = document.getElementById('mobile-energy-badge');
+    if (badge) badge.onclick = () => document.getElementById('settings-modal')?.classList.remove('hidden');
+    updateMobilePlatformUI();
 }
 
 function ruleNameToId(name) {
@@ -667,34 +836,36 @@ window.getDisplayedEstimatedDamage = (actualDamage) => getDisplayedEstimatedDama
 window.refreshDamageDisplay = () => { if (battle.scoreResult) UI.renderScore(battle, activeHighlight); };
 
 // DEV ONLY
-window.devApplyShackle = (shackleId) => {
-    if (stage.shackleTimer) { clearTimeout(stage.shackleTimer); stage.shackleTimer = null; }
-    engineDevApplyShackle(stage, shackleId);
-    if (shackleId === 'thalassophobia') {
-        const triggerFear = () => {
-            if (battle.state === 'IDLE' || battle.state === 'WAIT_ACTION') {
-                if (UI.el.diceContainer) {
-                    UI.el.diceContainer.classList.add('deep-sea-anim');
-                    setTimeout(() => UI.el.diceContainer.classList.remove('deep-sea-anim'), 1000);
+if (IS_DEV) {
+    window.devApplyShackle = (shackleId) => {
+        if (stage.shackleTimer) { clearTimeout(stage.shackleTimer); stage.shackleTimer = null; }
+        engineDevApplyShackle(stage, shackleId);
+        if (shackleId === 'thalassophobia') {
+            const triggerFear = () => {
+                if (battle.state === 'IDLE' || battle.state === 'WAIT_ACTION') {
+                    if (UI.el.diceContainer) {
+                        UI.el.diceContainer.classList.add('deep-sea-anim');
+                        setTimeout(() => UI.el.diceContainer.classList.remove('deep-sea-anim'), 1000);
+                    }
                 }
-            }
+                stage.shackleTimer = setTimeout(triggerFear, 3000 + Math.random() * 5000);
+            };
             stage.shackleTimer = setTimeout(triggerFear, 3000 + Math.random() * 5000);
-        };
-        stage.shackleTimer = setTimeout(triggerFear, 3000 + Math.random() * 5000);
-    }
-    UI.updateEnemyUI(stage);
-    if (battle.scoreResult) UI.renderScore(battle, activeHighlight);
-    saveGame();
-};
-// DEV ONLY
-window.devRemoveShackle = () => {
-    if (stage.shackleTimer) { clearTimeout(stage.shackleTimer); stage.shackleTimer = null; }
-    clearIllusionaryFakeRatio();
-    engineDevRemoveShackle(stage);
-    UI.updateEnemyUI(stage);
-    if (battle.scoreResult) UI.renderScore(battle, activeHighlight);
-    saveGame();
-};
+        }
+        UI.updateEnemyUI(stage);
+        if (battle.scoreResult) UI.renderScore(battle, activeHighlight);
+        saveGame();
+    };
+    // DEV ONLY
+    window.devRemoveShackle = () => {
+        if (stage.shackleTimer) { clearTimeout(stage.shackleTimer); stage.shackleTimer = null; }
+        clearIllusionaryFakeRatio();
+        engineDevRemoveShackle(stage);
+        UI.updateEnemyUI(stage);
+        if (battle.scoreResult) UI.renderScore(battle, activeHighlight);
+        saveGame();
+    };
+}
 
 // --- Modular Game Loop Hooks ---
 function applyCombatShackles(dmg, actualDamage, isEnemyDefeated) {
@@ -775,6 +946,7 @@ function saveGame() {
     };
     localStorage.setItem(SAVE_KEY, JSON.stringify(saveData));
     scheduleSteamCloudFlush();
+    schedulePlatformProfileSave();
 }
 
 function getRuleMetaByName(name) {
@@ -903,7 +1075,7 @@ function loadGame() {
             : null;
         player.contractLevel = Math.max(0, Math.min(
             metaData.upgrades.soulBurst,
-            Number.isFinite(Number(player.contractLevel)) ? Number(player.contractLevel) : metaData.upgrades.soulBurst
+            Number.isFinite(Number(player.contractLevel)) ? Number(player.contractLevel) : 0
         ));
         if (!player.highlights || typeof player.highlights !== 'object') {
             player.highlights = { best: null, last: null };
@@ -935,12 +1107,15 @@ function loadGame() {
         } else {
             loadStage(parsed.stage.level, true, parsed);
         }
+        return true;
     }
+    return false;
 }
 
 function clearSave() {
     localStorage.removeItem(SAVE_KEY);
     scheduleSteamCloudFlush();
+    schedulePlatformProfileSave();
 }
 
 function checkSaveExists() {
@@ -951,6 +1126,9 @@ function checkSaveExists() {
 
 // --- 初始化與主流程 ---
 function initTitleScreen() {
+    let currentTab = 'hands';
+    // 收集冊分頁的完整刷新（含分頁按鈕文字）；實作在下方收集冊區塊內指定
+    let refreshCollectionModalUI = () => UI.renderCollectionModal(currentTab);
     i18n.updateDOM(); // Initialize standard DOM texts
     if (window.i18n) { i18n.updateDOM(); }
     updateCollectionButtonLabel();
@@ -977,15 +1155,17 @@ function initTitleScreen() {
         UI.renderRulesDB();
         
         if (document.getElementById('history-modal') && !document.getElementById('history-modal').classList.contains('hidden')) {
-            window.renderHistoryModal();
+            const history = secureParseStorage(HISTORY_KEY, [], (data) => Array.isArray(data));
+            UI.renderHistoryModal(history, metaData);
         }
         if (document.getElementById('collection-modal') && !document.getElementById('collection-modal').classList.contains('hidden')) {
-            window.renderCollectionModal();
+            refreshCollectionModalUI();
         }
         if (document.getElementById('souls-modal') && !document.getElementById('souls-modal').classList.contains('hidden')) {
-            window.renderSoulsModal();
+            UI.renderSoulsModal(metaData);
         }
         updateCollectionButtonLabel();
+        updateMobilePlatformUI();
     });
 
     loadMetaData();
@@ -1002,7 +1182,13 @@ function initTitleScreen() {
     UI.el.btnNewGame.onclick = beginNewGameSetup;
     UI.el.btnContinue.onclick = () => {
         UI.el.titleScreen.classList.add('hidden');
-        loadGame();
+        if (!loadGame()) {
+            // 存檔損毀：退回標題並清除，避免黑畫面軟鎖
+            UI.el.titleScreen.classList.remove('hidden');
+            UI.el.btnContinue.classList.add('hidden');
+            clearSave();
+            UI.showToast(i18n.t('messages.save_corrupted'));
+        }
     };
 
     if (UI.el.runSetupModal) {
@@ -1107,7 +1293,6 @@ function initTitleScreen() {
     }
 
     if (UI.el.btnCollection && UI.el.collectionModal && UI.el.btnCloseCollection) {
-        let currentTab = 'hands';
         const renderTabLabel = (tab, labelKey) => {
             const label = i18n.t(labelKey);
             const summary = window.getCollectionSummary ? window.getCollectionSummary() : null;
@@ -1133,6 +1318,7 @@ function initTitleScreen() {
             setTabButton(UI.el.tabRelics, 'relics', 'ui.tab_relics');
             setTabButton(UI.el.tabShackles, 'shackles', 'ui.tab_shackles');
         };
+        refreshCollectionModalUI = updateTabUI;
 
         UI.el.btnCollection.onclick = () => {
             currentTab = 'hands';
@@ -1214,17 +1400,27 @@ function initTitleScreen() {
         if (UI.el.shopOverlay.classList.contains('hidden')) return;
         finishShopAndAdvance();
     };
-    document.getElementById('btn-restart').onclick = () => location.reload();
+    document.getElementById('btn-restart').onclick = async () => {
+        await window.bibiPlatform.hideResultBanner();
+        location.reload();
+    };
 
     let btnInfinite = document.getElementById('btn-infinite');
     if (btnInfinite) {
-        btnInfinite.onclick = () => {
-            unlockSteamAchievement('ACH_ENTER_INFINITE');
-            player.isInfiniteMode = true;
-            UI.el.endOverlay.classList.add('hidden');
-            document.getElementById('btn-restart').classList.remove('hidden');
-            btnInfinite.classList.add('hidden');
-            enemyDefeated(); // Proceed to shop as if enemy was defeated normally
+        btnInfinite.onclick = async () => {
+            btnInfinite.disabled = true;
+            try {
+                if (!await spendMobileChallenge()) return;
+                await window.bibiPlatform.hideResultBanner();
+                unlockSteamAchievement('ACH_ENTER_INFINITE');
+                player.isInfiniteMode = true;
+                UI.el.endOverlay.classList.add('hidden');
+                document.getElementById('btn-restart').classList.remove('hidden');
+                btnInfinite.classList.add('hidden');
+                openShop(); // Boss defeat already awarded souls/drop via enemyDefeated(); just enter the shop
+            } finally {
+                btnInfinite.disabled = false;
+            }
         };
     }
 
@@ -1423,6 +1619,16 @@ function initTitleScreen() {
 
 import { SHACKLE_DB } from './data.js';
 
+function buildActiveShackleConfig() {
+    if (!stage.activeShackle) return null;
+    const definition = SHACKLE_DB.find(shackle => shackle.id === stage.activeShackle);
+    return {
+        ...(definition || {}),
+        id: stage.activeShackle,
+        ...(stage.shackleMeta || {})
+    };
+}
+
 // --- Tutorial functions ---
 function startTutorialGame() {
     tutorialMode = true;
@@ -1518,13 +1724,21 @@ function getStarterRelicPool(sealedRelics = []) {
     return RELIC_DB.filter(relic => relic.price > 0 && relic.rarity === 1 && !sealed.has(relic.id));
 }
 
-function startNewGameWithSetup(setup) {
-    clearSave();
-    UI.hideRunSetupModal();
-    UI.hideFateSelectionModal();
-    UI.el.titleScreen.classList.add('hidden');
-    initNewGame(setup);
-    pendingFateChoices = [];
+async function startNewGameWithSetup(setup) {
+    if (mobileChallengeStarting) return;
+    mobileChallengeStarting = true;
+    try {
+        if (!await spendMobileChallenge()) return;
+        await window.bibiPlatform.hideResultBanner();
+        clearSave();
+        UI.hideRunSetupModal();
+        UI.hideFateSelectionModal();
+        UI.el.titleScreen.classList.add('hidden');
+        initNewGame(setup);
+        pendingFateChoices = [];
+    } finally {
+        mobileChallengeStarting = false;
+    }
 }
 
 function beginFateSelection(setup) {
@@ -1775,6 +1989,12 @@ function loadStage(levelIndex, isLoad = false, parsedData = null) {
         stage.damageBuffMulti = player.nextDamageMulti || 1.0;
         player.nextDamageMulti = 1.0; // Consume it
 
+        if (stage.activeShackle && player.relics.includes('cons_pliers')) {
+            stage.activeShackle = null;
+            stage.shackleMeta = null;
+            stage.shackleWasNew = false;
+            player.relics.splice(player.relics.indexOf('cons_pliers'), 1);
+        }
 
         if (stage.activeShackle === 'timecompress') {
             stage.turnsLeft = 2;
@@ -1782,13 +2002,6 @@ function loadStage(levelIndex, isLoad = false, parsedData = null) {
 
         if (stage.activeShackle === 'wither') {
             player.hp = 1;
-        }
-        
-        if (stage.activeShackle && player.relics.includes('cons_pliers')) {
-            stage.activeShackle = null;
-            stage.shackleMeta = null;
-            stage.shackleWasNew = false;
-            player.relics.splice(player.relics.indexOf('cons_pliers'), 1);
         }
 
         if (stage.activeShackle) {
@@ -2131,8 +2344,7 @@ window.executeRoll = function(isInitial = false) {
     battle.state = 'ROLLING';
     clearActiveHighlight();
     battle.dice.forEach(d => { d.matchedGroups = {A:false, B:false, C:false, D:false}; });
-    saveGame();
-    
+    // 不在動畫開始前存檔：避免中途關閉遊戲時「已扣次數、骰面未換」的半套存檔（動畫收尾會存）
     renderAll();
 
     let intervals = 0;
@@ -2193,13 +2405,7 @@ window.executeRoll = function(isInitial = false) {
                 stage.shackleMeta.cursedId = cursedDie.id;
             }
 
-            let shackleConfig = null;
-            if (stage.activeShackle) {
-                shackleConfig = { id: stage.activeShackle };
-                if (stage.shackleMeta) {
-                    Object.assign(shackleConfig, stage.shackleMeta);
-                }
-            }
+            const shackleConfig = buildActiveShackleConfig();
 
             let activeRelics = player.relics;
             if (stage.activeShackle === 'relicseal' && stage.shackleMeta && stage.shackleMeta.ignoredRelics) {
@@ -2214,11 +2420,13 @@ window.executeRoll = function(isInitial = false) {
                 stage.shackleMeta.blindIndices = unlockedIndices.slice(0, 2);
             }
 
+            // 【黑洞】結算時把 8 視為 1，used 陣列存的是換算後的值，配對高亮需用同一套換算
+            const matchVal = (die) => (stage.activeShackle === 'blackhole' && die.val === 8) ? 1 : die.val;
             const applyMatch = (usedVals, groupName) => {
                 if(!usedVals || usedVals.length === 0) return;
                 let available = battle.dice.filter(d => !d.matchedGroups[groupName]);
                 usedVals.forEach(v => {
-                    let idx = available.findIndex(dice => dice.val === v);
+                    let idx = available.findIndex(dice => matchVal(dice) === v);
                     if (idx !== -1) {
                         available[idx].matchedGroups[groupName] = true;
                         available.splice(idx, 1);
@@ -2277,11 +2485,7 @@ window.fireAttack = function() {
             target.val = Math.floor(Math.random() * 8) + 1;
             battle.dice.sort((a, b) => a.val - b.val);
 
-            let shackleConfig = null;
-            if (stage.activeShackle) {
-                shackleConfig = { id: stage.activeShackle };
-                if (stage.shackleMeta) Object.assign(shackleConfig, stage.shackleMeta);
-            }
+            const shackleConfig = buildActiveShackleConfig();
             let activeRelics = player.relics;
             if (stage.activeShackle === 'relicseal' && stage.shackleMeta && stage.shackleMeta.ignoredRelics) {
                 activeRelics = player.relics.filter(r => !stage.shackleMeta.ignoredRelics.includes(r));
@@ -2296,11 +2500,7 @@ window.fireAttack = function() {
     Audio.playAttackSound();
 
     // --- Build shackleConfig + activeRelics for steps calculation ---
-    let shackleConfig = null;
-    if (stage.activeShackle) {
-        shackleConfig = { id: stage.activeShackle };
-        if (stage.shackleMeta) Object.assign(shackleConfig, stage.shackleMeta);
-    }
+    const shackleConfig = buildActiveShackleConfig();
     let activeRelics = player.relics;
     if (stage.activeShackle === 'relicseal' && stage.shackleMeta && stage.shackleMeta.ignoredRelics) {
         activeRelics = player.relics.filter(r => !stage.shackleMeta.ignoredRelics.includes(r));
@@ -2386,10 +2586,9 @@ window.fireAttack = function() {
             ['tagA', 'tagB', 'tagC', 'tagD'].forEach(tag => {
                 let name = battle.scoreResult[tag].name;
                 if (name !== '無') {
-                    for (let group in RULE_DB) {
-                        let rule = RULE_DB[group].find(r => r.name === name);
-                        if (rule && rule.rarity === 4) hasLegendary = true;
-                    }
+                    // getRuleMetaByName 可比對含後綴的牌名（如「比比丟八(ビビデバ)」）
+                    const rule = getRuleMetaByName(name);
+                    if (rule && rule.rarity >= 4) hasLegendary = true;
                 }
             });
             if (hasLegendary) {
@@ -2483,11 +2682,7 @@ window.fireAttack = function() {
             }
 
             if (isDefeated) {
-                if (stage.level === ENEMY_DB.length - 1) {
-                    gameWin();
-                } else {
-                    enemyDefeated();
-                }
+                enemyDefeated();
             } else {
                 stage.turnsLeft--;
                 if (stage.turnsLeft <= 0) {
@@ -2778,6 +2973,7 @@ function enemyDefeated() {
         let earnedSouls = 0;
         if (isBoss(stage.level) && !player.isInfiniteMode) earnedSouls = 2;
         else if (player.isInfiniteMode || stage.level >= ENEMY_DB.length) earnedSouls = 1;
+        else if (isElite(stage.level)) earnedSouls = 1;
 
         let burstLevel = player.contractLevel || 0;
         if (earnedSouls > 0 || burstLevel > 0) {
@@ -2824,10 +3020,29 @@ function openShop() {
     }
 }
 
-window.rerollShop = function(isInitial = false) {
+window.rerollShop = async function(isInitial = false) {
     if (!isInitial) {
         const rerollLimit = getShopRerollLimit();
         if (shopRerollsUsed >= rerollLimit) return UI.showToast(i18n.t('messages.toast_shop_limit', rerollLimit));
+        const access = getShopRerollAccess({
+            isMobile: window.bibiPlatform.isMobile,
+            premium: window.bibiPlatform.getPremiumState().active,
+            rerollsUsed: shopRerollsUsed,
+            rerollLimit
+        });
+        if (!access.allowed) return UI.showToast(i18n.t('messages.toast_shop_limit', rerollLimit));
+        if (access.requiresAd) {
+            UI.el.shopRerollBtn.disabled = true;
+            const rewarded = await performRewardedAction({
+                showAd: () => window.bibiPlatform.showRewardedAd(),
+                onReward: async () => {}
+            });
+            if (!rewarded.ok) {
+                UI.updateShopRerollBtn(shopRerollsUsed, rerollLimit);
+                UI.showToast(i18n.t('ui.mobile_ad_failed'));
+                return;
+            }
+        }
         shopRerollsUsed++;
         UI.updateShopRerollBtn(shopRerollsUsed, rerollLimit);
         UI.updateHeaderUI(player, stage);
@@ -3012,6 +3227,11 @@ function recordHistory(win) {
         let pbInfinite = parseInt(localStorage.getItem('bibbidiba_pb_infinite')) || 0;
         if (currentInfiniteFloor > pbInfinite) {
             localStorage.setItem('bibbidiba_pb_infinite', currentInfiniteFloor.toString());
+            metaData.stats.highestInfiniteLevel = Math.max(
+                Number(metaData.stats.highestInfiniteLevel) || 0,
+                currentInfiniteFloor
+            );
+            saveMetaData();
             scheduleSteamCloudFlush();
         }
     }
@@ -3065,6 +3285,7 @@ function gameOver(reason) {
     UI.el.endDesc.innerText = reason;
     UI.renderEndGameStats(player.highestDamage, player.highestDamageCombo, player.relics, player.highlights?.best || null, player.highestMulti || 0);
     UI.hidePromoWinCard();
+    window.bibiPlatform.showResultBanner().catch(error => console.warn('[AdMob Banner]', error));
 }
 
 function gameWin() {
@@ -3091,152 +3312,156 @@ function gameWin() {
     UI.el.endDesc.innerText = i18n.t('messages.game_clear_desc');
     UI.renderEndGameStats(player.highestDamage, player.highestDamageCombo, player.relics, player.highlights?.best || null, player.highestMulti || 0);
     UI.showPromoWinCard();
+    window.bibiPlatform.showResultBanner().catch(error => console.warn('[AdMob Banner]', error));
     let endInterval = setInterval(UI.shootConfetti, 1000);
     setTimeout(() => clearInterval(endInterval), 5000);
 }
 
-let cheatBuffer = '';
-window.addEventListener('keydown', (e) => {
-    cheatBuffer += e.key;
-    if (cheatBuffer.length > 20) cheatBuffer = cheatBuffer.slice(-20);
+// DEV ONLY
+if (IS_DEV) {
+    let cheatBuffer = '';
+    window.addEventListener('keydown', (e) => {
+        cheatBuffer += e.key;
+        if (cheatBuffer.length > 20) cheatBuffer = cheatBuffer.slice(-20);
 
-    if (cheatBuffer.endsWith('8989889')) {
-        if (window.devKillEnemy) window.devKillEnemy();
-        cheatBuffer = '';
-    } else {
-        let match = cheatBuffer.match(/ss([1-8]{8})$/);
-        if (match) {
-            if (window.devSetDice) window.devSetDice(match[1]);
+        if (cheatBuffer.endsWith('8989889')) {
+            if (window.devKillEnemy) window.devKillEnemy();
             cheatBuffer = '';
-        }
-    }
-});
-
-window.devKillEnemy = () => {
-    if (battle.state === 'ATTACKING') return;
-    stage.enemyHp = 0;
-    UI.updateEnemyUI(stage);
-    enemyDefeated();
-};
-
-window.devGetAllRelics = () => {
-    // Add all relics (including mythic) to bypass fusion limit logic and empty the shop pool
-    RELIC_DB.forEach(r => {
-        if (!r.id.startsWith('cons_') && !player.relics.includes(r.id)) {
-            player.relics.push(r.id);
-            if (typeof unlockCollectionItem === 'function') unlockCollectionItem('relic', r.id);
+        } else {
+            let match = cheatBuffer.match(/ss([1-8]{8})$/);
+            if (match) {
+                if (window.devSetDice) window.devSetDice(match[1]);
+                cheatBuffer = '';
+            }
         }
     });
 
-    UI.renderInventory(player, battle);
-    if (typeof saveGame === 'function') saveGame();
+    window.devKillEnemy = () => {
+        if (battle.state === 'ATTACKING') return;
+        stage.enemyHp = 0;
+        UI.updateEnemyUI(stage);
+        enemyDefeated();
+    };
 
-    UI.showToast(i18n.t('messages.toast_dev_get_all'));
-    if (window.closeDevModal) window.closeDevModal();
-};
+    window.devGetAllRelics = () => {
+        // Add all relics (including mythic) to bypass fusion limit logic and empty the shop pool
+        RELIC_DB.forEach(r => {
+            if (!r.id.startsWith('cons_') && !player.relics.includes(r.id)) {
+                player.relics.push(r.id);
+                if (typeof unlockCollectionItem === 'function') unlockCollectionItem('relic', r.id);
+            }
+        });
 
-function refreshDevScoreResult() {
-    if (battle.state !== 'WAIT_ACTION' || !battle.scoreResult) return;
-    let shackleConfig = null;
-    if (stage.activeShackle) {
-        shackleConfig = { id: stage.activeShackle };
-        if (stage.shackleMeta) Object.assign(shackleConfig, stage.shackleMeta);
+        UI.renderInventory(player, battle);
+        if (typeof saveGame === 'function') saveGame();
+
+        UI.showToast(i18n.t('messages.toast_dev_get_all'));
+        if (window.closeDevModal) window.closeDevModal();
+    };
+
+    var refreshDevScoreResult = function() {
+        if (battle.state !== 'WAIT_ACTION' || !battle.scoreResult) return;
+        const shackleConfig = buildActiveShackleConfig();
+        let activeRelics = player.relics;
+        if (stage.activeShackle === 'relicseal' && stage.shackleMeta && stage.shackleMeta.ignoredRelics) {
+            activeRelics = player.relics.filter(r => !stage.shackleMeta.ignoredRelics.includes(r));
+        }
+        battle.scoreResult = calculateEngineScore(battle.dice, activeRelics, battle.rollsLeft, player.hp, shackleConfig ? [shackleConfig] : [], stage.turnsLeft, { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled, finalDamageUpgrade: metaData?.upgrades?.finalDamage || 0, damageBuffMulti: stage.damageBuffMulti || 1.0, isEliteOrBoss: isElite(stage.level) || isBoss(stage.level), bonusBasePoints: (player.bonusBasePoints || 0) });
+    };
+
+    window.devDamagePlayer = (amount = 1) => {
+        if (battle.state === 'ATTACKING') return;
+        const damage = Math.max(1, Math.min(99, Math.floor(Number(amount) || 1)));
+        player.hp = Math.max(1, (Number(player.hp) || 1) - damage);
+        refreshDevScoreResult();
+        renderAll();
+        UI.showToast(i18n.t('messages.toast_dev_damage_self', damage, player.hp, window.getMaxHp()));
+    };
+
+    window.devSetEnemyTurnsOne = () => {
+        if (battle.state === 'ATTACKING') return;
+        stage.turnsLeft = 1;
+        refreshDevScoreResult();
+        renderAll();
+        UI.showToast(i18n.t('messages.toast_dev_turn_one'));
+    };
+
+    window.devSetDice = (digitString) => {
+        if (battle.state === 'ATTACKING') return;
+        for (let i = 0; i < 8; i++) {
+            if (digitString[i]) {
+                battle.dice[i].val = parseInt(digitString[i], 10);
+                battle.dice[i].locked = false;
+            }
+        }
+        battle.dice.sort((a, b) => a.val - b.val);
+
+        refreshDevScoreResult();
+        renderAll();
+    };
+
+    const btnDevKill = document.getElementById('dev-kill-btn');
+    const btnDevDice = document.getElementById('dev-dice-btn');
+    const inputDevDice = document.getElementById('dev-dice-input');
+    const btnDevGetAll = document.getElementById('dev-get-all-relics-btn');
+    const btnDevDamage = document.getElementById('dev-damage-btn');
+    const inputDevDamage = document.getElementById('dev-damage-input');
+    const btnDevTurnOne = document.getElementById('dev-turn-one-btn');
+
+    if (btnDevGetAll) {
+        btnDevGetAll.onclick = () => {
+            if (window.devGetAllRelics) window.devGetAllRelics();
+        };
     }
-    let activeRelics = player.relics;
-    if (stage.activeShackle === 'relicseal' && stage.shackleMeta && stage.shackleMeta.ignoredRelics) {
-        activeRelics = player.relics.filter(r => !stage.shackleMeta.ignoredRelics.includes(r));
+
+    if (btnDevKill) {
+        btnDevKill.onclick = () => {
+            if (window.devKillEnemy) {
+                window.devKillEnemy();
+                if (window.closeDevModal) window.closeDevModal();
+            }
+        };
     }
-    battle.scoreResult = calculateEngineScore(battle.dice, activeRelics, battle.rollsLeft, player.hp, shackleConfig ? [shackleConfig] : [], stage.turnsLeft, { level: stage.level, relics: player.relics, unlockedHands: Object.keys(window.getCollection ? window.getCollection().hands : {}).length, playerHp: player.hp, maxHp: window.getMaxHp(), fivesRolled: player.fivesRolled, finalDamageUpgrade: metaData?.upgrades?.finalDamage || 0, damageBuffMulti: stage.damageBuffMulti || 1.0, isEliteOrBoss: isElite(stage.level) || isBoss(stage.level), bonusBasePoints: (player.bonusBasePoints || 0) });
-}
 
-window.devDamagePlayer = (amount = 1) => {
-    if (battle.state === 'ATTACKING') return;
-    const damage = Math.max(1, Math.min(99, Math.floor(Number(amount) || 1)));
-    player.hp = Math.max(1, (Number(player.hp) || 1) - damage);
-    refreshDevScoreResult();
-    renderAll();
-    UI.showToast(i18n.t('messages.toast_dev_damage_self', damage, player.hp, window.getMaxHp()));
-};
-
-window.devSetEnemyTurnsOne = () => {
-    if (battle.state === 'ATTACKING') return;
-    stage.turnsLeft = 1;
-    refreshDevScoreResult();
-    renderAll();
-    UI.showToast(i18n.t('messages.toast_dev_turn_one'));
-};
-
-window.devSetDice = (digitString) => {
-    if (battle.state === 'ATTACKING') return;
-    for (let i = 0; i < 8; i++) {
-        if (digitString[i]) {
-            battle.dice[i].val = parseInt(digitString[i], 10);
-            battle.dice[i].locked = false;
-        }
+    if (btnDevTurnOne) {
+        btnDevTurnOne.onclick = () => {
+            if (window.devSetEnemyTurnsOne) {
+                window.devSetEnemyTurnsOne();
+                if (window.closeDevModal) window.closeDevModal();
+            }
+        };
     }
-    battle.dice.sort((a, b) => a.val - b.val);
 
-    refreshDevScoreResult();
-    renderAll();
-};
+    if (btnDevDamage && inputDevDamage) {
+        btnDevDamage.onclick = () => {
+            if (window.devDamagePlayer) {
+                window.devDamagePlayer(inputDevDamage.value);
+                if (window.closeDevModal) window.closeDevModal();
+            }
+        };
+    }
 
-const btnDevKill = document.getElementById('dev-kill-btn');
-const btnDevDice = document.getElementById('dev-dice-btn');
-const inputDevDice = document.getElementById('dev-dice-input');
-const btnDevGetAll = document.getElementById('dev-get-all-relics-btn');
-const btnDevDamage = document.getElementById('dev-damage-btn');
-const inputDevDamage = document.getElementById('dev-damage-input');
-const btnDevTurnOne = document.getElementById('dev-turn-one-btn');
-
-if (btnDevGetAll) {
-    btnDevGetAll.onclick = () => {
-        if (window.devGetAllRelics) window.devGetAllRelics();
-    };
-}
-
-if (btnDevKill) {
-    btnDevKill.onclick = () => {
-        if (window.devKillEnemy) {
-            window.devKillEnemy();
-            if (window.closeDevModal) window.closeDevModal();
-        }
-    };
-}
-
-if (btnDevTurnOne) {
-    btnDevTurnOne.onclick = () => {
-        if (window.devSetEnemyTurnsOne) {
-            window.devSetEnemyTurnsOne();
-            if (window.closeDevModal) window.closeDevModal();
-        }
-    };
-}
-
-if (btnDevDamage && inputDevDamage) {
-    btnDevDamage.onclick = () => {
-        if (window.devDamagePlayer) {
-            window.devDamagePlayer(inputDevDamage.value);
-            if (window.closeDevModal) window.closeDevModal();
-        }
-    };
-}
-
-if (btnDevDice && inputDevDice) {
-    btnDevDice.onclick = () => {
-        const val = inputDevDice.value.trim();
-        if (/^[1-8]{8}$/.test(val) && window.devSetDice) {
-            window.devSetDice(val);
-            if (window.closeDevModal) window.closeDevModal();
-        } else {
-            alert('請輸入精確的 8 個數字 (1-8)');
-        }
-    };
+    if (btnDevDice && inputDevDice) {
+        btnDevDice.onclick = () => {
+            const val = inputDevDice.value.trim();
+            if (/^[1-8]{8}$/.test(val) && window.devSetDice) {
+                window.devSetDice(val);
+                if (window.closeDevModal) window.closeDevModal();
+            } else {
+                alert('請輸入精確的 8 個數字 (1-8)');
+            }
+        };
+    }
 }
 
 window.addEventListener('beforeunload', () => {
     if (steamCloudFlushTimer) {
         clearTimeout(steamCloudFlushTimer);
         steamCloudFlushTimer = null;
+    }
+    if (platformProfileSaveTimer) {
+        clearTimeout(platformProfileSaveTimer);
+        platformProfileSaveTimer = null;
     }
     if (!window.steamCloud || typeof window.steamCloud.saveProfileSync !== 'function' || steamCloudImporting) return;
     try {
@@ -3249,13 +3474,50 @@ window.addEventListener('beforeunload', () => {
     }
 });
 
+function bindMobileLifecycle() {
+    if (!window.bibiPlatform?.isMobile) return;
+    window.bibiPlatform.onAppStateChange(async ({ isActive }) => {
+        if (isActive) {
+            Audio.playBGM();
+            updateMobilePlatformUI();
+            return;
+        }
+        Audio.pauseBGM();
+        if (battle.state !== 'IDLE') saveGame();
+        saveMetaData();
+        await flushPlatformProfile();
+    });
+    window.bibiPlatform.onBackButton(async () => {
+        if (UI.closeTopModal()) return;
+        if (!UI.el.titleScreen.classList.contains('hidden')) {
+            await window.bibiPlatform.exitApp();
+            return;
+        }
+        if (confirm(i18n.t('ui.confirm_back_title'))) {
+            if (battle.state !== 'IDLE') saveGame();
+            await flushPlatformProfile();
+            await window.bibiPlatform.hideResultBanner();
+            location.reload();
+        }
+    });
+}
+
 async function bootGame() {
+    await window.bibiPlatform.restoreLocalProfile();
+    syncLocaleFromStorage();
+    await window.bibiPlatform.ready();
     await initSteamCloudProfile();
     loadCollection();
     retryPendingSteamAchievements();
     initTitleScreen();
     UI.initDragScrollAll();
     UI.initPromo();
+    bindMobilePlatformUI();
+    bindMobileLifecycle();
+    if (window.bibiPlatform.getAuthState().user) {
+        await syncMobileProgress().catch(error => console.warn('[Firebase Progress]', error));
+    }
+    updateMobilePlatformUI();
     window.getEnemyWithMeta = getEnemyWithMeta;
 }
 

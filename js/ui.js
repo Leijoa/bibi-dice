@@ -5,6 +5,9 @@ import * as Audio from './audio.js';
 import { getDiceImageFilter, getDiceImageUrl } from './diceSkin.js';
 window.i18n = i18n;
 
+// 開發者模式（僅限本地開發環境，比照 main.js 的 IS_DEV）
+const IS_DEV = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+
 const MYTHIC_CHARACTER_ASSETS = {
     lion: 'img/characters/thunderclaw-lion-cutout.png',
     pongo: 'img/characters/pongo-cutout.png'
@@ -260,6 +263,7 @@ export function showToast(msg, callback, options = {}) {
     toastEntry.timer = setTimeout(dismissToast, duration);
     return toast;
 }
+window.showToast = showToast;
 
 export function playShackleSealAnimation(callback) {
     const oldOverlay = document.querySelector('.shackle-seal-overlay');
@@ -418,7 +422,7 @@ export function updateEnemyUI(stage) {
         const _newBadge = window.isCurrentShackleNew && window.isCurrentShackleNew(activeShackleId)
             ? renderNewBadge('new-badge--shackle')
             : '';
-        shackleHtml += `<span id="active-shackle-badge" onclick="window.showShackleInfo('${activeShackleId}')" class="relative ml-1.5 bg-red-900/80 hover:bg-red-800 text-[12px] md:text-[12px] text-red-300 px-1 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0 max-w-[72px] md:max-w-none truncate overflow-visible" title="${_shackleLabel}">${_shackleLabel}${_newBadge}</span>`;
+        shackleHtml += `<span id="active-shackle-badge" onclick="window.showShackleInfo('${activeShackleId}')" class="relative ml-1.5 bg-red-900/80 hover:bg-red-800 text-[10px] md:text-[12px] text-red-300 px-1 py-0.5 rounded cursor-pointer border border-red-500/50 shadow-sm transition-colors active:scale-95 flex-shrink-0 overflow-visible inline-flex items-center" title="${_shackleLabel}"><span class="max-w-[100px] md:max-w-none truncate">${_shackleLabel}</span>${_newBadge}</span>`;
     }
 
     let localizedEnemyName = enemy.name;
@@ -664,6 +668,10 @@ window._relicPressClick = function(e, id) {
 export function renderDice(battle, activeHighlight, player) {
     let shackleId = window.getStageActiveShackle ? window.getStageActiveShackle() : null;
     let shackleMeta = window.getShackleMeta ? window.getShackleMeta() : null;
+    const suppressMythic = Boolean(SHACKLE_DB.find(shackle => shackle.id === shackleId)?.suppressMythic);
+    const activeRelics = player?.relics
+        ? (suppressMythic ? player.relics.filter(id => !id.startsWith('fusion_')) : player.relics)
+        : [];
     updateBoardBackground(window.getStageLevel ? window.getStageLevel() : 0, shackleId);
 
     el.diceContainer.innerHTML = battle.dice.map((d, idx) => {
@@ -723,29 +731,25 @@ export function renderDice(battle, activeHighlight, player) {
         
         let baseVal = d.val;
         let isEnhanced = false;
-        if (player && player.relics) {
+        if (activeRelics.length > 0) {
             let val = d.val;
             let E = (window.getStageLevel ? window.getStageLevel() : 0) + 1;
 
             if (val === 1 || val === 2) {
-                if (player.relics.includes('fusion_source')) { baseVal = 15 + (E * 2.5); isEnhanced = true; }
+                if (activeRelics.includes('fusion_source')) { baseVal = 15 + (E * 2.5); isEnhanced = true; }
             }
-            if (val === 7 || val === 8) {
-                if (player.relics.includes('fusion_titan')) { baseVal = baseVal + (E * 3); isEnhanced = true; }
-            }
-            if (val === 6 && player.relics.includes('fusion_titan')) { baseVal = baseVal + (E * 3); isEnhanced = true; }
-            if (val === 2 && player.relics.includes('fusion_bloody')) {
-                let lostHp = 3 - player.hp;
-                baseVal = 30 + (lostHp > 0 ? lostHp * 10 : 0); isEnhanced = true;
+            if (val === 2 && activeRelics.includes('fusion_blood_crusade')) {
+                baseVal = 30; isEnhanced = true;
             }
 
-            if (!isEnhanced && player.relics.includes('b' + val)) {
+            if (!isEnhanced && activeRelics.includes('b' + val)) {
                 if (val===1) baseVal=10; else if(val===2) baseVal=10; else if(val===3) baseVal=11; else if(val===4) baseVal=11; else if(val===5) baseVal=11; else if(val===6) baseVal=11; else if(val===7) baseVal=12; else if(val===8) baseVal=12;
                 isEnhanced = true;
             }
-            if (player.relics.includes('fusion_bloody')) {
-                let lostHp = 3 - player.hp;
-                if (lostHp > 0 && val !== 2) { baseVal += lostHp * 10; isEnhanced = true; }
+            if (activeRelics.includes('fusion_blood_crusade')) {
+                let maxHp = window.getMaxHp ? window.getMaxHp() : 3;
+                let lostHp = maxHp - player.hp;
+                if (lostHp > 0) { baseVal += lostHp * 10; isEnhanced = true; }
             }
         }
 
@@ -1636,7 +1640,7 @@ export function renderShopItems(shopItems, player) {
         </div>`;
     }).join('');
     
-    if(shopItems.length === 0) el.shopItemsContainer.innerHTML = `<div class="col-span-full text-center text-slate-400 py-6 font-bold text-base">商店已經被你買空了！</div>`;
+    if(shopItems.length === 0) el.shopItemsContainer.innerHTML = `<div class="col-span-full text-center text-slate-400 py-6 font-bold text-base">${i18n.t('messages.shop_sold_out')}</div>`;
 }
 
 export function showFusionReplaceModal(currentFusions, newFusionId, callback) {
@@ -1728,6 +1732,88 @@ export function updateShopRerollBtn(shopRerollsUsed, rerollLimit = 1) {
         el.shopRerollBtn.className = "w-full sm:w-auto flex-1 bg-slate-700 text-slate-400 font-black py-3 rounded-xl cursor-not-allowed text-base md:text-lg border-b-4 border-slate-900";
         el.shopRerollBtn.disabled = true;
     }
+}
+
+export function updateMobilePlatformStatus(authState, premiumState, energyState) {
+    const badge = document.getElementById('mobile-energy-badge');
+    const panel = document.getElementById('mobile-account-panel');
+    const value = document.getElementById('mobile-energy-value');
+    const accountState = document.getElementById('mobile-account-state');
+    const authActions = document.getElementById('mobile-auth-actions');
+    const userActions = document.getElementById('mobile-user-actions');
+    const emailInput = document.getElementById('mobile-account-email');
+    const passwordInput = document.getElementById('mobile-account-password');
+    const deletePassword = document.getElementById('mobile-delete-password');
+    const buyButton = document.getElementById('btn-mobile-buy-premium');
+    const accountTitle = document.getElementById('platform-account-title');
+    if (value) value.textContent = premiumState?.active ? '∞' : `${energyState?.remaining ?? 0}/5`;
+    if (badge) badge.classList.toggle('hidden', false);
+    if (panel) panel.classList.toggle('hidden', false);
+    if (accountTitle) {
+        accountTitle.textContent = window.bibiPlatform?.isMobile
+            ? i18n.t('ui.mobile_account_title')
+            : i18n.t('ui.cloud_account_title');
+    }
+
+    const user = authState?.user;
+    if (accountState) {
+        accountState.textContent = user
+            ? i18n.t('ui.mobile_signed_in', user.email || '')
+            : i18n.t('ui.mobile_guest');
+    }
+    if (authActions) authActions.classList.toggle('hidden', Boolean(user));
+    if (userActions) userActions.classList.toggle('hidden', !user);
+    if (emailInput) emailInput.classList.toggle('hidden', Boolean(user));
+    if (passwordInput) passwordInput.classList.toggle('hidden', Boolean(user));
+    if (!user && deletePassword) deletePassword.value = '';
+    if (buyButton) {
+        buyButton.disabled = Boolean(premiumState?.active);
+        buyButton.textContent = premiumState?.active
+            ? i18n.t('ui.mobile_premium_active')
+            : i18n.t('ui.mobile_buy_premium');
+    }
+}
+
+export function requestMobileEnergyAd() {
+    const modal = document.getElementById('mobile-energy-modal');
+    const cancel = document.getElementById('btn-mobile-energy-cancel');
+    const watch = document.getElementById('btn-mobile-energy-ad');
+    if (!modal || !cancel || !watch) return Promise.resolve(false);
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    return new Promise(resolve => {
+        const finish = decision => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            cancel.onclick = null;
+            watch.onclick = null;
+            resolve(decision);
+        };
+        cancel.onclick = () => finish(false);
+        watch.onclick = () => finish(true);
+    });
+}
+
+export function closeTopModal() {
+    const modalIds = [
+        'mobile-energy-modal',
+        'dev-modal',
+        'fate-selection-modal',
+        'run-setup-modal',
+        'settings-modal',
+        'how-to-play-modal',
+        'collection-modal',
+        'history-modal',
+        'souls-modal'
+    ];
+    for (const id of modalIds) {
+        const modal = document.getElementById(id);
+        if (!modal || modal.classList.contains('hidden')) continue;
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+        return true;
+    }
+    return false;
 }
 
 function getLocalizedCombo(comboStr) {
@@ -2213,29 +2299,32 @@ function renderDevShackleSection(container) {
     };
 }
 
-window.openDevModal = function() {
-    if (!el.devModal || !el.devRelicSelect) return;
-    el.devRelicSelect.innerHTML = '<option value="">-- 請選擇遺物 --</option>';
-    RELIC_DB.forEach(r => {
-        let opt = document.createElement('option');
-        opt.value = r.id;
-        opt.innerText = `${r.name} (${r.id})`;
-        el.devRelicSelect.appendChild(opt);
-    });
-    const shackleSection = document.getElementById('dev-shackle-section');
-    if (shackleSection) renderDevShackleSection(shackleSection);
-    el.devModal.classList.remove('hidden');
-    el.devModal.classList.add('flex');
-};
+// DEV ONLY
+if (IS_DEV) {
+    window.openDevModal = function() {
+        if (!el.devModal || !el.devRelicSelect) return;
+        el.devRelicSelect.innerHTML = '<option value="">-- 請選擇遺物 --</option>';
+        RELIC_DB.forEach(r => {
+            let opt = document.createElement('option');
+            opt.value = r.id;
+            opt.innerText = `${r.name} (${r.id})`;
+            el.devRelicSelect.appendChild(opt);
+        });
+        const shackleSection = document.getElementById('dev-shackle-section');
+        if (shackleSection) renderDevShackleSection(shackleSection);
+        el.devModal.classList.remove('hidden');
+        el.devModal.classList.add('flex');
+    };
 
-window.closeDevModal = function() {
-    if (!el.devModal) return;
-    el.devModal.classList.add('hidden');
-    el.devModal.classList.remove('flex');
-};
+    window.closeDevModal = function() {
+        if (!el.devModal) return;
+        el.devModal.classList.add('hidden');
+        el.devModal.classList.remove('flex');
+    };
 
-if (el.devRelicCancel) {
-    el.devRelicCancel.onclick = window.closeDevModal;
+    if (el.devRelicCancel) {
+        el.devRelicCancel.onclick = window.closeDevModal;
+    }
 }
 
 export function renderRunSetup(relics, setup, sealLimit, contractLimit) {
@@ -2765,9 +2854,10 @@ if (el.inventoryGrid) {
     }, { passive: false });
 }
 
-let settingsTapCount = 0;
-let settingsTapTimer = null;
-if (el.settingsTitle) {
+// DEV ONLY：設定標題 5 連點開發者入口
+if (IS_DEV && el.settingsTitle) {
+    let settingsTapCount = 0;
+    let settingsTapTimer = null;
     el.settingsTitle.addEventListener('click', () => {
         settingsTapCount++;
         clearTimeout(settingsTapTimer);
@@ -2981,7 +3071,7 @@ const STEAM_STORE_URL = 'https://store.steampowered.com/app/4792230/_BIBI_DICE/'
 
 function isPromoTarget() {
     const body = document.body;
-    return body.classList.contains('steam-portrait') || body.classList.contains('itch-build');
+    return body.classList.contains('steam-demo-build') || body.classList.contains('itch-build');
 }
 
 function openStoreUrl() {
@@ -2999,11 +3089,17 @@ export function initPromo() {
     const titleBtn  = document.getElementById('promo-title-btn');
     if (titleCard) {
         titleCard.classList.remove('hidden');
-        titleBtn?.addEventListener('click', openStoreUrl);
+        if (titleBtn) {
+            titleBtn.addEventListener('click', openStoreUrl);
+            titleBtn.dataset.promoReady = 'true';
+        }
     }
 
     const winBtn = document.getElementById('promo-win-btn');
-    winBtn?.addEventListener('click', openStoreUrl);
+    if (winBtn) {
+        winBtn.addEventListener('click', openStoreUrl);
+        winBtn.dataset.promoReady = 'true';
+    }
 }
 
 export function showPromoWinCard() {

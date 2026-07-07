@@ -31,7 +31,7 @@ export const translations = {
       'btn_history': '歷史牌局',
       'btn_souls': '靈魂奉獻',
       'reset_souls': '重置靈魂 (退還所有花費)',
-      'version': '[免費測試版]',
+      'version': '1.0.0',
       'author_info': '作者:雷爪獅 | Youtube:雷爪獅遊戲頻道 | threads:@leijoalan',
       'stage': '第 {0} 層',
       'next_stage': '下一關：{0}',
@@ -58,7 +58,7 @@ export const translations = {
       'tab_relics': '遺物',
       'tab_shackles': '枷鎖',
       'fusion_limit_msg': '你必須選擇捨棄並分解其中一件遺物（退回基礎素材），才能容納新的力量！',
-      'fusion_limit_title': '力量超載！再生遺物達上限 (2/2)',
+      'fusion_limit_title': '力量超載！神話遺物達上限 ({0}/{0})',
       'fusion_materials': '退回素材：',
       'fusion_new_item': 'NEW',
       'fusion_discard_btn': '捨棄並分解',
@@ -68,13 +68,7 @@ export const translations = {
       'pb_highest_infinite': '最高無限層數',      'btn_rules': '牌型表',      'empty_inventory': '背包空空如也',
       'fusion_condition': '\n\n合成條件: {0} + {1}',
       'fusion_text_short': '合成: {0} + {1}',
-
-
-
       'rules_title': '全牌型倍率表',
-      'tab_hands': '牌型',
-      'tab_relics': '遺物',
-      'tab_shackles': '枷鎖',
       'locked': '未解鎖',
       'locked_relic': '未解鎖遺物',
       'locked_shackle': '未解鎖枷鎖',
@@ -108,7 +102,7 @@ export const translations = {
       'btn_history': '历史牌局',
       'btn_souls': '灵魂奉献',
       'reset_souls': '重置灵魂 (退还所有花费)',
-      'version': '[免费测试版]',
+      'version': '1.0.0',
       'author_info': '作者:雷爪狮 | Youtube:雷爪狮游戏频道 | threads:@leijoalan',
       'stage': '第 {0} 层',
       'next_stage': '下一关：{0}',
@@ -135,7 +129,7 @@ export const translations = {
       'tab_relics': '遗物',
       'tab_shackles': '枷锁',
       'fusion_limit_msg': '你必须选择舍弃并分解其中一件遗物（退回基础素材），才能容纳新的力量！',
-      'fusion_limit_title': '力量超载！再生遗物达上限 (2/2)',
+      'fusion_limit_title': '力量超载！神话遗物达上限 ({0}/{0})',
       'fusion_materials': '退回素材：',
       'fusion_new_item': 'NEW',
       'fusion_discard_btn': '舍弃并分解',
@@ -145,19 +139,10 @@ export const translations = {
       'pb_highest_infinite': '最高无限层数',      'btn_rules': '牌型表',      'empty_inventory': '背包空空如也',
       'fusion_condition': '\n\n合成条件: {0} + {1}',
       'fusion_text_short': '合成: {0} + {1}',
-      'fusion_limit_msg': '你必须选择舍弃并分解其中一件遗物（退回基础素材），才能容纳新的力量！',
-      'fusion_limit_title': '力量超载！再生遗物达上限 (2/2)',
-      'fusion_materials': '退回素材：',
-      'fusion_new_item': 'NEW',
-      'fusion_discard_btn': '舍弃并分解',
       'locked': '未解锁',
       'locked_relic': '未解锁遗物',
       'locked_shackle': '未解锁枷锁',
-
       'rules_title': '全牌型倍率表',
-      'tab_hands': '牌型',
-      'tab_relics': '遗物',
-      'tab_shackles': '枷锁',
       'souls_warning': '警告：进行任何灵魂奉献将会清除当前进行中的游戏进度。'
     }
   },
@@ -188,7 +173,7 @@ export const translations = {
       'btn_history': 'Match History',
       'btn_souls': 'Soul Offering',
       'reset_souls': 'Reset Souls (Refund all costs)',
-      'version': '[Free Demo]',
+      'version': '1.0.0',
       'author_info': 'Author: Leijoalan | Youtube: Leijoalan Game Channel | threads:@leijoalan',
       'stage': 'Floor {0}',
       'next_stage': 'Next Stage: {0}',
@@ -214,8 +199,8 @@ export const translations = {
       'tab_hands': 'Hands',
       'tab_relics': 'Relics',
       'tab_shackles': 'Shackles',
-      'fusion_limit_msg': 'You must discard and dismantle one of your relics (return to base materials) to make room for new power!',
-      'fusion_limit_title': 'Power Overload! Mythic Limit Reached (2/2)',
+      'fusion_limit_msg': 'You must choose to discard and dismantle one of your relics (returning base materials) to make room for new power!',
+      'fusion_limit_title': 'Power Overload! Mythic Limit Reached ({0}/{0})',
       'fusion_materials': 'Materials Returned:',
       'fusion_new_item': 'NEW',
       'fusion_discard_btn': 'Discard & Dismantle',
@@ -225,20 +210,10 @@ export const translations = {
       'pb_highest_infinite': 'Max Infinite Lvl',      'btn_rules': 'Hands',      'empty_inventory': 'Inventory is empty',
       'fusion_condition': '\n\nFusion Req: {0} + {1}',
       'fusion_text_short': 'Fusion: {0} + {1}',
-      'fusion_limit_msg': 'You must choose to discard and dismantle one of your relics (returning base materials) to make room for new power!',
-      'fusion_limit_title': 'Power Overload! Mythic Limit Reached (2/2)',
-      'fusion_materials': 'Materials Returned:',
-      'fusion_new_item': 'NEW',
-      'fusion_discard_btn': 'Discard & Dismantle',
       'locked': 'Locked',
       'locked_relic': 'Locked Relic',
       'locked_shackle': 'Locked Shackle',
-
-
       'rules_title': 'Hands Multipliers',
-      'tab_hands': 'Hands',
-      'tab_relics': 'Relics',
-      'tab_shackles': 'Shackles',
       'souls_warning': 'Warning: Any soul sacrifice will erase your current run progress.'
     }
   },
@@ -269,7 +244,7 @@ export const translations = {
       'btn_history': '対戦履歴',
       'btn_souls': '魂の捧げ物',
       'reset_souls': 'ソウルリセット (全コスト返還)',
-      'version': '[無料テスト版]',
+      'version': '1.0.0',
       'author_info': '作者: Leijoalan | Youtube: 雷爪獅遊戲頻道 | threads:@leijoalan',
       'stage': '第 {0} 層',
       'next_stage': '次のステージ：{0}',
@@ -295,8 +270,8 @@ export const translations = {
       'tab_hands': '役',
       'tab_relics': '遺物',
       'tab_shackles': '枷鎖',
-      'fusion_limit_msg': '新たな力を得るためには、遺物を1つ捨てて分解（基礎素材に戻す）する必要があります！',
-      'fusion_limit_title': '力の暴走！神話遺物の上限に到達 (2/2)',
+      'fusion_limit_msg': '新しい力を得るには、遺物を1つ捨てて分解（基礎素材に戻す）する必要があります！',
+      'fusion_limit_title': '力の暴走！神話遺物の上限に到達 ({0}/{0})',
       'fusion_materials': '返還される素材：',
       'fusion_new_item': 'NEW',
       'fusion_discard_btn': '破棄して分解する',
@@ -306,20 +281,10 @@ export const translations = {
       'pb_highest_infinite': '最高無限階層',      'btn_rules': '役一覧',      'empty_inventory': 'バッグは空っぽです',
       'fusion_condition': '\n\n合成条件: {0} + {1}',
       'fusion_text_short': '合成: {0} + {1}',
-      'fusion_limit_msg': '新しい力を得るには、遺物を1つ捨てて分解（基礎素材に戻す）する必要があります！',
-      'fusion_limit_title': '力の暴走！神話遺物の上限に到達 (2/2)',
-      'fusion_materials': '返還される素材：',
-      'fusion_new_item': 'NEW',
-      'fusion_discard_btn': '破棄して分解する',
       'locked': '未解放',
       'locked_relic': '未解放の遺物',
       'locked_shackle': '未解放の枷鎖',
-
-
       'rules_title': '役の倍率表',
-      'tab_hands': '役',
-      'tab_relics': '遺物',
-      'tab_shackles': '枷鎖',
       'souls_warning': '警告：魂の奉献を行うと、現在進行中のゲーム進行状況が消去されます。'
     }
   }
@@ -388,6 +353,10 @@ class I18nManager {
       if (key) {
         el.textContent = this.t(key);
       }
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+      const key = el.getAttribute('data-i18n-placeholder');
+      if (key) el.setAttribute('placeholder', this.t(key));
     });
   }
 }
