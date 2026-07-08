@@ -1,3 +1,23 @@
+### UI：ABCD 四區左上角加牌型分區浮水印標示 [2026/07/09]
+* **需求**：玩家搞不懂 ABCD 四個區塊各是什麼，製作人要求在四區左上角加「A/B/C/D」標示，浮水印風格（不明顯也沒關係）、字大一點、字體用遊戲風格。
+* **`js/ui.js`**：`renderScore` 四個 `#zone-box-*` 各加一個 `<span class="zone-corner-label" aria-hidden="true">A~D</span>`（純字母、通用不需 i18n）。
+* **`css/style.css`**：新增 `.zone-corner-label`——左上角絕對定位、`var(--font-number)`（Bahnschrift，與倍率數字同款顯示字體）、26px（≥768px 為 32px）、`color: currentColor` 繼承該區配色（藍/粉/紫/青，停用時自動變灰）、`opacity 0.32` 浮水印感、`pointer-events:none`。
+* **驗證**：`node --check js/ui.js` 通過；本機實機 540×960 造盤截圖——四區左上角顯示 A/B/C/D，字體確認為 Bahnschrift、色彩對應各區、不遮擋牌型名與倍率。
+
+### UI：點 ABCD 區高光骰子時同步顯示牌型說明浮條 [2026/07/09]
+* **需求**：製作人回報玩家點 ABCD 區看到骰子高光後，仍搞不懂「為什麼是這幾顆發動」，希望高光同時跳出牌型說明，但不能擋到骰子。
+* **`index.html`**：於 `#board-panel` 內新增 `#hand-hint-banner` 浮條元素（預設 `hidden`、`aria-live="polite"`）。
+* **`js/ui.js`**：新增 `updateHandHintBanner()`，於 `renderDice` 結尾呼叫。點某區高光時，依 `activeHighlight` 取當前發動牌型，於盤面頂部顯示「牌型名　x倍率　—　說明」；非 `WAIT_ACTION`、無高光、失憶（amnesia）枷鎖時隱藏。牌型查詢重用既有 `RULE_DB`＋`isRuleNameMatch`，文字重用既有 `rules.<id>.name`／`.desc` i18n key，**未新增任何語系 key**。
+* **`css/style.css`**：新增 `.hand-hint-banner` 系列樣式——絕對定位於盤面頂部（覆蓋標題列、骰子正上方，不遮擋骰子）、ABCD 四色邊框與牌型名配色、說明過長以單行省略號截斷、跳出微動畫。
+* **驗證**：`node --check js/ui.js` 通過；`steam:i18n:verify` 四語 710 keys 完全對齊（key 數不變）；本機 http 伺服器實機驗證——`devSetDice` 造盤後點 A（比比丟八 x100.0 8顆相同數字）、D（全異 x15.0 8顆數字皆不相同）浮條正確顯示且色彩對應，量測浮條底邊不與骰子重疊；再次點同區/重骰/自動 5 秒皆正確隱藏；540×960 視窗說明無溢位。
+* **注意**：本次未打包，未反映到 `dist/steam-windows` exe；製作人確認後需跑 `steam:package:verify`。
+
+### 素材：全套圖片＋影片廣告產製與審查 [2026/07/08]
+* **`promo/ads/approved/`**：新增 9 件通過審查的廣告成品——圖片 6 張（直式 1080×1920／方形 1080×1080／橫式 1200×628，各繁中＋英文版）與影片 3 支（繁中直式 12s、繁中方形 10s、英文橫式 15s，各附 contact sheet）。素材源自 Steam 商店截圖、四語實機錄影、透明 Logo 與角色立繪；文案沿用官方 frame.md 節奏與 POST_COPY。
+* **`promo/ads/src/`**：保留可重跑的產製原始檔（圖片 HTML 模板＋Playwright 腳本、三個 HyperFrames 0.7.17 影片專案）。
+* **`promo/ads/REVIEW.md`**：審查紀錄——兩支影片初版誤植「ROGUELIKE」已修正為 ROGUELITE 重 render；並記錄上游 steam-launch-short 繁簡 gameplay 素材互換問題（詳見 SYNC.md 待處理問題）。
+* **驗證**：6 張 PNG 逐張像素尺寸與目視檢查；3 支 MP4 經 ffprobe 規格驗證（H.264／30fps／AAC）與抽幀逐格審查；HyperFrames lint／validate 通過。
+
 ### 工具：擬人模擬遊玩系統 Phase 2~4（五人格／生涯模擬／儀表板／A/B） [2026/07/08]
 * **`sim/personas/novice.mjs` / `veteran.mjs` / `gambler.mjs`**：補滿五人格（新手高失誤且相信假數字、老手低取樣心算、賭徒追大牌偏誤）；`heuristics.mjs` 加共用失誤模型。
 * **`sim/core/career.mjs`**：生涯模擬——局間靈魂升級購買（各人格優先序）、契約自適應、無限塔；`run.mjs` 重構出可跨局共用狀態的 `simulateRunWithState`。

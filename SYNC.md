@@ -2,7 +2,38 @@
 
 ## AI 快速交接區（任何 AI 開工前必讀）
 
-最後更新：2026-07-08
+最後更新：2026-07-09
+
+### 2026-07-09 阿扣（ABCD 四區左上角牌型分區浮水印 + 點區牌型說明浮條）
+- 狀態：完成，待製作人確認 commit + 打包（尚未 commit、未打包進 exe）
+- 追加任務：玩家搞不懂 ABCD 四區是什麼 → 四區左上角加 A/B/C/D 浮水印標示
+  - `js/ui.js`：`renderScore` 四個 `#zone-box-*` 各加 `<span class="zone-corner-label">A~D</span>`（純字母，不需 i18n）
+  - `css/style.css`：`.zone-corner-label`——左上角絕對定位、`var(--font-number)`（Bahnschrift）、26px（md 32px）、`currentColor` 繼承區色、opacity 0.32 浮水印、pointer-events none
+  - 驗證：`node --check` 通過；540×960 實機截圖確認四區左上角 A/B/C/D、Bahnschrift 字體、色彩對應、不擋牌型名與倍率
+- 原任務（點 ABCD 區高光骰子時顯示牌型說明浮條）：
+- 任務：製作人回報玩家點 ABCD 區看骰子高光後仍不懂「為何這幾顆發動」，要求高光同時跳出牌型說明，但不能擋到骰子
+- 修改（單點、只動表現層，未動 `engine.js`/`data.js`/`main.js`）：
+  - `index.html`：`#board-panel` 內新增 `#hand-hint-banner` 浮條
+  - `js/ui.js`：新增 `updateHandHintBanner()`，`renderDice` 結尾呼叫；點區高光時於盤面頂部顯示「牌型名 x倍率 — 說明」，非 WAIT_ACTION／無高光／失憶枷鎖隱藏；牌型查詢重用 `RULE_DB`＋`isRuleNameMatch`
+  - `css/style.css`：`.hand-hint-banner` 系列——絕對定位盤面頂部（覆蓋標題列、骰子正上方，不遮骰子）、ABCD 四色、說明單行省略號、跳出動畫
+- 文字：**重用既有 `rules.<id>.name`／`.desc` 四語 key，未新增任何 i18n key**
+- 驗證：`node --check js/ui.js` 通過；`steam:i18n:verify` 四語 710 keys 對齊（不變）；本機 http server 實機——A/D 區浮條正確顯示、色彩對應、不與骰子重疊、再點同區/重骰/5 秒自動皆隱藏、540×960 無溢位
+- 注意：`.claude/launch.json` 為本次 preview 用的靜態伺服器設定（暫存，不建議入 commit）；UI 已改但**尚未跑 `steam:package:verify`**，未反映到製作人玩的 exe
+更新者：阿扣（Claude Code）
+
+### 2026-07-08 阿扣（全套圖片＋影片廣告產製與審查）
+- 狀態：完成；成品待製作人確認後投放，未 commit
+- 任務：以官方腳本（`promo/social/steam-launch-short/` frame.md 與四語 POST_COPY）與既有素材為源，並行產出全套廣告，逐件審查後分類
+- 產出（`promo/ads/`，共 9 件全數通過審查，rejected/ 為空）：
+  - 圖片 6 張（approved/）：直式 1080×1920、方形 1080×1080、橫式 1200×628，各繁中＋英文版；HTML 模板＋Playwright 產圖，來源檔在 `promo/ads/src/image/` 可重跑
+  - 影片 3 支（approved/，各附 contact sheet）：繁中直式 1080×1920 12s、繁中方形 1080×1080 10s、英文橫式 1920×1080 15s；HyperFrames 0.7.17 專案在 `promo/ads/src/video-*/` 可改文案重 render
+  - 審查紀錄：`promo/ads/REVIEW.md`（標準、逐件結果、改進建議）
+- 審查修正：直式跑馬字與橫式常駐 HUD 均誤植「ROGUELIKE」，已改「ROGUELITE」重 render 並抽幀複驗
+- 注意：
+  - **發現上游素材互換**：steam-launch-short 的 zh-tw/02-reroll.mp4 實為簡體、zh-cn 反為繁體（已列入待處理問題）；本次繁中影片已改用正確檔，原檔未動
+  - 英文版三張圖片的實機截圖為繁中 UI（沿用 Steam 商店官方截圖）；日後投英語市場建議補英文 UI 截圖
+  - 未修改任何遊戲程式與既有 promo 專案
+更新者：阿扣（Claude Code）
 
 ### 2026-07-08 阿扣（擬人模擬遊玩系統 Phase 2~4：五人格／生涯模擬／儀表板／A/B 對比）
 - 狀態：Phase 1~4 全部完成，待製作人確認 commit
@@ -596,6 +627,7 @@
 
 | 問題 | 狀態 | 說明 |
 |---|---|---|
+| steam-launch-short 繁簡 gameplay 素材互換 | 待修正 | `promo/social/steam-launch-short/assets/gameplay/zh-tw/02-reroll.mp4` 實為簡體 UI、`zh-cn/02-reroll.mp4` 反為繁體，兩檔疑似互換（2026-07-08 廣告產製時發現）。已發布的四語短片 previews 若曾用錯置素材渲染可能受影響，需抽幀確認；是否重 render 待製作人決定 |
 | 19 項 Bug 修復後的 SteamPipe 發布 | 待製作人決策 | Phase 1～4 已全部修復並通過 `steam:package:verify`；尚未 commit / push / 上傳 Steam。建議製作人實機試玩 `dist/steam-windows/BIBI-DICE.exe` 後再排程發布 |
 | G8 電玩展報名送件 | 待製作人上傳 | 四張截圖與表單資料已整理於 `promo/g8-2026-registration/`；目前可使用公開 Trailer `https://youtu.be/U4BvT5RyU5M` |
 | 四平台四語上市短片發布 | 進行中 | 第一波英文 YouTube Shorts 與 Threads 繁中已完成；待回填 24／72 小時數據後安排第二、三波 |

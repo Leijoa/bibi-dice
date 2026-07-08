@@ -5,8 +5,10 @@ import * as Audio from './audio.js';
 import { getDiceImageFilter, getDiceImageUrl } from './diceSkin.js';
 window.i18n = i18n;
 
-// 開發者模式（僅限本地開發環境，比照 main.js 的 IS_DEV）
-const IS_DEV = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+// 開發者模式（比照 main.js 的 IS_DEV：localhost 或 Electron --bibi-dev 啟動）
+const IS_DEV = window.location.hostname === 'localhost'
+    || window.location.hostname === '127.0.0.1'
+    || (window.location.protocol === 'bibi:' && new URLSearchParams(window.location.search).get('bibiDev') === '1');
 
 const MYTHIC_CHARACTER_ASSETS = {
     lion: 'img/characters/thunderclaw-lion-cutout.png',
@@ -812,6 +814,54 @@ export function renderDice(battle, activeHighlight, player) {
 
     el.rollsBadge.innerText = i18n.t('ui.rolls_left', battle.rollsLeft);
     el.rollsBadge.className = battle.rollsLeft === 0 ? "bg-slate-800 px-2 py-0.5 rounded-full text-[12px] md:text-sm font-bold text-slate-500 transition-colors" : "bg-slate-800 px-2 py-0.5 rounded-full text-[12px] md:text-sm font-bold text-violet-300 transition-colors";
+
+    updateHandHintBanner(battle, activeHighlight);
+}
+
+// --- 牌型說明浮條（點 ABCD 區高光骰子時，於盤面頂部說明為何發動；不遮擋骰子）---
+function updateHandHintBanner(battle, activeHighlight) {
+    const banner = document.getElementById('hand-hint-banner');
+    if (!banner) return;
+
+    const zoneClasses = ['hand-hint-banner--A', 'hand-hint-banner--B', 'hand-hint-banner--C', 'hand-hint-banner--D'];
+    const hide = () => {
+        banner.classList.add('hidden');
+        banner.classList.remove(...zoneClasses);
+    };
+
+    const isAmnesia = window.getStageActiveShackle && window.getStageActiveShackle() === 'amnesia';
+    if (!activeHighlight || isAmnesia || !battle || !battle.scoreResult || battle.state !== 'WAIT_ACTION') {
+        hide();
+        return;
+    }
+
+    const tag = battle.scoreResult['tag' + activeHighlight];
+    if (!tag || tag.name === '無' || tag.name === '???') {
+        hide();
+        return;
+    }
+
+    const ruleId = window.getRuleCollectionId ? window.getRuleCollectionId(tag.name) : null;
+    let rule = null;
+    for (const rules of Object.values(RULE_DB)) {
+        rule = (ruleId ? rules.find(r => r.id === ruleId) : null) || rules.find(r => isRuleNameMatch(tag.name, r.name));
+        if (rule) break;
+    }
+    if (!rule) {
+        hide();
+        return;
+    }
+
+    const nameText = window.i18n ? window.i18n.t(`rules.${rule.id}.name`) : rule.name;
+    const descText = window.i18n ? window.i18n.t(`rules.${rule.id}.desc`) : rule.desc;
+    const multiText = 'x' + tag.multi.toFixed(1);
+
+    banner.innerHTML = `
+        <span class="hand-hint-banner__name">${escapeHtml(nameText)}</span>
+        <span class="hand-hint-banner__multi">${escapeHtml(multiText)}</span>
+        <span class="hand-hint-banner__desc">${escapeHtml(descText)}</span>`;
+    banner.classList.remove('hidden', ...zoneClasses);
+    banner.classList.add(`hand-hint-banner--${activeHighlight}`);
 }
 
 // --- 重骰波浪動畫 ---
@@ -1074,21 +1124,25 @@ export function renderScore(battle, activeHighlight) {
 
     <div class="relative grid grid-cols-4 gap-1 mb-1 ${zoneGridClass}">
         <div id="zone-box-A" ${getZoneAction('A', res.tagA)} class="relative flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-visible ${getBoxStyle('A', res.tagA)} ${getTagEmphasisClass(res.tagA)}">
+            <span class="zone-corner-label" aria-hidden="true">A</span>
             ${getTagNewBadge(res.tagA)}
             <div class="text-[12px] md:text-[12px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagA.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagA.multi.toFixed(1)}</div>
         </div>
         <div id="zone-box-B" ${getZoneAction('B', res.tagB)} class="relative flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-visible ${getBoxStyle('B', res.tagB)} ${getTagEmphasisClass(res.tagB)}">
+            <span class="zone-corner-label" aria-hidden="true">B</span>
             ${getTagNewBadge(res.tagB)}
             <div class="text-[12px] md:text-[12px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagB.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagB.multi.toFixed(1)}</div>
         </div>
         <div id="zone-box-C" ${getZoneAction('C', res.tagC)} class="relative flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-visible ${getBoxStyle('C', res.tagC)} ${getTagEmphasisClass(res.tagC)}">
+            <span class="zone-corner-label" aria-hidden="true">C</span>
             ${getTagNewBadge(res.tagC)}
             <div class="text-[12px] md:text-[12px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagC.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagC.multi.toFixed(1)}</div>
         </div>
         <div id="zone-box-D" ${getZoneAction('D', res.tagD)} class="relative flex flex-col items-center justify-center py-2.5 md:py-3 rounded-lg border min-w-0 overflow-visible ${getBoxStyle('D', res.tagD)} ${getTagEmphasisClass(res.tagD)}">
+            <span class="zone-corner-label" aria-hidden="true">D</span>
             ${getTagNewBadge(res.tagD)}
             <div class="text-[12px] md:text-[12px] font-bold zone-tag-name opacity-70 w-full px-1 text-center">${isAmnesia ? '???' : getTagLocalName(res.tagD.name)}</div>
             <div class="font-black text-xl md:text-2xl leading-none mt-1">${isAmnesia ? 'x???' : 'x' + res.tagD.multi.toFixed(1)}</div>
