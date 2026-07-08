@@ -1,3 +1,29 @@
+### 工具：擬人模擬遊玩系統 Phase 2~4（五人格／生涯模擬／儀表板／A/B） [2026/07/08]
+* **`sim/personas/novice.mjs` / `veteran.mjs` / `gambler.mjs`**：補滿五人格（新手高失誤且相信假數字、老手低取樣心算、賭徒追大牌偏誤）；`heuristics.mjs` 加共用失誤模型。
+* **`sim/core/career.mjs`**：生涯模擬——局間靈魂升級購買（各人格優先序）、契約自適應、無限塔；`run.mjs` 重構出可跨局共用狀態的 `simulateRunWithState`。
+* **`sim/report/dashboard.mjs`**：批量模式自動產出單檔離線 `dashboard.html`（通過率折線、遺物榜、枷鎖難度、靈魂節奏）。
+* **`sim/compare.mjs`**：A/B 數值對比工具，比較兩份 snapshot.json 的顯著變動。
+* **`package.json`**：新增 `sim:career`、`sim:compare` 指令。
+* **驗證**：`sim:verify` 10 項全過（決定性涵蓋五人格）；5000 局批量 66 秒；compare 實測正確。
+* **平衡信號**：賭徒人格（All-in 追同數大牌）零升級通關率 44.8%，高於一步期望值理論派 31.8%——現行數值高度獎勵梭哈路線；【假象】枷鎖對新手 -47.2% 通過率、對理論派無感，資訊型枷鎖難度與玩家水準強相關。
+* **生涯節奏（8 條生涯 × 上限 120 局）**：全解鎖局外升級中位數——賭徒 85 局／理論派 101／老手 106；新手與休閒 120 局內無法全解鎖。無限塔最深：理論派 32 層、老手 31、休閒 22。
+
+### 工具：擬人模擬遊玩系統 Phase 1（sim/ 無頭模擬器＋平衡報表） [2026/07/08]
+* **`sim/core/`**：新增無頭模擬核心。adapter.mjs 直接 import 真引擎與 data.js（計分零複製）；battle.mjs / shop.mjs / run.mjs 從 main.js 忠實移植回合、重骰、鎖定限制、全部枷鎖結算、商店三選一、融合、掉落與靈魂公式（逐段註記來源行號）。
+* **`sim/personas/`**：休閒（heuristic＋10% 手滑）與理論派（候選鎖法＋引擎取樣期望值）兩人格；人格僅能讀取「畫面可見資訊」，資訊干擾型枷鎖會真實影響決策品質。
+* **`sim/report/` / `sim/cli.mjs`**：輸出五份 UTF-8 BOM CSV：難度曲線與死亡熱點、遺物強度榜、枷鎖難度實測、靈魂節奏、每局摘要；終端印死亡熱點與枷鎖難度摘要。
+* **`sim/verify.mjs`**：保真測試——alldamege.csv 全部 6435 組合 vs 引擎零誤差、同 seed 決定性、枷鎖結算劇本（鐵壁／絕對屏障／同歸於盡）。
+* **`package.json`**：新增 `sim`、`sim:verify` 指令。**`.gitignore`**：新增 `sim/output/`。
+* **驗證**：`sim:verify` 7 項全過；2000 局批量（2 人格 × 2 局外帳號 × 500 局，seed 42）48 秒完成。首批發現：零升級死亡熱點集中 6~10 關、【同歸於盡】對休閒玩家 -48.8% 通過率、神話遺物【微縮星雲】【六道輪迴】勝率增益為負。
+* **範圍控制**：未修改任何遊戲程式與四語系；模擬工具不影響 Steam 打包。
+
+### 工具：製作人專用作弊測試模式（--bibi-dev） [2026/07/06]
+* **`steam-app/main.js`**：新增 `DEV_CHEAT_MODE`（`--bibi-dev` 參數或 `BIBI_DICE_DEV=1`），成立時遊戲 URL 附加 `bibiDev=1`；Steam 正常啟動不受影響。
+* **`js/main.js` / `js/ui.js`**：IS_DEV 增加「bibi: 協定且 `bibiDev=1`」判斷，網頁版帶參數無效。
+* **`package.json`**：新增 `steam:app:devcheat` 指令。
+* **桌面捷徑**：建立「BIBI DICE 作弊測試模式.lnk」指向 dist exe 帶參數，點兩下即開作弊模式（捷徑不入 repo）。
+* **驗證**：語法檢查與 `steam:package:verify` 19 項 check 通過，打包後 exe 已含閘門。
+
 ### 修正：19 項 Bug 修復 Phase 3 驗收與 Phase 4 低嚴重度收尾 [2026/07/06]
 * **Phase 3 交叉驗收通過（阿扣）**：弒神枷鎖（M2）引擎實測 240→16、噪音提示（M4）、語言切換回呼（M7）皆確認；同時抽查 Phase 1/2 修復與計畫一致。
 * **`js/main.js`**：黑洞下牌型高亮以換算值配對（L1）；天譴改 `rarity >= 4` 並改用 getRuleMetaByName 修「比比丟八(ビビデバ)」漏判（L2）；契約敵名前綴改 i18n key（L3）；移除重骰動畫前的半套存檔（L5）；損毀存檔改退回標題並提示，不再軟鎖（L6）；語言切換時收集冊分頁標籤同步刷新（M7 補強）。

@@ -2,3 +2,7 @@ node_modules/
 dist/
 promo/steam/review/capture-temp/
 steam-build/
+mobile.config.local.json
+android/app/google-services.json
+ios/App/App/GoogleService-Info.plist
+sim/output/
