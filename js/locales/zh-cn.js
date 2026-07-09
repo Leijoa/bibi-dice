@@ -279,6 +279,8 @@ ui: {
     tab_shackles: '枷锁',
     fusion_limit_msg: '你必须选择舍弃并分解其中一件遗物（退回基础素材），才能容纳新的力量！',
     score_total_base: '骰子点数加成后总和',
+    hand_tag_fixed: '指定数字',
+    hand_tag_any: '任意数字',
     bonus_reroll: '剩余资源加成 (剩 {0} 次)',
     pb_title: '个人最佳记录',
     pb_highest_dmg: '最高伤害',

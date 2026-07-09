@@ -279,6 +279,8 @@ ui: {
     tab_shackles: 'Shackles',
     fusion_limit_msg: 'You must discard and dismantle one of your relics (return to base materials) to make room for new power!',
     score_total_base: 'Total Base Score',
+    hand_tag_fixed: 'Fixed',
+    hand_tag_any: 'Any',
     bonus_reroll: 'Reroll Bonus ({0} left)',
     pb_title: 'Personal Bests',
     pb_highest_dmg: 'Highest Damage',

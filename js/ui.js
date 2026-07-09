@@ -352,6 +352,27 @@ const RULE_EXAMPLE_DICE = {
     rule_d10: [[2, 2, 3, 3, 5, 5, 7, 7]]
 };
 
+// 指定數字牌型：骰面數字就是必要答案（不可替換）；其餘牌型的範例骰子僅為圖示、可換任意數字
+const FIXED_NUMBER_RULE_IDS = new Set([
+    'rule_b0', // 彗星（1~8 各一）
+    'rule_d0', // 兩極（只有 1 和 8）
+    'rule_d2', // 全異（必為 1~8）
+    'rule_d4', // 斐波那契
+    'rule_d5', // 圓周率
+    'rule_d6', // 自然對數
+    'rule_d7', // 二進位
+    'rule_d8', // 絕對二進位
+    'rule_d9', // 質數
+    'rule_d10' // 絕對質數
+]);
+
+function renderRuleTag(ruleId) {
+    const isFixed = FIXED_NUMBER_RULE_IDS.has(ruleId);
+    const cls = isFixed ? 'rule-tag--fixed' : 'rule-tag--any';
+    const label = i18n.t(isFixed ? 'ui.hand_tag_fixed' : 'ui.hand_tag_any');
+    return `<span class="rule-tag ${cls}">${label}</span>`;
+}
+
 function renderRuleExampleDice(ruleId) {
     const groups = RULE_EXAMPLE_DICE[ruleId];
     if (!groups || !groups.length) return '';
@@ -388,7 +409,7 @@ export function renderRulesDB() {
             html += `
             <div class="rule-card flex justify-between items-start gap-2 bg-slate-900/50 p-2.5 rounded-lg border border-slate-700">
                 <div class="rule-card__copy min-w-0">
-                    <div class="rule-card__name font-bold ${rStyle.color}">${ruleName}</div>
+                    <div class="rule-card__name font-bold ${rStyle.color}">${ruleName}${renderRuleTag(rule.id)}</div>
                     <div class="rule-card__desc text-slate-400">${ruleDesc}</div>
                     ${renderRuleExampleDice(rule.id)}
                 </div>

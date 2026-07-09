@@ -279,6 +279,8 @@ ui: {
     tab_shackles: '枷鎖',
     fusion_limit_msg: '新たな力を得るには、遺物を1つ捨てて分解し、基礎素材へ戻す必要があります！',
     score_total_base: 'ダイス基本点合計',
+    hand_tag_fixed: '指定',
+    hand_tag_any: '任意',
     bonus_reroll: '残りリソースボーナス (残り {0} 回)',
     pb_title: '自己ベスト',
     pb_highest_dmg: '最高ダメージ',
