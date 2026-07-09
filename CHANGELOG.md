@@ -1,3 +1,17 @@
+### 修正：牌型說明浮條改盤面底部＋動態平衡提示不擋骰＋ABCD 角標移左下 [2026/07/09]
+* **根因（重要）**：`css/style.css` 的 `#board-panel > *`（ID 選擇器，優先序高於 class）強制所有盤面子元素 `position: relative; z-index:1`，使牌型說明浮條的 `position:absolute` 從未生效——浮條其實以相對定位佔據版面流，把骰子往下推擠（製作人回報的「擠壓骰子」真因）。新增 `#board-panel > .hand-hint-banner { position:absolute; z-index:30 }` 以更高優先序覆蓋。
+* **`css/style.css`**：`.hand-hint-banner` 由頂部改**盤面底部**（`bottom`），右緣內縮讓開重骰／攻擊控制列（`right:64px`，md `108px`）；說明文字改可換行、移除省略號截斷（修正過長說明被截斷看不懂）；壓縮行高與 padding，使最長說明（絕對質數 2 行）仍落在骰子下方留白不重疊。
+* **`index.html` / `js/ui.js`**：新增 `#board-notice-banner` 與 `showBoardNotice()`，於盤面底部同位置短暫顯示遺物觸發提示；牌型浮條與盤面提示互斥不重疊。
+* **`js/main.js`**：【動態平衡】遺物提示由畫面中央 `showToast`（會擋住骰子）改為 `UI.showBoardNotice`（盤面底部、不擋骰子）。
+* **`css/style.css`**：`.zone-corner-label` 由左上角改**左下角**（`bottom`），修正英文版牌型名較長時與 ABCD 角標重疊。
+* **驗證**：`node --check js/ui.js js/main.js` 通過；本機 531×970 實機——量測牌型浮條短說明在骰子下方 12px 空隙、最長說明（絕對質數 2 行 49px）overlap −1px 不壓骰、不蓋控制列；動態平衡提示於底部置中不擋骰；英文版 ABCD 角標（top 832）低於牌型名（底 824）不重疊，四項截圖確認。
+
+### UI：牌型表加入範例小骰子（子牌型分組呈現） [2026/07/09]
+* **需求**：牌型表只有文字敘述不夠直觀，製作人要求在說明下方加入該牌型範例小骰子，且要美觀、辨識度高。
+* **`js/ui.js`**：`renderRulesDB` 每張 `.rule-card` 於說明下方渲染範例骰子。新增 `RULE_EXAMPLE_DICE`（39 牌型各一例，資料結構為「子牌型分組」二維陣列）與 `renderRuleExampleDice()`：複合牌型（C 區）拆成多組、以「＋」串接，對應說明結構（如南瓜馬車＝五同組＋三同組、經典四對子＝4 組對子、雙四連順＝兩組四連順）；同數／順子／特殊盤面為單組。骰面重用 `getDiceImageUrl`／`getDiceImageFilter`（隨玩家骰子外觀變化）並加輕微 `drop-shadow` 立體感；rule-card 版面改 `items-start` 使 copy 欄堆疊。
+* **`css/style.css`**：新增 `.rule-card__dice`（flex 換行、組間距大於骰間距）、`.rule-dice-group`（同組緊鄰）、`.rule-dice-plus`（灰色「＋」，portrait 較大）、`.rule-dice-mini`（22px，portrait 26px）。
+* **驗證**：`node --check js/ui.js` 通過；`steam:i18n:verify` 四語 710 keys 對齊（未新增 key）；本機 540×960 開牌型表——39 卡共 61 組骰子、22 個「＋」（數量與分組設計完全吻合）、骰圖載入正確；量測南瓜馬車「五同組(x29–151) ＋(x159) 三同組(x177–249)」、經典四對子 4 組 2 顆＋3 個「＋」均勻分隔、比比丟八單組 8 顆無「＋」，排版與說明相符。
+
 ### UI：ABCD 四區左上角加牌型分區浮水印標示 [2026/07/09]
 * **需求**：玩家搞不懂 ABCD 四個區塊各是什麼，製作人要求在四區左上角加「A/B/C/D」標示，浮水印風格（不明顯也沒關係）、字大一點、字體用遊戲風格。
 * **`js/ui.js`**：`renderScore` 四個 `#zone-box-*` 各加一個 `<span class="zone-corner-label" aria-hidden="true">A~D</span>`（純字母、通用不需 i18n）。

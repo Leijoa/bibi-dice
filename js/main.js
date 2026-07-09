@@ -411,7 +411,10 @@ window.unlockSteamAchievement = unlockSteamAchievement;
 
 
 // 開發者模式（僅限本地開發環境）
-const IS_DEV = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+// 開發模式：localhost 網頁，或 Electron 以 --bibi-dev 啟動（限 bibi: 協定，網頁網址帶參數無效）
+const IS_DEV = window.location.hostname === 'localhost'
+    || window.location.hostname === '127.0.0.1'
+    || (window.location.protocol === 'bibi:' && new URLSearchParams(window.location.search).get('bibiDev') === '1');
 if (IS_DEV) {
     let devSecretBuffer = "";
     window.addEventListener('keydown', (e) => {
@@ -2334,7 +2337,7 @@ window.executeRoll = function(isInitial = false) {
         }
 
         if (!tutorialMode && player.relics.includes('balance') && battle.rollsLeft === player.maxRolls && !battle.balanceUsedThisTurn) {
-            UI.showToast(i18n.t('messages.toast_balance'));
+            UI.showBoardNotice(i18n.t('messages.toast_balance'));
             battle.balanceUsedThisTurn = true;
         } else {
             battle.rollsLeft--;

@@ -299,6 +299,66 @@ export function playShackleSealAnimation(callback) {
 }
 
 // --- 動態生成牌型表 ---
+// 牌型表範例骰：每個牌型以「子牌型分組」呈現（僅供圖示辨識，非實際計分盤面）。
+// 複合牌型拆成多組並以「＋」串接，對應說明文字的結構，一眼看懂牌型組成。
+const RULE_EXAMPLE_DICE = {
+    // A 區：同數（單組）
+    rule_a0: [[3, 3, 3, 3, 3, 3, 3, 3]],
+    rule_a1: [[3, 3, 3, 3, 3, 3, 3]],
+    rule_a2: [[3, 3, 3, 3, 3, 3]],
+    rule_a3: [[3, 3, 3, 3, 3]],
+    rule_a4: [[3, 3, 3, 3]],
+    rule_a5: [[3, 3, 3]],
+    rule_a6: [[3, 3]],
+    // B 區：順子 / 彗星（單組連續）
+    rule_b0: [[1, 2, 3, 4, 5, 6, 7, 8]],
+    rule_b1: [[1, 2, 3, 4, 5, 6, 7]],
+    rule_b2: [[1, 2, 3, 4, 5, 6]],
+    rule_b3: [[2, 3, 4, 5, 6]],
+    rule_b4: [[3, 4, 5, 6]],
+    rule_b5: [[4, 5, 6]],
+    // C 區：複合牌型（多組，對應「A + B」結構）
+    rule_c0: [[2, 2, 2, 2], [6, 6, 6, 6]],
+    rule_c1: [[3, 3, 3, 3, 3], [7, 7, 7]],
+    rule_c2: [[2, 2, 2, 2], [5, 5], [7, 7]],
+    rule_c3: [[1, 2, 3], [6, 7, 8], [4, 5]],
+    rule_c4: [[1, 1], [3, 3], [5, 5], [7, 7]],
+    rule_c5: [[1, 2, 3, 4], [5, 6, 7, 8]],
+    rule_c6: [[2, 2, 2, 2], [6, 6, 6]],
+    rule_c7: [[1, 2, 3], [5, 6, 7], [8, 8]],
+    rule_c8: [[2, 2, 2], [5, 5, 5], [7, 7]],
+    rule_c9: [[1, 2, 3], [6, 6, 6]],
+    rule_c10: [[1, 2, 3], [6, 7, 8]],
+    rule_c11: [[2, 2, 2], [6, 6, 6]],
+    rule_c12: [[3, 3, 3], [7, 7]],
+    rule_c13: [[1, 1], [4, 4], [7, 7]],
+    rule_c14: [[2, 2], [6, 6]],
+    // D 區：特殊盤面 / 數列（單組完整盤面）
+    rule_d0: [[1, 1, 1, 8, 8, 8, 8, 8]],
+    rule_d1: [[1, 1, 3, 3, 5, 5, 7, 7]],
+    rule_d2: [[1, 2, 3, 4, 5, 6, 7, 8]],
+    rule_d3: [[2, 3, 4, 5, 6, 7, 3, 6]],
+    rule_d4: [[1, 1, 2, 3, 5, 8]],
+    rule_d5: [[3, 1, 4, 1, 6]],
+    rule_d6: [[2, 7, 1, 8, 2, 8]],
+    rule_d7: [[1, 2, 4, 8]],
+    rule_d8: [[1, 1, 2, 2, 4, 4, 8, 8]],
+    rule_d9: [[2, 3, 5, 7]],
+    rule_d10: [[2, 2, 3, 3, 5, 5, 7, 7]]
+};
+
+function renderRuleExampleDice(ruleId) {
+    const groups = RULE_EXAMPLE_DICE[ruleId];
+    if (!groups || !groups.length) return '';
+    const groupsHtml = groups.map(vals => {
+        const dice = vals.map(v =>
+            `<img class="rule-dice-mini" src="${getDiceImageUrl(v)}" style="filter:${getDiceImageFilter(v)} drop-shadow(0 1px 1.5px rgba(0,0,0,0.55));" alt="${v}">`
+        ).join('');
+        return `<span class="rule-dice-group">${dice}</span>`;
+    }).join('<span class="rule-dice-plus">+</span>');
+    return `<div class="rule-card__dice" aria-hidden="true">${groupsHtml}</div>`;
+}
+
 export function renderRulesDB() {
     let html = '';
     const groups = [
@@ -319,12 +379,13 @@ export function renderRulesDB() {
             let ruleDesc = i18n.t(`rules.rule_${letter}${origIdx}.desc`) || rule.desc;
 
             html += `
-            <div class="rule-card flex justify-between items-center bg-slate-900/50 p-2.5 rounded-lg border border-slate-700">
-                <div class="rule-card__copy">
+            <div class="rule-card flex justify-between items-start gap-2 bg-slate-900/50 p-2.5 rounded-lg border border-slate-700">
+                <div class="rule-card__copy min-w-0">
                     <div class="rule-card__name font-bold ${rStyle.color}">${ruleName}</div>
                     <div class="rule-card__desc text-slate-400">${ruleDesc}</div>
+                    ${renderRuleExampleDice(rule.id)}
                 </div>
-                <div class="rule-card__multi font-black text-violet-300">${rule.multi}</div>
+                <div class="rule-card__multi font-black text-violet-300 shrink-0">${rule.multi}</div>
             </div>`;
         });
         html += `</div>`;
@@ -862,7 +923,28 @@ function updateHandHintBanner(battle, activeHighlight) {
         <span class="hand-hint-banner__desc">${escapeHtml(descText)}</span>`;
     banner.classList.remove('hidden', ...zoneClasses);
     banner.classList.add(`hand-hint-banner--${activeHighlight}`);
+    // 顯示牌型說明時，隱藏同位置的盤面提示避免重疊
+    const notice = document.getElementById('board-notice-banner');
+    if (notice) notice.classList.add('hidden');
 }
+
+// 盤面提示（遺物觸發等）：於盤面底部短暫顯示，位置與牌型浮條相同、不遮擋骰子
+let _boardNoticeTimer = null;
+export function showBoardNotice(msg, duration = 2200) {
+    const banner = document.getElementById('board-notice-banner');
+    if (!banner) return;
+    banner.textContent = msg;
+    banner.classList.remove('hidden');
+    // 避免與牌型說明浮條同時出現於同位置
+    const hint = document.getElementById('hand-hint-banner');
+    if (hint) hint.classList.add('hidden');
+    if (_boardNoticeTimer) clearTimeout(_boardNoticeTimer);
+    _boardNoticeTimer = setTimeout(() => {
+        banner.classList.add('hidden');
+        _boardNoticeTimer = null;
+    }, duration);
+}
+window.showBoardNotice = showBoardNotice;
 
 // --- 重骰波浪動畫 ---
 let _rerollAnimTimers = [];

@@ -801,6 +801,46 @@ header {
   overflow-wrap: anywhere;
 }
 
+.rule-card__dice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 7px;
+  margin-top: 8px;
+}
+
+.rule-dice-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.rule-dice-plus {
+  color: #7c8598;
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1;
+  margin: 0 1px;
+  user-select: none;
+}
+
+.rule-dice-mini {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  object-fit: contain;
+  display: block;
+}
+
+body.steam-portrait .rule-dice-mini {
+  width: 26px;
+  height: 26px;
+}
+
+body.steam-portrait .rule-dice-plus {
+  font-size: 15px;
+}
+
 .rule-card__multi {
   display: flex;
   flex: 0 0 68px;
@@ -3069,24 +3109,34 @@ button[id^="btn-close"]:hover {
   filter: drop-shadow(0 0 8px rgba(45,212,191,0.95)) drop-shadow(0 0 18px rgba(20,184,166,0.65));
 }
 
-/* 牌型說明浮條：點 ABCD 區時於盤面頂部（標題列位置、骰子正上方）說明牌型為何發動，不遮擋骰子 */
+/* 牌型說明浮條 / 盤面提示：點 ABCD 區或觸發遺物時，於盤面「底部」（骰子下方留白處）說明，不遮擋骰子；文字可換行不截斷 */
 .hand-hint-banner {
   position: absolute;
-  top: 4px;
+  bottom: 4px;
   left: 6px;
-  right: 6px;
+  right: 64px; /* 讓開右側重骰／攻擊控制列 */
   z-index: 30;
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 8px;
-  padding: 5px 12px;
+  gap: 0 8px;
+  padding: 4px 11px;
+  line-height: 1.25;
   border-radius: 9px;
   border: 1px solid rgba(148, 163, 184, 0.5);
   background: rgba(9, 9, 12, 0.96);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55);
+  box-shadow: 0 -4px 14px rgba(0, 0, 0, 0.55);
   backdrop-filter: blur(2px);
   pointer-events: none;
   animation: hand-hint-pop 0.18s ease-out;
+}
+@media (min-width: 768px) {
+  .hand-hint-banner { right: 108px; }
+}
+/* 覆蓋 #board-panel > * 的 position:relative/z-index:1（ID 選擇器優先序較高），確保浮條真正絕對定位浮在骰子下方留白、不佔版面流擠壓骰子 */
+#board-panel > .hand-hint-banner {
+  position: absolute;
+  z-index: 30;
 }
 .hand-hint-banner.hidden {
   display: none;
@@ -3107,9 +3157,8 @@ button[id^="btn-close"]:hover {
 .hand-hint-banner__desc {
   font-size: 12px;
   color: #cbd5e1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow-wrap: anywhere;
   flex: 1 1 auto;
   min-width: 0;
 }
@@ -3127,15 +3176,25 @@ button[id^="btn-close"]:hover {
 .hand-hint-banner--D { border-color: rgba(45, 212, 191, 0.85); }
 .hand-hint-banner--D .hand-hint-banner__name { color: #5eead4; }
 
+/* 盤面提示（遺物觸發等，如動態平衡）：與牌型浮條同位置、同不遮擋骰子，紫色系 */
+.board-notice-banner {
+  justify-content: center;
+  text-align: center;
+  border-color: rgba(167, 139, 250, 0.85);
+  color: #ddd6fe;
+  font-weight: 800;
+  font-size: 13px;
+}
+
 @keyframes hand-hint-pop {
-  from { opacity: 0; transform: translateY(-6px); }
+  from { opacity: 0; transform: translateY(6px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* ABCD 區左上角浮水印標示：協助玩家辨識四個區塊，沿用倍率數字的顯示字體，色彩繼承該區色 */
+/* ABCD 區左下角浮水印標示：協助玩家辨識四個區塊（放左下角避免英文版牌型名重疊），沿用倍率數字的顯示字體，色彩繼承該區色 */
 .zone-corner-label {
   position: absolute;
-  top: 1px;
+  bottom: 1px;
   left: 6px;
   z-index: 1;
   font-family: var(--font-number);

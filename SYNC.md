@@ -4,6 +4,29 @@
 
 最後更新：2026-07-09
 
+### 2026-07-09 阿扣（浮條改底部＋動態平衡不擋骰＋ABCD 角標左下；設定卡死待重現）
+- 狀態：#1/#2/#4/#5 完成並實機驗證；#3（設定介面卡死）未修，待製作人提供重現資訊
+- #1 牌型說明浮條擠壓骰子 → **找到根因**：`#board-panel > *`（ID 選擇器）強制盤面子元素 `position:relative;z-index:1`，蓋掉浮條的 absolute，使浮條佔版面流把骰子往下推。解法：`#board-panel > .hand-hint-banner { position:absolute; z-index:30 }`（`css/style.css`）。並將浮條由頂部改**盤面底部**、右緣讓開控制列
+- #4 過長說明截斷 → 浮條改可換行、移除省略號；壓縮行高/padding，最長說明（絕對質數 2 行）overlap −1px 不壓骰
+- #2 動態平衡每次首骰提示擋骰 → 新增 `#board-notice-banner` + `UI.showBoardNotice()`（盤面底部同位置），`js/main.js` 的 balance 提示由 `showToast`（中央擋骰）改 `showBoardNotice`；與牌型浮條互斥
+- #5 ABCD 角標英文版與牌型名重疊 → `.zone-corner-label` 由左上改**左下角**
+- #3 設定介面偶發「物件都不能點擊」→ **已排查但未定位**：所有 modal 的 `.hidden`（display:none）正確生效、攻擊 overlay（神話/破億）都有 4.3s/5.2s fallback 移除、tutorial 結束 `location.reload()` 全清、切語言只安全重繪。靜態程式碼找不到必然卡死點。**需製作人提供重現**：Steam exe 還是網頁？做了哪個設定動作（改視窗大小/語言/骰子外觀/音量）？是整個遊戲不能點還是設定視窗本身不能點？重開遊戲能恢復嗎？
+- 修改檔：`index.html`、`js/ui.js`、`js/main.js`、`css/style.css`
+- 驗證：`node --check` 通過；531×970 實機量測＋四張截圖（浮條底部不壓骰、動態平衡底部不擋骰、英文 ABCD 左下不重疊、最長說明不壓骰）
+- 注意：尚未打包進 exe；#2 目前只改 balance，rebel/forcedshift 等首骰提示仍為中央 toast，如要一致可比照改
+更新者：阿扣（Claude Code）
+
+### 2026-07-09 阿扣（牌型表加入範例小骰子，子牌型分組）
+- 狀態：完成，待製作人確認 commit + 打包（尚未 commit、未打包進 exe）
+- 任務：牌型表只有文字不夠直觀 → 說明下方加該牌型範例小骰子，且要美觀＋辨識度高
+- 修改（僅表現層，未動 engine/data/main）：
+  - `js/ui.js`：新增 `RULE_EXAMPLE_DICE`（39 牌型「子牌型分組」二維陣列）＋ `renderRuleExampleDice()`；複合牌型拆多組以「＋」串接對應說明結構，單牌型單組；骰面重用 `getDiceImageUrl`／`getDiceImageFilter` 隨玩家外觀變化＋輕 drop-shadow；rule-card 改 `items-start`
+  - `css/style.css`：`.rule-card__dice`／`.rule-dice-group`／`.rule-dice-plus`／`.rule-dice-mini`（22px、portrait 26px）
+- 文字：骰子/「＋」皆圖示，未新增 i18n key
+- 驗證：`node --check` 通過；`steam:i18n:verify` 710 keys 對齊；540×960 開牌型表——39 卡共 61 組、22 個「＋」與設計吻合、骰圖載入正確；量測南瓜馬車「五同＋三同」兩組與「＋」位置正確、經典四對子 4 組 2 顆分隔、比比丟八單組 8 顆無「＋」
+- 注意：截圖工具對含大量骰圖的牌型表 modal 會 compositor 逾時（環境問題非程式），本次以幾何量測＋計數驗證；mini 骰子視覺已於前一版成功截圖確認
+更新者：阿扣（Claude Code）
+
 ### 2026-07-09 阿扣（ABCD 四區左上角牌型分區浮水印 + 點區牌型說明浮條）
 - 狀態：完成，待製作人確認 commit + 打包（尚未 commit、未打包進 exe）
 - 追加任務：玩家搞不懂 ABCD 四區是什麼 → 四區左上角加 A/B/C/D 浮水印標示
