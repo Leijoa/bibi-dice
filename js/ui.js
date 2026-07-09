@@ -355,9 +355,11 @@ const RULE_EXAMPLE_DICE = {
 function renderRuleExampleDice(ruleId) {
     const groups = RULE_EXAMPLE_DICE[ruleId];
     if (!groups || !groups.length) return '';
+    // 用空白骰底圖（dice_0）＋另外疊上大字數字，避免直接用小圖時骰面數字太小難讀
+    const blankDie = getDiceImageUrl(0);
     const groupsHtml = groups.map(vals => {
         const dice = vals.map(v =>
-            `<img class="rule-dice-mini" src="${getDiceImageUrl(v)}" style="filter:${getDiceImageFilter(v)} drop-shadow(0 1px 1.5px rgba(0,0,0,0.55));" alt="${v}">`
+            `<span class="rule-dice-mini"><img class="rule-dice-mini__img" src="${blankDie}" style="filter:${getDiceImageFilter(v)} drop-shadow(0 1px 1.5px rgba(0,0,0,0.55));" alt=""><span class="rule-dice-mini__num">${v}</span></span>`
         ).join('');
         return `<span class="rule-dice-group">${dice}</span>`;
     }).join('<span class="rule-dice-plus">+</span>');

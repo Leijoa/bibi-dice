@@ -4,6 +4,13 @@
 
 最後更新：2026-07-09
 
+### 2026-07-09 阿扣（牌型表範例骰子改空白骰底＋大字數字）
+- 狀態：完成並實機驗證，待製作人確認 commit + 打包
+- 任務：牌型表範例骰子的骰面數字太小難讀 → 改用空白骰底 `dice_0.webp` + 疊大字數字
+- 修改：`js/ui.js` `renderRuleExampleDice` 改用 dice_0 底圖 + `.rule-dice-mini__num` 疊字；`css/style.css` `.rule-dice-mini` 改相對定位容器，骰放大 28px（portrait 32px）、金色 900 粗數字 18px（portrait 20px）+ 描邊
+- 驗證：531×970 開牌型表 245 顆數字皆放大清晰、1~8 正確、分組「＋」完整、最寬列無溢位
+更新者：阿扣（Claude Code）
+
 ### 2026-07-09 阿扣（浮條改底部＋動態平衡不擋骰＋ABCD 角標左下＋設定 toast 卡死修復）
 - 狀態：#1~#5 全部完成並實機驗證
 - #1 牌型說明浮條擠壓骰子 → **找到根因**：`#board-panel > *`（ID 選擇器）強制盤面子元素 `position:relative;z-index:1`，蓋掉浮條的 absolute，使浮條佔版面流把骰子往下推。解法：`#board-panel > .hand-hint-banner { position:absolute; z-index:30 }`（`css/style.css`）。並將浮條由頂部改**盤面底部**、右緣讓開控制列

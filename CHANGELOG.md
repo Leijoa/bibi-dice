@@ -1,3 +1,9 @@
+### UI：牌型表範例骰子改空白骰底＋大字數字（提升可讀性）[2026/07/09]
+* **需求**：牌型表範例骰子直接用骰面小圖時，骰面數字太小難讀。
+* **`js/ui.js`**：`renderRuleExampleDice` 改用空白骰底圖 `dice_0.webp`，再以 `.rule-dice-mini__num` 疊上大字數字（不再依賴骰面圖內建的小數字）。
+* **`css/style.css`**：`.rule-dice-mini` 改為相對定位容器（骰底圖 `.rule-dice-mini__img` + 數字 `.rule-dice-mini__num`）；骰子放大為 28px（portrait 32px）、金色數字 `var(--font-number)` 900 粗、18px（portrait 20px）、加深色描邊確保對比。
+* **驗證**：本機 531×970 開牌型表——A~D 四區 245 顆範例骰數字皆放大清晰（1~8 正確、分組「＋」完整），最寬列（比比丟八 8 顆）無溢位。
+
 ### 修正：設定視窗控制項偶發不能點（toast 蓋住設定視窗）[2026/07/09]
 * **根因**：`showToast` 產生的 toast 掛在 `document.body`，而各 modal（含設定視窗 z-120）位於有 `transform` 的 `#game-container` 內——transform 會建立獨立 stacking context，使設定視窗的 z-120 被「困」在 game-container 中；在 body 的 stacking context 裡，正值 z-index 的 toast（z-100）反而疊在整個 game-container（含設定視窗）之上。因此只要開設定視窗時剛好有 toast 還在（如剛戰鬥後的提示），toast 就會蓋住並攔截下方設定控制項的點擊，呈現「偶發、只有設定視窗不能點」。
 * **`js/ui.js`**：`showToast` 產生的 toast 本體改 `pointer-events: none`（純通知不需接收點擊），可關閉 toast 的 × 按鈕另設 `pointer-events: auto`。toast 從此不再攔截任何下層控制項點擊，× 仍可點。
