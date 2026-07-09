@@ -827,6 +827,32 @@ body.steam-portrait .rule-tag {
   font-size: 12px;
 }
 
+/* 牌型表頂端圖例 */
+.rules-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  padding: 8px 10px;
+  margin-bottom: 8px;
+  border-radius: 10px;
+  background: rgba(30, 30, 40, 0.6);
+  border: 1px solid rgba(100, 116, 139, 0.35);
+}
+.rules-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.rules-legend__text {
+  font-size: 12px;
+  font-weight: 700;
+  color: #cbd5e1;
+}
+body.steam-portrait .rules-legend__text {
+  font-size: 13px;
+}
+
 .rule-card__dice {
   display: flex;
   flex-wrap: wrap;
@@ -879,7 +905,13 @@ body.steam-portrait .rule-tag {
   color: #ffd23f;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.9), 0 0 3px rgba(0, 0, 0, 0.7);
   pointer-events: none;
+  text-transform: none;
 }
+/* token 上色：金＝指定數字、青＝任意（字母/範例）、灰＝任意骰(?) */
+.rule-dice-mini__num--fixed { color: #ffd23f; }
+.rule-dice-mini__num--any { color: #a5e8ff; }
+.rule-dice-mini__num--wild { color: #cbd5e1; font-weight: 800; }
+.rule-dice-mini--wild { opacity: 0.5; }
 
 body.steam-portrait .rule-dice-mini {
   width: 32px;
