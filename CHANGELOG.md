@@ -1,3 +1,8 @@
+### 修正：設定視窗控制項偶發不能點（toast 蓋住設定視窗）[2026/07/09]
+* **根因**：`showToast` 產生的 toast 掛在 `document.body`，而各 modal（含設定視窗 z-120）位於有 `transform` 的 `#game-container` 內——transform 會建立獨立 stacking context，使設定視窗的 z-120 被「困」在 game-container 中；在 body 的 stacking context 裡，正值 z-index 的 toast（z-100）反而疊在整個 game-container（含設定視窗）之上。因此只要開設定視窗時剛好有 toast 還在（如剛戰鬥後的提示），toast 就會蓋住並攔截下方設定控制項的點擊，呈現「偶發、只有設定視窗不能點」。
+* **`js/ui.js`**：`showToast` 產生的 toast 本體改 `pointer-events: none`（純通知不需接收點擊），可關閉 toast 的 × 按鈕另設 `pointer-events: auto`。toast 從此不再攔截任何下層控制項點擊，× 仍可點。
+* **驗證**：本機實機——開設定視窗後產生 toast，`elementFromPoint` 於 toast 中心回傳的是設定視窗內容（非 toast），確認點擊已可穿透至設定控制項；可關閉 toast 的 × 仍在最上層可點。
+
 ### 修正：牌型說明浮條改盤面底部＋動態平衡提示不擋骰＋ABCD 角標移左下 [2026/07/09]
 * **根因（重要）**：`css/style.css` 的 `#board-panel > *`（ID 選擇器，優先序高於 class）強制所有盤面子元素 `position: relative; z-index:1`，使牌型說明浮條的 `position:absolute` 從未生效——浮條其實以相對定位佔據版面流，把骰子往下推擠（製作人回報的「擠壓骰子」真因）。新增 `#board-panel > .hand-hint-banner { position:absolute; z-index:30 }` 以更高優先序覆蓋。
 * **`css/style.css`**：`.hand-hint-banner` 由頂部改**盤面底部**（`bottom`），右緣內縮讓開重骰／攻擊控制列（`right:64px`，md `108px`）；說明文字改可換行、移除省略號截斷（修正過長說明被截斷看不懂）；壓縮行高與 padding，使最長說明（絕對質數 2 行）仍落在骰子下方留白不重疊。

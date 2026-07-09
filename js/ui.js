@@ -210,6 +210,10 @@ export function showToast(msg, callback, options = {}) {
 
     let toast = document.createElement('div');
     toast.className = 'fixed bg-slate-900 text-white font-bold py-4 px-6 rounded-2xl shadow-[0_0_50px_rgba(122,59,245,0.4)] border-2 border-violet-500/60 z-[100] text-lg md:text-2xl text-center flex flex-col gap-2 toast-enter whitespace-pre-wrap leading-relaxed transition-all duration-300';
+    // toast 為純通知，設 pointer-events:none，避免它蓋在 modal（如設定視窗）上時擋住下方控制項的點擊。
+    // 成因：toast 掛在 body，而 modal 在有 transform 的 #game-container 內（獨立 stacking context），
+    // body 層 toast 會疊在被困住的 modal 之上；設 none 即可讓點擊穿透，closable 的 × 另設 auto。
+    toast.style.pointerEvents = 'none';
     if (closable) toast.style.paddingRight = '2.75rem';
     if (zIndex !== null) toast.style.zIndex = String(zIndex);
 
@@ -246,6 +250,7 @@ export function showToast(msg, callback, options = {}) {
         closeBtn.style.top = '6px';
         closeBtn.style.right = '10px';
         closeBtn.style.left = 'auto';
+        closeBtn.style.pointerEvents = 'auto'; // toast 本體 pointer-events:none，但 × 需可點
         closeBtn.textContent = '×';
         closeBtn.setAttribute('aria-label', i18n.t('ui.toast_close') || 'Close');
         closeBtn.setAttribute('title', i18n.t('ui.toast_close') || 'Close');

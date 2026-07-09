@@ -4,13 +4,13 @@
 
 最後更新：2026-07-09
 
-### 2026-07-09 阿扣（浮條改底部＋動態平衡不擋骰＋ABCD 角標左下；設定卡死待重現）
-- 狀態：#1/#2/#4/#5 完成並實機驗證；#3（設定介面卡死）未修，待製作人提供重現資訊
+### 2026-07-09 阿扣（浮條改底部＋動態平衡不擋骰＋ABCD 角標左下＋設定 toast 卡死修復）
+- 狀態：#1~#5 全部完成並實機驗證
 - #1 牌型說明浮條擠壓骰子 → **找到根因**：`#board-panel > *`（ID 選擇器）強制盤面子元素 `position:relative;z-index:1`，蓋掉浮條的 absolute，使浮條佔版面流把骰子往下推。解法：`#board-panel > .hand-hint-banner { position:absolute; z-index:30 }`（`css/style.css`）。並將浮條由頂部改**盤面底部**、右緣讓開控制列
 - #4 過長說明截斷 → 浮條改可換行、移除省略號；壓縮行高/padding，最長說明（絕對質數 2 行）overlap −1px 不壓骰
 - #2 動態平衡每次首骰提示擋骰 → 新增 `#board-notice-banner` + `UI.showBoardNotice()`（盤面底部同位置），`js/main.js` 的 balance 提示由 `showToast`（中央擋骰）改 `showBoardNotice`；與牌型浮條互斥
 - #5 ABCD 角標英文版與牌型名重疊 → `.zone-corner-label` 由左上改**左下角**
-- #3 設定介面偶發「物件都不能點擊」→ **已排查但未定位**：所有 modal 的 `.hidden`（display:none）正確生效、攻擊 overlay（神話/破億）都有 4.3s/5.2s fallback 移除、tutorial 結束 `location.reload()` 全清、切語言只安全重繪。靜態程式碼找不到必然卡死點。**需製作人提供重現**：Steam exe 還是網頁？做了哪個設定動作（改視窗大小/語言/骰子外觀/音量）？是整個遊戲不能點還是設定視窗本身不能點？重開遊戲能恢復嗎？
+- #3 設定介面偶發「只有設定視窗不能點」→ **已定位並修復**：`showToast` 的 toast 掛在 `body`，而設定視窗（z-120）在有 `transform` 的 `#game-container` 內（獨立 stacking context），body 層 toast（z-100）反而疊在被困住的設定視窗之上；開設定時剛好有 toast 殘留就會擋住控制項。修法：`js/ui.js` toast 本體改 `pointer-events:none`（純通知），× 另設 `auto`。實機驗證 `elementFromPoint` 於 toast 中心已回傳設定視窗內容、× 仍可點
 - 修改檔：`index.html`、`js/ui.js`、`js/main.js`、`css/style.css`
 - 驗證：`node --check` 通過；531×970 實機量測＋四張截圖（浮條底部不壓骰、動態平衡底部不擋骰、英文 ABCD 左下不重疊、最長說明不壓骰）
 - 注意：尚未打包進 exe；#2 目前只改 balance，rebel/forcedshift 等首骰提示仍為中央 toast，如要一致可比照改
