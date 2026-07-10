@@ -98,14 +98,17 @@ let tutorialMode = false;
 let tutorialStep = 0;
 let tutorialForcedDice = null; // array[8] to force on next roll
 
+// 步驟順序：先教核心循環（骰子→鎖定→重骰→傷害），最後才在攻擊前介紹枷鎖，
+// 避免玩家還沒學會鎖定骰子就得先理解枷鎖。文字綁在陣列索引（tutorial.stepN），
+// 調整順序時務必同步調整四語系 tutorial.stepN。
 const TUTORIAL_STEPS = [
     { step: 0, highlight: 'enemy-hp',       forceDice: [3, 3, 5, 2, 7, 1, 4, 6], waitFor: 'any_click' },
-    { step: 1, highlight: 'shackle-badge',  waitFor: 'shackle_info' },
-    { step: 2, highlight: 'turns-left',     waitFor: 'any_click' },
-    { step: 3, highlight: 'dice-container', waitFor: 'any_click' },
-    { step: 4, highlight: 'dice-container', waitFor: 'lock_two_dice' },
-    { step: 5, highlight: 'roll-btn',       waitFor: 'roll_action', forceDiceAfterRoll: [3, 3, 3, 6, 6, 1, 4, 2] },
-    { step: 6, highlight: 'damage-preview', waitFor: 'any_click' },
+    { step: 1, highlight: 'turns-left',     waitFor: 'any_click' },
+    { step: 2, highlight: 'dice-container', waitFor: 'any_click' },
+    { step: 3, highlight: 'dice-container', waitFor: 'lock_two_dice' },
+    { step: 4, highlight: 'roll-btn',       waitFor: 'roll_action', forceDiceAfterRoll: [3, 3, 3, 6, 6, 1, 4, 2] },
+    { step: 5, highlight: 'damage-preview', waitFor: 'any_click' },
+    { step: 6, highlight: 'shackle-badge',  waitFor: 'shackle_info' },
     { step: 7, highlight: 'attack-btn',     waitFor: 'attack_action' },
     { step: 8, highlight: 'shop-container', waitFor: 'shop_select' },
     { step: 9, highlight: null,             waitFor: 'any_click', onComplete: 'end_tutorial' }

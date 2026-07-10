@@ -264,7 +264,7 @@ export const RULE_DB = {
     ],
     groupD: [
         { id: 'rule_d0',  name: '兩極', desc: '盤面只有 1 和 8', multi: 'x60' , rarity: 5 },
-        { id: 'rule_d1',  name: '絕對秩序', desc: '7顆以上數字為全奇數或全偶數', multi: 'x12' , rarity: 3 },
+        { id: 'rule_d1',  name: '絕對秩序', desc: '八顆數字全為奇數或全為偶數', multi: 'x12' , rarity: 3 },
         { id: 'rule_d2',  name: '全異', desc: '8顆數字皆不相同', multi: 'x15' , rarity: 4 },
         { id: 'rule_d3',  name: '中庸之道', desc: '盤面完全沒有 1 和 8', multi: 'x5' , rarity: 2 },
         { id: 'rule_d4',  name: '斐波那契數列', desc: '大自然隱藏的黃金螺旋公式 (112358)', multi: 'x10' , rarity: 3 },
