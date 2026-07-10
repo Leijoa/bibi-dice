@@ -636,12 +636,16 @@ window.showShackleInfo = function(id) {
         container.appendChild(nameSpan);
         container.appendChild(descSpan);
 
+        // 教學的枷鎖步驟：下一步會高光此說明視窗，改為不自動過期（離開該步驟時由教學收掉）
+        const tutState = window.getTutorialState ? window.getTutorialState() : null;
+        const isTutorialShackleStep = Boolean(tutState?.mode && window.TUTORIAL_STEPS?.[tutState.step]?.waitFor === 'shackle_info');
         const infoToast = showToast(container, null, {
-            duration: 10000,
+            duration: isTutorialShackleStep ? 600000 : 10000,
             closable: true,
             zIndex: 220,
             toggleKey: `shackle:${id}`
         });
+        if (infoToast && isTutorialShackleStep) infoToast.id = 'shackle-info-toast';
         if (infoToast && window.onTutorialShackleInfo) window.onTutorialShackleInfo(id);
     }
 };
@@ -2778,7 +2782,9 @@ export function showTutorialStep(stepIndex, totalSteps) {
         'dice-container': 'dice-container',
         'roll-btn': 'controls-container',
         'score-preview': 'score-area',
+        'hand-hint-banner': 'hand-hint-banner',
         'damage-preview': 'final-damage-preview',
+        'shackle-toast': 'shackle-info-toast',
         'attack-btn': 'controls-container',
         'shop-container': 'shop-items'
     };
@@ -2789,7 +2795,8 @@ export function showTutorialStep(stepIndex, totalSteps) {
         _tutorialHighlighted.el = targetEl;
         _tutorialHighlighted.origPos = targetEl.style.position;
         _tutorialHighlighted.origZ = targetEl.style.zIndex;
-        targetEl.style.position = 'relative';
+        // 已定位元素（如牌型浮條 absolute、枷鎖說明 toast fixed）不可強制 relative，否則會脫離原位
+        if (getComputedStyle(targetEl).position === 'static') targetEl.style.position = 'relative';
         targetEl.style.zIndex = '196';
         targetEl.classList.add('tutorial-highlight');
         const shopOverlay = targetEl.closest('#shop-overlay');
@@ -2809,8 +2816,10 @@ export function showTutorialStep(stepIndex, totalSteps) {
             }
         }
         // 攻擊步驟：#game-container 有 transform:scale() 建立 stacking context，
-        // board-panel 無 z-index 故會被 backdrop(z-195) 遮蔽；暫時提升至 196 使按鈕可點擊
-        if (step.highlight === 'attack-btn' || step.highlight === 'dice-container' || step.highlight === 'roll-btn') {
+        // board-panel 無 z-index 故會被 backdrop(z-195) 遮蔽；暫時提升至 196 使按鈕可點擊。
+        // score-preview（四區教學）與 hand-hint-banner（浮條說明）也需提升：
+        // 點區後的骰子高光與牌型浮條都在 board-panel 內
+        if (step.highlight === 'attack-btn' || step.highlight === 'dice-container' || step.highlight === 'roll-btn' || step.highlight === 'score-preview' || step.highlight === 'hand-hint-banner') {
             const boardPanel = document.getElementById('board-panel');
             if (boardPanel) {
                 _tutorialHighlighted.boardPanel = boardPanel;
@@ -2824,9 +2833,9 @@ export function showTutorialStep(stepIndex, totalSteps) {
     overlay.classList.remove('hidden');
     tooltip.classList.remove('hidden');
 
-    // 需要玩家直接點擊遊戲元素的步驟（shop_select、attack_action），
+    // 需要玩家直接點擊遊戲元素的步驟（shop_select、attack_action、zone_highlight 等），
     // 將 backdrop 設為 pointer-events:none，讓點擊穿透至下方遊戲按鈕
-    const needsClickThrough = step.waitFor === 'shop_select' || step.waitFor === 'attack_action' || step.waitFor === 'lock_two_dice' || step.waitFor === 'roll_action' || step.waitFor === 'shackle_info';
+    const needsClickThrough = step.waitFor === 'shop_select' || step.waitFor === 'attack_action' || step.waitFor === 'lock_two_dice' || step.waitFor === 'roll_action' || step.waitFor === 'shackle_info' || step.waitFor === 'zone_highlight';
     backdrop.style.pointerEvents = needsClickThrough ? 'none' : 'auto';
 
     // Position tooltip near highlighted element (or center-bottom if none)

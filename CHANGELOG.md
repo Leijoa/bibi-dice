@@ -1,3 +1,17 @@
+### 新手教學：四區牌型介紹＋說明視窗位置＋修正攻擊按鈕卡死 [2026/07/10~11]
+* **修正（`js/main.js`）**：枷鎖說明移到攻擊前一步後，`onTutorialShackleInfo` 推進步驟時未重渲染控制列（攻擊按鈕的 disabled 是渲染當下寫進 HTML），攻擊按鈕停留在禁用 → 教學卡死無法攻擊。新增 `advanceBattleTutorialStep()` 統一推進入口（一律 renderControls + showTutorialStep），shackle_info／lock_two_dice／zone_highlight 推進路徑共用。
+* **`js/main.js`**：教學 10 步 → 14 步。重骰後新增「四區總覽」（高光計分區；強制骰面 1,2,3,3,3,4,6,6 使 A三同/B四連順/C南瓜 三區亮、D 區暗）→「點區互動」（新 waitFor `zone_highlight`，玩家實際點亮牌型區）→「牌型說明浮條位置」（高光浮條本體；教學點區不設 5 秒自動清除，離開此步才清高光）；枷鎖步後新增「枷鎖說明視窗位置」（高光畫面中央的說明 toast，離開此步收掉）。`TUTORIAL_ATTACK_UNLOCK_STEP` 7→11。
+* **`js/ui.js`**：highlightMap 加 `hand-hint-banner`／`shackle-toast`；`needsClickThrough` 加 `zone_highlight`；board-panel z-index 提升條件加 `score-preview`／`hand-hint-banner`；`showTutorialStep` 僅對 computed position 為 static 的目標補 inline relative（浮條 absolute、toast fixed 不可強制 relative）；`showShackleInfo` 教學枷鎖步時 toast 不自動過期並掛 `#shackle-info-toast` id 供高光定位。
+* **`css/style.css`**：`.tutorial-highlight` 移除 `position:relative !important`（會強制蓋掉牌型浮條的 absolute，使浮條擠回版面流推擠骰子——7/9 修正過的問題在教學高光下復發的根因）。
+* **`js/locales/*.js`**：四語系 `tutorial.step5~step13` 依新索引輪轉＋新增四步文字（+4 keys = 720）。
+* **驗證**：`node --check` 六檔通過；`steam:i18n:verify` 四語 720 keys 對齊；本機實機教學 14 步全程通過（鎖對子、四區亮暗正確、點 A 區三顆骰發光＋浮條 absolute 高光、浮條／toast 離步正確收掉、點枷鎖後攻擊按鈕解鎖可攻擊、商店、完成旗標），console 零錯誤；`steam:package:verify` 17 項 check＋EXE smoke 通過，已打包進 exe（2026/07/11）。
+
+### UI：牌型表抽象標記任意字母加黑框提升辨識度 [2026/07/10]
+* **需求**：牌型表範例骰改成抽象標記後，青色英文字母與空白骰底背景太接近，辨讀吃力。
+* **`css/style.css`**：`.rule-dice-mini__num--any` 統一改回與指定數字相同的黃色數字樣式，不再使用另一套白色粗體字；保留灰色 `?` 的既有分類，不改牌型資料與 i18n。
+* **協作註記**：阿扣因 workspace trust 與 session limit 暫不可用，製作人明確授權本小修由韻西先獨力完成。
+* **驗證**：`node --check js/ui.js`、`npm.cmd run steam:i18n:verify`、`git diff --check -- css/style.css CHANGELOG.md SYNC.md`。
+
 ### 新手教學：枷鎖說明移到攻擊前（先學核心循環）[2026/07/10]
 * **需求**：枷鎖說明原本排在第 2 步，玩家還沒學會鎖定骰子就得先理解枷鎖，不直覺。
 * **`js/main.js`**：`TUTORIAL_STEPS` 重排——枷鎖（shackle-badge / shackle_info）由 index 1 移到 index 6，順序改為 敵人 HP → 回合 → 骰子 → 鎖定 → 重骰 → 傷害 → 枷鎖 → 攻擊 → 商店 → 完成。`forceDiceAfterRoll` 仍在 lock 步驟後緊接的 roll 步驟（index 4）、`TUTORIAL_ATTACK_UNLOCK_STEP` 仍為 7（攻擊步驟）。

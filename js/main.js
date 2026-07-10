@@ -98,23 +98,27 @@ let tutorialMode = false;
 let tutorialStep = 0;
 let tutorialForcedDice = null; // array[8] to force on next roll
 
-// 步驟順序：先教核心循環（骰子→鎖定→重骰→傷害），最後才在攻擊前介紹枷鎖，
-// 避免玩家還沒學會鎖定骰子就得先理解枷鎖。文字綁在陣列索引（tutorial.stepN），
-// 調整順序時務必同步調整四語系 tutorial.stepN。
+// 步驟順序：先教核心循環（骰子→鎖定→重骰），重骰後用強制骰面（A/B/C 三區同時亮）
+// 介紹四區牌型與點區互動，看完傷害預覽後才在攻擊前介紹枷鎖。
+// 文字綁在陣列索引（tutorial.stepN），調整順序時務必同步調整四語系 tutorial.stepN。
 const TUTORIAL_STEPS = [
-    { step: 0, highlight: 'enemy-hp',       forceDice: [3, 3, 5, 2, 7, 1, 4, 6], waitFor: 'any_click' },
-    { step: 1, highlight: 'turns-left',     waitFor: 'any_click' },
-    { step: 2, highlight: 'dice-container', waitFor: 'any_click' },
-    { step: 3, highlight: 'dice-container', waitFor: 'lock_two_dice' },
-    { step: 4, highlight: 'roll-btn',       waitFor: 'roll_action', forceDiceAfterRoll: [3, 3, 3, 6, 6, 1, 4, 2] },
-    { step: 5, highlight: 'damage-preview', waitFor: 'any_click' },
-    { step: 6, highlight: 'shackle-badge',  waitFor: 'shackle_info' },
-    { step: 7, highlight: 'attack-btn',     waitFor: 'attack_action' },
-    { step: 8, highlight: 'shop-container', waitFor: 'shop_select' },
-    { step: 9, highlight: null,             waitFor: 'any_click', onComplete: 'end_tutorial' }
+    { step: 0,  highlight: 'enemy-hp',         forceDice: [3, 3, 5, 2, 7, 1, 4, 6], waitFor: 'any_click' },
+    { step: 1,  highlight: 'turns-left',       waitFor: 'any_click' },
+    { step: 2,  highlight: 'dice-container',   waitFor: 'any_click' },
+    { step: 3,  highlight: 'dice-container',   waitFor: 'lock_two_dice' },
+    { step: 4,  highlight: 'roll-btn',         waitFor: 'roll_action', forceDiceAfterRoll: [3, 3, 3, 6, 6, 1, 4, 2] },
+    { step: 5,  highlight: 'score-preview',    waitFor: 'any_click' },
+    { step: 6,  highlight: 'score-preview',    waitFor: 'zone_highlight' },
+    { step: 7,  highlight: 'hand-hint-banner', waitFor: 'any_click' },
+    { step: 8,  highlight: 'damage-preview',   waitFor: 'any_click' },
+    { step: 9,  highlight: 'shackle-badge',    waitFor: 'shackle_info' },
+    { step: 10, highlight: 'shackle-toast',    waitFor: 'any_click' },
+    { step: 11, highlight: 'attack-btn',       waitFor: 'attack_action' },
+    { step: 12, highlight: 'shop-container',   waitFor: 'shop_select' },
+    { step: 13, highlight: null,               waitFor: 'any_click', onComplete: 'end_tutorial' }
 ];
 window.TUTORIAL_STEPS = TUTORIAL_STEPS;
-const TUTORIAL_ATTACK_UNLOCK_STEP = 7;
+const TUTORIAL_ATTACK_UNLOCK_STEP = 11;
 window.TUTORIAL_ATTACK_UNLOCK_STEP = TUTORIAL_ATTACK_UNLOCK_STEP;
 const HISTORY_KEY = 'bibbidiba_history_v60';
 const COLLECTION_KEY = 'bibbidiba_collection_v60';
@@ -1660,6 +1664,24 @@ function startTutorialGame() {
     startTurn();
 }
 
+// 戰鬥中教學步驟推進的統一入口：攻擊按鈕的 disabled 是渲染當下寫進 HTML 的，
+// 任何推進路徑都必須重渲染控制列，否則跨越 TUTORIAL_ATTACK_UNLOCK_STEP 時按鈕不會解鎖
+// （2026-07-10 枷鎖步移到攻擊前後，shackle_info 路徑漏了 renderControls 導致教學卡死）。
+// 注意：僅供戰鬥中（WAIT_ACTION）的推進使用；商店步驟推進不可走此函式（battle 為非戰鬥狀態）。
+function advanceBattleTutorialStep() {
+    const leavingStep = TUTORIAL_STEPS[tutorialStep];
+    tutorialStep++;
+    // 離開「牌型說明浮條」步驟：清掉點區高光（教學點區時未設 5 秒自動清除）
+    if (leavingStep?.highlight === 'hand-hint-banner') clearActiveHighlight(true);
+    // 離開「枷鎖說明視窗」步驟：收掉教學用不過期的枷鎖說明 toast
+    if (leavingStep?.highlight === 'shackle-toast') UI.clearToasts();
+    if (tutorialStep >= TUTORIAL_STEPS.length) return;
+    const nextStep = TUTORIAL_STEPS[tutorialStep];
+    if (nextStep?.forceDiceAfterRoll) tutorialForcedDice = [...nextStep.forceDiceAfterRoll];
+    UI.renderControls(battle, player.maxRolls);
+    UI.showTutorialStep(tutorialStep, TUTORIAL_STEPS.length);
+}
+
 window.advanceTutorialStep = function() {
     if (!tutorialMode) return;
     const currentStep = TUTORIAL_STEPS[tutorialStep];
@@ -1667,13 +1689,7 @@ window.advanceTutorialStep = function() {
         endTutorial();
         return;
     }
-    tutorialStep++;
-    if (tutorialStep < TUTORIAL_STEPS.length) {
-        // 步驟推進後重新渲染控制器，確保攻擊按鈕的 disabled 狀態與當前 tutorialStep 同步
-        // （renderControls 內 isTutorialAttackLocked 會依 TUTORIAL_ATTACK_UNLOCK_STEP 解除禁用）
-        UI.renderControls(battle, player.maxRolls);
-        UI.showTutorialStep(tutorialStep, TUTORIAL_STEPS.length);
-    }
+    advanceBattleTutorialStep();
 };
 
 window.onTutorialShackleInfo = function(id) {
@@ -1681,8 +1697,7 @@ window.onTutorialShackleInfo = function(id) {
     const currentStep = TUTORIAL_STEPS[tutorialStep];
     if (currentStep?.waitFor !== 'shackle_info') return;
     if (stage.activeShackle && id !== stage.activeShackle) return;
-    tutorialStep++;
-    UI.showTutorialStep(tutorialStep, TUTORIAL_STEPS.length);
+    advanceBattleTutorialStep();
 };
 
 window.skipTutorial = function() {
@@ -2198,10 +2213,7 @@ window.toggleLock = function(idx) {
                 const lockedVals = lockedDice.map(d => d.val);
                 const hasPair = lockedVals.some((val, index) => lockedVals.indexOf(val) !== index);
                 if (hasPair) {
-                    tutorialStep++;
-                    const nextStep = TUTORIAL_STEPS[tutorialStep];
-                    if (nextStep?.forceDiceAfterRoll) tutorialForcedDice = [...nextStep.forceDiceAfterRoll];
-                    UI.showTutorialStep(tutorialStep, TUTORIAL_STEPS.length);
+                    advanceBattleTutorialStep();
                 } else {
                     UI.showToast(i18n.t('tutorial.lock_pair_hint'));
                 }
@@ -2304,17 +2316,28 @@ window.setHighlight = function(group) {
         return;
     }
 
+    const isTutorialZoneStep = tutorialMode && TUTORIAL_STEPS[tutorialStep]?.waitFor === 'zone_highlight';
+
     clearHighlightTimer();
     if (activeHighlight === group) {
         activeHighlight = null;
     } else {
         activeHighlight = group;
-        highlightAutoClearTimer = setTimeout(() => {
-            clearActiveHighlight(true);
-        }, 5000);
+        // 教學點區步驟不設 5 秒自動清除：高光與浮條需保留到下一步（浮條說明）結束才清
+        if (!isTutorialZoneStep) {
+            highlightAutoClearTimer = setTimeout(() => {
+                clearActiveHighlight(true);
+            }, 5000);
+        }
     }
     UI.renderDice(battle, activeHighlight, player);
     UI.renderScore(battle, activeHighlight);
+
+    // 教學：點區互動步驟——成功點亮任一有效牌型區後立即推進到「牌型說明浮條」步驟
+    // （下一步會高光浮條本體並保持 board-panel 提升，玩家可慢慢看高光與說明）
+    if (isTutorialZoneStep && activeHighlight) {
+        advanceBattleTutorialStep();
+    }
 };
 
 window.executeRoll = function(isInitial = false) {

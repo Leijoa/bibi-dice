@@ -4,6 +4,25 @@
 
 最後更新：2026-07-10
 
+### 2026-07-10~11 阿扣（新手教學：四區牌型介紹＋說明視窗位置＋修攻擊按鈕卡死）
+- 狀態：完成並實機驗證（14 步全程通過）；已 commit + push；已打包進 exe（`steam:package:verify` 17 項 check＋EXE smoke 通過）
+- Bug 根因（教學卡死無法攻擊）：攻擊按鈕的 disabled 是 renderControls 渲染當下寫進 HTML 的；7/10 枷鎖步移到攻擊前一步後，`onTutorialShackleInfo` 的推進路徑沒有重渲染控制列，跨越解鎖門檻時按鈕不會解鎖 → 教學卡死於攻擊步。修法：新增 `advanceBattleTutorialStep()` 統一推進入口（一律 renderControls + showTutorialStep），shackle_info／lock_two_dice／zone_highlight 路徑皆走此函式，杜絕日後重排再踩
+- 四區教學（製作人問題 1）：重骰後插入 step5 四區總覽（高光 score-area；強制骰面 1,2,3,3,3,4,6,6 → A三同/B四連順/C南瓜 三區亮、D 暗，現成活教材）＋ step6 點區互動（新 waitFor `zone_highlight`，點亮任一有效區立即推進）；傷害預覽文字瘦身聚焦「總基礎 × 四區倍率」
+- 說明視窗位置（製作人追加）：step7 高光「牌型說明浮條」本體（點區後跳出的浮條，教學點區時不設 5 秒自動清除、離開此步才清）；step10 高光「枷鎖說明視窗」（教學中 toast 不自動過期＋掛 `#shackle-info-toast` id，離開此步 UI.clearToasts 收掉）。教學共 **14 步**，`TUTORIAL_ATTACK_UNLOCK_STEP`=11
+- **重要 CSS 根因修正**：`.tutorial-highlight` 原有 `position:relative !important` 會強制蓋掉浮條的 absolute（浮條被擠回版面流、推擠骰子＝7/9 修過的老 bug 在教學高光下復發）。已移除該行，static 元素改由 `showTutorialStep` 以 inline style 補 relative（getComputedStyle 判斷），absolute 浮條／fixed toast 保持原定位
+- 修改：`js/main.js`（TUTORIAL_STEPS 14 步、helper＋離步清理、setHighlight 鉤子）、`js/ui.js`（highlightMap 加 hand-hint-banner/shackle-toast、位置特例、board-panel 提升條件、showShackleInfo 教學分支）、`css/style.css`（.tutorial-highlight 移除強制 relative）、四語系 `tutorial.step5~13` 輪轉＋新增四步（720 keys）
+- 驗證：`node --check` 六檔通過；`steam:i18n:verify` 720 keys 對齊；本機實機 531×970 教學 14 步全程——鎖對子、四區 A/B/C 亮 D 暗、點 A 區 3 顆骰 dice-glow-A＋浮條 absolute 高光＋tooltip 貼浮條上方 3px、離步浮條收掉、枷鎖 toast 高光且 fixed 未破版、離步 toast 收掉、**攻擊按鈕解鎖可攻擊**、商店、完成旗標寫入，console 零錯誤
+- 注意：驗證中瀏覽器 renderer 凍結（rAF 不觸發，同截圖 compositor 逾時的既知環境問題）曾使傷害逐步動畫（countUpTo 為 rAF 驅動）停住，以遊戲內建 `setting_stepAnimation=false` 路徑完成全程驗證，非遊戲 bug；正常環境逐步動畫路徑 7/10 已驗過。**韻西 7/10 的 css 修改（牌型表任意字母改黃色，待製作人視覺確認）未包含在本次 commit、保留於工作區，但已隨本次打包進 exe，製作人可直接在 exe 開牌型表視覺確認**
+更新者：阿扣（Claude Code）
+
+### 2026-07-10 韻西（牌型表抽象標記任意字母加黑框）
+- 狀態：完成，待製作人視覺確認；尚未 commit / 打包
+- 任務：牌型表範例骰改抽象標記後，青色英文字母與空白骰底背景太接近，辨讀吃力；製作人要求加黑框或換色加框
+- 修改：只動 `css/style.css`，將 `.rule-dice-mini__num--any` 統一改回與指定數字相同的黃色數字樣式，不再使用另一套白色粗體字；保留灰色 `?`、牌型 token 資料與四語系不變
+- 協作註記：阿扣呼叫失敗，原因為 workspace trust 尚未互動接受且 `claude.exe` session limit（重置 11:10pm Asia/Taipei）；製作人已明確授權此小修由韻西先獨力完成
+- 驗證：`node --check js/ui.js` 通過；`npm.cmd run steam:i18n:verify` 716 keys 對齊；`git diff --check -- css/style.css CHANGELOG.md SYNC.md` 通過
+更新者：韻西（Codex）
+
 ### 2026-07-10 阿扣（新手教學枷鎖移後 + 絕對秩序說明改八顆）
 - 狀態：完成並實機驗證，待製作人確認 commit + 打包
 - 教學：枷鎖說明原在第 2 步（玩家還沒學鎖定就要懂枷鎖）→ `TUTORIAL_STEPS` 重排，枷鎖移到 index 6（攻擊前）；順序 敵人→回合→骰子→鎖定→重骰→傷害→枷鎖→攻擊→商店→完成。文字綁索引，四語系 `tutorial.step1~6` 同步輪轉。`forceDiceAfterRoll`(idx4)、`TUTORIAL_ATTACK_UNLOCK_STEP=7` 仍對齊

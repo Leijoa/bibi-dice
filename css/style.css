@@ -2679,7 +2679,8 @@ body.steam-portrait .collection-grid {
 
 /* ===== Tutorial System ===== */
 .tutorial-highlight {
-  position: relative !important;
+  /* 不強制 position：已定位元素（牌型浮條 absolute、枷鎖說明 toast fixed）需保持原定位，
+     static 元素由 showTutorialStep 以 inline style 補 relative */
   z-index: 196 !important;
   box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.9), 0 0 20px rgba(139, 92, 246, 0.5) !important;
   border-radius: 8px;
