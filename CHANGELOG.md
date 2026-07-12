@@ -1,3 +1,39 @@
+### 文件：AI 協作流程優化（SYNC 瘦身＋交叉驗收分級＋呼叫阿扣標準腳本） [2026/07/13]
+* **`SYNC.md`**：快速交接區 2026-06-30（含）以前的紀錄歸檔至 `SYNC_ARCHIVE.md`（816→548 行）；「目前真實狀態」表補更新（Base Game Build 24157365、四語 720 keys、SteamCMD 帳號 leijoa2588）；「19 項 Bug 修復後的 SteamPipe 發布」移至已處理（2026-07-11 隨教學大改版發布）；重要協作規則新增「交叉驗收分級 A/B/C」「打包與 commit 衛生」「發布類任務收尾義務」「韻西呼叫阿扣標準流程」「批次實作任務規範」；指令表補 sim 系列與 `steam:package:demo`。
+* **`SYNC_ARCHIVE.md`**（擴充）：本次歸檔的 6/20~6/30 紀錄放最上方；原 2026-06-30 封存批次（6/8~6/18）完整保留於「## 2026-06-30 封存批次」段落，git diff 核對零遺失。
+* **`scripts/call-claude-review.ps1`**（新增）：韻西呼叫阿扣的標準腳本——非互動 `-p`、`--no-session-persistence`、預算上限 US$5.00（AGENTS.md 規範）、權限模式預設 plan（唯讀）、輸出自動存檔至 `tmp/`，並偵測 session limit／workspace trust／401 三種既知失敗原因給中文指引；檔案以 UTF-8 with BOM 儲存（PowerShell 5.1 執行含中文的無 BOM .ps1 會以 ANSI 解碼破壞語法）。
+* **驗證**：歸檔前後內容逐段核對未遺失；PSParser 解析 0 錯誤；腳本兩種錯誤路徑煙霧測試 exit code 正確。未動任何遊戲程式。
+
+### 文件：內容擴充計劃書（遺物／枷鎖／牌型） [2026/07/12]
+* **`docs/design/CONTENT_EXPANSION_PLAN.md`**：新增內容擴充計劃書——11 常規遺物＋4 新融合＋2 神話 rework＋7 枷鎖＋7 牌型候選，分 6 批實作；含每批固定驗證流程（i18n／alldamege.csv 重產／sim:compare 同 seed 對照／package:verify）與待製作人確認的 Q1~Q9 決策清單。
+* **定案**：新 C 區牌型「玻璃鞋」（5同+對子 x18）、「午夜鐘聲」（6同+對子 x30）、「舞會階梯」（4連順+4同 x18）名稱由製作人拍板；【灰姑娘】【加冕】【婚禮】列為命名保留字。
+* **設計前提修正**：遊戲無金幣系統（商店三選一，price 為遺留欄位）；鎖定類遺物必須綁「按下重骰瞬間」結算（重骰承諾），否則攻擊前全鎖白拿。
+* **查核**：鏡像對稱 35 種組合與 D 區判定鏈逐一比對（須排除全異避免死牌型）；輕如鴻毛／重如泰山全 24 盤枚舉證實為大牌放大器待裁定。
+* **未動任何遊戲程式**；製作人同日兩輪回覆全數核准（鏡像對稱 x20、輕如鴻毛/重如泰山降級 x10、上層/下層世界要做、雙神眷顧僅 A/C 區、歉收要做、批次照案、神話 rework 去散牌化照案、批次 1 名稱通過），決議收錄於計劃書第 5 節，計劃書定稿。後續批次實作由韻西協同阿扣進行。
+
+### Steam：公告正文補上四張 full-size 說明圖 [2026/07/12]
+* **修正**：正式版 Steam 更新公告 `669496599819322726` 的正文補上四張說明圖，位置放在開頭兩段說明後，使用 `promo/announcements/tutorial-update-2026-07-11/steam-final/steam-01..04` 對應的 Steam CDN full-size 圖。
+* **根因**：先前只套用活動封面／圖像素材頁；正文未插圖。另右側「先前上傳的圖片」列表顯示 128×72 縮圖，若直接取縮圖 URL 會導致公開頁只出現小圖，需改用彈窗中的 1920×1080 full-size URL。
+* **驗證**：公開繁中頁 `https://store.steampowered.com/news/app/4792230/view/669496599819322726?l=tchinese` 已確認 4 張 clan 圖皆為 1920×1080，正文無 `[img]`、`[url=]`、`SCRATCH` 破碼。
+
+### Steam：正式版新手教學更新 Build 24157365 與更新公告發布 [2026/07/11]
+* **正式版發布**：SteamCMD 以正確帳號 `leijoa2588` 上傳正式版 AppID `4792230` BuildID `24157365`，並經製作人手機 Steam App 核准後，在 Steamworks 將 `default` 設為 `24157365`。
+* **Demo 回退**：本次製作人確認只更新正式版；Demo AppID `4796530` 曾誤切到 BuildID `24157360`，已經製作人手機 Steam App 核准後回退，`default` 目前維持 BuildID `23985042`。
+* **打包修正（`scripts/publish-steam-demo.ps1`）**：Steam web dist 排除清單補上 `steam-build`、`tmp`、`docs`、`sim`、`steam-app` 與內部協作／部署設定檔；同時修正排除檔清理只刪根目錄的問題，改為遞迴清除，避免 VDF、舊 SteamCMD log、臨時檔、模擬工具與內部文件被打進玩家安裝包。
+* **帳號修正**：先前依過時文件誤讀 `leijoa_dev`；已修正專案紀錄為 `leijoa2588`，並確認 `rg leijoa_dev` 無殘留。
+* **驗證**：`npm.cmd run steam:package:verify` 通過；`npm.cmd run steam:package:demo` 後執行 `node scripts/verify-steam-windows-build.js` 通過；正式版／Demo 打包輸出與 packaged app 均確認不含 `steam-build`、`tmp`、`docs`、`sim`、`steam-app`、`mobile-entry.js`。
+* **Steam 更新公告**：正式版 Steam 社群活動已公開，類型 `定期更新`，標題「更新：新手教學大改版，手把手看懂四區牌型」，並連結正式版 BuildID `24157365`。公開網址：`https://store.steampowered.com/news/app/4792230/view/669496599819322726`。
+* **公告圖像**：製作人手動上傳圖像素材後，繁中與英文封面皆套用 `promo/announcements/tutorial-update-2026-07-11/steam-final/event-cover-800x450.png`；舊版帶有「正式版 / Demo 同步更新」字樣的四張圖未用於公開公告內文。
+* **公開頁驗證**：Steam 後台發布頁顯示「發佈成功」與「公開可見」；繁中公開頁顯示「正式版現已套用／正式版生效」，英文公開頁顯示 `The full game now has a rebuilt tutorial...` 與 `This update is live in the full game...`。繁中／英文公開頁皆未找到 `正式版與 Demo 同步`、`正式版 / Demo 同步`、`正式版和 Demo 都已更新`、`full game and the demo` 等錯誤同步說法。
+
+### 宣傳：新手教學大改版公告附圖審核包 [2026/07/11]
+* **產出**：新增 `promo/announcements/tutorial-update-2026-07-11/`，包含 Steam 公告用 1920x1080 橫圖 4 張、Threads 備用 1080x1350 直圖 2 張，以及 `raw/` 原始截圖。
+* **標註內容**：附圖分別對應「新手教學重做與四區牌型亮起」、「點擊牌型區查看骰子高光與說明浮條」、「新版牌型表標記法」、「枷鎖說明視窗位置」。
+* **工具**：新增 `tmp/capture-tutorial-update-assets.js`，用 Playwright 擷取本機預覽畫面並套公告版面標註。
+* **狀態**：本包原先供製作人審核；後續 Steam 公告已發布，公開封面改用 `steam-final/event-cover-800x450.png`，Threads 部分仍由製作人自行發布。
+* **協作註記**：阿扣因 workspace trust 尚未互動接受且 session limit（Asia/Taipei 04:10 重置）暫不可用；製作人已明確授權阿扣額度滿時由韻西先獨力完成。
+* **驗證**：六張成品已逐張人工檢查可讀性、裁切與標註位置；`node --check tmp/capture-tutorial-update-assets.js` 通過。
+
 ### 新手教學：四區牌型介紹＋說明視窗位置＋修正攻擊按鈕卡死 [2026/07/10~11]
 * **修正（`js/main.js`）**：枷鎖說明移到攻擊前一步後，`onTutorialShackleInfo` 推進步驟時未重渲染控制列（攻擊按鈕的 disabled 是渲染當下寫進 HTML），攻擊按鈕停留在禁用 → 教學卡死無法攻擊。新增 `advanceBattleTutorialStep()` 統一推進入口（一律 renderControls + showTutorialStep），shackle_info／lock_two_dice／zone_highlight 推進路徑共用。
 * **`js/main.js`**：教學 10 步 → 14 步。重骰後新增「四區總覽」（高光計分區；強制骰面 1,2,3,3,3,4,6,6 使 A三同/B四連順/C南瓜 三區亮、D 區暗）→「點區互動」（新 waitFor `zone_highlight`，玩家實際點亮牌型區）→「牌型說明浮條位置」（高光浮條本體；教學點區不設 5 秒自動清除，離開此步才清高光）；枷鎖步後新增「枷鎖說明視窗位置」（高光畫面中央的說明 toast，離開此步收掉）。`TUTORIAL_ATTACK_UNLOCK_STEP` 7→11。
